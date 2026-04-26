@@ -1,0 +1,170 @@
+// Global interactive layer: scroll progress, cursor glow, reveal-on-scroll, magnetic CTAs.
+// Non-invasive — injects overlays and upgrades existing elements via event listeners.
+
+(function () {
+  // --- 1. Scroll progress bar ---
+  const progressBar = document.createElement("div");
+  progressBar.id = "scroll-progress";
+  Object.assign(progressBar.style, {
+    position: "fixed", top: "0", left: "0", right: "0",
+    height: "3px", background: "var(--accent, #FFD500)",
+    transformOrigin: "right", transform: "scaleX(0)",
+    zIndex: "100", transition: "transform .08s linear",
+    boxShadow: "0 0 12px var(--accent, #FFD500)",
+  });
+  document.body.appendChild(progressBar);
+
+  // --- 2. Cursor glow ---
+  const cursor = document.createElement("div");
+  cursor.id = "cursor-glow";
+  Object.assign(cursor.style, {
+    position: "fixed", top: "0", left: "0",
+    width: "360px", height: "360px", borderRadius: "50%",
+    background: "radial-gradient(circle, rgba(255,213,0,0.14), rgba(255,213,0,0) 70%)",
+    pointerEvents: "none", zIndex: "1",
+    transform: "translate(-50%, -50%)",
+    transition: "opacity .4s ease",
+    opacity: "0", mixBlendMode: "screen",
+  });
+  document.body.appendChild(cursor);
+
+  let cx = 0, cy = 0, tx = 0, ty = 0;
+  window.addEventListener("mousemove", (e) => {
+    tx = e.clientX; ty = e.clientY;
+    cursor.style.opacity = "1";
+  });
+  window.addEventListener("mouseleave", () => cursor.style.opacity = "0");
+
+  function loop() {
+    cx += (tx - cx) * 0.18;
+    cy += (ty - cy) * 0.18;
+    cursor.style.left = cx + "px";
+    cursor.style.top = cy + "px";
+    requestAnimationFrame(loop);
+  }
+  loop();
+
+  // --- 3. Scroll handler ---
+  function onScroll() {
+    const h = document.documentElement;
+    const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight || 1);
+    progressBar.style.transform = `scaleX(${Math.min(1, Math.max(0, scrolled))})`;
+  }
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+
+  // --- 4. Reveal on scroll ---
+  function setupReveal() {
+    const targets = document.querySelectorAll(
+      "section > .wrap > *, section > div:not([id]) > *, section h1, section h2, section h3"
+    );
+    const style = document.createElement("style");
+    style.textContent = `
+      .reveal-init { opacity: 0; transform: translateY(30px); transition: opacity .7s ease, transform .7s cubic-bezier(.2,.8,.2,1); }
+      .reveal-in { opacity: 1; transform: none; }
+    `;
+    document.head.appendChild(style);
+
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add("reveal-in");
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.08, rootMargin: "0px 0px -60px 0px" });
+
+    targets.forEach((el) => {
+      // Skip fixed/sticky stuff and nav
+      const cs = getComputedStyle(el);
+      if (cs.position === "fixed" || cs.position === "sticky") return;
+      if (el.closest("nav")) return;
+      el.classList.add("reveal-init");
+      io.observe(el);
+    });
+  }
+
+  // --- 5. Gentle hover grow on primary CTAs ---
+  function setupMagnetic() {
+    const btns = document.querySelectorAll(".btn-primary, .btn.btn-primary");
+    btns.forEach(btn => {
+      if (btn.dataset.ctaGrow) return;
+      btn.dataset.ctaGrow = "1";
+      btn.style.transition = "transform .25s ease";
+      btn.style.transformOrigin = "center center";
+      btn.addEventListener("mouseenter", () => {
+        btn.style.transform = "scale(1.04)";
+      });
+      btn.addEventListener("mouseleave", () => {
+        btn.style.transform = "scale(1)";
+      });
+    });
+  }
+
+  // --- 6. Tilt on step / testimonial cards ---
+  function setupTilt() {
+    const cards = document.querySelectorAll(
+      '[style*="border-radius: 20px"][style*="var(--card)"], details.faq'
+    );
+    // Keep it subtle; skip for now to preserve readability
+  }
+
+  // --- 7. Animated number counters on stats ---
+  function setupCounters() {
+    const stats = document.querySelectorAll(".display");
+    stats.forEach(el => {
+      const text = el.textContent.trim();
+      const m = text.match(/^(\+?)(\d+(?:\.\d+)?)(M|K|ש׳|\+)?$/);
+      if (!m) return;
+      const prefix = m[1] || "";
+      const value = parseFloat(m[2]);
+      const suffix = m[3] || "";
+      el.dataset.final = text;
+
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (!e.isIntersecting) return;
+          io.unobserve(e.target);
+          const start = performance.now();
+          const dur = 1100;
+          const step = (now) => {
+            const t = Math.min(1, (now - start) / dur);
+            const eased = 1 - Math.pow(1 - t, 3);
+            const v = value * eased;
+            const display = value % 1 === 0 ? Math.round(v) : v.toFixed(1);
+            el.textContent = prefix + display + suffix;
+            if (t < 1) requestAnimationFrame(step);
+            else el.textContent = el.dataset.final;
+          };
+          requestAnimationFrame(step);
+        });
+      }, { threshold: 0.3 });
+      io.observe(el);
+    });
+  }
+
+  // Wait for React to render
+  function init() {
+    setTimeout(() => {
+      setupReveal();
+      setupMagnetic();
+      setupCounters();
+    }, 600);
+    // Re-run magnetic when variation changes (root re-renders)
+    const mo = new MutationObserver(() => {
+      clearTimeout(init._debounce);
+      init._debounce = setTimeout(() => {
+        setupMagnetic();
+        setupCounters();
+      }, 400);
+    });
+    const root = document.getElementById("root");
+    if (root) mo.observe(root, { childList: true, subtree: false });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
