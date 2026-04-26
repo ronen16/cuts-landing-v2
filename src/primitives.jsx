@@ -170,6 +170,17 @@ function validateForm(values) {
   return errors;
 }
 
+function useIsMobile() {
+  const [mobile, setMobile] = React.useState(() => window.innerWidth < 768);
+  React.useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const handler = (e) => setMobile(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+  return mobile;
+}
+
 function useForm() {
   const [values, setValues] = React.useState({ name: "", phone: "", email: "" });
   const [errors, setErrors] = React.useState({});
@@ -230,6 +241,7 @@ function LogoMarquee({ color = "currentColor", logos = CLIENT_LOGOS }) {
 
 // Sticky header
 function TopNav({ variant, onCTAClick }) {
+  const isMobile = useIsMobile();
   const bg = "rgba(10,10,10,0.78)";
   return (
     <nav style={{
@@ -238,20 +250,22 @@ function TopNav({ variant, onCTAClick }) {
       background: bg,
       borderBottom: "1px solid var(--line2)",
     }}>
-      <div className="wrap" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: 72 }}>
+      <div className="wrap" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: 64 }}>
         <a href="#" style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <img src={LOGO_SRC} alt="Cuts" style={{ height: 34 }} />
+          <img src={LOGO_SRC} alt="Cuts" style={{ height: 30 }} />
         </a>
-        <ul style={{ display: "flex", gap: 28, listStyle: "none", margin: 0, padding: 0, fontSize: 15, fontWeight: 500 }}>
-          {NAV.map(n => (
-            <li key={n.href}>
-              <a href={n.href} onClick={(e) => { e.preventDefault(); scrollToId(n.href); }} style={{ opacity: 0.8 }}>
-                {n.label}
-              </a>
-            </li>
-          ))}
-        </ul>
-        <button className="btn btn-primary" onClick={onCTAClick} style={{ padding: "10px 18px", fontSize: 14 }}>
+        {!isMobile && (
+          <ul style={{ display: "flex", gap: 28, listStyle: "none", margin: 0, padding: 0, fontSize: 15, fontWeight: 500 }}>
+            {NAV.map(n => (
+              <li key={n.href}>
+                <a href={n.href} onClick={(e) => { e.preventDefault(); scrollToId(n.href); }} style={{ opacity: 0.8 }}>
+                  {n.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
+        <button className="btn btn-primary" onClick={onCTAClick} style={{ padding: isMobile ? "10px 16px" : "10px 18px", fontSize: 14 }}>
           בוא נדבר ←
         </button>
       </div>
@@ -260,9 +274,10 @@ function TopNav({ variant, onCTAClick }) {
 }
 
 function Footer() {
+  const isMobile = useIsMobile();
   return (
     <footer style={{ borderTop: "1px solid var(--line2)", padding: "48px 0 32px", marginTop: 40 }}>
-      <div className="wrap" style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr 1fr 1fr", gap: 40 }}>
+      <div className="wrap" style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "1.5fr 1fr 1fr 1fr", gap: isMobile ? 32 : 40 }}>
         <div>
           <img src={LOGO_SRC} alt="Cuts" style={{ height: 44, marginBottom: 16 }} />
           <p style={{ opacity: 0.6, maxWidth: 280, lineHeight: 1.6, margin: 0 }}>
@@ -308,6 +323,6 @@ function Footer() {
 
 Object.assign(window, {
   LOGO_SRC, NAV, CLIENT_LOGOS, PILLARS, SERVICES, STEPS, AUDIENCE, WHY_US, FAQ,
-  validateForm, useForm, scrollToId,
+  validateForm, useForm, useIsMobile, scrollToId,
   Waveform, LogoMarquee, TopNav, Footer,
 });

@@ -2,8 +2,9 @@
 // 10 sections, RTL, dark-dominant with yellow accent.
 
 function Hero({ onCTAClick }) {
+  const isMobile = useIsMobile();
   return (
-    <section style={{ position: "relative", padding: "100px 0 60px", overflow: "hidden" }}>
+    <section style={{ position: "relative", padding: isMobile ? "60px 0 40px" : "100px 0 60px", overflow: "hidden" }}>
       <div className="wrap" style={{ position: "relative" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 40 }}>
           <span className="tag" style={{
@@ -27,7 +28,7 @@ function Hero({ onCTAClick }) {
           <span style={{ color: "var(--accent)" }}>ויש כאלה שאף אחד לא זוכר?</span>
         </h1>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: 60, marginTop: 56, alignItems: "end" }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.4fr 1fr", gap: isMobile ? 28 : 60, marginTop: 40, alignItems: "end" }}>
           <p style={{ fontSize: 22, lineHeight: 1.55, margin: 0, opacity: 0.85, maxWidth: 680 }}>
             הלקוחות שלך לא צריכים עוד מודעה, הם צריכים להכיר את הבן אדם שמאחורי העסק.<br />
             אנחנו מפיקים לך פודקאסט שהופך צופים ללקוחות — בלי לדחוף, בלי לרדוף, רק להיות אתה.
@@ -53,6 +54,7 @@ function Hero({ onCTAClick }) {
 }
 
 function Problem() {
+  const isMobile = useIsMobile();
   const sectionRef = React.useRef(null);
   const [inView, setInView] = React.useState(false);
   const [mode, setMode] = React.useState("old"); // "old" | "new"
@@ -122,7 +124,7 @@ function Problem() {
   const areaD = pathD + ` L ${CHART_W} ${CHART_H} L 0 ${CHART_H} Z`;
 
   return (
-    <section ref={sectionRef} style={{ padding: "120px 0", background: "var(--card)", borderTop: "1px solid var(--line2)", borderBottom: "1px solid var(--line2)" }}>
+    <section ref={sectionRef} style={{ padding: isMobile ? "64px 0" : "120px 0", background: "var(--card)", borderTop: "1px solid var(--line2)", borderBottom: "1px solid var(--line2)" }}>
       <div className="wrap">
         <h2 className="display" style={{ fontSize: "clamp(38px, 6vw, 84px)", margin: "0 0 48px", maxWidth: 1100 }}>
           התקציבים עולים. הלידים מתקררים.<br />
@@ -131,8 +133,8 @@ function Problem() {
 
         {/* Three live stats */}
         <div style={{
-          display: "grid", gridTemplateColumns: "repeat(3, 1fr)",
-          gap: 16, marginBottom: 56
+          display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
+          gap: 16, marginBottom: 40
         }}>
           {[
           { n: `+${cpcUp}%`, label: "עליית מחיר הליד בגוגל", sub: "YoY · WordStream 2024", arrow: "↑", tone: "bad" },
@@ -163,7 +165,7 @@ function Problem() {
         </div>
 
         {/* Chart + paragraph */}
-        <div style={{ display: "grid", gridTemplateColumns: "1.1fr 1fr", gap: 60, alignItems: "stretch", marginBottom: 56 }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.1fr 1fr", gap: isMobile ? 28 : 60, alignItems: "stretch", marginBottom: 40 }}>
           <div style={{
             background: "var(--bg)",
             border: "1px solid var(--line2)",
@@ -264,7 +266,7 @@ function Problem() {
           background: "var(--bg)",
           border: "1px solid var(--line2)",
           borderRadius: 22,
-          padding: "44px 48px",
+          padding: isMobile ? "28px 20px" : "44px 48px",
           position: "relative",
           overflow: "hidden"
         }}>
@@ -378,6 +380,7 @@ function Problem() {
 }
 
 function Solution() {
+  const isMobile = useIsMobile();
   const [hoveredPillar, setHoveredPillar] = React.useState(-1);
 
   // Concrete examples revealed on hover
@@ -409,7 +412,7 @@ function Solution() {
 
 
   return (
-    <section style={{ padding: "120px 0" }}>
+    <section style={{ padding: isMobile ? "64px 0" : "120px 0" }}>
       <div className="wrap">
         <h2 className="display" style={{ fontSize: "clamp(40px, 7vw, 104px)", margin: "0 0 40px", fontWeight: 900 }}>
           מלמכור בכוח —<br />
@@ -452,7 +455,7 @@ function Solution() {
         </p>
 
         {/* Interactive Pillar cards */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 20 }}>
           {PILLARS.map((p, i) => {
             const isHover = hoveredPillar === i;
             const ex = PILLAR_EXAMPLES[i];
@@ -608,8 +611,9 @@ function CTAInline({ onCTAClick, label = "בוא נדבר על הפודקאסט 
 }
 
 function Services({ onCTAClick }) {
+  const isMobile = useIsMobile();
   return (
-    <section style={{ padding: "120px 0", background: "var(--card)", borderTop: "1px solid var(--line2)", borderBottom: "1px solid var(--line2)" }}>
+    <section style={{ padding: isMobile ? "64px 0" : "120px 0", background: "var(--card)", borderTop: "1px solid var(--line2)", borderBottom: "1px solid var(--line2)" }}>
       <div className="wrap">
         <h2 className="display" style={{ fontSize: "clamp(40px, 6vw, 88px)", margin: "0 0 24px", maxWidth: 1000 }}>
           אתה מדבר.<br />
@@ -620,12 +624,12 @@ function Services({ onCTAClick }) {
           אנחנו בונים את כל המכונה.
         </p>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 20 }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(6, 1fr)", gap: 20 }}>
           {SERVICES.map((s, i) => {
             const colSpan = s.highlight ? 6 : i === 0 || i === 1 ? 3 : 3;
             return (
               <div key={i} style={{
-                gridColumn: s.highlight ? "span 6" : "span 3",
+                gridColumn: isMobile ? "span 1" : s.highlight ? "span 6" : "span 3",
                 background: s.highlight ? "var(--bg)" : "var(--bg)",
                 borderRadius: 20, padding: s.highlight ? 48 : 32,
                 border: `${s.highlight ? 2 : 1}px solid ${s.highlight ? "var(--accent)" : "var(--line2)"}`,
@@ -698,6 +702,7 @@ function Services({ onCTAClick }) {
 }
 
 function HowItWorks() {
+  const isMobile = useIsMobile();
   const [active, setActive] = React.useState(0);
   const [hover, setHover] = React.useState(-1);
 
@@ -713,9 +718,9 @@ function HowItWorks() {
   const progress = shown / (STEPS.length - 1) * 100;
 
   return (
-    <section id="how" style={{ padding: "120px 0" }}>
+    <section id="how" style={{ padding: isMobile ? "64px 0" : "120px 0" }}>
       <div className="wrap">
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "end", marginBottom: 64, gap: 40, flexWrap: "wrap" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "end", marginBottom: 48, gap: 40, flexWrap: "wrap" }}>
           <div>
             <h2 className="display" style={{ fontSize: "clamp(40px, 6vw, 88px)", margin: "0", maxWidth: 900, color: "rgb(255, 213, 0)" }}>
               שלושה שלבים.<br />
@@ -746,7 +751,7 @@ function HowItWorks() {
             borderRadius: 2
           }} />
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24, position: "relative", zIndex: 1 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 16, position: "relative", zIndex: 1 }}>
             {STEPS.map((s, i) => {
               const isActive = shown === i;
               const reached = i <= shown;
@@ -879,8 +884,9 @@ function HowItWorks() {
 }
 
 function WhoItsFor() {
+  const isMobile = useIsMobile();
   return (
-    <section style={{ padding: "120px 0", background: "var(--card)", borderTop: "1px solid var(--line2)", borderBottom: "1px solid var(--line2)" }}>
+    <section style={{ padding: isMobile ? "64px 0" : "120px 0", background: "var(--card)", borderTop: "1px solid var(--line2)", borderBottom: "1px solid var(--line2)" }}>
       <div className="wrap" style={{ maxWidth: 1100 }}>
         <h2 className="display" style={{ fontSize: "clamp(38px, 5.5vw, 78px)", margin: "0 0 56px", maxWidth: 1000 }}>
           פודקאסט זה <span style={{ opacity: 0.55 }}>לא</span> לכל אחד.<br />
@@ -1053,6 +1059,7 @@ function InteractiveVerdict() {
 }
 
 function WhyUs() {
+  const isMobile = useIsMobile();
   const [hovered, setHovered] = React.useState(-1);
 
   // Interactive chip data for the AI highlight
@@ -1086,14 +1093,14 @@ function WhyUs() {
   };
 
   return (
-    <section id="why" style={{ padding: "120px 0" }}>
+    <section id="why" style={{ padding: isMobile ? "64px 0" : "120px 0" }}>
       <div className="wrap">
-        <h2 className="display" style={{ fontSize: "clamp(38px, 6vw, 84px)", margin: "0 0 64px", maxWidth: 1100 }}>
+        <h2 className="display" style={{ fontSize: "clamp(38px, 6vw, 84px)", margin: "0 0 48px", maxWidth: 1100 }}>
           אנחנו לא חברת הפקה.<br />
           <span style={{ color: "var(--accent)" }}>אנחנו שותפים לתוצאה העסקית.</span>
         </h2>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 20 }}>
           {WHY_US.map((w, i) => {
             const isHover = hovered === i;
             if (w.highlight) {
@@ -1309,8 +1316,9 @@ function WhyUs() {
 }
 
 function Results() {
+  const isMobile = useIsMobile();
   return (
-    <section id="results" style={{ padding: "120px 0", background: "var(--card)", borderTop: "1px solid var(--line2)", borderBottom: "1px solid var(--line2)" }}>
+    <section id="results" style={{ padding: isMobile ? "64px 0" : "120px 0", background: "var(--card)", borderTop: "1px solid var(--line2)", borderBottom: "1px solid var(--line2)" }}>
       <div className="wrap">
         <h2 className="display" style={{ fontSize: "clamp(38px, 6vw, 84px)", margin: "0 0 56px", maxWidth: 1100 }}>
           המספרים מאחורי<br />
@@ -1335,7 +1343,7 @@ function Results() {
           </span>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 20 }}>
           {[1, 2, 3].map((i) =>
           <div key={i} style={{
             background: "var(--bg)", borderRadius: 20, padding: 32,
@@ -1377,9 +1385,10 @@ function Results() {
 }
 
 function FAQSection() {
+  const isMobile = useIsMobile();
   const [openIdx, setOpenIdx] = React.useState(0);
   return (
-    <section id="faq" style={{ padding: "120px 0" }}>
+    <section id="faq" style={{ padding: isMobile ? "64px 0" : "120px 0" }}>
       <div className="wrap" style={{ maxWidth: 1000 }}>
         <span className="mono" style={{ fontSize: 13, opacity: 0.5 }}>09 / שאלות</span>
         <h2 className="display" style={{ fontSize: "clamp(40px, 6vw, 88px)", margin: "12px 0 56px" }}>
@@ -1449,9 +1458,10 @@ function FAQSection() {
 }
 
 function FinalCTA({ form }) {
+  const isMobile = useIsMobile();
   const { values, setField, errors, touched, blur, submit, submitted } = form;
   return (
-    <section id="cta" style={{ padding: "120px 0 60px", position: "relative", overflow: "hidden" }}>
+    <section id="cta" style={{ padding: isMobile ? "48px 0" : "120px 0 60px", position: "relative", overflow: "hidden" }}>
       {/* Decorative giant type watermark */}
       <div aria-hidden style={{
         position: "absolute", right: "-2%", bottom: "-10%",
@@ -1465,10 +1475,10 @@ function FinalCTA({ form }) {
       <div className="wrap" style={{ position: "relative", zIndex: 2 }}>
         <div style={{
           background: "var(--accent)", color: "#0A0A0A",
-          borderRadius: 28, padding: "80px 56px",
+          borderRadius: isMobile ? 20 : 28, padding: isMobile ? "40px 24px" : "80px 56px",
           position: "relative", overflow: "hidden"
         }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 60, alignItems: "center" }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.2fr 1fr", gap: isMobile ? 32 : 60, alignItems: "center" }}>
             <div>
               <span className="mono" style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.15em" }}>
                 10 / שיחת היכרות
