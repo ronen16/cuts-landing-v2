@@ -24,14 +24,14 @@ function Hero({ onCTAClick }) {
           fontSize: "clamp(52px, 9.5vw, 148px)",
           margin: 0, fontWeight: 900
         }}>
-          למה יש בעלי עסקים שהקהל שלהם מת עליהם<br />
-          <span style={{ color: "var(--accent)" }}>ויש כאלה שאף אחד לא זוכר?</span>
+          הלקוחות הכי טובים שלך<br />
+          <span style={{ color: "var(--accent)" }}>מגיעים אליך — לא להפך.</span>
         </h1>
 
         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.4fr 1fr", gap: isMobile ? 28 : 60, marginTop: 40, alignItems: "end" }}>
           <p style={{ fontSize: 22, lineHeight: 1.55, margin: 0, opacity: 0.85, maxWidth: 680 }}>
-            הלקוחות שלך לא צריכים עוד מודעה, הם צריכים להכיר את הבן אדם שמאחורי העסק.<br />
-            אנחנו מפיקים לך פודקאסט שהופך צופים ללקוחות — בלי לדחוף, בלי לרדוף, רק להיות אתה.
+            כשאתה הפנים של העסק — המוניטין שלך הוא המוצר.<br />
+            פודקאסט הוא הכלי שבונה אמון בקנה מידה: לקוחות שמגיעים חמים, מוכנים, ומשלמים — לפני שדיברתם.
           </p>
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             <button className="btn btn-primary" onClick={onCTAClick} style={{ justifyContent: "center", padding: "22px 28px", fontSize: 18 }}>
@@ -57,211 +57,79 @@ function Problem() {
   const isMobile = useIsMobile();
   const sectionRef = React.useRef(null);
   const [inView, setInView] = React.useState(false);
-  const [mode, setMode] = React.useState("old"); // "old" | "new"
+  const [mode, setMode] = React.useState("old");
 
   React.useEffect(() => {
     if (!sectionRef.current) return;
     const io = new IntersectionObserver(
-      ([e]) => {if (e.isIntersecting) setInView(true);},
+      ([e]) => { if (e.isIntersecting) setInView(true); },
       { threshold: 0.15 }
     );
     io.observe(sectionRef.current);
     return () => io.disconnect();
   }, []);
 
-  // Ticker for the "3 years" chart
-  const [tick, setTick] = React.useState(0);
-  React.useEffect(() => {
-    if (!inView) return;
-    const id = setInterval(() => setTick((t) => (t + 1) % 100), 60);
-    return () => clearInterval(id);
-  }, [inView]);
-
-  // Stat: animated count-up
-  const useCountUp = (target, duration = 1400) => {
-    const [v, setV] = React.useState(0);
-    React.useEffect(() => {
-      if (!inView) return;
-      const start = performance.now();
-      let raf;
-      const step = (now) => {
-        const t = Math.min(1, (now - start) / duration);
-        const eased = 1 - Math.pow(1 - t, 3);
-        setV(Math.round(target * eased));
-        if (t < 1) raf = requestAnimationFrame(step);
-      };
-      raf = requestAnimationFrame(step);
-      return () => cancelAnimationFrame(raf);
-    }, [target, duration, inView]);
-    return v;
-  };
-
-  const cpcUp = useCountUp(25); // Google Ads CPL +25% YoY (Wordstream 2024)
-  const convRate = useCountUp(223); // B2B avg conversion rate 2.23% (WebFX) — shown as 2.23%
-  const attention = useCountUp(47); // Avg screen attention 47s, down from 2.5min (Nielsen/Microsoft 2025)
-
-  // Line chart for CPC rising 2022 → 2026
-  const chartPoints = React.useMemo(() => {
-    // normalized y=0 (bottom) to y=1 (top)
-    const vals = [0.15, 0.22, 0.34, 0.52, 0.78, 0.96];
-    const years = ["'22", "'23", "'24", "'25", "'26", "'27"];
-    return vals.map((v, i) => ({ v, year: years[i] }));
-  }, []);
-
-  const CHART_W = 560;
-  const CHART_H = 180;
-  const pathD = React.useMemo(() => {
-    const n = chartPoints.length;
-    return chartPoints.
-    map((p, i) => {
-      const x = i / (n - 1) * CHART_W;
-      const y = CHART_H - p.v * CHART_H;
-      return `${i === 0 ? "M" : "L"} ${x.toFixed(1)} ${y.toFixed(1)}`;
-    }).
-    join(" ");
-  }, [chartPoints]);
-
-  const areaD = pathD + ` L ${CHART_W} ${CHART_H} L 0 ${CHART_H} Z`;
+  const PAINS = [
+    {
+      title: "אתה מסביר את עצמך שוב ושוב",
+      body: "כל לקוח חדש מגיע קר. אתה בונה אמון מאפס — בכל פגישה, בכל שיחה, בכל פעם מחדש.",
+    },
+    {
+      title: "אנשים לא מבינים מה עושה אותך שונה",
+      body: "יש לך ניסיון, גישה ותוצאות — אבל כשמישהו שואל למה לבחור בך, קשה לו להסביר לעצמו.",
+    },
+    {
+      title: "המתחרה הפחות טוב ממך מקבל לקוחות",
+      body: "כי יש לו נוכחות. הוא נשמע בכל מקום. ואנשים קונים ממי שהם מכירים — לא ממי שהכי טוב.",
+    },
+    {
+      title: "כשמישהו גוגל את הבעיה שלו — הוא לא מוצא אותך",
+      body: "הוא מוצא את המתחרה שהשקיע בתוכן. פונה אליו. ואתה בכלל לא נכנסת לתמונה.",
+    },
+  ];
 
   return (
     <section ref={sectionRef} style={{ padding: isMobile ? "64px 0" : "120px 0", background: "var(--card)", borderTop: "1px solid var(--line2)", borderBottom: "1px solid var(--line2)" }}>
       <div className="wrap">
-        <h2 className="display" style={{ fontSize: "clamp(38px, 6vw, 84px)", margin: "0 0 48px", maxWidth: 1100 }}>
-          התקציבים עולים. הלידים מתקררים.<br />
-          <span style={{ color: "var(--accent)" }}>וזה רק ימשיך להחמיר.</span>
+        <h2 className="display" style={{ fontSize: "clamp(38px, 6vw, 84px)", margin: "0 0 24px", maxWidth: 1100 }}>
+          אתה יודע שיש לך ערך.<br />
+          <span style={{ color: "var(--accent)" }}>אז למה אתה עוד מסביר את זה?</span>
         </h2>
 
-        {/* Three live stats */}
+        <p style={{ fontSize: 20, lineHeight: 1.7, opacity: 0.72, maxWidth: 760, margin: "0 0 56px" }}>
+          כשאתה מוכר שירות — אתה הבידול. הפרסונה שלך, הגישה שלך, הניסיון שלך.
+          הבעיה היא שהערך הזה לא מגיע לאנשים שצריכים אותך.
+        </p>
+
         <div style={{
-          display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
-          gap: 16, marginBottom: 40
+          display: "grid",
+          gridTemplateColumns: isMobile ? "1fr" : "repeat(2, 1fr)",
+          gap: 16, marginBottom: 56
         }}>
-          {[
-          { n: `+${cpcUp}%`, label: "עליית מחיר הליד בגוגל", sub: "YoY · WordStream 2024", arrow: "↑", tone: "bad" },
-          { n: `${(convRate / 100).toFixed(2)}%`, label: "אחוז המרה ממוצע ב־B2B", sub: "WebFX Benchmarks", arrow: "↓", tone: "bad" },
-          { n: `+${cpcUp}%`, label: "עליית מחיר הליד בגוגל", sub: "YoY · WordStream 2024", arrow: "↑", tone: "bad" }].
-          map((s, i) =>
-          <div key={i} style={{
-            padding: "32px 28px",
-            background: "var(--bg)",
-            border: "1px solid var(--line2)",
-            borderRadius: 18,
-            position: "relative", overflow: "hidden"
-          }}>
+          {PAINS.map((p, i) => (
+            <div key={i} style={{
+              padding: "32px 28px",
+              background: "var(--bg)",
+              border: "1px solid var(--line2)",
+              borderRadius: 18,
+              opacity: inView ? 1 : 0,
+              transform: inView ? "translateY(0)" : "translateY(16px)",
+              transition: `opacity 0.5s ease ${i * 0.1}s, transform 0.5s ease ${i * 0.1}s`
+            }}>
               <div style={{
-              position: "absolute", top: 18, left: 18,
-              color: "var(--accent)", fontSize: 22, opacity: 0.35, fontWeight: 900
-            }}>{s.arrow}</div>
-              <div className="display" style={{
-              fontSize: "clamp(44px, 5.5vw, 72px)",
-              fontWeight: 900, lineHeight: 1, color: "var(--accent)",
-              marginBottom: 14,
-              fontVariantNumeric: "tabular-nums"
-            }}>{s.n}</div>
-              <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 6 }}>{s.label}</div>
-              <div className="mono" style={{ fontSize: 11, opacity: 0.5, letterSpacing: "0.08em" }}>{s.sub}</div>
+                width: 28, height: 28, borderRadius: "50%",
+                border: "1.5px solid rgba(255,213,0,0.4)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                marginBottom: 18
+              }}>
+                <div style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--accent)", opacity: 0.7 }} />
+              </div>
+              <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 10 }}>{p.title}</div>
+              <div style={{ fontSize: 15, lineHeight: 1.7, opacity: 0.65 }}>{p.body}</div>
             </div>
-          )}
+          ))}
         </div>
 
-        {/* Chart + paragraph */}
-        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.1fr 1fr", gap: isMobile ? 28 : 60, alignItems: "stretch", marginBottom: 40 }}>
-          <div style={{
-            background: "var(--bg)",
-            border: "1px solid var(--line2)",
-            borderRadius: 18,
-            padding: 32,
-            position: "relative"
-          }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 20 }}>
-              <div>
-                <div className="mono" style={{ fontSize: 11, opacity: 0.5, letterSpacing: "0.15em", marginBottom: 6 }}>{"\n"}</div>
-                <div style={{ fontSize: 18, fontWeight: 700 }}>מחיר ליד ממוצע</div>
-              </div>
-              <div className="mono" style={{ fontSize: 11, opacity: 0.4 }}>
-                <span style={{ display: "inline-block", width: 10, height: 2, background: "var(--accent)", marginLeft: 6, verticalAlign: "middle" }} />
-                מגמה ←
-              </div>
-            </div>
-
-            <svg viewBox={`0 0 ${CHART_W} ${CHART_H + 28}`} style={{ width: "100%", height: "auto", overflow: "visible" }}>
-              <defs>
-                <linearGradient id="areaFill" x1="0" x2="0" y1="0" y2="1">
-                  <stop offset="0%" stopColor="var(--accent)" stopOpacity="0.35" />
-                  <stop offset="100%" stopColor="var(--accent)" stopOpacity="0" />
-                </linearGradient>
-              </defs>
-              {/* gridlines */}
-              {[0.25, 0.5, 0.75].map((g, i) =>
-              <line key={i}
-              x1={0} x2={CHART_W}
-              y1={CHART_H * g} y2={CHART_H * g}
-              stroke="rgba(255,255,255,0.05)"
-              strokeDasharray="2 4" />
-
-              )}
-              {/* area */}
-              <path d={areaD} fill="url(#areaFill)" style={{
-                transition: "opacity 0.8s ease",
-                opacity: inView ? 1 : 0
-              }} />
-              {/* line */}
-              <path d={pathD} fill="none" stroke="var(--accent)" strokeWidth="2.5"
-              strokeLinecap="round" strokeLinejoin="round"
-              style={{
-                strokeDasharray: 1200,
-                strokeDashoffset: inView ? 0 : 1200,
-                transition: "stroke-dashoffset 1.6s cubic-bezier(0.2,0.8,0.2,1)"
-              }} />
-              
-              {/* year dots */}
-              {chartPoints.map((p, i) => {
-                const x = i / (chartPoints.length - 1) * CHART_W;
-                const y = CHART_H - p.v * CHART_H;
-                const isLast = i === chartPoints.length - 1;
-                return (
-                  <g key={i}>
-                    <circle cx={x} cy={y} r={isLast ? 6 : 3}
-                    fill={isLast ? "var(--accent)" : "#0A0A0A"}
-                    stroke="var(--accent)" strokeWidth={isLast ? 0 : 2}
-                    style={{ transition: `opacity 0.4s ease ${0.8 + i * 0.1}s`, opacity: inView ? 1 : 0 }} />
-                    
-                    {isLast &&
-                    <circle cx={x} cy={y} r={10} fill="none" stroke="var(--accent)" strokeWidth="2"
-                    opacity={0.5 + 0.5 * Math.sin(tick / 6)} />
-
-                    }
-                    <text x={x} y={CHART_H + 20}
-                    textAnchor="middle"
-                    fill="rgba(255,255,255,0.45)"
-                    style={{ fontSize: 11, fontFamily: "ui-monospace, monospace", letterSpacing: "0.06em" }}>
-                      {p.year}</text>
-                  </g>);
-
-              })}
-              {/* forecast shade after '25 */}
-              <rect
-                x={CHART_W * 0.6} y={0}
-                width={CHART_W * 0.4} height={CHART_H}
-                fill="rgba(255,213,0,0.04)" />
-              
-              <text x={CHART_W * 0.8} y={16}
-              textAnchor="middle"
-              fill="rgba(255,213,0,0.45)"
-              style={{ fontSize: 10, fontFamily: "ui-monospace, monospace", letterSpacing: "0.2em" }}>
-                FORECAST →</text>
-            </svg>
-          </div>
-
-          <p style={{ fontSize: 19, lineHeight: 1.75, opacity: 0.9, margin: 0, alignSelf: "center" }}>
-            כל בעל עסק מרגיש את זה עכשיו: מחירי הלידים מזנקים. אחוזי ההמרה צונחים.
-            אנשים גוללים הלאה לפני שהם בכלל הבינו מה אתה מציע.
-            <br /><br />
-            וכשמישהו כבר נכנס לשיחה — הוא מתנגד, מתמקח, או פשוט נעלם.
-          </p>
-        </div>
-
-        {/* Interactive toggle: the old way vs your way */}
         <div style={{
           background: "var(--bg)",
           border: "1px solid var(--line2)",
@@ -270,7 +138,6 @@ function Problem() {
           position: "relative",
           overflow: "hidden"
         }}>
-          {/* Toggle */}
           <div style={{
             display: "inline-flex",
             background: "rgba(255,255,255,0.04)",
@@ -278,7 +145,6 @@ function Problem() {
             borderRadius: 999,
             padding: 4,
             marginBottom: 28,
-            position: "relative"
           }}>
             <button
               onClick={() => setMode("old")}
@@ -290,7 +156,8 @@ function Problem() {
                 fontFamily: "ui-monospace, monospace", letterSpacing: "0.1em",
                 transition: "all 0.25s ease"
               }}>
-              הדרך הישנה</button>
+              בלי פודקאסט
+            </button>
             <button
               onClick={() => setMode("new")}
               style={{
@@ -300,73 +167,60 @@ function Problem() {
                 border: "none", borderRadius: 999, cursor: "pointer",
                 fontFamily: "ui-monospace, monospace", letterSpacing: "0.1em",
                 transition: "all 0.25s ease"
-              }}>הדרך שלנו
+              }}>
+              עם פודקאסט
             </button>
           </div>
 
-          {/* Content swap */}
           <div style={{ position: "relative", minHeight: 200 }}>
-            <div key={mode} style={{
-              animation: "fadeSlide 0.4s cubic-bezier(0.2,0.8,0.2,1)"
-            }}>
-              {mode === "old" ?
-              <>
+            <div key={mode} style={{ animation: "fadeSlide 0.4s cubic-bezier(0.2,0.8,0.2,1)" }}>
+              {mode === "old" ? (
+                <>
                   <p className="display" style={{
-                  fontSize: "clamp(28px, 3.8vw, 52px)",
-                  lineHeight: 1.15, margin: 0, fontWeight: 800,
-                  maxWidth: 980
-                }}>
-                    הבעיה היא לא המוצר.{" "}
-                    <span style={{ color: "var(--accent)" }}>הבעיה היא שאתה עוד דוחף.</span>
+                    fontSize: "clamp(28px, 3.8vw, 52px)",
+                    lineHeight: 1.15, margin: 0, fontWeight: 800, maxWidth: 980
+                  }}>
+                    כל לקוח חדש מגיע קר.{" "}
+                    <span style={{ color: "var(--accent)" }}>אתה בונה אמון מאפס — שוב ושוב.</span>
                   </p>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 28 }}>
-                    {["מודעה של 15 שניות", "קמפיין ממומן", "דף נחיתה קר", "cold email", "רימרקטינג"].map((t, i) =>
-                  <span key={i} style={{
-                    padding: "10px 16px",
-                    background: "rgba(255,255,255,0.04)",
-                    border: "1px solid var(--line2)",
-                    borderRadius: 999,
-                    fontSize: 13,
-                    opacity: 0.6,
-                    textDecoration: "line-through",
-                    textDecorationColor: "rgba(255,255,255,0.3)"
-                  }}>{t}</span>
-                  )}
-                  </div>
-                </> :
-
-              <>
-                  <p className="display" style={{
-                  fontSize: "clamp(28px, 3.8vw, 52px)",
-                  lineHeight: 1.15, margin: 0, fontWeight: 800,
-                  maxWidth: 980
-                }}>
-                    תפסיק לשדר.{" "}
-                    <span style={{ color: "var(--accent)" }}>תתחיל לדבר.</span>
-                  </p>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 28 }}>
-                    {["פודקאסט ארוך", "סיפורים אמיתיים", "סמכות מקצועית", "קשר אנושי", "אמון שמצטבר"].map((t, i) =>
-                  <span key={i} style={{
-                    padding: "10px 16px",
-                    background: "rgba(255,213,0,0.08)",
-                    border: "1px solid rgba(255,213,0,0.35)",
-                    borderRadius: 999,
-                    fontSize: 13,
-                    color: "var(--accent)",
-                    fontWeight: 600
-                  }}>{t}</span>
-                  )}
+                    {["שיחות קרות", "פגישות אבחון ארוכות", "להסביר מי אתה", "לשכנע למה אתה", "מחיר כנקודת הכניסה"].map((t, i) => (
+                      <span key={i} style={{
+                        padding: "10px 16px",
+                        background: "rgba(255,255,255,0.04)",
+                        border: "1px solid var(--line2)",
+                        borderRadius: 999, fontSize: 13, opacity: 0.6,
+                        textDecoration: "line-through",
+                        textDecorationColor: "rgba(255,255,255,0.3)"
+                      }}>{t}</span>
+                    ))}
                   </div>
                 </>
-              }
+              ) : (
+                <>
+                  <p className="display" style={{
+                    fontSize: "clamp(28px, 3.8vw, 52px)",
+                    lineHeight: 1.15, margin: 0, fontWeight: 800, maxWidth: 980
+                  }}>
+                    לקוחות מגיעים אליך — אחרי שהם כבר{" "}
+                    <span style={{ color: "var(--accent)" }}>סומכים עליך 20 שעות.</span>
+                  </p>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 28 }}>
+                    {["נוכחות שמצטברת", "אמון לפני הפגישה הראשונה", "לקוחות שיודעים מה הם רוצים", "מחיר שלא עומד בוויכוח", "הפניות שמגיעות מעצמן"].map((t, i) => (
+                      <span key={i} style={{
+                        padding: "10px 16px",
+                        background: "rgba(255,213,0,0.08)",
+                        border: "1px solid rgba(255,213,0,0.35)",
+                        borderRadius: 999, fontSize: 13,
+                        color: "var(--accent)", fontWeight: 600
+                      }}>{t}</span>
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
-
-        <p style={{ fontSize: 19, lineHeight: 1.7, opacity: 0.85, maxWidth: 900, marginTop: 56 }}>
-          ב־2026 אנשים כבר לא קונים ממי שצועק הכי חזק במודעות. הם קונים ממי שהם מכירים, סומכים עליו, ומרגישים שהוא מבין אותם.{"\n"}
-          אלא שאי אפשר לבנות אמון במודעה של 15 שניות.
-        </p>
       </div>
 
       <style>{`
@@ -375,8 +229,8 @@ function Problem() {
           to   { opacity: 1; transform: translateY(0); }
         }
       `}</style>
-    </section>);
-
+    </section>
+  );
 }
 
 function Solution() {
