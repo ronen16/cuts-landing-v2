@@ -53,7 +53,7 @@ function Hero({ onCTAClick }) {
 
 }
 
-function Problem() {
+function MirrorMoment() {
   const isMobile = useIsMobile();
   const sectionRef = React.useRef(null);
   const [inView, setInView] = React.useState(false);
@@ -233,7 +233,7 @@ function Problem() {
   );
 }
 
-function Solution() {
+function TheShift() {
   const isMobile = useIsMobile();
   const [hoveredPillar, setHoveredPillar] = React.useState(-1);
 
@@ -268,10 +268,15 @@ function Solution() {
   return (
     <section style={{ padding: isMobile ? "64px 0" : "120px 0" }}>
       <div className="wrap">
-        <h2 className="display" style={{ fontSize: "clamp(40px, 7vw, 104px)", margin: "0 0 40px", fontWeight: 900 }}>
-          מלמכור בכוח —<br />
-          <span style={{ color: "var(--accent)" }}>להיות נקנה.</span>
+        <div className="mono" style={{ fontSize: 13, opacity: 0.5, marginBottom: 20 }}>// הרעיון החדש</div>
+        <h2 className="display" style={{ fontSize: "clamp(40px, 7vw, 104px)", margin: "0 0 32px", fontWeight: 900 }}>
+          פודקאסט הוא לא תוכן.<br />
+          <span style={{ color: "var(--accent)" }}>הוא מנוע מוניטין.</span>
         </h2>
+
+        <p style={{ fontSize: 20, lineHeight: 1.6, opacity: 0.75, maxWidth: 820, margin: "0 0 32px" }}>
+          מודעות בונות חשיפה. פודקאסט בונה אמון. ההבדל: אמון הוא מה שגורם לאנשים לשלם יותר, לא להתמקח, ולהפנות חברים.
+        </p>
 
         {/* Animated Push → Pull visual */}
         <div style={{
@@ -304,7 +309,7 @@ function Solution() {
         </div>
 
         <p style={{ fontSize: 20, lineHeight: 1.6, opacity: 0.85, maxWidth: 820, margin: "0 0 64px" }}>
-          פודקאסט הוא הכלי השיווקי היחיד שמייצר שלושה דברים בו־זמנית,
+          פודקאסט הוא הכלי היחיד שמייצר שלושה דברים בו־זמנית,
           שאף פורמט אחר לא נותן:
         </p>
 
@@ -1541,14 +1546,13 @@ function BoldVariation({ onCTAClick, form }) {
     <div className="fade-in">
       <TopNav variant="bold" onCTAClick={onCTAClick} />
       <Hero onCTAClick={onCTAClick} />
-      <Problem />
-      <Solution />
+      <MirrorMoment />
+      <TheShift />
+      <GuestStrip />
       <CTAInline onCTAClick={onCTAClick} />
       <Services onCTAClick={onCTAClick} />
       <HowItWorks />
       <WhoItsFor />
-      <GuestStrip />
-      <Results />
       <FAQSection />
       <FinalCTA form={form} />
       <Footer variant="bold" />
