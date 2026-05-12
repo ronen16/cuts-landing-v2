@@ -4631,25 +4631,21 @@ function WhoItsForOld() {
         }}>
           {[
           {
-            icon: <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="6" /><path d="M15.5 13.5 L17 22 L12 19 L7 22 L8.5 13.5" /></svg>,
             boldYellow: "יועצים ומומחים",
             boldRest: "שמוכרים שירות יקר",
             body: "לקוח שמגיע אחרי 10 פרקים שווה פי 3 מליד קר — הוא כבר מאמין לכם לפני שדיברתם."
           },
           {
-            icon: <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M12 6 L12 12 L16 14" /></svg>,
             boldYellow: "בעלי עסקים",
             boldRest: "עם מחזור מכירות ארוך",
             body: "כל ליד קר עולה לכם זמן וכסף. פודקאסט מחמם אותו לפני שהוא מגיע אליכם."
           },
           {
-            icon: <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4" /><path d="M4 21 C 4 16, 8 14, 12 14 C 16 14, 20 16, 20 21" /></svg>,
             boldYellow: "מומחים",
             boldRest: "שרוצים לבנות מותג אישי",
             body: "שרוצים שהשוק יכיר אותם — לא רק את השירות שהם מוכרים."
           },
           {
-            icon: <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="7" width="18" height="13" rx="2" /><path d="M9 7 V5 C 9 4, 10 3, 11 3 H13 C 14 3, 15 4, 15 5 V7" /></svg>,
             boldYellow: "אנשי מקצוע",
             boldRest: "שהמוניטין הוא הנכס שלהם",
             body: "רואי חשבון, עורכי דין, אדריכלים — שהמוניטין שלהם שווה יותר מכל פרסומת."
@@ -4657,32 +4653,29 @@ function WhoItsForOld() {
           map((c, i) => {
             const delay = 0.1 + i * 0.08;
             return (
-              <div key={i} style={{
-                background: "#0F0F0F",
-                border: "1px solid var(--line2)",
+              <div key={i} className="who-card" style={{
                 borderRadius: 18,
                 padding: "30px 32px 28px",
                 position: "relative",
                 opacity: inView ? 1 : 0,
                 transform: inView ? "translateY(0)" : "translateY(16px)",
-                transition: `opacity 0.6s ease ${delay}s, transform 0.6s cubic-bezier(0.2,0.8,0.2,1) ${delay}s, border-color 0.3s ease`
+                transition: `opacity 0.6s ease ${delay}s, transform 0.6s cubic-bezier(0.2,0.8,0.2,1) ${delay}s`,
+                ["--who-delay"]: `${i * 0.7}s`
               }}>
-                <div style={{
-                  position: "absolute", top: 26, right: 28,
-                  color: "var(--accent)",
-                  display: "flex", alignItems: "center", justifyContent: "center"
-                }}>{c.icon}</div>
+                <span aria-hidden="true" className="who-card__sheen" />
+                <span aria-hidden="true" className="who-card__corner who-card__corner--tr" />
+                <span aria-hidden="true" className="who-card__corner who-card__corner--bl" />
+                <span aria-hidden="true" className="who-card__bar" />
                 <h3 className="display" style={{
                   fontSize: "clamp(20px, 1.7vw, 24px)",
-                  fontWeight: 800, margin: "44px 0 12px",
-                  paddingInlineEnd: 48,
-                  lineHeight: 1.35
+                  fontWeight: 800, margin: "0 0 12px",
+                  lineHeight: 1.35, position: "relative", zIndex: 1
                 }}>
                   <span style={{ color: "var(--accent)" }}>{c.boldYellow}</span> <span>{c.boldRest}</span>
                 </h3>
                 <p style={{
                   fontSize: 15, lineHeight: 1.65, color: "rgba(255,255,255,0.55)",
-                  margin: 0
+                  margin: 0, position: "relative", zIndex: 1
                 }}>
                   {c.body}
                 </p>
@@ -4698,6 +4691,116 @@ function WhoItsForOld() {
           0%   { box-shadow: 0 0 0 0 rgba(255,213,0,0.5); }
           50%  { box-shadow: 0 0 0 14px rgba(255,213,0,0); }
           100% { box-shadow: 0 0 0 0 rgba(255,213,0,0); }
+        }
+
+        @keyframes whoSheen {
+          0%   { transform: translateX(-120%) skewX(-18deg); }
+          60%  { transform: translateX(140%) skewX(-18deg); }
+          100% { transform: translateX(140%) skewX(-18deg); }
+        }
+
+        @keyframes whoFloat {
+          0%, 100% { transform: translateY(0); }
+          50%      { transform: translateY(-3px); }
+        }
+
+        .who-card {
+          background: #0F0F0F;
+          border: 1px solid var(--line2);
+          overflow: hidden;
+          isolation: isolate;
+          will-change: transform, border-color, box-shadow;
+        }
+        .who-card,
+        .who-card .who-card__bar,
+        .who-card .who-card__corner,
+        .who-card .who-card__sheen {
+          transition:
+            transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1),
+            border-color 0.35s ease,
+            box-shadow 0.4s ease,
+            opacity 0.35s ease;
+        }
+
+        /* sweeping diagonal sheen — continuous slow loop, intensifies on hover */
+        .who-card__sheen {
+          position: absolute; inset: 0;
+          pointer-events: none;
+          background: linear-gradient(
+            115deg,
+            transparent 0%,
+            transparent 38%,
+            rgba(255, 213, 0, 0.08) 50%,
+            transparent 62%,
+            transparent 100%
+          );
+          transform: translateX(-120%) skewX(-18deg);
+          animation: whoSheen 6.5s ease-in-out infinite;
+          animation-delay: var(--who-delay, 0s);
+          opacity: 0.65;
+          z-index: 0;
+        }
+        .who-card:hover .who-card__sheen {
+          opacity: 1;
+          animation-duration: 2.4s;
+        }
+
+        /* animated yellow bar at bottom edge — grows from center on hover */
+        .who-card__bar {
+          position: absolute;
+          left: 50%; bottom: 0;
+          width: 0%; height: 2px;
+          background: linear-gradient(90deg, transparent, var(--accent), transparent);
+          box-shadow: 0 0 18px rgba(255, 213, 0, 0.6);
+          transform: translateX(-50%);
+          opacity: 0;
+          z-index: 2;
+        }
+        .who-card:hover .who-card__bar {
+          width: 92%;
+          opacity: 1;
+        }
+
+        /* corner brackets — appear on hover with a small slide */
+        .who-card__corner {
+          position: absolute;
+          width: 18px; height: 18px;
+          border: 2px solid var(--accent);
+          opacity: 0;
+          z-index: 2;
+        }
+        .who-card__corner--tr {
+          top: 12px; right: 12px;
+          border-left: none; border-bottom: none;
+          transform: translate(6px, -6px);
+        }
+        .who-card__corner--bl {
+          left: 12px; bottom: 12px;
+          border-right: none; border-top: none;
+          transform: translate(-6px, 6px);
+        }
+        .who-card:hover .who-card__corner {
+          opacity: 1;
+          transform: translate(0, 0);
+        }
+
+        .who-card:hover {
+          transform: translateY(-6px);
+          border-color: var(--accent);
+          box-shadow:
+            0 18px 50px -10px rgba(0, 0, 0, 0.55),
+            0 0 0 1px rgba(255, 213, 0, 0.35) inset,
+            0 0 60px -10px rgba(255, 213, 0, 0.35);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .who-card,
+          .who-card .who-card__sheen,
+          .who-card .who-card__bar,
+          .who-card .who-card__corner {
+            animation: none !important;
+            transition: none !important;
+          }
         }
       `}</style>
     </section>);
