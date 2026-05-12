@@ -4604,6 +4604,7 @@ function HowItWorksInteractive() {
 function WhoItsForOld() {
   const sectionRef = React.useRef(null);
   const [inView, setInView] = React.useState(false);
+  const [revealed, setRevealed] = React.useState(false);
 
   React.useEffect(() => {
     if (!sectionRef.current) return;
@@ -4614,6 +4615,14 @@ function WhoItsForOld() {
     io.observe(sectionRef.current);
     return () => io.disconnect();
   }, []);
+
+  React.useEffect(() => {
+    if (!inView) return;
+    const t = setTimeout(() => setRevealed(true), 1100);
+    return () => clearTimeout(t);
+  }, [inView]);
+
+  const whoHoverTransition = "transform 0.32s cubic-bezier(0.2,0.8,0.2,1), border-color 0.3s ease, box-shadow 0.35s ease, opacity 0.3s ease";
 
   return (
     <section ref={sectionRef} style={{ padding: "76px 0", background: "var(--card)", borderTop: "1px solid var(--line2)", borderBottom: "1px solid var(--line2)", overflow: "hidden" }}>
@@ -4659,7 +4668,7 @@ function WhoItsForOld() {
                 position: "relative",
                 opacity: inView ? 1 : 0,
                 transform: inView ? "translateY(0)" : "translateY(16px)",
-                transition: `opacity 0.6s ease ${delay}s, transform 0.6s cubic-bezier(0.2,0.8,0.2,1) ${delay}s`,
+                transition: revealed ? whoHoverTransition : `opacity 0.6s ease ${delay}s, transform 0.6s cubic-bezier(0.2,0.8,0.2,1) ${delay}s`,
                 ["--who-delay"]: `${i * 0.7}s`
               }}>
                 <span aria-hidden="true" className="who-card__sheen" />
@@ -4810,6 +4819,7 @@ function WhoItsForOld() {
 function InteractiveVerdictOld() {
   const wrapRef = React.useRef(null);
   const [inView, setInView] = React.useState(false);
+  const [revealed, setRevealed] = React.useState(false);
 
   React.useEffect(() => {
     if (!wrapRef.current) return;
@@ -4820,6 +4830,14 @@ function InteractiveVerdictOld() {
     io.observe(wrapRef.current);
     return () => io.disconnect();
   }, []);
+
+  React.useEffect(() => {
+    if (!inView) return;
+    const t = setTimeout(() => setRevealed(true), 1100);
+    return () => clearTimeout(t);
+  }, [inView]);
+
+  const hoverTransition = "transform 0.32s cubic-bezier(0.2,0.8,0.2,1), border-color 0.3s ease, box-shadow 0.35s ease, opacity 0.3s ease";
 
   const NOT_FOR = [
   "מוצרים שמוכרים בנפח גדול ומחיר נמוך",
@@ -4855,7 +4873,7 @@ function InteractiveVerdictOld() {
           display: "flex", flexDirection: "column",
           opacity: inView ? 0.78 : 0,
           transform: inView ? "translateY(0)" : "translateY(18px)",
-          transition: "opacity 0.6s ease 0.25s, transform 0.7s cubic-bezier(0.2,0.8,0.2,1) 0.25s, border-color 0.4s ease, box-shadow 0.4s ease"
+          transition: revealed ? hoverTransition : "opacity 0.6s ease 0.25s, transform 0.7s cubic-bezier(0.2,0.8,0.2,1) 0.25s, border-color 0.4s ease, box-shadow 0.4s ease"
         }}>
           <span aria-hidden="true" className="verdict-card__static" />
           <span aria-hidden="true" className="verdict-card__sheen" />
@@ -4922,7 +4940,7 @@ function InteractiveVerdictOld() {
           display: "flex", flexDirection: "column",
           opacity: inView ? 1 : 0,
           transform: inView ? "translateY(0)" : "translateY(18px)",
-          transition: "opacity 0.6s ease 0.3s, transform 0.7s cubic-bezier(0.2,0.8,0.2,1) 0.3s"
+          transition: revealed ? hoverTransition : "opacity 0.6s ease 0.3s, transform 0.7s cubic-bezier(0.2,0.8,0.2,1) 0.3s"
         }}>
           <span aria-hidden="true" className="verdict-card__aurora" />
           <span aria-hidden="true" className="verdict-card__sheen verdict-card__sheen--yes" />
