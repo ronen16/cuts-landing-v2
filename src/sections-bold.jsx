@@ -4697,7 +4697,6 @@ function WhoItsForOld() {
                 ["--who-delay"]: `${i * 0.7}s`
               }}>
                 <span aria-hidden="true" className="who-card__glow" />
-                <span aria-hidden="true" className="who-card__sheen" />
                 <span aria-hidden="true" className="who-card__edge" />
                 <span aria-hidden="true" className="who-card__corner who-card__corner--tr" />
                 <span aria-hidden="true" className="who-card__corner who-card__corner--bl" />
@@ -4734,12 +4733,6 @@ function WhoItsForOld() {
           0%   { box-shadow: 0 0 0 0 rgba(255,213,0,0.5); }
           50%  { box-shadow: 0 0 0 14px rgba(255,213,0,0); }
           100% { box-shadow: 0 0 0 0 rgba(255,213,0,0); }
-        }
-
-        @keyframes whoSheen {
-          0%   { transform: translateX(-120%) skewX(-18deg); }
-          60%  { transform: translateX(140%) skewX(-18deg); }
-          100% { transform: translateX(140%) skewX(-18deg); }
         }
 
         @keyframes whoFloat {
@@ -4825,36 +4818,12 @@ function WhoItsForOld() {
         }
         .who-card,
         .who-card .who-card__bar,
-        .who-card .who-card__corner,
-        .who-card .who-card__sheen {
+        .who-card .who-card__corner {
           transition:
             transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1),
             border-color 0.35s ease,
             box-shadow 0.4s ease,
             opacity 0.35s ease;
-        }
-
-        /* sweeping diagonal sheen — continuous slow loop, intensifies on hover */
-        .who-card__sheen {
-          position: absolute; inset: 0;
-          pointer-events: none;
-          background: linear-gradient(
-            115deg,
-            transparent 0%,
-            transparent 38%,
-            rgba(255, 213, 0, 0.08) 50%,
-            transparent 62%,
-            transparent 100%
-          );
-          transform: translateX(-120%) skewX(-18deg);
-          animation: whoSheen 6.5s ease-in-out infinite;
-          animation-delay: var(--who-delay, 0s);
-          opacity: 0.65;
-          z-index: 0;
-        }
-        .who-card:hover .who-card__sheen {
-          opacity: 1;
-          animation-duration: 2.4s;
         }
 
         /* animated yellow bar at bottom edge — grows from center on hover */
@@ -4907,7 +4876,6 @@ function WhoItsForOld() {
 
         @media (prefers-reduced-motion: reduce) {
           .who-card,
-          .who-card .who-card__sheen,
           .who-card .who-card__bar,
           .who-card .who-card__corner {
             animation: none !important;
@@ -4979,7 +4947,6 @@ function InteractiveVerdictOld() {
           transition: revealed ? hoverTransition : "opacity 0.6s ease 0.25s, transform 0.7s cubic-bezier(0.2,0.8,0.2,1) 0.25s, border-color 0.4s ease, box-shadow 0.4s ease"
         }}>
           <span aria-hidden="true" className="verdict-card__static" />
-          <span aria-hidden="true" className="verdict-card__sheen" />
           <span aria-hidden="true" className="verdict-card__corner verdict-card__corner--tl" />
           <span aria-hidden="true" className="verdict-card__corner verdict-card__corner--br" />
           {/* tag */}
