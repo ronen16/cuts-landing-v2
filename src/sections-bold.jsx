@@ -4818,32 +4818,6 @@ function InteractiveVerdictOld() {
               </li>
             )}
           </ul>
-
-          {/* divider + footer */}
-          <div style={{
-            marginTop: 28, paddingTop: 22,
-            borderTop: "1px solid rgba(255,255,255,0.08)"
-          }}>
-            <p style={{
-              fontSize: 14, lineHeight: 1.55, margin: "0 0 16px",
-              color: "rgba(255,255,255,0.55)", textAlign: "center"
-            }}>
-              לא בטוחים לאיזה צד אתם שייכים?<br />
-              <strong style={{ color: "#fff", fontWeight: 800 }}>נגיד לכם בשיחה — בלי לחץ.</strong>
-            </p>
-            <a href="#cta" onClick={(e) => { e.preventDefault(); scrollToId("#cta"); }} style={{
-              display: "block", textAlign: "center",
-              padding: "12px 20px", borderRadius: 12,
-              border: "1px solid rgba(255,255,255,0.2)",
-              color: "#fff", textDecoration: "none",
-              fontWeight: 700, fontSize: 14,
-              transition: "background 0.25s ease, border-color 0.25s ease"
-            }}
-            onMouseEnter={(e) => {e.currentTarget.style.background = "rgba(255,255,255,0.06)";e.currentTarget.style.borderColor = "rgba(255,255,255,0.32)";}}
-            onMouseLeave={(e) => {e.currentTarget.style.background = "transparent";e.currentTarget.style.borderColor = "rgba(255,255,255,0.2)";}}>
-              בואו נבדוק יחד →
-            </a>
-          </div>
         </div>
 
         {/* RIGHT — זה בשבילכם */}
@@ -4922,6 +4896,34 @@ function InteractiveVerdictOld() {
               </li>
             )}
           </ul>
+
+          {/* divider + footer */}
+          <div style={{
+            marginTop: 28, paddingTop: 22,
+            borderTop: "1px solid rgba(255,213,0,0.22)",
+            position: "relative", zIndex: 1
+          }}>
+            <p style={{
+              fontSize: 14, lineHeight: 1.55, margin: "0 0 16px",
+              color: "rgba(255,255,255,0.7)", textAlign: "center"
+            }}>
+              לא בטוחים לאיזה צד אתם שייכים?<br />
+              <strong style={{ color: "#fff", fontWeight: 800 }}>נגיד לכם בשיחה — בלי לחץ.</strong>
+            </p>
+            <a href="#cta" onClick={(e) => { e.preventDefault(); scrollToId("#cta"); }} style={{
+              display: "block", textAlign: "center",
+              padding: "12px 20px", borderRadius: 12,
+              background: "var(--accent)",
+              color: "#0A0A0A", textDecoration: "none",
+              fontWeight: 800, fontSize: 14,
+              boxShadow: "0 0 24px rgba(255,213,0,0.35)",
+              transition: "transform 0.2s ease, box-shadow 0.25s ease"
+            }}
+            onMouseEnter={(e) => {e.currentTarget.style.transform = "translateY(-1px)";e.currentTarget.style.boxShadow = "0 0 32px rgba(255,213,0,0.55)";}}
+            onMouseLeave={(e) => {e.currentTarget.style.transform = "translateY(0)";e.currentTarget.style.boxShadow = "0 0 24px rgba(255,213,0,0.35)";}}>
+              בואו נבדוק יחד →
+            </a>
+          </div>
         </div>
       </div>
     </div>);
