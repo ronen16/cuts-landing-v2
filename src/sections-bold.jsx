@@ -4831,7 +4831,7 @@ function InteractiveVerdictOld() {
               לא בטוחים לאיזה צד אתם שייכים?<br />
               <strong style={{ color: "#fff", fontWeight: 800 }}>נגיד לכם בשיחה — בלי לחץ.</strong>
             </p>
-            <a href="#contact" style={{
+            <a href="#cta" onClick={(e) => { e.preventDefault(); scrollToId("#cta"); }} style={{
               display: "block", textAlign: "center",
               padding: "12px 20px", borderRadius: 12,
               border: "1px solid rgba(255,255,255,0.2)",
