@@ -4637,12 +4637,11 @@ function WhoItsForOld() {
               פודקאסט לא מתאים לכולם.
             </span>
             <span style={{ display: "block", position: "relative" }}>
-              <span style={{ opacity: 0.92 }}>אבל אם אתם כאן — </span><span style={{
+              <span style={{ opacity: 0.92 }}>אבל אם אתם כאן </span><span style={{
                 color: "var(--accent)",
                 textShadow: "0 0 50px rgba(255,213,0,0.45), 0 0 90px rgba(255,213,0,0.2)",
                 position: "relative",
-                display: "inline-block",
-                paddingInline: "0.2em"
+                display: "inline-block"
               }}>
                 כנראה שזה בדיוק בשבילכם.
                 <span aria-hidden="true" style={{
