@@ -519,7 +519,7 @@ function SocialProofSection({ onCTAClick }) {
             margin: 0, fontWeight: 900, lineHeight: 1.15,
             textWrap: "balance"
           }}>
-            <span style={{ display: "block", opacity: 0.92, marginBottom: 10 }}>
+            <span style={{ display: "block", opacity: 0.92 }}>
               אל תאמינו למילה שאנחנו אומרים.
             </span>
             <span style={{ display: "block", position: "relative" }}>
@@ -3307,8 +3307,7 @@ function ProblemOld() {
               textShadow: "0 0 50px rgba(239,68,68,0.45), 0 0 90px rgba(239,68,68,0.2)",
               position: "relative",
               display: "inline-block",
-              paddingInline: "0.2em",
-              marginTop: 8
+              paddingInline: "0.2em"
             }}>
               ימשיך לשלם יותר ולסגור פחות.
               {/* soft underline glow */}
@@ -3768,7 +3767,7 @@ function SolutionOld() {
           maxWidth: 1180,
           position: "relative"
         }}>
-          <span style={{ display: "block", marginBottom: 12, opacity: 0.96 }}>
+          <span style={{ display: "block", opacity: 0.96 }}>
             <span style={{ position: "relative", display: "inline-block" }}>
               מפסיקים{" "}
               <span style={{
@@ -4044,7 +4043,7 @@ function ClosingPullQuote() {
       <p className="display" style={{
         position: "relative",
         fontSize: "clamp(28px, 3.6vw, 52px)",
-        lineHeight: 1.35,
+        lineHeight: 1.2,
         margin: 0,
         fontWeight: 800,
         letterSpacing: "-0.015em",
@@ -4633,7 +4632,7 @@ function WhoItsForOld() {
             margin: 0, fontWeight: 900, lineHeight: 1.15,
             textWrap: "balance"
           }}>
-            <span style={{ display: "block", opacity: 0.92, marginBottom: 10 }}>
+            <span style={{ display: "block", opacity: 0.92 }}>
               פודקאסט לא מתאים לכולם.
             </span>
             <span style={{ display: "block", position: "relative" }}>
