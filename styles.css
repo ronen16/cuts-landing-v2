@@ -38,13 +38,14 @@ body, input, select, textarea, button {
 
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; overflow-x: clip; }
 body {
   font-family: var(--font-body);
   color: var(--ink);
   background: var(--paper);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  overflow-x: clip;
 }
 a { color: inherit; text-decoration: none; }
 button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
@@ -64,8 +65,39 @@ img { display: block; max-width: 100%; }
   --accent: var(--primary);
   --card: #141414;
   --line2: rgba(245,242,232,0.10);
-  background: var(--bg); color: var(--fg);
+  background:
+    radial-gradient(1100px 700px at 12% 5%,   rgba(255,213,0,0.16), transparent 55%),
+    radial-gradient(950px  600px at 92% 25%,  rgba(255,213,0,0.10), transparent 55%),
+    radial-gradient(900px  600px at 8%  60%,  rgba(255,213,0,0.09), transparent 55%),
+    radial-gradient(1000px 650px at 95% 95%,  rgba(255,213,0,0.13), transparent 55%),
+    radial-gradient(700px  500px at 50% 45%,  rgba(255,213,0,0.05), transparent 70%),
+    var(--bg);
+  color: var(--fg);
 }
+
+/* Living drifting auras — fixed to viewport so it's always visible */
+.theme-bold::before {
+  content: "";
+  position: fixed; inset: -15%;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    radial-gradient(700px 500px at 25% 35%, rgba(255,213,0,0.14), transparent 60%),
+    radial-gradient(600px 420px at 75% 70%, rgba(255,213,0,0.10), transparent 60%);
+  animation: bgDrift 18s ease-in-out infinite alternate;
+  mix-blend-mode: screen;
+  filter: blur(20px);
+}
+
+@keyframes bgDrift {
+  0%   { transform: translate(0%, 0%)      scale(1);    opacity: 0.85; }
+  35%  { transform: translate(-4%, 3%)     scale(1.12); opacity: 1;    }
+  70%  { transform: translate(3%, -4%)     scale(1.08); opacity: 0.9;  }
+  100% { transform: translate(-2%, -2%)    scale(1.05); opacity: 1;    }
+}
+
+.theme-bold > * { position: relative; z-index: 1; }
+
 .theme-bold .paper-swap { background: #F5F2E8; color: #0A0A0A; }
 
 /* ===== EDITORIAL ===== */

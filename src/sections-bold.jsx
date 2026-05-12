@@ -1,225 +1,3701 @@
-// BOLD variation — rebuilt per landing page brief.
-// 10 sections, RTL, dark-dominant with yellow accent.
+// BOLD variation — REBUILT to match the new landing page brief structure.
+// Sections (14):
+//  1. Navigation
+//  2. Hero (no video — image placeholder on right)
+//  3. Social Proof Bar #1
+//  4. Social Proof Section (3 proof cards + CTA)
+//  5. Pain Point (centered headline + paragraph + CTA)
+//  6. Big Benefit #1 (image right, text left, CTA)
+//  7. Big Benefit #2 (text right, image left — zigzag)
+//  8. Big Benefit #3 (image right, text left)
+//  9. Social Proof #2 (single wide proof card + CTA)
+//  10. 6 Differentiators (3x2 grid + CTA)
+//  11. How It Works (3 steps + CTA)
+//  12. (REMOVED — was Meet The Team)
+//  13. Guarantee (single wide card + CTA)
+//  14. FAQ (6 questions accordion)
+//  15. Final CTA (checklist + form + image)
+//  16. Footer
+
+// ---------- Reusable bits ----------
+
+function CTAButton({ onCTAClick, label = "הפעולה המרכזית שצריך לבצע", style }) {
+  return (
+    <button className="btn btn-primary" onClick={onCTAClick} style={{
+      padding: "22px 44px",
+      fontSize: 18,
+      fontWeight: 700,
+      borderRadius: 10,
+      ...style
+    }}>
+      {label} ←
+    </button>);
+
+}
+
+function SectionLabel({ n, children }) {
+  return (
+    <div className="mono" style={{
+      fontSize: 12, letterSpacing: "0.2em",
+      color: "var(--accent)", opacity: 0.85,
+      marginBottom: 18
+    }}>
+      <span style={{ opacity: 0.5 }}>{String(n).padStart(2, "0")} /</span> {children}
+    </div>);
+
+}
+
+function VisualPlaceholder({ label = "תמונה או ויזואל שמחזק את הצעת הערך המרכזית", height = 530, dashed = true }) {
+  return (
+    <div style={{
+      width: "100%", minHeight: height, height,
+      background: "var(--card)",
+      border: `${dashed ? "2px dashed" : "2px solid"} var(--line2)`,
+      borderRadius: 18,
+      display: "flex", alignItems: "center", justifyContent: "center",
+      padding: 40, position: "relative", overflow: "hidden"
+    }}>
+      {/* Diagonal hatch hint */}
+      <svg aria-hidden="true" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", opacity: 0.07 }}>
+        <defs>
+          <pattern id={`hatch-${height}`} patternUnits="userSpaceOnUse" width="14" height="14" patternTransform="rotate(45)">
+            <line x1="0" y1="0" x2="0" y2="14" stroke="currentColor" strokeWidth="1" />
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill={`url(#hatch-${height})`} />
+      </svg>
+
+      <div style={{
+        textAlign: "center", color: "var(--fg)",
+        opacity: 0.7, position: "relative", zIndex: 2,
+        maxWidth: 360
+      }}>
+        <div style={{
+          width: 64, height: 64, borderRadius: "50%",
+          border: "2px solid var(--accent)",
+          margin: "0 auto 18px",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          color: "var(--accent)", fontSize: 28, fontWeight: 900
+        }}>📷</div>
+        <div className="mono" style={{
+          fontSize: 11, letterSpacing: "0.2em",
+          color: "var(--accent)", marginBottom: 10, fontWeight: 700
+        }}>מקום לתמונה</div>
+        <div style={{ fontSize: 15, lineHeight: 1.5, fontWeight: 600 }}>
+          {label}
+        </div>
+      </div>
+    </div>);
+
+}
+
+// ---------- 02 · HERO ----------
 
 function Hero({ onCTAClick }) {
-  const isMobile = useIsMobile();
+  const [tick, setTick] = React.useState(0);
+  React.useEffect(() => {
+    const id = setInterval(() => setTick((t) => t + 1), 80);
+    return () => clearInterval(id);
+  }, []);
+
+  // 64 waveform bars — pseudo-random heights animated by tick
+  const bars = React.useMemo(() => Array.from({ length: 64 }, (_, i) => i), []);
+  // 140 bars for full-width waveform
+  const wideBars = React.useMemo(() => Array.from({ length: 140 }, (_, i) => i), []);
+
   return (
-    <section style={{ position: "relative", padding: isMobile ? "60px 0 40px" : "100px 0 60px", overflow: "hidden" }}>
-      <div className="wrap" style={{ position: "relative" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 40 }}>
-          <span className="tag" style={{
-            color: "var(--accent)",
-            fontSize: 18,
-            padding: "14px 26px",
-            fontWeight: 700,
-            letterSpacing: "0.04em",
-            borderWidth: 2
+    <section style={{
+      position: "relative",
+      padding: "80px 0 88px",
+      overflow: "hidden",
+      borderBottom: "1px solid var(--line2)"
+    }}>
+      {/* Radial yellow glow */}
+      <div aria-hidden="true" style={{
+        position: "absolute",
+        top: "30%", right: "20%",
+        width: 700, height: 700,
+        background: "radial-gradient(ellipse, rgba(255,213,0,0.10), transparent 65%)",
+        filter: "blur(60px)",
+        pointerEvents: "none",
+        zIndex: 0
+      }} />
+
+      <div className="wrap" style={{ position: "relative", zIndex: 2 }}>
+        <div style={{ maxWidth: 1180, margin: "0 auto", textAlign: "center" }}>
+          {/* EYEBROW — live REC studio location */}
+          <div style={{
+            display: "inline-flex", alignItems: "center", gap: 14,
+            padding: "10px 18px",
+            background: "rgba(255,213,0,0.06)",
+            border: "1px solid rgba(255,213,0,0.3)",
+            borderRadius: 999,
+            marginBottom: 36
           }}>
-            <span className="dot pulse" style={{ width: 10, height: 10 }}></span>
-            הפקת פודקאסטים לעסקים
-          </span>
-        </div>
-
-        <h1 className="display" style={{
-          fontSize: "clamp(52px, 9.5vw, 148px)",
-          margin: 0, fontWeight: 900
-        }}>
-          הלקוחות הכי טובים שלך<br />
-          <span style={{ color: "var(--accent)" }}>מגיעים אליך — לא להפך.</span>
-        </h1>
-
-        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.4fr 1fr", gap: isMobile ? 28 : 60, marginTop: 40, alignItems: "end" }}>
-          <p style={{ fontSize: 22, lineHeight: 1.55, margin: 0, opacity: 0.85, maxWidth: 680 }}>
-            כשאתה הפנים של העסק — המוניטין שלך הוא המוצר.<br />
-            פודקאסט הוא הכלי שבונה אמון בקנה מידה: לקוחות שמגיעים חמים, מוכנים, ומשלמים — לפני שדיברתם.
-          </p>
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            <button className="btn btn-primary" onClick={onCTAClick} style={{ justifyContent: "center", padding: "22px 28px", fontSize: 18 }}>
-              בוא נדבר על הפודקאסט שלך ←
-            </button>
-            <div className="mono" style={{ fontSize: 12, opacity: 0.55, textAlign: "center", lineHeight: 1.7 }}>
-              {"\n"}
-            </div>
+            <span style={{
+              display: "inline-flex", alignItems: "center", gap: 8
+            }}>
+              <span className="mono" style={{
+                fontSize: 11, fontWeight: 700, letterSpacing: "0.22em",
+                color: "var(--accent)"
+              }}>LIVE</span>
+            </span>
+            <span style={{
+              width: 1, height: 14, background: "rgba(255,213,0,0.35)"
+            }} />
+            <span className="mono" style={{
+              fontWeight: 600, letterSpacing: "0.18em",
+              color: "rgba(255,213,0,0.85)", fontSize: "16px"
+            }}>שחם 8, פתח תקווה</span>
           </div>
+
+          {/* HEADLINE — refined cinematic */}
+          <div style={{ position: "relative", margin: "0 auto 32px", maxWidth: 1160, padding: "12px 28px" }}>
+            {/* ambient glow behind headline */}
+            <div aria-hidden="true" style={{
+              position: "absolute", inset: "-40px -20px",
+              background: "radial-gradient(ellipse at 50% 50%, rgba(255,213,0,0.10), transparent 60%)",
+              filter: "blur(30px)", pointerEvents: "none", zIndex: 0
+            }} />
+
+            {/* eyebrow — camera viewfinder frame */}
+            <div style={{
+              display: "inline-block",
+              position: "relative",
+              padding: "26px 78px",
+              marginBottom: 40,
+              zIndex: 2
+            }}>
+              {/* outer glow halo */}
+              <span aria-hidden="true" style={{
+                position: "absolute", inset: -24,
+                background: "radial-gradient(ellipse at center, rgba(255,213,0,0.22), transparent 65%)",
+                filter: "blur(24px)",
+                pointerEvents: "none",
+                animation: "heroEyebrowPulse 2.6s ease-in-out infinite"
+              }} />
+
+              {/* corner brackets — viewfinder */}
+              {[
+              { top: 0, right: 0, brT: 3, brR: 3 },
+              { top: 0, left: 0, brT: 3, brL: 3 },
+              { bottom: 0, right: 0, brB: 3, brR: 3 },
+              { bottom: 0, left: 0, brB: 3, brL: 3 }].
+              map((p, i) =>
+              <span key={i} aria-hidden="true" style={{
+                position: "absolute",
+                top: p.top, right: p.right, bottom: p.bottom, left: p.left,
+                width: 26, height: 26,
+                borderTop: p.brT ? `3px solid var(--accent)` : "none",
+                borderRight: p.brR ? `3px solid var(--accent)` : "none",
+                borderBottom: p.brB ? `3px solid var(--accent)` : "none",
+                borderLeft: p.brL ? `3px solid var(--accent)` : "none",
+                filter: "drop-shadow(0 0 10px rgba(255,213,0,0.85))"
+              }} />
+              )}
+
+              {/* faint inner background */}
+              <span aria-hidden="true" style={{
+                position: "absolute", inset: 8,
+                background: "radial-gradient(ellipse at center, rgba(255,213,0,0.14), transparent 72%)",
+                pointerEvents: "none"
+              }} />
+
+              {/* content row */}
+              <div style={{
+                display: "inline-flex", alignItems: "center", gap: 20,
+                position: "relative", zIndex: 1
+              }}>
+                {/* REC indicator */}
+                <span style={{
+                  display: "inline-flex", alignItems: "center", gap: 9
+                }}>
+                  <span style={{
+                    width: 12, height: 12, borderRadius: "50%",
+                    background: "#ff3b3b",
+                    boxShadow: "0 0 16px #ff3b3b, 0 0 28px rgba(255,59,59,0.7)",
+                    animation: "heroRec 1.4s ease-in-out infinite"
+                  }} />
+                  <span className="mono" style={{
+                    fontSize: 13, fontWeight: 900, letterSpacing: "0.26em",
+                    color: "#ff3b3b",
+                    textShadow: "0 0 10px rgba(255,59,59,0.6)"
+                  }}>REC</span>
+                </span>
+
+                <span style={{ width: 1, height: 22, background: "rgba(255,213,0,0.4)" }} />
+
+                {/* microphone icon */}
+                <svg width="22" height="28" viewBox="0 0 16 20" fill="none" style={{
+                  filter: "drop-shadow(0 0 6px rgba(255,213,0,0.7))"
+                }}>
+                  <rect x="5" y="1" width="6" height="10" rx="3" stroke="var(--accent)" strokeWidth="1.6" />
+                  <path d="M2 9c0 3.3 2.7 6 6 6s6-2.7 6-6" stroke="var(--accent)" strokeWidth="1.6" strokeLinecap="round" />
+                  <path d="M8 15v3M5 18h6" stroke="var(--accent)" strokeWidth="1.6" strokeLinecap="round" />
+                </svg>
+
+                {/* label */}
+                <span className="mono" style={{
+                  fontSize: 22, letterSpacing: "0.30em", fontWeight: 900,
+                  color: "var(--accent)",
+                  textShadow: "0 0 24px rgba(255,213,0,0.7), 0 0 48px rgba(255,213,0,0.35)",
+                  animation: "heroLabelPulse 2.6s ease-in-out infinite"
+                }}>
+                  דמיינו את זה לרגע
+                </span>
+
+                {/* audio level bars */}
+                <span style={{
+                  display: "inline-flex", alignItems: "center", gap: 4, height: 26
+                }}>
+                  {[0.6, 0.9, 0.45, 0.8, 0.55].map((h, i) =>
+                  <span key={i} style={{
+                    width: 3.5,
+                    height: `${h * 100}%`,
+                    background: "var(--accent)",
+                    borderRadius: 2,
+                    animation: `audioBar 0.${6 + i}s ease-in-out ${i * 0.08}s infinite alternate`,
+                    boxShadow: "0 0 6px rgba(255,213,0,0.8)"
+                  }} />
+                  )}
+                </span>
+              </div>
+            </div>
+
+            <h1 className="display" style={{
+              fontSize: "clamp(44px, 6.6vw, 112px)",
+              margin: 0,
+              fontWeight: 900,
+              lineHeight: 1.05,
+              letterSpacing: "-0.025em",
+              textWrap: "balance",
+              position: "relative", zIndex: 2
+            }}>
+              {/* Line 1 */}
+              <span style={{ display: "block", marginBottom: 10 }}>הליד הבא שלכם מגיע לפגישה
+
+              </span>
+
+              {/* Line 2 — explosive highlight */}
+              <span style={{ display: "block", marginBottom: 10 }}>
+                <span style={{
+                  color: "var(--accent)",
+                  position: "relative", display: "inline-block",
+                  paddingInline: "0.18em",
+                  textShadow: "0 0 40px rgba(255,213,0,0.45)"
+                }}>
+                  כשהוא כבר יודע מי אתם
+                  {/* soft underline glow */}
+                  <span aria-hidden="true" style={{
+                    position: "absolute", left: "2%", right: "2%", bottom: "-0.08em",
+                    height: 5,
+                    background: "linear-gradient(90deg, transparent, var(--accent) 15%, var(--accent) 85%, transparent)",
+                    opacity: 0.5,
+                    borderRadius: 3,
+                    filter: "blur(0.5px)"
+                  }} />
+                </span>
+              </span>
+
+              {/* Line 3 — soft white with subtle background swatch */}
+              <span style={{
+                display: "block",
+                opacity: 0.72, fontWeight: 700, marginBottom: 10,
+                color: "rgb(255, 255, 255)",
+                position: "relative"
+              }}>
+
+              </span>
+
+              {/* Line 4 — closer, italic with sparkle */}
+              <span style={{ display: "block" }}>
+                ורק רוצה לדעת{" "}
+                <span style={{
+                  color: "var(--accent)",
+                  fontStyle: "italic",
+                  position: "relative", display: "inline-block",
+                  textShadow: "0 0 30px rgba(255,213,0,0.55)"
+                }}>
+                  איך מתחילים.
+                  {/* underline dash */}
+                  <span aria-hidden="true" style={{
+                    position: "absolute", left: 0, right: 0, bottom: "-0.04em",
+                    height: 3,
+                    background: "var(--accent)",
+                    opacity: 0.7,
+                    borderRadius: 3,
+                    transform: "scaleX(0.7)", transformOrigin: "right"
+                  }} />
+                </span>
+              </span>
+            </h1>
+
+          </div>
+
+          <p style={{ fontSize: "clamp(18px, 1.6vw, 24px)",
+            lineHeight: 1.5,
+            margin: "0 auto 44px",
+            opacity: 0.82,
+            maxWidth: 820
+          }}>
+            פעם הייתם צריכים להסביר מי אתם בכל שיחת מכירה. עם פודקאסט — הם כבר יודעים.
+            
+            <span style={{ color: "var(--accent)", fontWeight: 700 }}></span>
+          </p>
+
+          {/* CTA — centered */}
+          <div style={{
+            display: "flex", justifyContent: "center",
+            marginBottom: 28
+          }}>
+            <CTAButton onCTAClick={onCTAClick} label="בוא נדבר על הפודקאסט שלך" />
+          </div>
+
+          <p style={{
+            fontSize: 13, opacity: 0.5, margin: 0,
+            display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap",
+            justifyContent: "center"
+          }}>
+            <span>אין שיחת מכירה לוחצת</span>
+            <span style={{ width: 4, height: 4, borderRadius: "50%", background: "var(--accent)", opacity: 0.6 }} />
+            <span>30 דקות, ללא עלות</span>
+            <span style={{ width: 4, height: 4, borderRadius: "50%", background: "var(--accent)", opacity: 0.6 }} />
+            <span>נחזור אליך תוך 24 שעות</span>
+          </p>
+        </div>
+      </div>
+
+
+
+
+      <style>{`
+        @keyframes heroRec {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.35; transform: scale(0.7); }
+        }
+        @keyframes audioBar {
+          0% { transform: scaleY(0.3); }
+          100% { transform: scaleY(1); }
+        }
+        @keyframes wfPulse {
+          0% { transform: scaleX(0.4); opacity: 0.4; }
+          100% { transform: scaleX(1); opacity: 1; }
+        }
+        @keyframes filmScan {
+          0% { top: -20px; }
+          100% { top: 100%; }
+        }
+        @keyframes heroEyebrowPulse {
+          0%, 100% { opacity: 0.85; transform: scale(1); }
+          50% { opacity: 1; transform: scale(1.04); }
+        }
+        @keyframes heroLabelPulse {
+          0%, 100% { text-shadow: 0 0 24px rgba(255,213,0,0.7), 0 0 48px rgba(255,213,0,0.35); }
+          50% { text-shadow: 0 0 32px rgba(255,213,0,0.95), 0 0 64px rgba(255,213,0,0.5); }
+        }
+      `}</style>
+    </section>);
+
+}
+
+// ---------- 03 · SOCIAL PROOF BAR #1 ----------
+
+function SocialProofBar1() {
+  return (
+    <section style={{ padding: "48px 0", borderTop: "1px solid var(--line2)", borderBottom: "1px solid var(--line2)", fontSize: "1px" }}>
+      <div className="wrap" style={{ textAlign: "center" }}>
+        <p className="display" style={{ fontSize: 32, margin: 0, fontWeight: 700, opacity: 0.85 }}>
+
+        </p>
+      </div>
+    </section>);
+
+}
+
+// ---------- 04 · SOCIAL PROOF SECTION (3 proof cards + CTA) ----------
+
+function SocialProofSection({ onCTAClick }) {
+  const videos = [
+  { name: "אריק דוידוב", role: "מייסד · DavidovTech", tag: "B2B SaaS", duration: "0:47" },
+  { name: "מאיה לוי", role: "מנכ\"ל · Loop Studio", tag: "Creative", duration: "1:12" },
+  { name: "יואב ברנע", role: "יועץ עסקי", tag: "Consulting", duration: "0:58" },
+  { name: "תמר כהן", role: "מאמנת מנהלים בכירים", tag: "Coaching", duration: "1:03" },
+  { name: "רון אלמוג", role: "מייסד · NorthBound", tag: "Fintech", duration: "0:52" },
+  { name: "שירה גולן", role: "מנכ\"לית · Glow Brands", tag: "DTC Brand", duration: "1:18" },
+  { name: "עמית בר-און", role: "שותף מייסד · Vector42", tag: "Agency", duration: "0:44" },
+  { name: "נועה שטרן", role: "סמנכ\"ל שיווק · Pulse", tag: "B2B SaaS", duration: "1:07" },
+  { name: "דניאל פרץ", role: "מנכ\"ל · Lavi Capital", tag: "Investment", duration: "0:55" },
+  { name: "ליאת אבני", role: "מייסדת · Sora Studio", tag: "Education", duration: "1:21" },
+  { name: "גיל אמיר", role: "VP Sales · Helix", tag: "Enterprise", duration: "0:49" },
+  { name: "הילה פרידמן", role: "אסטרטגית מותג", tag: "Branding", duration: "1:10" }];
+
+
+
+  const scrollerRef = React.useRef(null);
+  const canPrev = true;
+  const canNext = true;
+  const N = videos.length;
+  // Render 3 copies for seamless infinite scroll
+  const loopVideos = [...videos, ...videos, ...videos];
+
+  // Helper: compute step size + section width (for one copy of videos)
+  const getMetrics = () => {
+    const el = scrollerRef.current;
+    if (!el) return null;
+    const card = el.querySelector("[data-vid-card]");
+    if (!card) return null;
+    const step = card.clientWidth + 20;
+    const sectionW = step * N;
+    return { step, sectionW };
+  };
+
+  // On mount: position scroller at start of middle copy (no animation)
+  React.useEffect(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const m = getMetrics();
+    if (!m) return;
+    // RTL → scrollLeft is negative. Middle copy starts at -sectionW
+    el.scrollLeft = -m.sectionW;
+  }, []);
+
+  const scrollBy = (dir) => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const m = getMetrics();
+    if (!m) return;
+    // RTL: scrollLeft <= 0. dir +1 = next (visually left, more negative), dir -1 = prev
+    el.scrollBy({ left: -dir * m.step, behavior: "smooth" });
+  };
+
+  // After each scroll settles: if we drifted out of the middle copy, silently
+  // snap back to the equivalent position inside the middle copy — invisible jump.
+  React.useEffect(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    let timer = null;
+    const onScroll = () => {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => {
+        const m = getMetrics();
+        if (!m) return;
+        const sl = el.scrollLeft; // negative in RTL
+        // We want sl to stay roughly within [-2*sectionW, -sectionW]
+        if (sl > -m.sectionW + 4) {
+          // drifted into first copy → jump forward one section
+          el.scrollLeft = sl - m.sectionW;
+        } else if (sl < -2 * m.sectionW - 4) {
+          // drifted into third copy → jump back one section
+          el.scrollLeft = sl + m.sectionW;
+        }
+      }, 180);
+    };
+    el.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      el.removeEventListener("scroll", onScroll);
+      if (timer) clearTimeout(timer);
+    };
+  }, []);
+
+  return (
+    <section style={{ padding: "76px 0 52px", background: "var(--card)", borderTop: "1px solid var(--line2)", borderBottom: "1px solid var(--line2)", position: "relative", overflow: "hidden" }}>
+      <div aria-hidden="true" style={{
+        position: "absolute", top: "10%", left: "20%",
+        width: 500, height: 500,
+        background: "radial-gradient(ellipse, rgba(255,213,0,0.05), transparent 65%)",
+        filter: "blur(70px)", pointerEvents: "none"
+      }} />
+
+      <div className="wrap" style={{ position: "relative", zIndex: 1 }}>
+        <div style={{ textAlign: "center", marginBottom: 64, maxWidth: 900, marginLeft: "auto", marginRight: "auto" }}>
+          <p className="mono" style={{
+            fontSize: 12, letterSpacing: "0.25em", fontWeight: 700,
+            color: "var(--accent)", margin: "0 0 18px"
+          }}>
+
+          </p>
+          <h2 className="display" style={{
+            fontSize: "clamp(36px, 5.5vw, 64px)",
+            margin: 0, fontWeight: 900, lineHeight: 1.15,
+            textWrap: "balance"
+          }}>
+            <span style={{ display: "block", opacity: 0.92, marginBottom: 10, fontSize: "92px", whiteSpace: "nowrap" }}>
+              אל תאמינו למילה שאנחנו אומרים.
+            </span>
+            <span style={{ display: "block", position: "relative", whiteSpace: "nowrap" }}>
+              <span style={{
+                color: "var(--accent)",
+                textShadow: "0 0 50px rgba(255,213,0,0.45), 0 0 90px rgba(255,213,0,0.2)",
+                position: "relative",
+                display: "inline-block",
+                paddingInline: "0.2em", fontSize: "92px"
+              }}>
+                זה מה שהלקוחות שלנו מספרים.
+                {/* soft underline */}
+                <span aria-hidden="true" style={{
+                  position: "absolute", left: "3%", right: "3%", bottom: "-0.06em",
+                  height: 5,
+                  background: "linear-gradient(90deg, transparent, var(--accent) 15%, var(--accent) 85%, transparent)",
+                  opacity: 0.55,
+                  borderRadius: 3,
+                  filter: "blur(0.5px)"
+                }} />
+              </span>
+            </span>
+          </h2>
+        </div>
+      </div>
+
+      {/* Carousel — videos in single row, 9:16, with arrows */}
+      <div style={{
+        position: "relative",
+        marginBottom: 0,
+        maxWidth: 1280,
+        marginInline: "auto",
+        paddingInline: 80
+      }}>
+        {/* Edge fades */}
+        <div aria-hidden="true" style={{
+          position: "absolute", top: 0, bottom: 0, right: 80, width: 40, zIndex: 3,
+          pointerEvents: "none",
+          background: "linear-gradient(to left, var(--card), transparent)"
+        }} />
+        <div aria-hidden="true" style={{
+          position: "absolute", top: 0, bottom: 0, left: 80, width: 40, zIndex: 3,
+          pointerEvents: "none",
+          background: "linear-gradient(to right, var(--card), transparent)"
+        }} />
+
+        {/* Prev arrow (right in RTL) */}
+        <button
+          type="button"
+          onClick={() => scrollBy(-1)}
+          disabled={!canPrev}
+          aria-label="הקודם"
+          style={{
+            position: "absolute", top: "50%", right: 12,
+            transform: "translateY(-50%)",
+            zIndex: 4,
+            width: 52, height: 52, borderRadius: "50%",
+            background: canPrev ? "var(--accent)" : "rgba(255,255,255,0.06)",
+            border: canPrev ? "1px solid var(--accent)" : "1px solid var(--line2)",
+            color: canPrev ? "#0A0A0A" : "rgba(255,255,255,0.3)",
+            cursor: canPrev ? "pointer" : "not-allowed",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            boxShadow: canPrev ? "0 8px 24px rgba(255,213,0,0.3)" : "none",
+            transition: "all 0.2s ease"
+          }}>
+          
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </button>
+
+        {/* Next arrow (left in RTL) */}
+        <button
+          type="button"
+          onClick={() => scrollBy(1)}
+          disabled={!canNext}
+          aria-label="הבא"
+          style={{
+            position: "absolute", top: "50%", left: 12,
+            transform: "translateY(-50%)",
+            zIndex: 4,
+            width: 52, height: 52, borderRadius: "50%",
+            background: canNext ? "var(--accent)" : "rgba(255,255,255,0.06)",
+            border: canNext ? "1px solid var(--accent)" : "1px solid var(--line2)",
+            color: canNext ? "#0A0A0A" : "rgba(255,255,255,0.3)",
+            cursor: canNext ? "pointer" : "not-allowed",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            boxShadow: canNext ? "0 8px 24px rgba(255,213,0,0.3)" : "none",
+            transition: "all 0.2s ease"
+          }}>
+          
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+        </button>
+
+        {/* Scroller */}
+        <div
+          ref={scrollerRef}
+          className="testimonial-video-scroller"
+          style={{
+            display: "flex",
+            gap: 20,
+            overflowX: "auto",
+            scrollSnapType: "x mandatory",
+            scrollPaddingInline: 0,
+            padding: "10px 0",
+            scrollbarWidth: "none"
+          }}>
+          
+          {loopVideos.map((v, i) =>
+          <div
+            key={i}
+            data-vid-card="true"
+            style={{
+              flex: "0 0 calc((100% - 60px) / 4)",
+              aspectRatio: "9 / 16",
+              background: "var(--bg)",
+              border: "1px solid var(--line2)",
+              borderRadius: 16,
+              position: "relative",
+              overflow: "hidden",
+              cursor: "pointer",
+              scrollSnapAlign: "start",
+              scrollSnapStop: "always",
+              transition: "border-color 0.3s ease, transform 0.3s ease"
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = "rgba(255,213,0,0.55)";
+              e.currentTarget.style.transform = "translateY(-3px)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = "var(--line2)";
+              e.currentTarget.style.transform = "translateY(0)";
+            }}>
+            
+              {/* yellow corner brackets */}
+              <span aria-hidden="true" style={{
+              position: "absolute", top: 12, right: 12, width: 18, height: 18,
+              borderTop: "2px solid var(--accent)", borderRight: "2px solid var(--accent)",
+              zIndex: 3
+            }} />
+              <span aria-hidden="true" style={{
+              position: "absolute", bottom: 12, left: 12, width: 18, height: 18,
+              borderBottom: "2px solid var(--accent)", borderLeft: "2px solid var(--accent)",
+              zIndex: 3
+            }} />
+
+              <span aria-hidden="true" style={{
+              position: "absolute", top: "50%", left: 0, right: 0, height: 1,
+              background: "linear-gradient(to right, transparent, rgba(255,213,0,0.18), transparent)"
+            }} />
+
+              <div style={{
+              position: "absolute", top: 22, left: 22, right: 22,
+              display: "flex", justifyContent: "space-between", alignItems: "center",
+              zIndex: 2
+            }}>
+                <span className="mono" style={{
+                fontSize: 11, letterSpacing: "0.2em",
+                color: "var(--accent)", fontWeight: 700
+              }}>CLIENT · {String(i + 1).padStart(2, "0")}</span>
+                <span className="mono" style={{
+                fontSize: 10, letterSpacing: "0.15em",
+                color: "rgba(255,255,255,0.55)", fontWeight: 600
+              }}>{v.duration}</span>
+              </div>
+
+              <div style={{
+              position: "absolute", inset: 0,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              zIndex: 2,
+              flexDirection: "column", gap: 18
+            }}>
+                <svg width="90" height="90" viewBox="0 0 90 90" fill="none" aria-hidden="true">
+                  <circle cx="45" cy="32" r="18" stroke="rgba(255,213,0,0.35)" strokeWidth="1.5" strokeDasharray="3 3" />
+                  <path d="M14 84 C 14 64, 30 56, 45 56 C 60 56, 76 64, 76 84"
+                stroke="rgba(255,213,0,0.35)" strokeWidth="1.5" strokeDasharray="3 3" fill="none" />
+                </svg>
+
+                <div style={{
+                width: 56, height: 56, borderRadius: "50%",
+                background: "var(--accent)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                boxShadow: "0 8px 24px rgba(255,213,0,0.35)"
+              }}>
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M6 4 L16 10 L6 16 Z" fill="#0A0A0A" />
+                  </svg>
+                </div>
+              </div>
+
+              <div style={{
+              position: "absolute", bottom: 0, left: 0, right: 0,
+              padding: "60px 22px 22px",
+              background: "linear-gradient(to top, rgba(0,0,0,0.85) 30%, transparent)",
+              zIndex: 2
+            }}>
+                <span className="mono" style={{
+                display: "inline-block", marginBottom: 10,
+                padding: "3px 9px",
+                background: "rgba(255,213,0,0.12)",
+                border: "1px solid rgba(255,213,0,0.3)",
+                borderRadius: 999,
+                fontSize: 9, letterSpacing: "0.1em", fontWeight: 700,
+                color: "var(--accent)"
+              }}>{v.tag}</span>
+                <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 3, lineHeight: 1.2 }}>{v.name}</div>
+                <div style={{ fontSize: 11.5, opacity: 0.65, lineHeight: 1.3 }}>{v.role}</div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <style>{`
+        .testimonial-video-scroller::-webkit-scrollbar { display: none; }
+        @media (max-width: 900px) {
+          .testimonial-video-scroller > [data-vid-card] {
+            flex: 0 0 calc((100% - 20px) / 2) !important;
+          }
+        }
+        @media (max-width: 560px) {
+          .testimonial-video-scroller > [data-vid-card] {
+            flex: 0 0 80% !important;
+          }
+        }
+      `}</style>
+    </section>);
+
+}
+
+// ---------- 05 · PAIN POINT (centered) ----------
+
+function PainPoint({ onCTAClick }) {
+  return (
+    <section style={{ padding: "76px 0" }}>
+      <div className="wrap" style={{ maxWidth: 900, textAlign: "center" }}>
+        <h2 className="display" style={{
+          fontSize: "clamp(36px, 5vw, 56px)",
+          margin: "0 0 24px", fontWeight: 800, lineHeight: 1.15
+        }}>
+          התייחס לכאב הגדול ביותר שאתה פותר ולעולם של{" "}
+          <span style={{ color: "var(--accent)" }}>״הדרך הישנה״</span>, תוך שילוב היתרון הייחודי שלך
+        </h2>
+
+        <p style={{ fontSize: 18, lineHeight: 1.7, opacity: 0.78, margin: "0 auto 40px", maxWidth: 740 }}>
+          השתמש בסקשן הזה כדי לצייר תמונה חיה של נקודות הכאב של הלקוח האידיאלי ולחשוף את הפגמים של המצב הקיים,
+          כדי שיבין שאתה יודע במה הוא נמצא. השלם את זה עם הצעת הערך והבידול הייחודי שלך.
+        </p>
+
+        <CTAButton onCTAClick={onCTAClick} />
+      </div>
+    </section>);
+
+}
+
+// ---------- 06 · BIG BENEFIT #1 (image right · text left) ----------
+// 07 · BIG BENEFIT #2 (text right · image left)
+// 08 · BIG BENEFIT #3 (image right · text left)
+// All share BigBenefitRow, just flip imageSide.
+
+function BigBenefitRow({ n, imageSide = "right", summary, headline, body, onCTAClick, alt = false }) {
+  const Visual =
+  <div style={{ width: "100%" }}>
+      <VisualPlaceholder
+      label="תמונה שמשלימה ומחזקת את הצעת הערך המרכזית"
+      height={500} />
+    
+    </div>;
+
+
+  const Text =
+  <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: 32 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          <span className="mono" style={{
+          fontSize: 12, letterSpacing: "0.2em",
+          color: "var(--accent)", fontWeight: 700
+        }}>יתרון · 0{n}</span>
+          <span style={{ flex: 1, height: 1, background: "var(--line2)" }} />
         </div>
 
-        {/* Subtle waveform baseline */}
-        <div style={{ marginTop: 80, opacity: 0.35 }}>
-          <Waveform count={64} color="var(--accent)" />
-          <style>{`section:first-of-type .waveform { height: 56px !important; gap: 4px !important; }`}</style>
+        <p className="mono" style={{
+        fontSize: 14, opacity: 0.7, margin: 0,
+        letterSpacing: "0.06em", textTransform: "uppercase"
+      }}>
+          {summary}
+        </p>
+
+        <h2 className="display" style={{
+        fontSize: "clamp(32px, 4.2vw, 56px)",
+        margin: 0, fontWeight: 800, lineHeight: 1.1
+      }}>
+          {headline}
+        </h2>
+
+        <p style={{ fontSize: 17, lineHeight: 1.7, opacity: 0.8, margin: 0 }}>
+          {body}
+        </p>
+      </div>
+
+      <div>
+        <CTAButton onCTAClick={onCTAClick} />
+      </div>
+    </div>;
+
+
+  // RTL note: in RTL, "right" is the start side. We use grid-template-columns to control order.
+  // imageSide="right" → visual on right (start in RTL = column 1), text on left (column 2)
+  const cols = imageSide === "right" ? [Visual, Text] : [Text, Visual];
+
+  return (
+    <section style={{
+      padding: "68px 0",
+      background: alt ? "var(--card)" : "transparent",
+      borderTop: alt ? "1px solid var(--line2)" : "none",
+      borderBottom: alt ? "1px solid var(--line2)" : "none"
+    }}>
+      <div className="wrap">
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "center" }}>
+          {cols[0]}
+          {cols[1]}
         </div>
       </div>
     </section>);
 
 }
 
-function MirrorMoment() {
-  const isMobile = useIsMobile();
+function BigBenefit1({ onCTAClick }) {
+  return (
+    <BigBenefitRow
+      n={1}
+      imageSide="right"
+      summary="תמצית התוצאה האידיאלית"
+      headline={<>הצעת הערך ויתרון מרכזי #1<br /><span style={{ color: "var(--accent)" }}>(מה יצא ללקוח?)</span></>}
+      body="הפתרון שלנו עושה X, Y, Z — נסחו כאן את היתרון המרכזי שאתם מספקים והסבירו איך אתם עושים זאת בדרך עצמאית או ייחודית."
+      onCTAClick={onCTAClick} />);
+
+
+}
+
+function BigBenefit2({ onCTAClick }) {
+  return (
+    <BigBenefitRow
+      n={2}
+      imageSide="left"
+      summary="תמצית התוצאה האידיאלית"
+      headline={<>הצעת הערך ויתרון מרכזי #2<br /><span style={{ color: "var(--accent)" }}>(מה יצא ללקוח?)</span></>}
+      body="הפתרון שלנו עושה X, Y, Z — נסחו כאן את היתרון המרכזי שאתם מספקים והסבירו איך אתם עושים זאת בדרך עצמאית או ייחודית."
+      onCTAClick={onCTAClick}
+      alt />);
+
+
+}
+
+function BigBenefit3({ onCTAClick }) {
+  return (
+    <BigBenefitRow
+      n={3}
+      imageSide="right"
+      summary="תמצית התוצאה האידיאלית"
+      headline={<>הצעת הערך ויתרון מרכזי #3<br /><span style={{ color: "var(--accent)" }}>(מה יצא ללקוח?)</span></>}
+      body="הפתרון שלנו עושה X, Y, Z — נסחו כאן את היתרון המרכזי שאתם מספקים והסבירו איך אתם עושים זאת בדרך עצמאית או ייחודית."
+      onCTAClick={onCTAClick} />);
+
+
+}
+
+// ---------- 09 · SOCIAL PROOF #2 — REMOVED per request ----------
+
+// ---------- 10 · 6 DIFFERENTIATORS ----------
+
+function Differentiators({ onCTAClick }) {
+  const items = [1, 2, 3, 4, 5, 6];
+  return (
+    <section style={{ padding: "76px 0" }}>
+      <div className="wrap">
+        <h2 className="display" style={{
+          fontSize: "clamp(36px, 5vw, 56px)",
+          textAlign: "center", margin: "0 auto 64px", maxWidth: 900,
+          fontWeight: 800, lineHeight: 1.15
+        }}>
+          כותרת מבוססת יתרון —{" "}
+          <span style={{ color: "var(--accent)" }}>איך אתם עושים זאת ומה הופך אתכם לשונים.</span>
+        </h2>
+
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(3, 1fr)",
+          gap: 32, marginBottom: 56
+        }}>
+          {items.map((i) =>
+          <div key={i} style={{
+            background: "var(--card)",
+            border: "2px solid var(--line2)",
+            borderRadius: 16,
+            minHeight: 320,
+            padding: 40,
+            display: "flex", flexDirection: "column",
+            alignItems: "center", justifyContent: "center",
+            textAlign: "center", gap: 16,
+            position: "relative", overflow: "hidden"
+          }}>
+              <div className="mono" style={{
+              fontSize: 11, letterSpacing: "0.2em",
+              color: "var(--accent)", fontWeight: 700
+            }}>0{i}</div>
+              <h3 className="display" style={{ fontSize: 26, margin: 0, fontWeight: 800 }}>
+                בידול {i}
+              </h3>
+              <p style={{ fontSize: 16, lineHeight: 1.6, opacity: 0.7, margin: 0 }}>
+                טקסט גוף — פסקה קצרה שמסבירה איך הבידול הזה משפיע על הלקוח.
+              </p>
+            </div>
+          )}
+        </div>
+
+        <div style={{ textAlign: "center" }}>
+          <CTAButton onCTAClick={onCTAClick} />
+        </div>
+      </div>
+    </section>);
+
+}
+
+// ---------- 11 · HOW IT WORKS (3 steps + CTA) ----------
+
+function HowItWorks({ onCTAClick }) {
+  const steps = [1, 2, 3];
+  return (
+    <section id="how" style={{ padding: "76px 0", background: "var(--card)", borderTop: "1px solid var(--line2)", borderBottom: "1px solid var(--line2)" }}>
+      <div className="wrap">
+        <h2 className="display" style={{
+          fontSize: "clamp(36px, 5vw, 56px)",
+          textAlign: "center", margin: "0 auto 64px", maxWidth: 900,
+          fontWeight: 800, lineHeight: 1.15
+        }}>
+          איך זה עובד?{" "}
+          <span style={{ color: "var(--accent)" }}>
+            (הפכו את התפיסת הסיכויים להצלחה לגבוהה ולחסרת מאמץ.)
+          </span>
+        </h2>
+
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(3, 1fr)",
+          gap: 32, marginBottom: 56
+        }}>
+          {steps.map((i) =>
+          <div key={i} style={{
+            background: "var(--bg)",
+            border: "2px solid var(--line2)",
+            borderRadius: 16,
+            minHeight: 320,
+            padding: 40,
+            display: "flex", flexDirection: "column",
+            alignItems: "center", justifyContent: "center",
+            textAlign: "center", gap: 18,
+            position: "relative"
+          }}>
+              <div style={{
+              width: 56, height: 56, borderRadius: "50%",
+              background: "var(--accent)", color: "#0A0A0A",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: 22, fontWeight: 900, fontFamily: "var(--font-display)"
+            }}>{i}</div>
+              <h3 className="display" style={{ fontSize: 26, margin: 0, fontWeight: 800 }}>
+                כותרת
+              </h3>
+              <p style={{ fontSize: 16, lineHeight: 1.6, opacity: 0.7, margin: 0 }}>
+                טקסט גוף — פסקה קצרה שמתארת את השלב הזה בתהליך.
+              </p>
+            </div>
+          )}
+        </div>
+
+        <div style={{ textAlign: "center" }}>
+          <CTAButton onCTAClick={onCTAClick} />
+        </div>
+      </div>
+    </section>);
+
+}
+
+// ---------- 13 · GUARANTEE (single wide card + CTA) ----------
+
+function CountdownDigit({ value, label }) {
+  const [prevValue, setPrevValue] = React.useState(value);
+  const [flipping, setFlipping] = React.useState(false);
+
+  React.useEffect(() => {
+    if (value !== prevValue) {
+      setFlipping(true);
+      const t = setTimeout(() => {
+        setPrevValue(value);
+        setFlipping(false);
+      }, 300);
+      return () => clearTimeout(t);
+    }
+  }, [value, prevValue]);
+
+  const display = String(value).padStart(2, "0");
+
+  return (
+    <div style={{ textAlign: "center" }}>
+      <div style={{
+        position: "relative",
+        width: "clamp(80px, 10vw, 130px)",
+        height: "clamp(96px, 12vw, 160px)",
+        perspective: 600
+      }}>
+        {/* Static bg card */}
+        <div style={{
+          position: "absolute", inset: 0,
+          background: "linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%)",
+          border: "1px solid var(--line2)",
+          borderRadius: 14,
+          boxShadow: "inset 0 1px 0 rgba(255,255,255,0.04), 0 10px 30px rgba(0,0,0,0.5)"
+        }} />
+        {/* Center divider line */}
+        <div style={{
+          position: "absolute", left: 0, right: 0, top: "50%",
+          height: 1, background: "rgba(0,0,0,0.6)",
+          boxShadow: "0 1px 0 rgba(255,255,255,0.04)",
+          zIndex: 3
+        }} />
+        {/* Digit */}
+        <div className="display" style={{
+          position: "absolute", inset: 0,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontSize: "clamp(48px, 6.5vw, 92px)",
+          fontWeight: 900,
+          color: "var(--accent)",
+          letterSpacing: "-0.04em",
+          fontVariantNumeric: "tabular-nums",
+          textShadow: "0 0 30px rgba(255,213,0,0.3)",
+          transform: flipping ? "scale(0.92)" : "scale(1)",
+          transition: "transform 0.3s cubic-bezier(0.4,0,0.2,1)",
+          zIndex: 2
+        }}>{display}</div>
+        {/* Corner brackets */}
+        <span aria-hidden="true" style={{
+          position: "absolute", top: 8, right: 8, width: 12, height: 12,
+          borderTop: "1.5px solid var(--accent)", borderRight: "1.5px solid var(--accent)",
+          opacity: 0.5, zIndex: 4
+        }} />
+        <span aria-hidden="true" style={{
+          position: "absolute", bottom: 8, left: 8, width: 12, height: 12,
+          borderBottom: "1.5px solid var(--accent)", borderLeft: "1.5px solid var(--accent)",
+          opacity: 0.5, zIndex: 4
+        }} />
+      </div>
+      <div className="mono" style={{
+        fontSize: 11, letterSpacing: "0.28em",
+        opacity: 0.55, marginTop: 14, fontWeight: 700
+      }}>{label}</div>
+    </div>);
+
+}
+
+function Guarantee({ onCTAClick }) {
   const sectionRef = React.useRef(null);
   const [inView, setInView] = React.useState(false);
-  const [mode, setMode] = React.useState("old");
+  const [time, setTime] = React.useState({ h: 95, m: 59, s: 59 });
 
   React.useEffect(() => {
     if (!sectionRef.current) return;
     const io = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) setInView(true); },
+      ([e]) => {if (e.isIntersecting) setInView(true);},
+      { threshold: 0.2 }
+    );
+    io.observe(sectionRef.current);
+    return () => io.disconnect();
+  }, []);
+
+  // Countdown logic — GLOBAL: same value for every visitor at any moment.
+  // Cycles between 96 hours (max) and 12 hours (min) — when remaining hits 12h, resets to 96h.
+  // No localStorage, no per-user anchor. Pure function of the current wall-clock time.
+  React.useEffect(() => {
+    const HOUR = 60 * 60 * 1000;
+    const CYCLE = 84 * HOUR; // counts down 84 hours (96h → 12h) then resets
+    const MAX_REMAINING = 96 * HOUR;
+    // Fixed global anchor — everyone computes against the same moment.
+    const ANCHOR = Date.UTC(2026, 0, 5, 0, 0, 0); // Jan 5 2026 00:00 UTC
+
+    const tick = () => {
+      const now = Date.now();
+      const elapsed = ((now - ANCHOR) % CYCLE + CYCLE) % CYCLE; // 0 .. CYCLE
+      const diff = MAX_REMAINING - elapsed; // 96h .. 12h
+      const h = Math.floor(diff / HOUR);
+      const m = Math.floor(diff % HOUR / 60000);
+      const s = Math.floor(diff % 60000 / 1000);
+      setTime({ h, m, s });
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  return (
+    <section ref={sectionRef} style={{ padding: "96px 0", position: "relative", overflow: "hidden" }}>
+      {/* Animated glow */}
+      <div aria-hidden="true" style={{
+        position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)",
+        width: 1100, height: 700,
+        background: "radial-gradient(ellipse, rgba(255,213,0,0.10), transparent 65%)",
+        filter: "blur(100px)", pointerEvents: "none",
+        animation: "guaranteeGlow 6s ease-in-out infinite"
+      }} />
+
+      {/* Subtle grid background */}
+      <div aria-hidden="true" style={{
+        position: "absolute", inset: 0,
+        backgroundImage: "linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px)",
+        backgroundSize: "60px 60px",
+        maskImage: "radial-gradient(ellipse at center, black 30%, transparent 70%)",
+        pointerEvents: "none"
+      }} />
+
+      <style>{`
+        @keyframes guaranteeGlow {
+          0%, 100% { opacity: 0.7; transform: translate(-50%,-50%) scale(1); }
+          50% { opacity: 1; transform: translate(-50%,-50%) scale(1.05); }
+        }
+        @keyframes urgentPulse {
+          0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,213,0,0.4); }
+          50% { transform: scale(1.04); box-shadow: 0 0 0 8px rgba(255,213,0,0); }
+        }
+        @keyframes secondsPulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.6; }
+        }
+        @keyframes shimmer {
+          0% { background-position: -200% 0; }
+          100% { background-position: 200% 0; }
+        }
+        @keyframes bonusFloat {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-3px); }
+        }
+        @keyframes bonusGlowSweep {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+        @keyframes freeBlink {
+          0%, 100% { text-shadow: 0 0 0 rgba(255,213,0,0); }
+          50% { text-shadow: 0 0 16px rgba(255,213,0,0.7); }
+        }
+        @keyframes popularSweep {
+          0% { left: -50%; }
+          100% { left: 150%; }
+        }
+        @keyframes monthBadgeFloat {
+          0%, 100% { transform: translateX(-50%) translateY(0); }
+          50% { transform: translateX(-50%) translateY(-3px); }
+        }
+        @keyframes bonusEnter {
+          0% { opacity: 0; transform: translateY(24px) scale(0.96); }
+          100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes timerGlow {
+          0%, 100% { box-shadow: 0 0 0 0 rgba(255,213,0,0); }
+          50% { box-shadow: 0 0 32px 8px rgba(255,213,0,0.08); }
+        }
+        @keyframes strikeReveal {
+          0% { width: 0; }
+          100% { width: 100%; }
+        }
+        @keyframes urgencyDot {
+          0%, 100% { opacity: 1; box-shadow: 0 0 8px rgba(255,213,0,0.8); }
+          50% { opacity: 0.4; box-shadow: 0 0 0 rgba(255,213,0,0); }
+        }
+        @keyframes depleteBar {
+          0% { transform: scaleX(1); }
+          100% { transform: scaleX(0); }
+        }
+        @keyframes freePop {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.08); }
+        }
+        @keyframes arrowSlide {
+          0%, 100% { transform: translateX(0); opacity: 0.8; }
+          50% { transform: translateX(-8px); opacity: 1; }
+        }
+        @keyframes underlineSweep {
+          0%, 100% { opacity: 0.4; transform: scaleX(0.7); }
+          50% { opacity: 1; transform: scaleX(1); }
+        }
+        .bonus-card:hover {
+          transform: translateY(-4px);
+          border-color: rgba(255,213,0,0.6) !important;
+          box-shadow: 0 12px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,213,0,0.2);
+        }
+      `}</style>
+
+      <div className="wrap" style={{ position: "relative", zIndex: 1 }}>
+        {/* Urgent badge — pulsing */}
+        <div style={{
+          display: "flex", justifyContent: "center", marginBottom: 32,
+          opacity: inView ? 1 : 0,
+          transform: inView ? "translateY(0)" : "translateY(8px)",
+          transition: "all 0.6s ease 0.05s"
+        }}>
+          <div style={{
+            display: "inline-flex", alignItems: "center", gap: 12,
+            padding: "10px 22px",
+            background: "rgba(255,213,0,0.08)",
+            border: "1px solid rgba(255,213,0,0.4)",
+            borderRadius: 999,
+            animation: "urgentPulse 2.4s ease-in-out infinite"
+          }}>
+            <span style={{
+              width: 8, height: 8, borderRadius: "50%",
+              background: "var(--accent)",
+              boxShadow: "0 0 12px var(--accent)",
+              animation: "studioRec 1.2s ease-in-out infinite"
+            }} />
+            <span className="mono" style={{
+              fontSize: 11, letterSpacing: "0.28em",
+              color: "var(--accent)", fontWeight: 800
+            }}>מבצע לזמן מוגבל</span>
+          </div>
+        </div>
+
+        {/* Headline */}
+        <h2 className="display" style={{
+          fontSize: "clamp(40px, 6.5vw, 88px)",
+          textAlign: "center", margin: "0 auto 24px", maxWidth: 1100,
+          fontWeight: 900, lineHeight: 1.05, textWrap: "balance",
+          letterSpacing: "-0.02em",
+          opacity: inView ? 1 : 0,
+          transform: inView ? "translateY(0)" : "translateY(16px)",
+          transition: "opacity 0.7s ease 0.15s, transform 0.7s cubic-bezier(0.2,0.8,0.2,1) 0.15s"
+        }}>
+          <span style={{ color: "rgb(255, 255, 255)" }}>פרק ניסיון בלי התחייבות.</span>
+          <br />
+          <span style={{
+            color: "var(--accent)",
+            background: "linear-gradient(180deg, transparent 65%, rgba(255,213,0,0.18) 65%)",
+            padding: "0 8px"
+          }}>
+אפס סיכון.</span>
+        </h2>
+
+        <p style={{ fontSize: "clamp(16px, 1.4vw, 20px)",
+          textAlign: "center", margin: "0 auto 56px", maxWidth: 600,
+          opacity: inView ? 0.6 : 0, lineHeight: 1.6,
+          transform: inView ? "translateY(0)" : "translateY(8px)",
+          transition: "opacity 0.7s ease 0.25s, transform 0.7s ease 0.25s"
+        }}>
+          לא צריך להאמין לנו על המילה — תנו לתוצאה לדבר בעצמה.
+        </p>
+
+        {/* How it works — 3 steps */}
+        <div style={{
+          maxWidth: 1100, margin: "0 auto 36px",
+          display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16,
+          opacity: inView ? 1 : 0,
+          transform: inView ? "translateY(0)" : "translateY(12px)",
+          transition: "opacity 0.7s ease 0.3s, transform 0.7s ease 0.3s"
+        }}>
+          {[
+          { n: "01", t: "מקליטים פרק ניסיון.", s: "במחיר היכרות מיוחד." },
+          { n: "02", t: "אתם רואים את התוצאה.", s: "פרק מוגמר עם 2 רילסים." },
+          { n: "03", t: "אתם מחליטים.", s: "ממשיכים או עוצרים — בחירתכם." }].
+          map((step, i) =>
+          <div key={i} style={{
+            position: "relative",
+            padding: "22px 22px 20px",
+            background: "rgba(255,255,255,0.02)",
+            border: "1px solid var(--line2)",
+            borderRadius: 14,
+            textAlign: "right"
+          }}>
+              <span aria-hidden="true" style={{
+              position: "absolute", top: 8, right: 8, width: 12, height: 12,
+              borderTop: "2px solid var(--accent)", borderRight: "2px solid var(--accent)"
+            }} />
+              <span aria-hidden="true" style={{
+              position: "absolute", bottom: 8, left: 8, width: 12, height: 12,
+              borderBottom: "2px solid var(--accent)", borderLeft: "2px solid var(--accent)"
+            }} />
+              <div className="mono" style={{
+              fontSize: 11, letterSpacing: "0.2em", fontWeight: 700,
+              color: "var(--accent)", opacity: 0.85, marginBottom: 10
+            }}>{step.n}</div>
+              <div style={{
+              fontSize: "clamp(16px, 1.4vw, 19px)", fontWeight: 800,
+              marginBottom: 4, lineHeight: 1.3
+            }}>{step.t}</div>
+              <div style={{
+              fontSize: "clamp(13px, 1.05vw, 14px)",
+              opacity: 0.6, lineHeight: 1.5
+            }}>{step.s}</div>
+            </div>
+          )}
+        </div>
+
+        {/* Reassurance lines */}
+        <div style={{
+          maxWidth: 760, margin: "0 auto 56px",
+          padding: "22px 26px",
+          background: "rgba(255,255,255,0.02)",
+          border: "1px solid var(--line2)",
+          borderRadius: 14,
+          display: "flex", flexDirection: "column", gap: 14,
+          opacity: inView ? 1 : 0,
+          transform: inView ? "translateY(0)" : "translateY(12px)",
+          transition: "opacity 0.7s ease 0.4s, transform 0.7s ease 0.4s"
+        }}>
+          {[
+          {
+            icon:
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="9 12 11 14 15 10" />
+                </svg>,
+
+            main: "לא אהבתם? עוצרים. בלי שאלות, בלי לחץ.",
+            sub: "אנחנו לא מאמינים בלקוחות שנשארים כי הם חייבים."
+          },
+          {
+            icon:
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 12 20 22 4 22 4 12" />
+                  <rect x="2" y="7" width="20" height="5" />
+                  <line x1="12" y1="22" x2="12" y2="7" />
+                  <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z" />
+                  <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z" />
+                </svg>,
+
+            main: "אהבתם? ממשיכים עם חבילה מותאמת + 15% הנחה.",
+            sub: "כי סמכתם עלינו מהצעד הראשון."
+          }].
+          map((row, i) =>
+          <div key={i} style={{
+            display: "flex", alignItems: "flex-start", gap: 14,
+            flexDirection: "row-reverse", textAlign: "right"
+          }}>
+              <span style={{
+              flex: "0 0 auto", color: "var(--accent)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              width: 28, height: 28, marginTop: 2
+            }}>{row.icon}</span>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: "clamp(15px, 1.2vw, 17px)", fontWeight: 700, lineHeight: 1.4 }}>
+                  {row.main}
+                </div>
+                <div style={{ fontSize: "clamp(13px, 1vw, 14px)", opacity: 0.55, marginTop: 4, lineHeight: 1.5 }}>
+                  {row.sub}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Bonus pack — only for this month */}
+        <div style={{
+          maxWidth: 1100, margin: "0 auto 56px",
+          padding: "36px 32px 32px",
+          background: "rgba(255,255,255,0.02)",
+          border: "1px solid var(--line2)",
+          borderRadius: 18,
+          position: "relative",
+          opacity: inView ? 1 : 0,
+          transform: inView ? "translateY(0)" : "translateY(12px)",
+          transition: "opacity 0.7s ease 0.45s, transform 0.7s ease 0.45s"
+        }}>
+          {/* Animated glow sweep behind everything */}
+          <div aria-hidden="true" style={{
+            position: "absolute", inset: 0,
+            borderRadius: 18,
+            overflow: "hidden",
+            pointerEvents: "none"
+          }}>
+            <div style={{
+              position: "absolute", inset: 0,
+              background: "linear-gradient(90deg, transparent, rgba(255,213,0,0.06), transparent)",
+              transform: "translateX(-100%)",
+              animation: inView ? "bonusGlowSweep 5s ease-in-out 1.2s infinite" : "none"
+            }} />
+          </div>
+
+          <div style={{
+            position: "absolute", top: -14, left: "50%", transform: "translateX(-50%)",
+            background: "var(--accent)", color: "#0A0A0A",
+            padding: "6px 16px", borderRadius: 999,
+            fontSize: 11, fontWeight: 800, letterSpacing: "0.18em",
+            animation: "monthBadgeFloat 3s ease-in-out infinite",
+            boxShadow: "0 4px 24px rgba(255,213,0,0.4)"
+          }} className="mono">רק למצטרפים השבוע</div>
+
+          <h3 className="display" style={{
+            fontSize: "clamp(24px, 2.4vw, 32px)", fontWeight: 900,
+            textAlign: "center", margin: "8px 0 10px", lineHeight: 1.2
+          }}>
+            סוגרים עכשיו — <span style={{ color: "var(--accent)" }}>מקבלים גם את זה.</span>
+          </h3>
+          <p style={{
+            textAlign: "center", maxWidth: 640, margin: "0 auto 28px",
+            fontSize: 15, opacity: 0.6, lineHeight: 1.55
+          }}>כל מי שמתחיל פרק השבוע מקבל 4 מדריכים דיגיטליים בחינם — שיעזרו לכם להפיק את המקסימום מהפודקאסטים שלכם.
+
+          </p>
+
+          <div style={{
+            display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 14,
+            marginBottom: 18
+          }}>
+            {[
+            { t: "20 רעיונות לפרקים בתחומכם", s: "רשימה מותאמת אישית של 20 נושאים שמעניינים את הלקוחות שלכם — מוכן להקלטה.", price: "180", popular: false },
+            { t: "מדריך: איך מכינים פרק שמוכר", s: "כל מה שצריך לדעת לפני ההקלטה — שאלות, מבנה, וכיצד לגרום לאורח לדבר על מה שמעניין את הקהל שלכם.", price: "290", popular: true },
+            { t: "מדריך: פתיחת פודקאסט בכל הפלטפורמות", s: "Spotify, Apple, YouTube — מדריך מלא להעלאה והגדרה בכל הפלטפורמות בפעם הראשונה.", price: "220", popular: false },
+            { t: "מדריך: איך עובדים עם ManyChat", s: "הגדרה מלאה של אוטומציה שמביאה לידים מהפודקאסט ישירות לוואטסאפ — צעד אחר צעד.", price: "250", popular: false }].
+            map((b, i) =>
+            <div key={i}
+            className="bonus-card"
+            style={{
+              position: "relative",
+              padding: "24px 22px 20px",
+              background: b.popular ?
+              "linear-gradient(180deg, rgba(255,213,0,0.04) 0%, var(--bg) 60%)" :
+              "var(--bg)",
+              border: b.popular ? "1px solid rgba(255,213,0,0.55)" : "1px solid var(--line2)",
+              borderRadius: 14,
+              textAlign: "right",
+              overflow: "hidden",
+              display: "flex",
+              flexDirection: "column",
+              opacity: 0,
+              animation: inView ? `bonusEnter 0.7s cubic-bezier(0.2,0.8,0.2,1) ${0.6 + i * 0.12}s forwards` : "none",
+              transition: "transform 0.35s cubic-bezier(0.2,0.8,0.2,1), border-color 0.35s ease, box-shadow 0.35s ease",
+              cursor: "default"
+            }}>
+                {/* Corner brackets — yellow */}
+                <span aria-hidden="true" style={{
+                position: "absolute", top: 8, right: 8,
+                width: 14, height: 14,
+                borderTop: "1.5px solid var(--accent)",
+                borderRight: "1.5px solid var(--accent)",
+                opacity: 0.85
+              }} />
+                <span aria-hidden="true" style={{
+                position: "absolute", bottom: 8, left: 8,
+                width: 14, height: 14,
+                borderBottom: "1.5px solid var(--accent)",
+                borderLeft: "1.5px solid var(--accent)",
+                opacity: 0.85
+              }} />
+
+                {b.popular &&
+              <>
+                <div aria-hidden="true" style={{
+                  position: "absolute", top: 0, bottom: 0, width: "30%",
+                  background: "linear-gradient(90deg, transparent, rgba(255,213,0,0.08), transparent)",
+                  animation: "popularSweep 3.5s ease-in-out infinite",
+                  pointerEvents: "none"
+                }} />
+                <div style={{
+                  position: "absolute", top: 12, left: 14,
+                  background: "var(--accent)", color: "#0A0A0A",
+                  padding: "4px 11px", borderRadius: 999,
+                  fontSize: 10, fontWeight: 800, letterSpacing: "0.15em",
+                  boxShadow: "0 4px 16px rgba(255,213,0,0.5)",
+                  zIndex: 2
+                }} className="mono">הכי פופולרי</div>
+              </>
+              }
+
+                {/* Bonus index pill */}
+                <div style={{
+                display: "flex", alignItems: "center", gap: 10,
+                marginBottom: 14, position: "relative", zIndex: 1
+              }}>
+                  <span className="mono" style={{
+                  fontSize: 10, fontWeight: 800, letterSpacing: "0.18em",
+                  color: "var(--accent)",
+                  padding: "4px 8px",
+                  border: "1px solid rgba(255,213,0,0.35)",
+                  borderRadius: 4,
+                  background: "rgba(255,213,0,0.05)"
+                }}>בונוס 0{i + 1}</span>
+                </div>
+
+                <div style={{
+                fontSize: 17, fontWeight: 800, marginBottom: 8, lineHeight: 1.35,
+                position: "relative", zIndex: 1
+              }}>{b.t}</div>
+                <div style={{ fontSize: 13, opacity: 0.55, lineHeight: 1.55, marginBottom: 16, position: "relative", zIndex: 1 }}>{b.s}</div>
+                <div style={{ borderTop: "1px dashed rgba(255,213,0,0.2)", paddingTop: 14,
+                marginTop: "auto",
+                display: "flex", justifyContent: "space-between", alignItems: "center",
+                fontSize: 13, position: "relative", zIndex: 1
+              }}>
+                  <span style={{ opacity: 0.55 }} className="mono">
+                    שווי <span style={{ textDecoration: "line-through" }}>₪{b.price}</span>
+                  </span>
+                  <span className="mono" style={{
+                  fontSize: 14, fontWeight: 900, color: "var(--accent)",
+                  padding: "5px 12px",
+                  background: "rgba(255,213,0,0.1)",
+                  border: "1px solid rgba(255,213,0,0.3)",
+                  borderRadius: 999,
+                  animation: `freeBlink 2.5s ease-in-out ${i * 0.3}s infinite`
+                }}>חינם ✓</span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Total — dramatic */}
+          <div style={{
+            marginTop: 28,
+            padding: "28px 32px",
+            background: "linear-gradient(135deg, rgba(255,213,0,0.12) 0%, rgba(255,213,0,0.04) 100%)",
+            border: "1.5px solid rgba(255,213,0,0.5)",
+            borderRadius: 16,
+            position: "relative", overflow: "hidden",
+            boxShadow: "0 0 48px rgba(255,213,0,0.08), inset 0 0 32px rgba(255,213,0,0.04)",
+            zoom: 0.65
+          }}>
+            <div aria-hidden="true" style={{
+              position: "absolute", inset: 0,
+              background: "linear-gradient(90deg, transparent, rgba(255,213,0,0.18), transparent)",
+              transform: "translateX(-100%)",
+              animation: inView ? "bonusGlowSweep 4s ease-in-out 2s infinite" : "none",
+              pointerEvents: "none"
+            }} />
+
+            {/* Corner brackets */}
+            <span aria-hidden="true" style={{
+              position: "absolute", top: 10, right: 10,
+              width: 18, height: 18,
+              borderTop: "2px solid var(--accent)",
+              borderRight: "2px solid var(--accent)"
+            }} />
+            <span aria-hidden="true" style={{
+              position: "absolute", top: 10, left: 10,
+              width: 18, height: 18,
+              borderTop: "2px solid var(--accent)",
+              borderLeft: "2px solid var(--accent)"
+            }} />
+            <span aria-hidden="true" style={{
+              position: "absolute", bottom: 10, right: 10,
+              width: 18, height: 18,
+              borderBottom: "2px solid var(--accent)",
+              borderRight: "2px solid var(--accent)"
+            }} />
+            <span aria-hidden="true" style={{
+              position: "absolute", bottom: 10, left: 10,
+              width: 18, height: 18,
+              borderBottom: "2px solid var(--accent)",
+              borderLeft: "2px solid var(--accent)"
+            }} />
+
+            <div style={{
+              position: "relative", zIndex: 1, textAlign: "center"
+            }}>
+              <div className="mono" style={{
+                fontSize: 12, letterSpacing: "0.32em",
+                color: "var(--accent)", opacity: 0.95, marginBottom: 28,
+                display: "inline-flex", alignItems: "center", gap: 10,
+                padding: "7px 18px",
+                border: "1px solid rgba(255,213,0,0.4)",
+                borderRadius: 999,
+                background: "rgba(255,213,0,0.08)"
+              }}>
+                <span style={{
+                  width: 6, height: 6, borderRadius: "50%",
+                  background: "var(--accent)",
+                  animation: "urgencyDot 1.1s ease-in-out infinite"
+                }} />
+                שווי כולל
+              </div>
+
+              <div style={{
+                display: "flex", alignItems: "center", justifyContent: "center",
+                gap: "clamp(28px, 4vw, 56px)", flexWrap: "wrap"
+              }}>
+                <div style={{ textAlign: "center" }}>
+                  <div className="mono" style={{
+                    fontSize: 11, letterSpacing: "0.24em",
+                    opacity: 0.55, marginBottom: 10, fontWeight: 700
+                  }}>מחיר רגיל</div>
+                  <span className="mono" style={{
+                    textDecoration: "line-through",
+                    textDecorationColor: "rgba(255,213,0,0.7)",
+                    textDecorationThickness: "3px",
+                    opacity: 0.75,
+                    fontSize: "clamp(54px, 6.8vw, 92px)",
+                    fontWeight: 900,
+                    lineHeight: 1,
+                    letterSpacing: "-0.03em",
+                    display: "inline-block"
+                  }}><span style={{ color: "rgb(255, 255, 255)" }}>₪940</span></span>
+                </div>
+
+                <span style={{
+                  opacity: 0.8,
+                  fontSize: "clamp(34px, 3.4vw, 48px)",
+                  color: "var(--accent)",
+                  marginTop: 26,
+                  animation: "arrowSlide 2.4s ease-in-out infinite"
+                }}>←</span>
+
+                <div style={{ textAlign: "center" }}>
+                  <div className="mono" style={{
+                    fontSize: 11, letterSpacing: "0.24em",
+                    color: "var(--accent)", marginBottom: 10, fontWeight: 800
+                  }}>היום עבורכם</div>
+                  <div style={{
+                    position: "relative", display: "inline-block",
+                    animation: "freePop 2.6s ease-in-out infinite"
+                  }}>
+                    <span className="display" style={{
+                      fontSize: "clamp(64px, 8vw, 120px)", fontWeight: 900,
+                      color: "var(--accent)",
+                      lineHeight: 1,
+                      textShadow: "0 0 36px rgba(255,213,0,0.6), 0 0 8px rgba(255,213,0,0.4)",
+                      letterSpacing: "-0.03em",
+                      display: "inline-block"
+                    }}>חינם</span>
+                    {/* Underline accent */}
+                    <span aria-hidden="true" style={{
+                      position: "absolute", bottom: -8, left: 0, right: 0,
+                      height: 3,
+                      background: "linear-gradient(90deg, transparent, var(--accent), transparent)",
+                      animation: "underlineSweep 2.6s ease-in-out infinite"
+                    }} />
+                  </div>
+                </div>
+              </div>
+
+              <div style={{
+                marginTop: 32,
+                fontSize: "clamp(14px, 1.15vw, 17px)",
+                opacity: 0.85,
+                fontWeight: 700,
+                display: "inline-flex", alignItems: "center", gap: 10,
+                padding: "8px 18px",
+                background: "rgba(255,213,0,0.06)",
+                border: "1px solid rgba(255,213,0,0.2)",
+                borderRadius: 999
+              }}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--accent)" }}>
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                <span>חוסכים <span style={{ color: "var(--accent)", fontWeight: 900 }}>₪940</span> — מתנה למצטרפים החודש</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Urgency notice — clean callout matching site style */}
+        <div style={{
+          maxWidth: 820, margin: "0 auto 56px",
+          padding: "32px 36px",
+          background: "rgba(255,255,255,0.02)",
+          border: "1px solid var(--line2)",
+          borderRadius: 14,
+          position: "relative",
+          opacity: inView ? 1 : 0,
+          transform: inView ? "translateY(0)" : "translateY(12px)",
+          transition: "opacity 0.7s ease 0.55s, transform 0.7s ease 0.55s"
+        }}>
+          {/* Small label badge — top center */}
+          <div style={{
+            position: "absolute", top: -14, left: "50%", transform: "translateX(-50%)",
+            background: "var(--accent)", color: "#0A0A0A",
+            padding: "6px 16px", borderRadius: 999,
+            fontSize: 11, fontWeight: 800, letterSpacing: "0.18em",
+            animation: "monthBadgeFloat 3s ease-in-out infinite",
+            boxShadow: "0 4px 24px rgba(255,213,0,0.4)",
+            display: "flex", alignItems: "center", gap: 8
+          }} className="mono">
+            <span style={{
+              width: 6, height: 6, borderRadius: "50%",
+              background: "#0A0A0A",
+              animation: "urgencyDot 1.1s ease-in-out infinite"
+            }} />
+            מסתיים בקרוב
+          </div>
+
+          <div style={{ position: "relative", zIndex: 1, textAlign: "center" }}>
+            <h3 className="display" style={{
+              fontSize: "clamp(22px, 2.2vw, 30px)", fontWeight: 900,
+              lineHeight: 1.25, margin: "0 0 12px",
+              color: "rgb(255,255,255)"
+            }}>
+              הבונוסים ניתנים רק למי שמצטרף <span style={{
+                color: "var(--accent)",
+                background: "linear-gradient(180deg, transparent 65%, rgba(255,213,0,0.25) 65%)",
+                padding: "0 6px"
+              }}>בשבוע הקרוב</span>.
+            </h3>
+
+            <div className="display" style={{
+              fontSize: "clamp(18px, 1.7vw, 22px)", fontWeight: 800,
+              lineHeight: 1.4,
+              color: "rgb(255,255,255)"
+            }}>
+              ההטבה נגמרת ברגע שהשעון מגיע <span style={{
+                color: "var(--accent)",
+                fontWeight: 900,
+                animation: "freeBlink 1.8s ease-in-out infinite",
+                textShadow: "0 0 16px rgba(255,213,0,0.5)"
+              }}>לאפס</span>.
+            </div>
+
+            {/* Countdown Timer — inside the callout */}
+            <div style={{
+              display: "flex", alignItems: "flex-start", justifyContent: "center",
+              gap: "clamp(10px, 1.4vw, 22px)",
+              marginTop: 26
+            }}>
+              <CountdownDigit value={time.s} label="שניות" />
+              <div className="display" style={{
+                fontSize: "clamp(40px, 5.5vw, 76px)", fontWeight: 900,
+                color: "var(--accent)", opacity: 0.5,
+                lineHeight: "clamp(80px, 10vw, 132px)",
+                animation: "secondsPulse 1s ease-in-out infinite"
+              }}>:</div>
+              <CountdownDigit value={time.m} label="דקות" />
+              <div className="display" style={{
+                fontSize: "clamp(40px, 5.5vw, 76px)", fontWeight: 900,
+                color: "var(--accent)", opacity: 0.5,
+                lineHeight: "clamp(80px, 10vw, 132px)",
+                animation: "secondsPulse 1s ease-in-out infinite"
+              }}>:</div>
+              <CountdownDigit value={time.h} label="שעות" />
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+    </section>);
+
+}
+
+// ---------- 14 · FAQ (uses real Cuts content) ----------
+// (responsive helper for the Guarantee lead row)
+
+function FAQSection() {
+  const [openIdx, setOpenIdx] = React.useState(0);
+  return (
+    <section id="faq" style={{ padding: "76px 0", background: "var(--card)", borderTop: "1px solid var(--line2)", borderBottom: "1px solid var(--line2)" }}>
+      <div className="wrap" style={{ maxWidth: 900 }}>
+        <h2 className="display" style={{
+          fontSize: "clamp(36px, 4.5vw, 52px)",
+          textAlign: "center", margin: "0 0 56px",
+          fontWeight: 800, lineHeight: 1.15
+        }}>
+          שאלות <span style={{ color: "var(--accent)" }}>נפוצות</span>
+        </h2>
+
+        <div>
+          {FAQ.map((f, i) => {
+            const isOpen = openIdx === i;
+            return (
+              <div key={i}
+              onClick={() => setOpenIdx(isOpen ? -1 : i)}
+              style={{
+                borderTop: i === 0 ? "1px solid var(--line2)" : "none",
+                borderBottom: "1px solid var(--line2)",
+                padding: "26px 4px",
+                cursor: "pointer",
+                transition: "background .25s ease"
+              }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 20 }}>
+                  <div style={{ display: "flex", alignItems: "baseline", gap: 16, flex: 1 }}>
+                    <span className="mono" style={{
+                      fontSize: 12, opacity: isOpen ? 1 : 0.5,
+                      color: isOpen ? "var(--accent)" : "inherit", minWidth: 28
+                    }}>{String(i + 1).padStart(2, "0")}</span>
+                    <span className="display" style={{
+                      fontSize: 22, fontWeight: 700,
+                      color: isOpen ? "var(--accent)" : "inherit"
+                    }}>שאלה #{i + 1} — {f.q}</span>
+                  </div>
+                  <div style={{
+                    width: 32, height: 32, borderRadius: "50%",
+                    border: `1.5px solid ${isOpen ? "var(--accent)" : "var(--line2)"}`,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    flexShrink: 0,
+                    transition: "transform .3s, border-color .25s",
+                    transform: isOpen ? "rotate(180deg)" : "rotate(0)",
+                    background: isOpen ? "var(--accent)" : "transparent"
+                  }}>
+                    <span style={{ fontSize: 12, color: isOpen ? "#0A0A0A" : "currentColor" }}>▾</span>
+                  </div>
+                </div>
+                <div style={{
+                  display: "grid",
+                  gridTemplateRows: isOpen ? "1fr" : "0fr",
+                  transition: "grid-template-rows .35s ease",
+                  marginTop: isOpen ? 16 : 0
+                }}>
+                  <div style={{ overflow: "hidden", paddingRight: 44 }}>
+                    <p style={{ margin: 0, fontSize: 16, lineHeight: 1.75, opacity: 0.85 }}>{f.a}</p>
+                  </div>
+                </div>
+              </div>);
+
+          })}
+        </div>
+      </div>
+    </section>);
+
+}
+
+// ---------- STUDIO BOOKING — centered lead capture (between Results + GuestStrip) ----------
+
+function StudioBookingLead({ form }) {
+  const { values, setField, errors, touched, blur, submit, submitted } = form;
+  const sectionRef = React.useRef(null);
+  const [inView, setInView] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!sectionRef.current) return;
+    const io = new IntersectionObserver(
+      ([e]) => {if (e.isIntersecting) setInView(true);},
       { threshold: 0.15 }
     );
     io.observe(sectionRef.current);
     return () => io.disconnect();
   }, []);
 
-  const PAINS = [
-    {
-      title: "אתה מסביר את עצמך שוב ושוב",
-      body: "כל לקוח חדש מגיע קר. אתה בונה אמון מאפס — בכל פגישה, בכל שיחה, בכל פעם מחדש.",
-    },
-    {
-      title: "אנשים לא מבינים מה עושה אותך שונה",
-      body: "יש לך ניסיון, גישה ותוצאות — אבל כשמישהו שואל למה לבחור בך, קשה לו להסביר לעצמו.",
-    },
-    {
-      title: "המתחרה הפחות טוב ממך מקבל לקוחות",
-      body: "כי יש לו נוכחות. הוא נשמע בכל מקום. ואנשים קונים ממי שהם מכירים — לא ממי שהכי טוב.",
-    },
-    {
-      title: "כשמישהו גוגל את הבעיה שלו — הוא לא מוצא אותך",
-      body: "הוא מוצא את המתחרה שהשקיע בתוכן. פונה אליו. ואתה בכלל לא נכנסת לתמונה.",
-    },
-  ];
-
   return (
-    <section ref={sectionRef} style={{ padding: isMobile ? "64px 0" : "120px 0", background: "var(--card)", borderTop: "1px solid var(--line2)", borderBottom: "1px solid var(--line2)" }}>
-      <div className="wrap">
-        <h2 className="display" style={{ fontSize: "clamp(38px, 6vw, 84px)", margin: "0 0 24px", maxWidth: 1100 }}>
-          אתה יודע שיש לך ערך.<br />
-          <span style={{ color: "var(--accent)" }}>אז למה אתה עוד מסביר את זה?</span>
-        </h2>
+    <section ref={sectionRef} style={{
+      padding: "72px 0",
+      position: "relative",
+      overflow: "hidden",
+      background: "var(--bg)"
+    }}>
+      {/* dotted grid background */}
+      <div aria-hidden="true" style={{
+        position: "absolute", inset: 0,
+        backgroundImage: "radial-gradient(rgba(255,213,0,0.07) 1px, transparent 1px)",
+        backgroundSize: "28px 28px",
+        opacity: 0.5,
+        maskImage: "radial-gradient(ellipse at center, black 35%, transparent 75%)",
+        WebkitMaskImage: "radial-gradient(ellipse at center, black 35%, transparent 75%)",
+        pointerEvents: "none"
+      }} />
 
-        <p style={{ fontSize: 20, lineHeight: 1.7, opacity: 0.72, maxWidth: 760, margin: "0 0 56px" }}>
-          כשאתה מוכר שירות — אתה הבידול. הפרסונה שלך, הגישה שלך, הניסיון שלך.
-          הבעיה היא שהערך הזה לא מגיע לאנשים שצריכים אותך.
-        </p>
+      {/* yellow ambient glow */}
+      <div aria-hidden="true" style={{
+        position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
+        width: 800, height: 600,
+        background: "radial-gradient(ellipse, rgba(255,213,0,0.07), transparent 70%)",
+        filter: "blur(80px)", pointerEvents: "none"
+      }} />
 
+      <div className="wrap" style={{ position: "relative", zIndex: 1, maxWidth: 920 }}>
         <div style={{
-          display: "grid",
-          gridTemplateColumns: isMobile ? "1fr" : "repeat(2, 1fr)",
-          gap: 16, marginBottom: 56
+          background: "var(--card)",
+          border: "1px solid var(--line2)",
+          borderRadius: 24,
+          padding: "44px 48px 40px",
+          position: "relative",
+          overflow: "hidden",
+          boxShadow: "0 30px 80px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,213,0,0.08)"
         }}>
-          {PAINS.map((p, i) => (
-            <div key={i} style={{
-              padding: "32px 28px",
+          {/* corner brackets */}
+          <span aria-hidden="true" style={{
+            position: "absolute", top: 18, right: 18, width: 22, height: 22,
+            borderTop: "2px solid var(--accent)", borderRight: "2px solid var(--accent)"
+          }} />
+          <span aria-hidden="true" style={{
+            position: "absolute", top: 18, left: 18, width: 22, height: 22,
+            borderTop: "2px solid var(--accent)", borderLeft: "2px solid var(--accent)"
+          }} />
+          <span aria-hidden="true" style={{
+            position: "absolute", bottom: 18, right: 18, width: 22, height: 22,
+            borderBottom: "2px solid var(--accent)", borderRight: "2px solid var(--accent)"
+          }} />
+          <span aria-hidden="true" style={{
+            position: "absolute", bottom: 18, left: 18, width: 22, height: 22,
+            borderBottom: "2px solid var(--accent)", borderLeft: "2px solid var(--accent)"
+          }} />
+
+          {submitted ?
+          <div style={{ textAlign: "center", padding: "40px 0" }}>
+              <div style={{
+              width: 72, height: 72, borderRadius: "50%",
+              background: "var(--accent)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              margin: "0 auto 20px",
+              boxShadow: "0 10px 30px rgba(255,213,0,0.35)"
+            }}>
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#0A0A0A" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </div>
+              <h3 className="display" style={{ fontSize: 32, fontWeight: 900, margin: "0 0 12px" }}>
+                קיבלנו את הפרטים שלך.
+              </h3>
+              <p style={{ fontSize: 17, opacity: 0.7, margin: 0 }}>
+                ניצור קשר תוך 24 שעות לתיאום שיחת אבחון של 30 דקות.
+              </p>
+            </div> :
+
+          <div style={{ display: "grid", gridTemplateColumns: "1.1fr 1fr", gap: 40, alignItems: "center" }} className="studio-booking-grid">
+              {/* RIGHT side (in RTL = first) — pitch */}
+              <div>
+                {/* live availability chip */}
+                <div style={{
+                display: "inline-flex", alignItems: "center", gap: 10,
+                padding: "8px 14px",
+                background: "rgba(255,213,0,0.1)",
+                border: "1px solid rgba(255,213,0,0.3)",
+                borderRadius: 999,
+                marginBottom: 24,
+                opacity: inView ? 1 : 0,
+                transform: inView ? "translateY(0)" : "translateY(8px)",
+                transition: "all 0.5s ease 0.1s", fontSize: "14px"
+              }}>
+                  <span style={{
+                  width: 7, height: 7, borderRadius: "50%",
+                  background: "var(--accent)",
+                  boxShadow: "0 0 10px var(--accent)",
+                  animation: "studioRec 1.6s ease-in-out infinite"
+                }} />
+                  <span className="mono" style={{
+                  fontSize: 11, letterSpacing: "0.2em", fontWeight: 700,
+                  color: "var(--accent)"
+                }}>זמינים השבוע</span>
+                </div>
+
+                <h2 className="display" style={{
+                fontSize: "clamp(26px, 3.2vw, 38px)",
+                margin: "0 0 14px", fontWeight: 900, lineHeight: 1.1,
+                textWrap: "balance"
+              }}>
+                  בוא נראה איך{" "}
+                  <span style={{
+                  color: "var(--accent)",
+                  background: "linear-gradient(180deg, transparent 65%, rgba(255,213,0,0.18) 65%)",
+                  padding: "0 6px"
+                }}>הפודקאסט שלך</span>{" "}
+                  ייראה.
+                </h2>
+
+                <p style={{
+                fontSize: 16, lineHeight: 1.65, opacity: 0.78,
+                margin: "0 0 28px", maxWidth: 460
+              }}>
+                  שיחת אבחון של 30 דקות, ללא עלות. נכיר את העסק שלך, נבדוק התאמה לפודקאסט,
+                  ונראה לך דוגמאות אמיתיות מתוך האולפן.
+                </p>
+
+              </div>
+
+              {/* LEFT side (in RTL = second) — form */}
+              <form onSubmit={(e) => {e.preventDefault();submit();}}
+            style={{
               background: "var(--bg)",
               border: "1px solid var(--line2)",
               borderRadius: 18,
-              opacity: inView ? 1 : 0,
-              transform: inView ? "translateY(0)" : "translateY(16px)",
-              transition: `opacity 0.5s ease ${i * 0.1}s, transform 0.5s ease ${i * 0.1}s`
+              padding: 32,
+              display: "flex", flexDirection: "column", gap: 16,
+              position: "relative"
+            }}>
+              
+                {/* tiny header */}
+                <div style={{
+                display: "flex", alignItems: "center", justifyContent: "space-between",
+                paddingBottom: 14, borderBottom: "1px solid var(--line2)", marginBottom: 4
+              }}>
+                  <span className="mono" style={{
+                  fontSize: 11, letterSpacing: "0.22em", fontWeight: 700,
+                  color: "var(--accent)"
+                }}></span>
+                  <span className="mono" style={{
+                  fontSize: 10, letterSpacing: "0.15em", opacity: 0.45
+                }}></span>
+                </div>
+
+                {/* Name */}
+                <div>
+                  <label className="mono" style={{
+                  display: "block", fontSize: 11, letterSpacing: "0.18em",
+                  opacity: 0.6, marginBottom: 8, fontWeight: 600
+                }}>שם מלא</label>
+                  <input
+                  type="text"
+                  placeholder="ישראל ישראלי"
+                  value={values.name || ""}
+                  onChange={(e) => setField("name", e.target.value)}
+                  onBlur={() => blur("name")}
+                  style={{
+                    width: "100%",
+                    padding: "14px 18px",
+                    background: "var(--card)",
+                    border: `1px solid ${touched.name && errors.name ? "rgba(255,80,80,0.5)" : "var(--line2)"}`,
+                    borderRadius: 10,
+                    color: "var(--text)",
+                    fontSize: 15,
+                    fontFamily: "inherit",
+                    outline: "none",
+                    boxSizing: "border-box",
+                    transition: "border-color 0.2s ease"
+                  }}
+                  onFocus={(e) => {e.target.style.borderColor = "var(--accent)";}} />
+                
+                  {touched.name && errors.name &&
+                <span style={{ color: "rgba(255,120,120,0.9)", fontSize: 12, marginTop: 6, display: "block" }}>{errors.name}</span>
+                }
+                </div>
+
+                {/* Phone */}
+                <div>
+                  <label className="mono" style={{
+                  display: "block", fontSize: 11, letterSpacing: "0.18em",
+                  opacity: 0.6, marginBottom: 8, fontWeight: 600
+                }}>טלפון</label>
+                  <input
+                  type="tel"
+                  placeholder="050-0000000"
+                  dir="ltr"
+                  value={values.phone || ""}
+                  onChange={(e) => setField("phone", e.target.value)}
+                  onBlur={() => blur("phone")}
+                  style={{
+                    width: "100%",
+                    padding: "14px 18px",
+                    background: "var(--card)",
+                    border: `1px solid ${touched.phone && errors.phone ? "rgba(255,80,80,0.5)" : "var(--line2)"}`,
+                    borderRadius: 10,
+                    color: "var(--text)",
+                    fontSize: 15,
+                    fontFamily: "inherit",
+                    textAlign: "right",
+                    outline: "none",
+                    boxSizing: "border-box",
+                    transition: "border-color 0.2s ease"
+                  }}
+                  onFocus={(e) => {e.target.style.borderColor = "var(--accent)";}} />
+                
+                  {touched.phone && errors.phone &&
+                <span style={{ color: "rgba(255,120,120,0.9)", fontSize: 12, marginTop: 6, display: "block" }}>{errors.phone}</span>
+                }
+                </div>
+
+                {/* Submit */}
+                <button
+                type="submit"
+                style={{
+                  width: "100%",
+                  padding: "18px 24px",
+                  background: "var(--accent)",
+                  border: "none",
+                  borderRadius: 12,
+                  color: "#0A0A0A",
+                  fontSize: 16,
+                  fontWeight: 800,
+                  fontFamily: "inherit",
+                  cursor: "pointer",
+                  marginTop: 8,
+                  boxShadow: "0 8px 24px rgba(255,213,0,0.3)",
+                  transition: "transform 0.2s ease, box-shadow 0.2s ease",
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 10
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "translateY(-2px)";
+                  e.currentTarget.style.boxShadow = "0 12px 32px rgba(255,213,0,0.4)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow = "0 8px 24px rgba(255,213,0,0.3)";
+                }}>
+                
+                  קביעת שיחת אבחון
+                  <span style={{ fontSize: 18 }}>←</span>
+                </button>
+
+                {/* footer note */}
+                <p className="mono" style={{
+                fontSize: 10, letterSpacing: "0.12em",
+                opacity: 0.5, textAlign: "center", margin: "4px 0 0"
+              }}>
+                  ללא ספאם · ללא שיחות מכירה לוחצות
+                </p>
+              </form>
+            </div>
+          }
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes studioRec {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.4; transform: scale(0.7); }
+        }
+        @media (max-width: 880px) {
+          .studio-booking-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
+        }
+      `}</style>
+    </section>);
+
+}
+
+// ==========================================================
+// ---------- MINI LEAD STRIPE — compact horizontal lead band ----------
+
+function MiniLeadStripe({ form }) {
+  const { values, setField, errors, touched, blur, submit, submitted } = form;
+
+  return (
+    <section style={{
+      padding: "56px 0",
+      background: "var(--bg)",
+      borderTop: "1px solid var(--line2)",
+      borderBottom: "1px solid var(--line2)",
+      position: "relative",
+      overflow: "hidden"
+    }}>
+      {/* thin yellow accent line top */}
+      <div aria-hidden="true" style={{
+        position: "absolute", top: 0, right: "20%", left: "20%", height: 1,
+        background: "linear-gradient(to right, transparent, rgba(255,213,0,0.5), transparent)"
+      }} />
+
+      <div className="wrap">
+        {submitted ?
+        <div style={{
+          textAlign: "center",
+          padding: "16px 24px",
+          display: "flex", alignItems: "center", justifyContent: "center", gap: 12,
+          flexWrap: "wrap"
+        }}>
+            <span style={{
+            width: 32, height: 32, borderRadius: "50%",
+            background: "var(--accent)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            flexShrink: 0
+          }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0A0A0A" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </span>
+            <span style={{ fontSize: 17, fontWeight: 700 }}>תודה! נחזור אליך תוך 24 שעות.</span>
+          </div> :
+
+        <div className="mini-lead-row" style={{
+          display: "flex", alignItems: "center", gap: 24,
+          flexWrap: "wrap", justifyContent: "space-between"
+        }}>
+            {/* Left: heading */}
+            <div style={{ flex: "1 1 280px", minWidth: 0 }}>
+              <div className="mono" style={{
+              fontSize: 11, letterSpacing: "0.22em", fontWeight: 700,
+              color: "var(--accent)", marginBottom: 8
+            }}>
+                שיחת אבחון · ללא עלות
+              </div>
+              <h3 className="display" style={{
+              fontSize: "clamp(22px, 2.4vw, 30px)",
+              margin: 0, fontWeight: 900, lineHeight: 1.15
+            }}>
+                רוצה לראות אם זה מתאים לך?{" "}
+                <span style={{ color: "var(--accent)" }}>השאר פרטים.</span>
+              </h3>
+            </div>
+
+            {/* Right: inline form */}
+            <form
+            onSubmit={(e) => {e.preventDefault();submit();}}
+            style={{
+              display: "flex", gap: 10,
+              flex: "1 1 520px", minWidth: 0,
+              flexWrap: "wrap"
+            }}>
+            
+              <input
+              type="text"
+              placeholder="שם מלא"
+              value={values.name || ""}
+              onChange={(e) => setField("name", e.target.value)}
+              onBlur={() => blur("name")}
+              style={{
+                flex: "1 1 160px",
+                padding: "14px 18px",
+                background: "var(--card)",
+                border: `1px solid ${touched.name && errors.name ? "rgba(255,80,80,0.5)" : "var(--line2)"}`,
+                borderRadius: 10,
+                color: "var(--text)",
+                fontSize: 15,
+                fontFamily: "inherit",
+                outline: "none"
+              }}
+              onFocus={(e) => {e.target.style.borderColor = "var(--accent)";}} />
+            
+              <input
+              type="tel"
+              placeholder="טלפון"
+              dir="ltr"
+              value={values.phone || ""}
+              onChange={(e) => setField("phone", e.target.value)}
+              onBlur={() => blur("phone")}
+              style={{
+                flex: "1 1 140px",
+                padding: "14px 18px",
+                background: "var(--card)",
+                border: `1px solid ${touched.phone && errors.phone ? "rgba(255,80,80,0.5)" : "var(--line2)"}`,
+                borderRadius: 10,
+                color: "var(--text)",
+                fontSize: 15,
+                fontFamily: "inherit",
+                textAlign: "right",
+                outline: "none"
+              }}
+              onFocus={(e) => {e.target.style.borderColor = "var(--accent)";}} />
+            
+              <button
+              type="submit"
+              style={{
+                padding: "14px 28px",
+                background: "var(--accent)",
+                border: "none",
+                borderRadius: 10,
+                color: "#0A0A0A",
+                fontSize: 15,
+                fontWeight: 800,
+                fontFamily: "inherit",
+                cursor: "pointer",
+                whiteSpace: "nowrap",
+                boxShadow: "0 6px 20px rgba(255,213,0,0.25)",
+                transition: "transform 0.2s ease"
+              }}
+              onMouseEnter={(e) => {e.currentTarget.style.transform = "translateY(-1px)";}}
+              onMouseLeave={(e) => {e.currentTarget.style.transform = "translateY(0)";}}>
+              
+                שליחה ←
+              </button>
+            </form>
+          </div>
+        }
+      </div>
+
+      <style>{`
+        @media (max-width: 720px) {
+          .mini-lead-row { flex-direction: column; align-items: stretch !important; }
+          .mini-lead-row > div:first-child { text-align: center; }
+        }
+      `}</style>
+    </section>);
+
+}
+
+// ==========================================================
+// ---------- INLINE LEAD FORM (compact mid-page form) ----------
+
+function InlineLeadForm({ form }) {
+  const { values, setField, errors, touched, blur, submit, submitted } = form;
+  return (
+    <section style={{
+      padding: "68px 0",
+      background: "var(--bg)",
+      position: "relative", overflow: "hidden"
+    }}>
+      {/* subtle yellow ambient glow */}
+      <div aria-hidden="true" style={{
+        position: "absolute", top: "50%", right: "10%", transform: "translateY(-50%)",
+        width: 480, height: 480,
+        background: "radial-gradient(ellipse, rgba(255,213,0,0.07), transparent 65%)",
+        filter: "blur(60px)", pointerEvents: "none"
+      }} />
+
+      <div className="wrap" style={{ position: "relative", zIndex: 1 }}>
+        <div style={{
+          display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "center"
+        }}>
+          {/* Left — pitch */}
+          <div>
+            <div style={{
+              display: "inline-flex", alignItems: "center", gap: 10,
+              padding: "8px 14px",
+              background: "rgba(255,213,0,0.08)",
+              border: "1px solid rgba(255,213,0,0.3)",
+              borderRadius: 999, marginBottom: 22
+            }}>
+              <span style={{
+                width: 6, height: 6, borderRadius: "50%",
+                background: "var(--accent)", boxShadow: "0 0 10px var(--accent)"
+              }} />
+              <span className="mono" style={{
+                fontSize: 11, letterSpacing: "0.18em", fontWeight: 700,
+                color: "var(--accent)"
+              }}>שיחת אבחון · ללא עלות</span>
+            </div>
+
+            <h2 className="display" style={{
+              fontSize: "clamp(32px, 4.2vw, 56px)",
+              margin: "0 0 20px", fontWeight: 900, lineHeight: 1.1
+            }}>
+              מוכן לבנות פודקאסט<br />
+              <span style={{ color: "var(--accent)" }}>שמייצר לך לקוחות?</span>
+            </h2>
+
+            <p style={{ fontSize: 17, lineHeight: 1.65, opacity: 0.78, margin: "0 0 28px", maxWidth: 460 }}>
+              השאר פרטים, ונחזור אליך תוך 24 שעות לקביעת שיחת אבחון של 30 דקות —
+              בלי שיחת מכירה לוחצת, בלי התחייבות.
+            </p>
+
+            <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 12 }}>
+              {["נצלול לעסק שלך ולקהל היעד.", "נבדוק אם פודקאסט מתאים לך.", "נראה לך דוגמאות אמיתיות."].map((t) =>
+              <li key={t} style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 15, opacity: 0.85 }}>
+                  <span style={{
+                  width: 20, height: 20, borderRadius: "50%",
+                  background: "var(--accent)", color: "#0A0A0A",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 11, fontWeight: 900, flexShrink: 0
+                }}>✓</span>
+                  {t}
+                </li>
+              )}
+            </ul>
+          </div>
+
+          {/* Right — form */}
+          {submitted ?
+          <div style={{
+            background: "var(--accent)", color: "#0A0A0A",
+            borderRadius: 18, padding: 44,
+            display: "flex", flexDirection: "column", justifyContent: "center",
+            minHeight: 380
+          }}>
+              <div style={{ fontSize: 56, marginBottom: 10, fontWeight: 900 }}>✓</div>
+              <h3 className="display" style={{ fontSize: 36, margin: "0 0 12px", fontWeight: 900 }}>קיבלנו!</h3>
+              <p style={{ fontSize: 16, lineHeight: 1.6, opacity: 0.85, margin: 0 }}>
+                נחזור אליך תוך 24 שעות לקביעת שיחה.
+              </p>
+            </div> :
+
+          <form onSubmit={submit} style={{
+            background: "var(--bg)",
+            border: "2px solid var(--line2)",
+            borderRadius: 18, padding: 32,
+            display: "flex", flexDirection: "column", gap: 14
+          }}>
+              <div className={`field ${errors.name && touched.name ? "error" : ""}`}>
+                <label>שם מלא</label>
+                <input value={values.name} onChange={(e) => setField("name", e.target.value)} onBlur={() => blur("name")} placeholder="משה לוי" />
+                {errors.name && touched.name && <span className="err">{errors.name}</span>}
+              </div>
+              <div className={`field ${errors.phone && touched.phone ? "error" : ""}`}>
+                <label>טלפון</label>
+                <input dir="ltr" value={values.phone} onChange={(e) => setField("phone", e.target.value)} onBlur={() => blur("phone")} placeholder="054-000-0000" />
+                {errors.phone && touched.phone && <span className="err">{errors.phone}</span>}
+              </div>
+              <button type="submit" className="btn btn-primary" style={{
+              marginTop: 6, justifyContent: "center", padding: "18px",
+              fontSize: 16, borderRadius: 10
+            }}>
+                בוא נקבע שיחה ←
+              </button>
+              <p className="mono" style={{
+              fontSize: 11, opacity: 0.5, margin: "2px 0 0",
+              textAlign: "center", lineHeight: 1.6
+            }}>
+                אין שיחת מכירה לוחצת · נחזור תוך 24 שעות
+              </p>
+            </form>
+          }
+        </div>
+      </div>
+    </section>);
+
+}
+
+// ---------- 15 · FINAL CTA (recap checklist + form + image) ----------
+
+function FinalCTA({ form, onCTAClick }) {
+  const { values, setField, errors, touched, blur, submit, submitted } = form;
+  return (
+    <section id="cta" style={{ padding: "56px 0" }}>
+      <div className="wrap" style={{ maxWidth: 1000 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1.1fr 1fr", gap: 40, alignItems: "stretch" }}>
+          {/* Left — recap */}
+          <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: 32 }}>
+            <p className="mono" style={{ fontSize: 14, opacity: 0.7, margin: 0, letterSpacing: "0.06em" }}>
+
+            </p>
+
+            <h2 className="display" style={{
+              fontSize: "clamp(28px, 3.6vw, 42px)",
+              margin: 0, fontWeight: 800, lineHeight: 1.1
+            }}>
+              סיכום אחרון —{" "}
+              <span style={{ color: "var(--accent)" }}>
+                למה אנשים זקוקים לפעול היום (יצירת דחיפות).
+              </span>
+            </h2>
+
+            <p style={{ fontSize: 18, lineHeight: 1.65, opacity: 0.8, margin: 0 }}>
+              נסחו את הסיבה האחת המרכזית לכך שאנשים יפנו אליך ויצרו קשר עם החברה למתן שירות או מוצר.
+              זו ההזדמנות האחרונה שלכם לתפוס את תשומת לבם.
+            </p>
+
+            <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 10 }}>
+              {["הצעת ערך #1", "הצעת ערך #2", "הצעת ערך #3"].map((v) =>
+              <li key={v} style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                  <span style={{
+                  width: 24, height: 24, borderRadius: "50%",
+                  background: "var(--accent)", color: "#0A0A0A",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 13, fontWeight: 900, flexShrink: 0
+                }}>✓</span>
+                  <span style={{ fontSize: 18, opacity: 0.9 }}>{v}</span>
+                </li>
+              )}
+            </ul>
+
+            {submitted ? null :
+            <div style={{
+              marginTop: 8,
+              position: "relative",
+              padding: "28px 32px",
+              borderRadius: 18,
+              background: "linear-gradient(135deg, rgba(255,213,0,0.08) 0%, rgba(255,213,0,0.02) 100%)",
+              border: "1px solid rgba(255,213,0,0.2)",
+              overflow: "hidden"
             }}>
               <div style={{
-                width: 28, height: 28, borderRadius: "50%",
-                border: "1.5px solid rgba(255,213,0,0.4)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                marginBottom: 18
+                display: "inline-flex", alignItems: "center", gap: 8,
+                fontSize: 11, fontWeight: 700,
+                letterSpacing: "0.18em",
+                color: "var(--accent)",
+                marginBottom: 14,
+                textTransform: "uppercase"
               }}>
-                <div style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--accent)", opacity: 0.7 }} />
+                <span style={{
+                  width: 6, height: 6, borderRadius: "50%",
+                  background: "var(--accent)",
+                  boxShadow: "0 0 0 4px rgba(255,213,0,0.2)",
+                  animation: "ctaPulse 2s ease-in-out infinite"
+                }}></span>
+                מקומות מוגבלים החודש
               </div>
-              <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 10 }}>{p.title}</div>
-              <div style={{ fontSize: 15, lineHeight: 1.7, opacity: 0.65 }}>{p.body}</div>
+
+              <h3 className="display" style={{
+                fontSize: 26, fontWeight: 800, margin: "0 0 8px",
+                lineHeight: 1.2, letterSpacing: "-0.01em"
+              }}>
+                3 מקומות פנויים לפודקאסטים חדשים
+              </h3>
+
+              <p style={{
+                fontSize: 15, lineHeight: 1.55,
+                opacity: 0.7, margin: "0 0 22px"
+              }}>
+                האולפן עובד בתפוסה מלאה. אנחנו פותחים סלוטים חדשים פעם ברבעון —
+                ההזדמנות הבאה: ינואר 2025.
+              </p>
+
+              <div style={{
+                display: "flex", alignItems: "center", gap: 16,
+                marginTop: 4, paddingTop: 18,
+                borderTop: "1px solid rgba(255,255,255,0.08)",
+                fontSize: 13, opacity: 0.55, fontWeight: 500
+              }}>
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                  <span style={{ color: "var(--accent)" }}>✓</span> ללא התחייבות
+                </span>
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                  <span style={{ color: "var(--accent)" }}>✓</span> שיחת אבחון 30 דק׳
+                </span>
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                  <span style={{ color: "var(--accent)" }}>✓</span> מענה תוך 24ש׳
+                </span>
+              </div>
+            </div>}
+          </div>
+
+          {/* Right — form (replaces image per CTA functionality) */}
+          {submitted ?
+          <div style={{
+            background: "var(--accent)", color: "#0A0A0A",
+            borderRadius: 18, padding: 56,
+            display: "flex", flexDirection: "column", justifyContent: "center",
+            minHeight: 530
+          }}>
+              <div style={{ fontSize: 64, marginBottom: 12, fontWeight: 900 }}>✓</div>
+              <h3 className="display" style={{ fontSize: 44, margin: "0 0 16px", fontWeight: 900 }}>קיבלנו!</h3>
+              <p style={{ fontSize: 18, lineHeight: 1.6, opacity: 0.85, margin: 0 }}>
+                נחזור אליך תוך 24 שעות לקביעת שיחה.
+                אין שיחת מכירה לוחצת — רק שיחת אבחון אמיתית.
+              </p>
+            </div> :
+
+          <form onSubmit={submit} style={{
+            background: "linear-gradient(180deg, #161616 0%, #0F0F0F 100%)",
+            border: "1px solid var(--line2)",
+            borderRadius: 24, padding: 0,
+            display: "flex", flexDirection: "column",
+            alignSelf: "stretch",
+            position: "relative",
+            overflow: "hidden",
+            boxShadow: "0 30px 80px -30px rgba(0,0,0,0.6)"
+          }}>
+              {/* Top yellow accent strip */}
+              <div aria-hidden="true" style={{
+              height: 4,
+              background: "linear-gradient(90deg, transparent, var(--accent), transparent)"
+            }} />
+
+              {/* Header */}
+              <div style={{
+              padding: "32px 36px 24px",
+              borderBottom: "1px solid rgba(255,255,255,0.06)"
+            }}>
+                <div className="mono" style={{
+                fontSize: 11, fontWeight: 700,
+                letterSpacing: "0.2em",
+                color: "var(--accent)",
+                marginBottom: 8, textTransform: "uppercase"
+              }}>
+                    שיחת אבחון · ללא עלות
+                  </div>
+                <h3 className="display" style={{
+                fontSize: 24, fontWeight: 900, margin: 0,
+                lineHeight: 1.15, letterSpacing: "-0.01em"
+              }}>
+                    קביעת פגישה
+                  </h3>
+              </div>
+
+              {/* Form fields */}
+              <div style={{
+              padding: "32px 40px 24px",
+              display: "flex", flexDirection: "column", gap: 18,
+              flex: 1, justifyContent: "center"
+            }}>
+                <div className={`field ${errors.name && touched.name ? "error" : ""}`}>
+                  <label>שם מלא</label>
+                  <input id="cta-form-name" value={values.name} onChange={(e) => setField("name", e.target.value)} onBlur={() => blur("name")} placeholder="משה לוי" />
+                  {errors.name && touched.name && <span className="err">{errors.name}</span>}
+                </div>
+                <div className={`field ${errors.phone && touched.phone ? "error" : ""}`}>
+                  <label>טלפון</label>
+                  <input dir="ltr" value={values.phone} onChange={(e) => setField("phone", e.target.value)} onBlur={() => blur("phone")} placeholder="054-000-0000" />
+                  {errors.phone && touched.phone && <span className="err">{errors.phone}</span>}
+                </div>
+                <button type="submit" className="btn btn-primary" style={{
+                marginTop: 4, justifyContent: "center", padding: "20px",
+                fontSize: 17, borderRadius: 12, fontWeight: 800
+              }}>
+                  בוא נקבע שיחה ←
+                </button>
+              </div>
+
+              {/* Footer trust bar */}
+              <div style={{
+              padding: "20px 40px 28px",
+              borderTop: "1px solid rgba(255,255,255,0.06)",
+              background: "rgba(255,255,255,0.015)"
+            }}>
+                <div style={{
+                display: "flex", alignItems: "center", justifyContent: "space-between",
+                gap: 12, flexWrap: "wrap",
+                fontSize: 12, fontWeight: 600, opacity: 0.7
+              }}>
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                    <span style={{ color: "var(--accent)" }}>✓</span> ללא התחייבות
+                  </span>
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                    <span style={{ color: "var(--accent)" }}>✓</span> 30 דקות
+                  </span>
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                    <span style={{ color: "var(--accent)" }}>✓</span> מענה תוך 24ש׳
+                  </span>
+                </div>
+                <p className="mono" style={{
+                fontSize: 10, opacity: 0.4, margin: "12px 0 0",
+                textAlign: "center", lineHeight: 1.6,
+                letterSpacing: "0.05em"
+              }}>
+                  אין שיחת מכירה לוחצת. רק שיחת אבחון אמיתית.
+                </p>
+              </div>
+            </form>
+          }
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes ctaPulse {
+          0%, 100% { box-shadow: 0 0 0 0 rgba(255,213,0,0.5); transform: scale(1); }
+          50%      { box-shadow: 0 0 0 6px rgba(255,213,0,0); transform: scale(1.15); }
+        }
+      `}</style>
+    </section>);
+
+}
+
+// ---------- GUEST STRIP (from previous version — option B) ----------
+
+function GuestStrip() {
+  return (
+    <section style={{
+      padding: "76px 0 64px",
+      position: "relative", overflow: "hidden",
+      background: "var(--bg)",
+      borderTop: "1px solid var(--line2)"
+    }}>
+      <div aria-hidden="true" style={{
+        position: "absolute", top: "30%", left: "50%",
+        transform: "translate(-50%, -50%)",
+        width: 900, height: 400,
+        background: "radial-gradient(ellipse, rgba(255,213,0,0.06), transparent 70%)",
+        pointerEvents: "none", filter: "blur(40px)"
+      }} />
+
+      <div className="wrap" style={{ position: "relative", zIndex: 2, marginBottom: 56 }}>
+        <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 32, flexWrap: "wrap" }}>
+          <div>
+            <div className="mono" style={{
+              display: "inline-flex", alignItems: "center", gap: 10,
+              padding: "8px 14px", borderRadius: 999,
+              background: "rgba(255,213,0,0.08)",
+              border: "1px solid rgba(255,213,0,0.3)",
+              fontSize: 11, letterSpacing: "0.18em",
+              color: "var(--accent)", marginBottom: 24
+            }}>
+              <span style={{
+                width: 7, height: 7, borderRadius: "50%",
+                background: "var(--accent)", boxShadow: "0 0 8px var(--accent)"
+              }} />
+              מהאולפן
             </div>
-          ))}
+            <h2 className="display" style={{
+              fontSize: "clamp(40px, 6vw, 88px)",
+              margin: 0, fontWeight: 900, lineHeight: 0.95,
+              maxWidth: 900
+            }}>
+              עשרות אורחים.<br />
+              <span style={{ color: "var(--accent)" }}>מאות פרקים.</span>
+            </h2>
+          </div>
+          <p style={{ fontSize: 18, lineHeight: 1.6, opacity: 0.7, margin: 0, maxWidth: 380 }}>
+            מבעלי עסקים ומנכ״לים ועד יוצרי תוכן ומותגי צריכה — דוגמית מהאולפן שלנו, בפעולה.
+          </p>
+        </div>
+      </div>
+
+      <div style={{ position: "relative" }}>
+        <div aria-hidden="true" style={{ position: "absolute", top: 0, bottom: 0, right: 0, width: 220, zIndex: 3, pointerEvents: "none", background: "linear-gradient(to left, var(--bg), transparent)" }} />
+        <div aria-hidden="true" style={{ position: "absolute", top: 0, bottom: 0, left: 0, width: 220, zIndex: 3, pointerEvents: "none", background: "linear-gradient(to right, var(--bg), transparent)" }} />
+
+        {/* Single-row branded marquee — placeholder guest frames */}
+        <div className="guest-marquee-row" style={{
+          display: "flex", gap: 24,
+          animation: "marquee-rtl 28s linear infinite",
+          width: "max-content",
+          padding: "10px 0"
+        }}>
+          {[...Array(2)].flatMap((_, dup) =>
+          [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map((n, i) =>
+          <div
+            key={`${dup}-${i}`}
+            aria-hidden={dup === 1 ? "true" : undefined}
+            style={{
+              flexShrink: 0,
+              width: 240, aspectRatio: "9 / 16",
+              background: "var(--card)",
+              border: "1px solid var(--line2)",
+              borderRadius: 16,
+              position: "relative",
+              overflow: "hidden"
+            }}>
+            
+                {/* yellow corner brackets */}
+                <span aria-hidden="true" style={{
+              position: "absolute", top: 12, right: 12, width: 18, height: 18,
+              borderTop: "2px solid var(--accent)", borderRight: "2px solid var(--accent)"
+            }} />
+                <span aria-hidden="true" style={{
+              position: "absolute", bottom: 12, left: 12, width: 18, height: 18,
+              borderBottom: "2px solid var(--accent)", borderLeft: "2px solid var(--accent)"
+            }} />
+
+                {/* Scan line */}
+                <span aria-hidden="true" style={{
+              position: "absolute", top: "50%", left: 0, right: 0, height: 1,
+              background: "linear-gradient(to right, transparent, rgba(255,213,0,0.18), transparent)"
+            }} />
+
+                {/* Top: index + REC dot */}
+                <div style={{
+              position: "absolute", top: 22, left: 22, right: 22,
+              display: "flex", justifyContent: "space-between", alignItems: "center",
+              zIndex: 2
+            }}>
+                  <span className="mono" style={{
+                fontSize: 11, letterSpacing: "0.2em",
+                color: "var(--accent)", fontWeight: 700
+              }}>GUEST · {String(n).padStart(2, "0")}</span>
+                  <span style={{
+                display: "inline-flex", alignItems: "center", gap: 6,
+                fontFamily: "var(--font-mono)", fontSize: 9, letterSpacing: "0.18em",
+                color: "rgba(255,255,255,0.45)"
+              }}>
+                    <span style={{
+                  width: 6, height: 6, borderRadius: "50%",
+                  background: "var(--accent)",
+                  animation: "guestRec 1.6s ease-in-out infinite"
+                }} />
+                    REC
+                  </span>
+                </div>
+
+                {/* Center: silhouette placeholder */}
+                <div style={{
+              position: "absolute", inset: 0,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              zIndex: 2
+            }}>
+                  <svg width="110" height="110" viewBox="0 0 90 90" fill="none" aria-hidden="true">
+                    <circle cx="45" cy="32" r="18" stroke="rgba(255,213,0,0.4)" strokeWidth="1.5" strokeDasharray="3 3" />
+                    <path d="M14 84 C 14 64, 30 56, 45 56 C 60 56, 76 64, 76 84"
+                stroke="rgba(255,213,0,0.4)" strokeWidth="1.5" strokeDasharray="3 3" fill="none" />
+                  </svg>
+                </div>
+              </div>
+          )
+          )}
+        </div>
+      </div>
+
+      <div className="wrap" style={{ marginTop: 72, display: "flex", justifyContent: "center" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 56, flexWrap: "wrap", justifyContent: "center" }}>
+          <div style={{ textAlign: "center" }}>
+            <div className="display" style={{ fontSize: "clamp(64px, 8vw, 120px)", fontWeight: 900, lineHeight: 1, color: "var(--accent)" }}>+50</div>
+            <div className="mono" style={{ fontSize: 13, letterSpacing: "0.2em", opacity: 0.7, marginTop: 14 }}>אורחים</div>
+          </div>
+          <div style={{ width: 1, height: 80, background: "var(--line2)" }} />
+          <div style={{ textAlign: "center" }}>
+            <div className="display" style={{ fontSize: "clamp(64px, 8vw, 120px)", fontWeight: 900, lineHeight: 1, color: "var(--accent)" }}>+300</div>
+            <div className="mono" style={{ fontSize: 13, letterSpacing: "0.2em", opacity: 0.7, marginTop: 14 }}>פרקים</div>
+          </div>
+          <div style={{ width: 1, height: 80, background: "var(--line2)" }} />
+          <div style={{ textAlign: "center" }}>
+            <div className="display" style={{ fontSize: "clamp(64px, 8vw, 120px)", fontWeight: 900, lineHeight: 1, color: "var(--accent)" }}>4</div>
+            <div className="mono" style={{ fontSize: 13, letterSpacing: "0.2em", opacity: 0.7, marginTop: 14 }}>סטים באולפן</div>
+          </div>
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes marquee-rtl { from { transform: translateX(0); } to { transform: translateX(50%); } }
+        @keyframes guestRec {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.3; transform: scale(0.7); }
+        }
+        .guest-marquee-row:hover { animation-play-state: paused; }
+        @media (max-width: 768px) {
+          .guest-marquee-row > div { width: 180px !important; }
+        }
+      `}</style>
+    </section>);
+
+}
+
+// ---------- RESULTS (from previous version — option B) ----------
+
+function Results() {
+  const scrollerRef = React.useRef(null);
+  const [scrollState, setScrollState] = React.useState({ atStart: true, atEnd: false });
+
+  const cases = [
+  { num: "01", client: "שם הלקוח / B2B SaaS", kpi: "+340% לידים אורגניים" },
+  { num: "02", client: "שם הלקוח / Consulting", kpi: "+12 מיליון צפיות" },
+  { num: "03", client: "שם הלקוח / Coaching", kpi: "+87 לקוחות חדשים" },
+  { num: "04", client: "שם הלקוח / Fintech", kpi: "ROI x4.2" },
+  { num: "05", client: "שם הלקוח / DTC Brand", kpi: "+220% engagement" },
+  { num: "06", client: "שם הלקוח / Agency", kpi: "₪1.8M pipeline" }];
+
+
+  const checkScrollState = React.useCallback(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const atStart = Math.abs(el.scrollLeft) < 4;
+    // RTL: scrollLeft is negative; at end means abs(scrollLeft) >= scrollWidth - clientWidth
+    const atEnd = Math.abs(el.scrollLeft) >= el.scrollWidth - el.clientWidth - 4;
+    setScrollState({ atStart, atEnd });
+  }, []);
+
+  React.useEffect(() => {
+    checkScrollState();
+    const el = scrollerRef.current;
+    if (!el) return;
+    el.addEventListener("scroll", checkScrollState, { passive: true });
+    window.addEventListener("resize", checkScrollState);
+    return () => {
+      el.removeEventListener("scroll", checkScrollState);
+      window.removeEventListener("resize", checkScrollState);
+    };
+  }, [checkScrollState]);
+
+  const scrollByCard = (dir) => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const firstCard = el.querySelector("[data-case-card]");
+    if (!firstCard) return;
+    const cardW = firstCard.getBoundingClientRect().width;
+    const gap = 20;
+    const step = cardW + gap;
+    // RTL: "next" (left arrow, dir=1) goes to more-negative scrollLeft
+    el.scrollBy({ left: dir * -step, behavior: "smooth" });
+  };
+
+  return (
+    <section id="results" style={{ padding: "76px 0 52px", background: "var(--card)", borderTop: "1px solid var(--line2)", borderBottom: "1px solid var(--line2)" }}>
+      <div className="wrap">
+        <h2 className="display" style={{ fontSize: "clamp(38px, 6vw, 84px)", margin: "0 0 56px", maxWidth: 1100 }}>
+          המספרים מאחורי<br />
+          <span style={{ color: "var(--accent)" }}>הפודקאסטים שאנחנו מייצרים.</span>
+        </h2>
+      </div>
+
+      {/* Carousel — full-bleed wrapper for arrows */}
+      <div style={{ position: "relative", maxWidth: 1280, marginInline: "auto", paddingInline: 24 }}>
+        {/* Right arrow (previous in RTL) */}
+        <button
+          aria-label="הקודם"
+          onClick={() => scrollByCard(-1)}
+          disabled={scrollState.atStart}
+          style={{
+            position: "absolute", right: -8, top: "calc(50% - 28px)",
+            transform: "translateY(-50%)", zIndex: 2,
+            width: 56, height: 56, borderRadius: "50%",
+            background: scrollState.atStart ? "rgba(255,213,0,0.2)" : "var(--accent)",
+            color: "#0A0A0A", border: "none",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 24, fontWeight: 900,
+            cursor: scrollState.atStart ? "not-allowed" : "pointer",
+            opacity: scrollState.atStart ? 0.4 : 1,
+            boxShadow: scrollState.atStart ? "none" : "0 12px 32px rgba(255,213,0,0.4)",
+            transition: "all 0.2s ease"
+          }}>→</button>
+
+        {/* Left arrow (next in RTL) */}
+        <button
+          aria-label="הבא"
+          onClick={() => scrollByCard(1)}
+          disabled={scrollState.atEnd}
+          style={{
+            position: "absolute", left: -8, top: "calc(50% - 28px)",
+            transform: "translateY(-50%)", zIndex: 2,
+            width: 56, height: 56, borderRadius: "50%",
+            background: scrollState.atEnd ? "rgba(255,213,0,0.2)" : "var(--accent)",
+            color: "#0A0A0A", border: "none",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 24, fontWeight: 900,
+            cursor: scrollState.atEnd ? "not-allowed" : "pointer",
+            opacity: scrollState.atEnd ? 0.4 : 1,
+            boxShadow: scrollState.atEnd ? "none" : "0 12px 32px rgba(255,213,0,0.4)",
+            transition: "all 0.2s ease"
+          }}>←</button>
+
+        <div
+          ref={scrollerRef}
+          style={{
+            display: "flex", gap: 20,
+            overflowX: "auto", scrollSnapType: "x mandatory",
+            scrollbarWidth: "none", msOverflowStyle: "none",
+            paddingBlock: 10, paddingInline: 4,
+            scrollPaddingInline: 4
+          }}>
+          <style>{`#results [style*="overflow"]::-webkit-scrollbar{display:none}`}</style>
+
+          {cases.map((c, i) =>
+          <a
+            key={i}
+            data-case-card
+            href="#"
+            onClick={(e) => e.preventDefault()}
+            style={{
+              flex: "0 0 calc((100% - 40px) / 3)",
+              scrollSnapAlign: "start",
+              background: "var(--bg)", borderRadius: 20,
+              border: "1px solid var(--line2)",
+              overflow: "hidden",
+              textDecoration: "none", color: "inherit",
+              display: "flex", flexDirection: "column",
+              transition: "transform 0.25s ease, border-color 0.25s ease"
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "translateY(-4px)";
+              e.currentTarget.style.borderColor = "rgba(255,213,0,0.4)";
+              const overlay = e.currentTarget.querySelector("[data-play]");
+              if (overlay) overlay.style.opacity = "1";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.borderColor = "var(--line2)";
+              const overlay = e.currentTarget.querySelector("[data-play]");
+              if (overlay) overlay.style.opacity = "0.85";
+            }}>
+              {/* 16:9 YouTube thumbnail placeholder */}
+              <div style={{
+              position: "relative",
+              aspectRatio: "16 / 9",
+              background: "linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%)",
+              borderBottom: "1px solid var(--line2)"
+            }}>
+                {/* Subtle pattern */}
+                <div aria-hidden="true" style={{
+                position: "absolute", inset: 0,
+                backgroundImage: "radial-gradient(circle at 30% 50%, rgba(255,213,0,0.08), transparent 60%)"
+              }} />
+
+                {/* Case # badge */}
+                <div className="mono" style={{
+                position: "absolute", top: 14, right: 14,
+                fontSize: 11, letterSpacing: "0.16em",
+                color: "var(--accent)", opacity: 0.8,
+                background: "rgba(0,0,0,0.5)", backdropFilter: "blur(6px)",
+                padding: "4px 10px", borderRadius: 6
+              }}>CASE #{c.num}</div>
+
+                {/* YouTube play button */}
+                <div data-play style={{
+                position: "absolute", inset: 0,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                opacity: 0.85, transition: "opacity 0.25s ease"
+              }}>
+                  <div style={{
+                  width: 68, height: 48,
+                  background: "var(--accent)",
+                  borderRadius: 12,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  boxShadow: "0 8px 24px rgba(0,0,0,0.5)"
+                }}>
+                    <div style={{
+                    width: 0, height: 0,
+                    borderTop: "10px solid transparent",
+                    borderBottom: "10px solid transparent",
+                    borderRight: "16px solid #0A0A0A",
+                    marginLeft: 4
+                  }} />
+                  </div>
+                </div>
+
+                {/* "לוגו" stub bottom-left */}
+                <div style={{
+                position: "absolute", bottom: 14, left: 14,
+                width: 44, height: 44, borderRadius: 8,
+                border: "1px dashed rgba(255,255,255,0.18)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 10, color: "var(--muted)", opacity: 0.5,
+                background: "rgba(0,0,0,0.4)", backdropFilter: "blur(4px)"
+              }}>לוגו</div>
+              </div>
+
+              {/* Card body */}
+              <div style={{ padding: "20px 22px 22px", display: "flex", flexDirection: "column", gap: 10 }}>
+                <div style={{ fontSize: 15, fontWeight: 700, opacity: 0.95 }}>{c.client}</div>
+                <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+                  <span className="display" style={{ fontSize: 22, fontWeight: 900, color: "var(--accent)", lineHeight: 1 }}>{c.kpi}</span>
+                </div>
+                <div className="mono" style={{ fontSize: 11, opacity: 0.5, letterSpacing: "0.1em" }}>KPI · לידים · צפיות</div>
+              </div>
+            </a>
+          )}
+        </div>
+      </div>
+    </section>);
+
+}
+
+// ==========================================================
+// LEGACY SECTIONS — copied from previous version (sections-bold-standalone.jsx)
+// Renamed to avoid collisions with current Hero/HowItWorks/FAQSection/Results.
+// ==========================================================
+
+// ---------- BRIDGE MESSAGE — between Problem and Social Proof ----------
+
+function BridgeMessage() {
+  const sectionRef = React.useRef(null);
+  const [inView, setInView] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!sectionRef.current) return;
+    const io = new IntersectionObserver(
+      ([e]) => {if (e.isIntersecting) setInView(true);},
+      { threshold: 0.2 }
+    );
+    io.observe(sectionRef.current);
+    return () => io.disconnect();
+  }, []);
+
+  return (
+    <section ref={sectionRef} style={{
+      padding: "88px 0",
+      position: "relative",
+      overflow: "hidden"
+    }}>
+      <div aria-hidden="true" style={{
+        position: "absolute", top: "30%", right: "50%", transform: "translateX(50%)",
+        width: 700, height: 700,
+        background: "radial-gradient(ellipse, rgba(255,213,0,0.06), transparent 65%)",
+        filter: "blur(80px)", pointerEvents: "none"
+      }} />
+
+      <div className="wrap" style={{ position: "relative", zIndex: 1 }}>
+        {/* Tiny mono label */}
+        <div style={{
+          display: "flex", alignItems: "center", gap: 12, justifyContent: "center",
+          marginBottom: 28,
+          opacity: inView ? 1 : 0,
+          transform: inView ? "translateY(0)" : "translateY(8px)",
+          transition: "all 0.6s ease 0.05s"
+        }}>
+          <span style={{
+            width: 7, height: 7, borderRadius: "50%",
+            background: "var(--accent)",
+            boxShadow: "0 0 10px var(--accent)",
+            animation: "studioRec 1.6s ease-in-out infinite"
+          }} />
+          <span className="mono" style={{
+            fontSize: 11, letterSpacing: "0.28em", color: "var(--accent)", fontWeight: 700
+          }}>הבעיה האמיתית</span>
         </div>
 
+        {/* Chips — what you tried, all crossed out */}
         <div style={{
-          background: "var(--bg)",
-          border: "1px solid var(--line2)",
-          borderRadius: 22,
-          padding: isMobile ? "28px 20px" : "44px 48px",
-          position: "relative",
-          overflow: "hidden"
+          display: "flex", flexWrap: "wrap", gap: 10,
+          marginBottom: 56, justifyContent: "center",
+          opacity: inView ? 1 : 0,
+          transition: "opacity 0.6s ease 0.15s"
         }}>
-          <div style={{
-            display: "inline-flex",
-            background: "rgba(255,255,255,0.04)",
+          {[
+          "סרטונים קצרים עם הוק מנצח",
+          "מחלק כסף בקניון בשביל עוקבים",
+          "קמפיין ממומן עם תקציב גדול",
+          "אינפלואנסרים ומותגי-יוקרה"].
+          map((t, i) =>
+          <span key={i} style={{
+            padding: "10px 18px",
+            background: "rgba(255,255,255,0.03)",
             border: "1px solid var(--line2)",
             borderRadius: 999,
-            padding: 4,
-            marginBottom: 28,
+            fontSize: 14,
+            opacity: 0.55,
+            textDecoration: "line-through",
+            textDecorationColor: "rgba(255,255,255,0.3)",
+            transform: inView ? "translateY(0)" : "translateY(8px)",
+            transition: `transform 0.5s ease ${0.2 + i * 0.06}s, opacity 0.5s ease ${0.2 + i * 0.06}s`
+          }}>{t}</span>
+          )}
+        </div>
+
+        {/* Big headline — bold style with yellow highlight */}
+        <h2 className="display" style={{
+          fontSize: "clamp(40px, 6vw, 84px)",
+          margin: "0 auto 28px", maxWidth: 1100,
+          fontWeight: 900, lineHeight: 1.08, textAlign: "center",
+          textWrap: "balance",
+          opacity: inView ? 1 : 0,
+          transform: inView ? "translateY(0)" : "translateY(16px)",
+          transition: "opacity 0.7s ease 0.3s, transform 0.7s cubic-bezier(0.2,0.8,0.2,1) 0.3s"
+        }}>
+          ניסית הכל. השקעת כסף.{" "}
+          <span style={{
+            color: "var(--accent)",
+            background: "linear-gradient(180deg, transparent 65%, rgba(255,213,0,0.18) 65%)",
+            padding: "0 8px"
+          }}>ועדיין לא קונים.</span>
+        </h2>
+
+        <p style={{
+          fontSize: "clamp(17px, 1.5vw, 21px)",
+          lineHeight: 1.6, margin: "0 auto 80px", maxWidth: 680,
+          textAlign: "center", opacity: 0.7,
+          opacity: inView ? 0.7 : 0,
+          transform: inView ? "translateY(0)" : "translateY(12px)",
+          transition: "opacity 0.7s ease 0.45s, transform 0.7s ease 0.45s"
+        }}>
+          כי אי אפשר להכיר מישהו ב־30 שניות. ולקוחות לא קונים ממי שהם לא מכירים.
+        </p>
+
+        {/* Three-stat grid — bold-style yellow numerics */}
+        <div style={{
+          display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 0,
+          maxWidth: 1100, margin: "0 auto",
+          border: "1px solid var(--line2)", borderRadius: 20,
+          background: "var(--card)", overflow: "hidden",
+          position: "relative",
+          opacity: inView ? 1 : 0,
+          transform: inView ? "translateY(0)" : "translateY(20px)",
+          transition: "opacity 0.8s ease 0.6s, transform 0.8s cubic-bezier(0.2,0.8,0.2,1) 0.6s"
+        }}>
+          {/* corner brackets */}
+          <span aria-hidden="true" style={{
+            position: "absolute", top: 14, right: 14, width: 18, height: 18,
+            borderTop: "2px solid var(--accent)", borderRight: "2px solid var(--accent)"
+          }} />
+          <span aria-hidden="true" style={{
+            position: "absolute", bottom: 14, left: 14, width: 18, height: 18,
+            borderBottom: "2px solid var(--accent)", borderLeft: "2px solid var(--accent)"
+          }} />
+
+          {[
+          { n: "30", unit: "שניות", label: "תשומת לב לפוסט" },
+          { n: "0%", unit: "אמון", label: "ממי שלא מכירים אותך" },
+          { n: "1", unit: "שעה", label: "לבנות קשר אמיתי" }].
+          map((s, i) =>
+          <div key={i} style={{
+            padding: "44px 32px",
+            textAlign: "center",
+            borderRight: i < 2 ? "1px solid var(--line2)" : "none",
+            position: "relative"
           }}>
-            <button
-              onClick={() => setMode("old")}
-              style={{
-                padding: "10px 22px", fontSize: 13, fontWeight: 700,
-                background: mode === "old" ? "var(--accent)" : "transparent",
-                color: mode === "old" ? "#0A0A0A" : "rgba(255,255,255,0.55)",
-                border: "none", borderRadius: 999, cursor: "pointer",
-                fontFamily: "ui-monospace, monospace", letterSpacing: "0.1em",
-                transition: "all 0.25s ease"
-              }}>
-              בלי פודקאסט
-            </button>
-            <button
-              onClick={() => setMode("new")}
-              style={{
-                padding: "10px 22px", fontSize: 13, fontWeight: 700,
-                background: mode === "new" ? "var(--accent)" : "transparent",
-                color: mode === "new" ? "#0A0A0A" : "rgba(255,255,255,0.55)",
-                border: "none", borderRadius: 999, cursor: "pointer",
-                fontFamily: "ui-monospace, monospace", letterSpacing: "0.1em",
-                transition: "all 0.25s ease"
-              }}>
-              עם פודקאסט
-            </button>
+              <div className="display" style={{
+              fontSize: "clamp(56px, 7vw, 96px)",
+              fontWeight: 900, lineHeight: 1,
+              color: "var(--accent)",
+              letterSpacing: "-0.02em"
+            }}>{s.n}</div>
+              <div className="mono" style={{
+              fontSize: 11, letterSpacing: "0.22em",
+              opacity: 0.6, marginTop: 12, fontWeight: 600
+            }}>{s.unit}</div>
+              <div style={{
+              fontSize: 14, opacity: 0.55, marginTop: 16, lineHeight: 1.5
+            }}>{s.label}</div>
+            </div>
+          )}
+        </div>
+
+        {/* Closing line — quiet truth */}
+        <p style={{
+          fontSize: "clamp(18px, 1.6vw, 24px)",
+          lineHeight: 1.5, margin: "64px auto 0", maxWidth: 760,
+          textAlign: "center", fontWeight: 600,
+          opacity: inView ? 1 : 0,
+          transform: inView ? "translateY(0)" : "translateY(12px)",
+          transition: "opacity 0.7s ease 0.85s, transform 0.7s ease 0.85s"
+        }}>
+          כל מי שמוכר באמת —{" "}
+          <span style={{ color: "var(--accent)", fontWeight: 800 }}>בנה קודם אמון</span>.
+          {" "}פודקאסט נותן לקהל שלך את השעה הזאת.
+        </p>
+      </div>
+    </section>);
+
+}
+
+function ProblemOld() {
+  const sectionRef = React.useRef(null);
+  const [inView, setInView] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!sectionRef.current) return;
+    const io = new IntersectionObserver(
+      ([e]) => {if (e.isIntersecting) setInView(true);},
+      { threshold: 0.15 }
+    );
+    io.observe(sectionRef.current);
+    return () => io.disconnect();
+  }, []);
+
+  // Ticker for the "3 years" chart
+  const [tick, setTick] = React.useState(0);
+  React.useEffect(() => {
+    if (!inView) return;
+    const id = setInterval(() => setTick((t) => (t + 1) % 100), 60);
+    return () => clearInterval(id);
+  }, [inView]);
+
+  // Stat: animated count-up
+  const useCountUp = (target, duration = 1400) => {
+    const [v, setV] = React.useState(0);
+    React.useEffect(() => {
+      if (!inView) return;
+      const start = performance.now();
+      let raf;
+      const step = (now) => {
+        const t = Math.min(1, (now - start) / duration);
+        const eased = 1 - Math.pow(1 - t, 3);
+        setV(Math.round(target * eased));
+        if (t < 1) raf = requestAnimationFrame(step);
+      };
+      raf = requestAnimationFrame(step);
+      return () => cancelAnimationFrame(raf);
+    }, [target, duration, inView]);
+    return v;
+  };
+
+  const cpcUp = useCountUp(25); // Google Ads CPL +25% YoY (Wordstream 2024)
+  const convRate = useCountUp(223); // B2B avg conversion rate 2.23% (WebFX) — shown as 2.23%
+  const attention = useCountUp(47); // Avg screen attention 47s, down from 2.5min (Nielsen/Microsoft 2025)
+
+  // Line chart for CPC rising 2022 → 2027 — LTR: '22 left (low/past), '27 right (high/future)
+  const chartPoints = React.useMemo(() => {
+    const vals = [0.12, 0.22, 0.34, 0.52, 0.78, 0.96];
+    const years = ["'22", "'23", "'24", "'25", "'26", "'27"];
+    return vals.map((v, i) => ({ v, year: years[i] }));
+  }, []);
+
+  const CHART_W = 1080;
+  const CHART_H = 210;
+  const pathD = React.useMemo(() => {
+    const n = chartPoints.length;
+    return chartPoints.
+    map((p, i) => {
+      const x = i / (n - 1) * CHART_W;
+      const y = CHART_H - p.v * CHART_H;
+      return `${i === 0 ? "M" : "L"} ${x.toFixed(1)} ${y.toFixed(1)}`;
+    }).
+    join(" ");
+  }, [chartPoints]);
+
+  const areaD = pathD + ` L ${CHART_W} ${CHART_H} L 0 ${CHART_H} Z`;
+
+  return (
+    <section ref={sectionRef} style={{ padding: "96px 0 76px", background: "var(--card)", borderTop: "1px solid var(--line2)", borderBottom: "1px solid var(--line2)", position: "relative", overflow: "hidden" }}>
+      {/* atmospheric red glow — warning tone */}
+      <div aria-hidden="true" style={{
+        position: "absolute", top: "-20%", left: "50%", transform: "translateX(-50%)",
+        width: "60%", height: "60%",
+        background: "radial-gradient(ellipse at center, rgba(239,68,68,0.08) 0%, transparent 70%)",
+        pointerEvents: "none"
+      }} />
+
+      <div className="wrap" style={{ position: "relative" }}>
+        {/* Eyebrow tag */}
+        <div style={{
+          display: "flex", alignItems: "center", gap: 12, justifyContent: "center",
+          marginBottom: 28,
+          opacity: inView ? 1 : 0,
+          transform: inView ? "translateY(0)" : "translateY(8px)",
+          transition: "opacity 0.6s ease, transform 0.6s ease"
+        }}>
+          <span aria-hidden="true" style={{
+            width: 8, height: 8, borderRadius: "50%",
+            background: "#ef4444",
+            boxShadow: "0 0 0 4px rgba(239,68,68,0.18)",
+            animation: "warnPulse 1.6s ease-in-out infinite"
+          }} />
+          <span className="mono" style={{
+            fontSize: 12, letterSpacing: "0.28em", fontWeight: 700,
+            color: "#ef4444", textTransform: "uppercase"
+          }}>
+            אזהרה · המציאות החדשה של 2026
+          </span>
+        </div>
+
+        {/* Big headline — fear tone with red highlight on consequence */}
+        <h2 className="display" style={{
+          fontSize: "clamp(40px, 6.4vw, 92px)",
+          margin: "0 auto 28px", maxWidth: 1180,
+          fontWeight: 900, lineHeight: 1.05, textAlign: "center",
+          textWrap: "balance", letterSpacing: "-0.015em"
+        }}>
+          <span style={{
+            display: "block",
+            opacity: inView ? 1 : 0,
+            transform: inView ? "translateY(0)" : "translateY(20px)",
+            transition: "opacity 0.7s ease 0.15s, transform 0.7s cubic-bezier(0.2,0.8,0.2,1) 0.15s"
+          }}>
+            המשחק של הפרסום הממומן השתנה.
+          </span>
+          <span style={{
+            display: "block",
+            opacity: inView ? 1 : 0,
+            transform: inView ? "translateY(0)" : "translateY(20px)",
+            transition: "opacity 0.7s ease 0.35s, transform 0.7s cubic-bezier(0.2,0.8,0.2,1) 0.35s"
+          }}>
+            מי שלא מבין את זה,
+          </span>
+          <span style={{
+            display: "block",
+            position: "relative",
+            opacity: inView ? 1 : 0,
+            transform: inView ? "translateY(0)" : "translateY(20px)",
+            transition: "opacity 0.8s ease 0.6s, transform 0.8s cubic-bezier(0.2,0.8,0.2,1) 0.6s"
+          }}>
+            <span style={{
+              color: "#ef4444",
+              textShadow: "0 0 50px rgba(239,68,68,0.45), 0 0 90px rgba(239,68,68,0.2)",
+              position: "relative",
+              display: "inline-block",
+              paddingInline: "0.2em",
+              marginTop: 8
+            }}>
+              ימשיך לשלם יותר ולסגור פחות.
+              {/* soft underline glow */}
+              <span aria-hidden="true" style={{
+                position: "absolute", left: "3%", right: "3%", bottom: "-0.06em",
+                height: 5,
+                background: "linear-gradient(90deg, transparent, #ef4444 15%, #ef4444 85%, transparent)",
+                opacity: 0.55,
+                borderRadius: 3,
+                filter: "blur(0.5px)"
+              }} />
+            </span>
+          </span>
+        </h2>
+
+        {/* Sub-line — quiet, factual sting */}
+        <p style={{
+          fontSize: "clamp(16px, 1.5vw, 20px)",
+          lineHeight: 1.6, margin: "0 auto 64px", maxWidth: 640,
+          textAlign: "center", opacity: inView ? 0.65 : 0,
+          transform: inView ? "translateY(0)" : "translateY(12px)",
+          transition: "opacity 0.7s ease 0.85s, transform 0.7s ease 0.85s"
+        }}>
+          הנתונים מהשנה האחרונה לא משאירים מקום לפרשנות.
+        </p>
+
+        <style>{`
+          @keyframes warnPulse {
+            0%, 100% { box-shadow: 0 0 0 4px rgba(239,68,68,0.18); }
+            50% { box-shadow: 0 0 0 8px rgba(239,68,68,0.05); }
+          }
+        `}</style>
+
+        {/* Three live stats — restructured per reference */}
+        <div style={{
+          display: "grid", gridTemplateColumns: "repeat(3, 1fr)",
+          gap: 18, marginBottom: 36
+        }}>
+          {[
+          { tag: "↑ עולה", n: `+${cpcUp}%`, label: "עליית מחיר ליד בגוגל",
+            desc: "כל שנה אתם משלמים יותר — ומקבלים לידים פחות רלוונטיים" },
+          { tag: "↓ יורד", n: `${(convRate / 100).toFixed(2)}%`, label: "אחוז המרה ממוצע ב־B2B",
+            desc: "מתוך 100 אנשים שרואים את המודעה — 98 גוללים הלאה בלי לעצור" },
+          { tag: "↑ עולה", n: `96%`, label: "נוטשים את האתר שלכם",
+            desc: "מתוך 100 אנשים שנכנסים — 96 עוזבים בלי להשאיר פרטים. כי הם עוד לא סומכים עליכם" }].
+          map((s, i) =>
+          <div key={i} className="warn-stat-card"
+          style={{
+            padding: "32px 26px 28px",
+            background: "var(--bg)",
+            border: "1px solid rgba(239,68,68,0.18)",
+            borderRadius: 20,
+            position: "relative", overflow: "hidden",
+            textAlign: "center",
+            opacity: inView ? 1 : 0,
+            transform: inView ? "translateY(0)" : "translateY(28px)",
+            transition: `opacity 0.75s ease ${1.0 + i * 0.14}s, transform 0.75s cubic-bezier(0.2,0.8,0.2,1) ${1.0 + i * 0.14}s, border-color 0.3s ease, background 0.3s ease`
+          }}>
+              {/* corner glow */}
+              <div aria-hidden="true" style={{
+              position: "absolute", top: "-40%", left: "50%", transform: "translateX(-50%)",
+              width: 320, height: 320,
+              background: "radial-gradient(circle, rgba(239,68,68,0.10), transparent 65%)",
+              pointerEvents: "none", borderRadius: "50%",
+              filter: "blur(8px)"
+            }} />
+              {/* tag */}
+              <div className="mono" style={{
+              fontSize: 11, fontWeight: 800, letterSpacing: "0.14em",
+              color: "#ef4444", marginBottom: 10,
+              position: "relative", zIndex: 1
+            }}>{s.tag}</div>
+              {/* big number */}
+              <div className="display" style={{
+              fontSize: "clamp(36px, 3.6vw, 52px)",
+              fontWeight: 900, lineHeight: 1, color: "#ef4444",
+              marginBottom: 14,
+              fontVariantNumeric: "tabular-nums",
+              textShadow: "0 0 36px rgba(239,68,68,0.4)",
+              letterSpacing: "-0.025em",
+              position: "relative", zIndex: 1
+            }}>{s.n}</div>
+              {/* label */}
+              <div style={{
+              fontSize: 14, fontWeight: 700, marginBottom: 10,
+              position: "relative", zIndex: 1
+            }}>{s.label}</div>
+              {/* divider */}
+              <div aria-hidden="true" style={{
+              width: 28, height: 1, margin: "0 auto 10px",
+              background: "rgba(239,68,68,0.4)"
+            }} />
+              {/* description */}
+              <div style={{
+              fontSize: 14, lineHeight: 1.65, opacity: 0.55,
+              position: "relative", zIndex: 1,
+              textWrap: "pretty", maxWidth: 260, marginInline: "auto"
+            }}>{s.desc}</div>
+            </div>
+          )}
+        </div>
+
+        <style>{`
+          .warn-stat-card:hover {
+            border-color: rgba(239,68,68,0.45) !important;
+            transform: translateY(-4px) !important;
+            background: #0d0808 !important;
+          }
+        `}</style>
+
+        {/* Paragraph card — centered, climactic */}
+        <div style={{
+          background: "var(--bg)",
+          border: "1px solid rgba(239,68,68,0.16)",
+          borderRadius: 22,
+          padding: "56px 56px 52px",
+          marginBottom: 36,
+          position: "relative", overflow: "hidden",
+          opacity: inView ? 1 : 0,
+          transform: inView ? "translateY(0)" : "translateY(20px)",
+          transition: "opacity 0.8s ease 1.6s, transform 0.8s cubic-bezier(0.2,0.8,0.2,1) 1.6s"
+        }}>
+          <div aria-hidden="true" style={{
+            position: "absolute", top: "-30%", left: "50%", transform: "translateX(-50%)",
+            width: "70%", height: "70%",
+            background: "radial-gradient(ellipse, rgba(239,68,68,0.07), transparent 70%)",
+            pointerEvents: "none", filter: "blur(20px)"
+          }} />
+          <div style={{
+            fontSize: "clamp(18px, 1.55vw, 22px)",
+            lineHeight: 1.85,
+            textAlign: "center",
+            maxWidth: 880, margin: "0 auto",
+            position: "relative", zIndex: 1,
+            textWrap: "pretty"
+          }}>
+            <p style={{ margin: "0 0 18px", opacity: 0.85 }}>
+              כל בעל עסק מרגיש את זה עכשיו: <strong style={{ color: "#fff", fontWeight: 800 }}>מחירי הלידים מזנקים, אחוזי ההמרה צונחים.</strong><br />אנשים גוללים הלאה לפני שהם בכלל יודעים מי אתה.<br />זה לא מצב זמני, מחירי הלידים עולים כל שנה - <strong style={{ color: "#fff", fontWeight: 800 }}>ואין סיבה שזה יעצור.</strong><br />כל עוד אתם משלמים על תשומת לב - <strong style={{ color: "#fff", fontWeight: 800 }}>מישהו אחר יכול להציע יותר ולקחת אותה מכם.</strong><br />
+            </p>
+            <p style={{
+              margin: 0,
+              color: "#ef4444",
+              fontWeight: 800,
+
+              textShadow: "0 0 36px rgba(239,68,68,0.5)",
+              position: "relative", display: "inline-block",
+              paddingInline: "0.2em", fontSize: "36px"
+            }}>
+              יש רק דרך אחת לצאת מהמשחק הזה.
+              <span aria-hidden="true" style={{
+                position: "absolute", left: "3%", right: "3%", bottom: "-0.18em",
+                height: 4,
+                background: "linear-gradient(90deg, transparent, #ef4444 15%, #ef4444 85%, transparent)",
+                opacity: 0.55, borderRadius: 3, filter: "blur(0.5px)"
+              }} />
+            </p>
           </div>
 
-          <div style={{ position: "relative", minHeight: 200 }}>
-            <div key={mode} style={{ animation: "fadeSlide 0.4s cubic-bezier(0.2,0.8,0.2,1)" }}>
-              {mode === "old" ? (
-                <>
-                  <p className="display" style={{
-                    fontSize: "clamp(28px, 3.8vw, 52px)",
-                    lineHeight: 1.15, margin: 0, fontWeight: 800, maxWidth: 980
-                  }}>
-                    כל לקוח חדש מגיע קר.{" "}
-                    <span style={{ color: "var(--accent)" }}>אתה בונה אמון מאפס — שוב ושוב.</span>
-                  </p>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 28 }}>
-                    {["שיחות קרות", "פגישות אבחון ארוכות", "להסביר מי אתה", "לשכנע למה אתה", "מחיר כנקודת הכניסה"].map((t, i) => (
-                      <span key={i} style={{
-                        padding: "10px 16px",
-                        background: "rgba(255,255,255,0.04)",
-                        border: "1px solid var(--line2)",
-                        borderRadius: 999, fontSize: 13, opacity: 0.6,
-                        textDecoration: "line-through",
-                        textDecorationColor: "rgba(255,255,255,0.3)"
-                      }}>{t}</span>
-                    ))}
-                  </div>
-                </>
-              ) : (
-                <>
-                  <p className="display" style={{
-                    fontSize: "clamp(28px, 3.8vw, 52px)",
-                    lineHeight: 1.15, margin: 0, fontWeight: 800, maxWidth: 980
-                  }}>
-                    לקוחות מגיעים אליך — אחרי שהם כבר{" "}
-                    <span style={{ color: "var(--accent)" }}>סומכים עליך 20 שעות.</span>
-                  </p>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 28 }}>
-                    {["נוכחות שמצטברת", "אמון לפני הפגישה הראשונה", "לקוחות שיודעים מה הם רוצים", "מחיר שלא עומד בוויכוח", "הפניות שמגיעות מעצמן"].map((t, i) => (
-                      <span key={i} style={{
-                        padding: "10px 16px",
-                        background: "rgba(255,213,0,0.08)",
-                        border: "1px solid rgba(255,213,0,0.35)",
-                        borderRadius: 999, fontSize: 13,
-                        color: "var(--accent)", fontWeight: 600
-                      }}>{t}</span>
-                    ))}
-                  </div>
-                </>
-              )}
+          {/* divider between message + chart */}
+          <div aria-hidden="true" style={{
+            height: 1, margin: "48px 0 36px",
+            background: "linear-gradient(90deg, transparent, rgba(239,68,68,0.28), transparent)",
+            position: "relative", zIndex: 1,
+            opacity: inView ? 1 : 0,
+            transition: "opacity 0.6s ease 1.9s"
+          }} />
+
+          <div style={{
+            display: "flex", justifyContent: "space-between", alignItems: "baseline",
+            marginBottom: 28, position: "relative", zIndex: 1,
+            opacity: inView ? 1 : 0,
+            transform: inView ? "translateY(0)" : "translateY(20px)",
+            transition: "opacity 0.85s ease 1.95s, transform 0.85s cubic-bezier(0.2,0.8,0.2,1) 1.95s"
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <span style={{
+                display: "inline-block", width: 12, height: 2, background: "#ef4444",
+                boxShadow: "0 0 8px rgba(239,68,68,0.7)"
+              }} />
+              <span className="mono" style={{
+                fontSize: 12, opacity: 0.65, letterSpacing: "0.18em", fontWeight: 600
+              }}>מחיר ליד ממוצע</span>
+            </div>
+            <div style={{ fontSize: 17, fontWeight: 700, opacity: 0.9 }}>
+
             </div>
           </div>
+
+          <svg viewBox={`0 0 ${CHART_W} ${CHART_H + 96}`}
+          style={{ width: "100%", height: "auto", overflow: "visible", display: "block", position: "relative", zIndex: 1 }}>
+            <defs>
+              <linearGradient id="areaFill" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stopColor="#ef4444" stopOpacity="0.45" />
+                <stop offset="100%" stopColor="#ef4444" stopOpacity="0" />
+              </linearGradient>
+              <linearGradient id="lineGrad" x1="0" x2="1" y1="0" y2="0">
+                <stop offset="0%" stopColor="rgba(239,68,68,0.55)" />
+                <stop offset="55%" stopColor="#ef4444" />
+                <stop offset="100%" stopColor="#fca5a5" />
+              </linearGradient>
+              <filter id="lineGlow" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="3.5" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+              <filter id="dotGlow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur stdDeviation="5" />
+              </filter>
+            </defs>
+
+            {/* gridlines */}
+            {[0.2, 0.4, 0.6, 0.8].map((g, i) =>
+            <line key={i}
+            x1={0} x2={CHART_W}
+            y1={CHART_H * g} y2={CHART_H * g}
+            stroke="rgba(255,255,255,0.05)"
+            strokeDasharray="2 5"
+            style={{
+              opacity: inView ? 1 : 0,
+              transition: `opacity 0.5s ease ${2.05 + i * 0.06}s`
+            }} />
+            )}
+
+            {/* forecast shade — RIGHT portion (future, since LTR) */}
+            <rect
+              x={CHART_W * 0.6} y={0}
+              width={CHART_W * 0.4} height={CHART_H}
+              fill="rgba(239,68,68,0.05)"
+              style={{
+                transformOrigin: `${CHART_W}px 0`,
+                transform: inView ? "scaleX(1)" : "scaleX(0)",
+                transition: "transform 0.7s cubic-bezier(0.2,0.8,0.2,1) 2.3s"
+              }} />
+            <line
+              x1={CHART_W * 0.6} x2={CHART_W * 0.6}
+              y1={0} y2={CHART_H}
+              stroke="rgba(239,68,68,0.32)"
+              strokeDasharray="3 5"
+              style={{
+                opacity: inView ? 1 : 0,
+                transition: "opacity 0.4s ease 2.6s"
+              }} />
+            <text x={CHART_W * 0.6 - 12} y={20}
+            textAnchor="end"
+            fill="rgba(239,68,68,0.85)"
+            style={{
+              fontSize: 13, fontFamily: "ui-monospace, monospace", letterSpacing: "0.12em",
+              fontWeight: 700, direction: "rtl",
+              opacity: inView ? 1 : 0,
+              transition: "opacity 0.5s ease 2.8s"
+            }}>
+              תחזית →
+            </text>
+
+            {/* area fill — animated reveal from right (past) to left (future) */}
+            <path d={areaD} fill="url(#areaFill)" style={{
+              transition: "opacity 1.4s ease 2.7s",
+              opacity: inView ? 1 : 0
+            }} />
+
+            {/* main line — draws on RTL */}
+            <path d={pathD} fill="none" stroke="url(#lineGrad)" strokeWidth="3.5"
+            strokeLinecap="round" strokeLinejoin="round"
+            filter="url(#lineGlow)"
+            style={{
+              strokeDasharray: 2400,
+              strokeDashoffset: inView ? 0 : 2400,
+              transition: "stroke-dashoffset 2.2s cubic-bezier(0.65,0,0.35,1) 2.4s"
+            }} />
+
+            {/* moving glow head */}
+            {inView &&
+            <circle r="6" fill="#ef4444" filter="url(#dotGlow)" opacity="0.95">
+                <animateMotion dur="2.2s" begin="2.4s" fill="freeze" path={pathD} rotate="auto" />
+                <animate attributeName="opacity" from="1" to="0" begin="4.5s" dur="0.5s" fill="freeze" />
+              </circle>
+            }
+
+            {/* year dots */}
+            {chartPoints.map((p, i) => {
+              const x = i / (chartPoints.length - 1) * CHART_W;
+              const y = CHART_H - p.v * CHART_H;
+              const isFirst = i === 0; // '27 — high, left
+              const isLast = i === chartPoints.length - 1; // '22 — low, right
+              const isAnchor = isFirst || isLast;
+              const dotDelay = 2.5 + (1 - i / (chartPoints.length - 1)) * 1.8;
+              return (
+                <g key={i}>
+                  <circle cx={x} cy={y} r={isAnchor ? 7 : 4}
+                  fill={isAnchor ? "#ef4444" : "#0A0A0A"}
+                  stroke="#ef4444" strokeWidth={isAnchor ? 0 : 2}
+                  style={{
+                    transformOrigin: `${x}px ${y}px`,
+                    transform: inView ? "scale(1)" : "scale(0)",
+                    transition: `transform 0.55s cubic-bezier(0.34,1.56,0.64,1) ${dotDelay}s`
+                  }} />
+                  {isAnchor && inView &&
+                  <>
+                      <circle cx={x} cy={y} r={7} fill="none" stroke="#ef4444" strokeWidth="2" opacity="0.7">
+                        <animate attributeName="r" from="7" to="26" dur="1.8s" begin={`${dotDelay + 0.4}s`} repeatCount="indefinite" />
+                        <animate attributeName="opacity" from="0.7" to="0" dur="1.8s" begin={`${dotDelay + 0.4}s`} repeatCount="indefinite" />
+                      </circle>
+                      <circle cx={x} cy={y} r={10} fill="#ef4444" opacity="0.25" filter="url(#dotGlow)">
+                        <animate attributeName="opacity" values="0.15;0.4;0.15" dur="2.2s" begin={`${dotDelay + 0.4}s`} repeatCount="indefinite" />
+                      </circle>
+                    </>
+                  }
+                  {/* year label */}
+                  <text x={x} y={CHART_H + 28}
+                  textAnchor="middle"
+                  fill={isAnchor ? "rgba(239,68,68,0.9)" : "rgba(255,255,255,0.42)"}
+                  style={{
+                    fontSize: 13, fontFamily: "ui-monospace, monospace", letterSpacing: "0.05em",
+                    fontWeight: isAnchor ? 800 : 500,
+                    opacity: inView ? 1 : 0,
+                    transition: `opacity 0.4s ease ${dotDelay + 0.1}s`
+                  }}>
+                    {p.year}
+                  </text>
+                </g>);
+            })}
+
+            {/* LOW-LEFT badge — "שילמתם 10₪ לליד" ('22 — past) */}
+            {(() => {
+              const px = 0;
+              const py = CHART_H - chartPoints[0].v * CHART_H;
+              const badgeW = 188,badgeH = 38;
+              const badgeX = px + 24;
+              const badgeY = py + 24;
+              return (
+                <g style={{
+                  opacity: inView ? 1 : 0,
+                  transform: inView ? "translateY(0)" : "translateY(-10px)",
+                  transition: "opacity 0.55s ease 4.0s, transform 0.55s cubic-bezier(0.2,0.8,0.2,1) 4.0s"
+                }}>
+                  {/* connector */}
+                  <line
+                    x1={badgeX + 18} x2={px + 4}
+                    y1={badgeY} y2={py + 6}
+                    stroke="rgba(239,68,68,0.55)" strokeWidth="1.5"
+                    strokeDasharray="3 3" />
+                  {/* badge */}
+                  <rect x={badgeX} y={badgeY} width={badgeW} height={badgeH} rx={10}
+                  fill="rgba(239,68,68,0.18)" stroke="#ef4444" strokeWidth="1.5"
+                  filter="url(#lineGlow)" />
+                  <text x={badgeX + badgeW / 2} y={badgeY + badgeH / 2 + 6}
+                  textAnchor="middle"
+                  fill="#fff"
+                  style={{ fontSize: 15, fontWeight: 800, direction: "rtl" }}>
+                    שילמתם 10₪ לליד
+                  </text>
+                </g>);
+            })()}
+
+            {/* HIGH-RIGHT badge — "תשלמו 300₪+ לליד" ('27 — future) */}
+            {(() => {
+              const lastIdx = chartPoints.length - 1;
+              const px = CHART_W;
+              const py = CHART_H - chartPoints[lastIdx].v * CHART_H;
+              const badgeW = 188,badgeH = 38;
+              const badgeX = px - badgeW - 24;
+              const badgeY = py - 14;
+              return (
+                <g style={{
+                  opacity: inView ? 1 : 0,
+                  transform: inView ? "translateY(0)" : "translateY(10px)",
+                  transition: "opacity 0.55s ease 4.2s, transform 0.55s cubic-bezier(0.2,0.8,0.2,1) 4.2s"
+                }}>
+                  <line
+                    x1={badgeX + badgeW - 18} x2={px - 4}
+                    y1={badgeY + badgeH} y2={py + 4}
+                    stroke="rgba(239,68,68,0.55)" strokeWidth="1.5"
+                    strokeDasharray="3 3" />
+                  <rect x={badgeX} y={badgeY} width={badgeW} height={badgeH} rx={10}
+                  fill="rgba(239,68,68,0.18)" stroke="#ef4444" strokeWidth="1.5"
+                  filter="url(#lineGlow)" />
+                  <text x={badgeX + badgeW / 2} y={badgeY + badgeH / 2 + 6}
+                  textAnchor="middle"
+                  fill="#fff"
+                  style={{ fontSize: 15, fontWeight: 800, direction: "rtl" }}>
+                    תשלמו 300₪+ לליד
+                  </text>
+                </g>);
+            })()}
+          </svg>
         </div>
       </div>
 
@@ -229,12 +3705,11 @@ function MirrorMoment() {
           to   { opacity: 1; transform: translateY(0); }
         }
       `}</style>
-    </section>
-  );
+    </section>);
+
 }
 
-function TheShift() {
-  const isMobile = useIsMobile();
+function SolutionOld() {
   const [hoveredPillar, setHoveredPillar] = React.useState(-1);
 
   // Concrete examples revealed on hover
@@ -242,79 +3717,121 @@ function TheShift() {
   {
     icon: "🎙",
     lines: [
-    "לקוח מאזין בדרך לעבודה",
-    "שומע אותך נאבק בסוגיה שגם הוא נאבק בה",
-    "מרגיש שהוא מכיר אותך חודשים לפני פגישה"]
+    "לקוח מאזין בדרך לעבודה.",
+    "שומע אותך נאבק בסוגיה שגם הוא נאבק בה.",
+    "מרגיש שהוא מכיר אותך חודשים לפני פגישה."]
 
   },
   {
     icon: "📚",
     lines: [
-    "פרק על טעות נפוצה בתחום שלך",
-    "לקוח גוגל את הבעיה, מוצא את הפרק",
-    "הוא פונה אליך — לא למתחרה"]
+    "פרק על טעות נפוצה בתחום שלך.",
+    "לקוח מגגל את הבעיה, מוצא את הפרק.",
+    "הוא פונה אליך — לא למתחרה."]
 
   },
   {
     icon: "🤝",
     lines: [
-    "״שמעתי את הפרק על…״",
-    "במקום ״תשכנע אותי למה אתה״",
-    "שיחת מכירה הופכת לשיחת הצטרפות"]
+    "״שמעתי את הפרק על…״.",
+    "במקום ״תשכנע אותי למה אתה״.",
+    "שיחת מכירה הופכת לשיחת הצטרפות."]
 
   }];
 
 
   return (
-    <section style={{ padding: isMobile ? "64px 0" : "120px 0" }}>
-      <div className="wrap">
-        <div className="mono" style={{ fontSize: 13, opacity: 0.5, marginBottom: 20 }}>// הרעיון החדש</div>
-        <h2 className="display" style={{ fontSize: "clamp(40px, 7vw, 104px)", margin: "0 0 32px", fontWeight: 900 }}>
-          פודקאסט הוא לא תוכן.<br />
-          <span style={{ color: "var(--accent)" }}>הוא מנוע מוניטין.</span>
+    <section style={{ padding: "76px 0", position: "relative", overflow: "hidden" }}>
+      {/* ambient backdrop glows */}
+      <div aria-hidden="true" style={{
+        position: "absolute", top: "10%", right: "-10%",
+        width: 600, height: 600, borderRadius: "50%",
+        background: "radial-gradient(circle, rgba(255,213,0,0.10), transparent 60%)",
+        filter: "blur(60px)", pointerEvents: "none", zIndex: 0
+      }} />
+      <div aria-hidden="true" style={{
+        position: "absolute", bottom: "5%", left: "-5%",
+        width: 500, height: 500, borderRadius: "50%",
+        background: "radial-gradient(circle, rgba(255,213,0,0.06), transparent 60%)",
+        filter: "blur(50px)", pointerEvents: "none", zIndex: 0
+      }} />
+
+      <div className="wrap" style={{ position: "relative", zIndex: 1 }}>
+        <h2 className="display" style={{
+          fontSize: "clamp(42px, 7.4vw, 112px)",
+          margin: "0 auto 48px",
+          fontWeight: 900,
+          textAlign: "center",
+          lineHeight: 1.05,
+          letterSpacing: "-0.02em",
+          textWrap: "balance",
+          maxWidth: 1180,
+          position: "relative"
+        }}>
+          <span style={{ display: "block", marginBottom: 12, opacity: 0.96 }}>
+            <span style={{ position: "relative", display: "inline-block" }}>
+              מפסיקים{" "}
+              <span style={{
+                position: "relative",
+                display: "inline-block",
+                color: "#fff"
+              }}>
+                למכור בכוח
+                {/* strikethrough effect */}
+                <span aria-hidden="true" style={{
+                  position: "absolute", left: "-4%", right: "-4%",
+                  top: "52%",
+                  height: 6,
+                  background: "linear-gradient(90deg, transparent, #ff3b3b 12%, #ff3b3b 88%, transparent)",
+                  transform: "rotate(-2deg)",
+                  borderRadius: 3,
+                  opacity: 0.85,
+                  boxShadow: "0 0 16px rgba(255,59,59,0.5)"
+                }} />
+              </span>
+            </span>
+          </span>
+
+          <span style={{ display: "block", position: "relative" }}>
+            <span style={{
+              color: "var(--accent)",
+              textShadow: "0 0 50px rgba(255,213,0,0.45), 0 0 90px rgba(255,213,0,0.2)",
+              position: "relative",
+              display: "inline-block",
+              paddingInline: "0.2em"
+            }}>
+              גורמים ללקוחות לבוא אליכם.
+              {/* soft underline */}
+              <span aria-hidden="true" style={{
+                position: "absolute", left: "3%", right: "3%", bottom: "-0.06em",
+                height: 5,
+                background: "linear-gradient(90deg, transparent, var(--accent) 15%, var(--accent) 85%, transparent)",
+                opacity: 0.55,
+                borderRadius: 3,
+                filter: "blur(0.5px)"
+              }} />
+            </span>
+          </span>
         </h2>
 
-        <p style={{ fontSize: 20, lineHeight: 1.6, opacity: 0.75, maxWidth: 820, margin: "0 0 32px" }}>
-          מודעות בונות חשיפה. פודקאסט בונה אמון. ההבדל: אמון הוא מה שגורם לאנשים לשלם יותר, לא להתמקח, ולהפנות חברים.
-        </p>
-
-        {/* Animated Push → Pull visual */}
-        <div style={{
-          display: "inline-flex", alignItems: "center", gap: 20,
-          marginBottom: 64,
-          padding: "14px 26px",
-          border: "1.5px solid var(--line2)",
-          borderRadius: 999,
-          position: "relative",
-          overflow: "hidden"
-        }}>
-          <span className="mono" style={{
-            fontSize: 14,
-            color: "rgba(255,255,255,0.3)",
-            textDecoration: "line-through",
-            letterSpacing: "0.12em",
-            fontWeight: 500,
-            animation: "pushFade 3.2s ease-in-out infinite"
-          }}>לדחוף</span>
-          <span style={{
-            fontSize: 22, color: "var(--accent)",
-            animation: "arrowSlide 3.2s ease-in-out infinite",
-            display: "inline-block"
-          }}>←</span>
-          <span className="mono" style={{
-            fontSize: 14, color: "var(--accent)",
-            fontWeight: 700, letterSpacing: "0.12em",
-            animation: "pullGlow 3.2s ease-in-out infinite"
-          }}>למשוך</span>
+        {/* Lead paragraph — centered, hierarchic */}
+        <div style={{ textAlign: "center", maxWidth: 880, margin: "0 auto 64px" }}>
+          <p style={{
+            fontSize: "clamp(18px, 1.6vw, 22px)",
+            lineHeight: 1.6,
+            opacity: 0.9,
+            margin: 0,
+            textWrap: "balance"
+          }}>
+            פודקאסט הוא הכלי השיווקי <span style={{ color: "var(--accent)", fontWeight: 700 }}>היחיד</span> שמייצר שלושה דברים{" "}
+            <span style={{ color: "#fff", fontWeight: 700, borderBottom: "2px solid rgba(255,213,0,0.5)", paddingBottom: 2 }}>בו־זמנית</span>,
+            <br />
+            שאף פורמט אחר לא נותן:
+          </p>
         </div>
 
-        <p style={{ fontSize: 20, lineHeight: 1.6, opacity: 0.85, maxWidth: 820, margin: "0 0 64px" }}>
-          פודקאסט הוא הכלי היחיד שמייצר שלושה דברים בו־זמנית,
-          שאף פורמט אחר לא נותן:
-        </p>
-
         {/* Interactive Pillar cards */}
-        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 20 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
           {PILLARS.map((p, i) => {
             const isHover = hoveredPillar === i;
             const ex = PILLAR_EXAMPLES[i];
@@ -330,6 +3847,7 @@ function TheShift() {
                   position: "relative", overflow: "hidden",
                   cursor: "pointer",
                   minHeight: 360,
+                  display: "flex", flexDirection: "column",
                   transform: isHover ? "translateY(-6px)" : "translateY(0)",
                   boxShadow: isHover ?
                   "0 20px 50px -20px rgba(255,213,0,0.28)" :
@@ -361,39 +3879,30 @@ function TheShift() {
                   transition: "color 0.3s ease"
                 }}>{p.title}</h3>
 
-                {/* Base body — fades out on hover */}
+                {/* Base body — always visible */}
                 <p style={{
                   fontSize: 16, lineHeight: 1.65,
-                  opacity: isHover ? 0 : 0.85,
-                  margin: 0, position: "relative", zIndex: 2,
-                  transition: "opacity 0.3s ease",
-                  maxHeight: isHover ? 0 : 300,
-                  overflow: "hidden"
+                  opacity: 0.85,
+                  margin: "0 0 24px", position: "relative", zIndex: 2,
+                  whiteSpace: "pre-line"
                 }}>{p.body}</p>
 
-                {/* Hover example reveal */}
+                {/* Example reveal — always visible */}
                 <div style={{
-                  position: "absolute",
-                  insetInlineStart: 36, insetInlineEnd: 36,
-                  top: 120,
-                  opacity: isHover ? 1 : 0,
-                  transform: isHover ? "translateY(0)" : "translateY(12px)",
-                  transition: "opacity 0.4s ease 0.05s, transform 0.4s cubic-bezier(0.2,0.8,0.2,1) 0.05s",
+                  position: "relative",
+                  zIndex: 2,
                   pointerEvents: "none",
-                  zIndex: 2
+                  marginTop: "auto"
                 }}>
-                  <div style={{ fontSize: 32, marginBottom: 14 }}>{ex.icon}</div>
                   <div className="mono" style={{
                     fontSize: 10, letterSpacing: "0.2em",
-                    color: "var(--accent)", opacity: 0.8, marginBottom: 14
-                  }}>// תרחיש אמיתי</div>
+                    color: "var(--accent)", opacity: 0.8, marginBottom: 12
+                  }}>תרחיש אמיתי</div>
                   <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 10 }}>
                     {ex.lines.map((l, li) =>
                     <li key={li} style={{
                       fontSize: 14, lineHeight: 1.5, opacity: 0.85,
-                      display: "flex", gap: 10, alignItems: "start",
-                      transform: isHover ? "translateX(0)" : "translateX(6px)",
-                      transition: `transform 0.4s ease ${0.08 * li + 0.1}s`
+                      display: "flex", gap: 10, alignItems: "start"
                     }}>
                         <span style={{
                         width: 4, height: 4, borderRadius: "50%",
@@ -423,21 +3932,8 @@ function TheShift() {
           })}
         </div>
 
-        {/* Closing pull quote */}
-        <div style={{
-          marginTop: 56,
-          background: "var(--accent)", color: "#0A0A0A",
-          padding: "48px 56px", borderRadius: 22,
-          textAlign: "center"
-        }}>
-          <p className="display" style={{
-            fontSize: "clamp(26px, 3.4vw, 44px)",
-            lineHeight: 1.25, margin: 0, fontWeight: 800
-          }}>
-            זה בדיוק ההבדל בין לקוח שמתמקח על כל שקל,<br />
-            ללקוח ששואל איפה להעביר את התשלום.
-          </p>
-        </div>
+        {/* Closing pull quote — refined, restrained */}
+        <ClosingPullQuote />
       </div>
 
       <style>{`
@@ -459,6 +3955,170 @@ function TheShift() {
 
 }
 
+function ClosingPullQuote() {
+  const ref = React.useRef(null);
+  const [inView, setInView] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!ref.current) return;
+    const io = new IntersectionObserver(
+      ([e]) => {if (e.isIntersecting) {setInView(true);io.disconnect();}},
+      { threshold: 0.35 }
+    );
+    io.observe(ref.current);
+    return () => io.disconnect();
+  }, []);
+
+  return (
+    <div ref={ref} style={{
+      marginTop: 80,
+      position: "relative",
+      padding: "40px 24px",
+      textAlign: "center",
+      maxWidth: 1100,
+      marginLeft: "auto",
+      marginRight: "auto"
+    }}>
+      {/* Glow halo behind quote */}
+      <div aria-hidden="true" style={{
+        position: "absolute",
+        top: "50%", left: "50%",
+        transform: "translate(-50%, -50%)",
+        width: 600, height: 400,
+        borderRadius: "50%",
+        background: "radial-gradient(ellipse, rgba(255,213,0,0.10), transparent 65%)",
+        filter: "blur(60px)",
+        opacity: inView ? 1 : 0,
+        transition: "opacity 1.2s ease 0.3s",
+        pointerEvents: "none",
+        zIndex: 0
+      }} />
+
+      {/* Massive quote glyph */}
+      <div aria-hidden="true" style={{
+        position: "relative",
+        fontSize: 140, lineHeight: 0.6,
+        fontFamily: "Georgia, serif",
+        fontWeight: 900,
+        color: "var(--accent)",
+        opacity: inView ? 0.85 : 0,
+        transform: inView ? "translateY(0)" : "translateY(20px)",
+        transition: "opacity 1s ease 0.2s, transform 1s cubic-bezier(0.2,0.8,0.2,1) 0.2s",
+        userSelect: "none",
+        textShadow: "0 0 40px rgba(255,213,0,0.5)",
+        marginBottom: 8,
+        zIndex: 1
+      }}></div>
+
+      {/* Eyebrow */}
+      <div style={{
+        position: "relative",
+        display: "inline-flex", alignItems: "center", gap: 10,
+        marginBottom: 18,
+        opacity: inView ? 1 : 0,
+        transform: inView ? "translateY(0)" : "translateY(8px)",
+        transition: "opacity 0.6s ease 0.1s, transform 0.6s ease 0.1s",
+        zIndex: 1
+      }}>
+        <span style={{
+          display: "inline-block",
+          width: inView ? 32 : 0, height: 1.5,
+          background: "var(--accent)",
+          transition: "width 0.7s cubic-bezier(0.2,0.8,0.2,1) 0.35s"
+        }} />
+        <span className="mono" style={{
+          fontSize: 14, fontWeight: 800,
+          letterSpacing: "0.24em",
+          color: "var(--accent)",
+          textShadow: "0 0 14px rgba(255,213,0,0.45)"
+        }}>השורה התחתונה</span>
+        <span style={{
+          display: "inline-block",
+          width: inView ? 32 : 0, height: 1.5,
+          background: "var(--accent)",
+          transition: "width 0.7s cubic-bezier(0.2,0.8,0.2,1) 0.35s"
+        }} />
+      </div>
+
+      {/* Quote */}
+      <p className="display" style={{
+        position: "relative",
+        fontSize: "clamp(28px, 3.6vw, 52px)",
+        lineHeight: 1.35,
+        margin: 0,
+        fontWeight: 800,
+        letterSpacing: "-0.015em",
+        color: "rgba(255,255,255,0.95)",
+        textWrap: "balance",
+        zIndex: 1
+      }}>
+        <AnimatedLine inView={inView} delay={250}>
+          זה בדיוק ההבדל בין{" "}
+          <span style={{
+            position: "relative",
+            display: "inline-block",
+            color: "rgba(255,255,255,0.95)",
+            fontWeight: 800
+          }}>
+            לקוח שמתמקח על כל שקל
+            <span aria-hidden="true" style={{
+              position: "absolute",
+              left: "-3%", right: "-3%",
+              top: "52%",
+              height: 5,
+              background: "linear-gradient(90deg, transparent, #ff3b3b 12%, #ff3b3b 88%, transparent)",
+              transform: inView ? "scaleX(1)" : "scaleX(0)",
+              transformOrigin: "right",
+              transition: "transform 0.9s cubic-bezier(0.2,0.8,0.2,1) 0.7s",
+              borderRadius: 3,
+              opacity: 0.9,
+              boxShadow: "0 0 14px rgba(255,59,59,0.55)"
+            }} />
+          </span>,
+        </AnimatedLine>
+        <br />
+        <AnimatedLine inView={inView} delay={450}>
+          ללקוח ששואל{" "}
+          <span style={{
+            position: "relative",
+            color: "var(--accent)",
+            fontWeight: 900,
+            whiteSpace: "nowrap",
+            textShadow: "0 0 30px rgba(255,213,0,0.45)"
+          }}>
+            איפה להעביר את התשלום
+            <span aria-hidden="true" style={{
+              position: "absolute",
+              left: 0, right: 0, bottom: "-0.08em",
+              height: 4,
+              background: "linear-gradient(90deg, transparent, var(--accent) 10%, var(--accent) 90%, transparent)",
+              transformOrigin: "right",
+              transform: inView ? "scaleX(1)" : "scaleX(0)",
+              transition: "transform 0.9s cubic-bezier(0.2,0.8,0.2,1) 0.95s",
+              borderRadius: 2,
+              boxShadow: "0 0 12px rgba(255,213,0,0.6)"
+            }} />
+          </span>.
+        </AnimatedLine>
+      </p>
+    </div>);
+
+}
+
+function AnimatedLine({ children, inView, delay = 0 }) {
+  return (
+    <span style={{
+      display: "inline-block",
+      opacity: inView ? 1 : 0,
+      transform: inView ? "translateY(0)" : "translateY(14px)",
+      filter: inView ? "blur(0)" : "blur(4px)",
+      transition: `opacity 0.7s ease ${delay}ms, transform 0.7s cubic-bezier(0.2,0.8,0.2,1) ${delay}ms, filter 0.7s ease ${delay}ms`
+    }}>
+      {children}
+    </span>);
+
+}
+
 function CTAInline({ onCTAClick, label = "בוא נדבר על הפודקאסט שלך ←" }) {
   return (
     <div style={{ display: "flex", justifyContent: "center", padding: "40px 0" }}>
@@ -469,10 +4129,141 @@ function CTAInline({ onCTAClick, label = "בוא נדבר על הפודקאסט 
 
 }
 
-function Services({ onCTAClick }) {
-  const isMobile = useIsMobile();
+function ServicesAIStats() {
+  const ref = React.useRef(null);
+  const [inView, setInView] = React.useState(false);
+  const [counts, setCounts] = React.useState([0, 0, 0, 0]);
+
+  const STATS = [
+  { value: 12, suffix: "", label: "רילסים מכל פרק", sub: "ממוצע — לפעמים יותר" },
+  { value: 100, suffix: "%", label: "מהטקסט מנותח ע״י AI", sub: "Claude · GPT · Descript" },
+  { value: 8, suffix: "h", label: "עבודה ידנית שנחסכה", sub: "מול עורך אנושי שרק מסתכל" },
+  { value: 340, suffix: "%", label: "עלייה ב־reach ממוצע", sub: "מול פרק שלא מפורק" }];
+
+
+  React.useEffect(() => {
+    if (!ref.current) return;
+    const io = new IntersectionObserver(
+      ([e]) => {if (e.isIntersecting) setInView(true);},
+      { threshold: 0.3 }
+    );
+    io.observe(ref.current);
+    return () => io.disconnect();
+  }, []);
+
+  React.useEffect(() => {
+    if (!inView) return;
+    const start = performance.now();
+    const dur = 1600;
+    let raf;
+    const tick = (t) => {
+      const p = Math.min(1, (t - start) / dur);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setCounts(STATS.map((s) => Math.round(s.value * eased)));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [inView]);
+
   return (
-    <section style={{ padding: isMobile ? "64px 0" : "120px 0", background: "var(--card)", borderTop: "1px solid var(--line2)", borderBottom: "1px solid var(--line2)" }}>
+    <div ref={ref} style={{
+      marginTop: 24,
+      position: "relative", zIndex: 2,
+      borderRadius: 14,
+      overflow: "hidden",
+      border: "1px solid rgba(255,213,0,0.18)",
+      background: "linear-gradient(180deg, rgba(255,213,0,0.03), rgba(255,213,0,0.01))"
+    }}>
+      {/* AI scanning line — sweeps across continuously */}
+      <div style={{
+        position: "absolute", top: 0, bottom: 0, width: 2,
+        background: "linear-gradient(180deg, transparent, var(--accent), transparent)",
+        boxShadow: "0 0 24px rgba(255,213,0,0.6)",
+        animation: inView ? "aiScan 3.4s linear infinite" : "none",
+        pointerEvents: "none"
+      }} />
+
+      {/* Header strip */}
+      <div style={{
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        padding: "12px 18px",
+        borderBottom: "1px solid rgba(255,213,0,0.12)",
+        background: "rgba(255,213,0,0.04)"
+      }}>
+        <div className="mono" style={{ fontSize: 11, letterSpacing: "0.2em", color: "var(--accent)", display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{
+            display: "inline-block", width: 8, height: 8, borderRadius: "50%",
+            background: "var(--accent)",
+            boxShadow: "0 0 10px var(--accent)",
+            animation: "aiBlink 1.2s ease-in-out infinite"
+          }} />
+          LIVE · AI ANALYSIS
+        </div>
+        <div className="mono" style={{ fontSize: 11, opacity: 0.5, letterSpacing: "0.15em" }}>
+          BENCHMARK · 2024–25
+        </div>
+      </div>
+
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(4, 1fr)",
+        gap: 0
+      }}>
+        {STATS.map((s, i) =>
+        <div key={i} style={{
+          padding: "26px 22px",
+          borderRight: i < STATS.length - 1 ? "1px solid rgba(255,213,0,0.12)" : "none",
+          position: "relative",
+          opacity: inView ? 1 : 0,
+          transform: inView ? "translateY(0)" : "translateY(12px)",
+          transition: `opacity 0.5s ease ${0.1 + i * 0.1}s, transform 0.6s cubic-bezier(0.2,0.8,0.2,1) ${0.1 + i * 0.1}s`
+        }}>
+            <div style={{
+            fontFamily: "var(--font-display)",
+            fontWeight: 900,
+            fontSize: "clamp(38px, 4.4vw, 56px)",
+            lineHeight: 1,
+            color: "var(--accent)",
+            letterSpacing: "-0.02em",
+            fontVariantNumeric: "tabular-nums",
+            marginBottom: 10,
+            display: "flex", alignItems: "baseline", gap: 2
+          }}>
+              {counts[i]}{s.suffix}
+            </div>
+            <div style={{
+            fontSize: 14, fontWeight: 700, lineHeight: 1.3,
+            marginBottom: 4, color: "#fff"
+          }}>
+              {s.label}
+            </div>
+            <div className="mono" style={{
+            fontSize: 11, opacity: 0.5, letterSpacing: "0.05em"
+          }}>
+              {s.sub}
+            </div>
+          </div>
+        )}
+      </div>
+
+      <style>{`
+        @keyframes aiScan {
+          0%   { right: -2px; }
+          100% { right: 100%; }
+        }
+        @keyframes aiBlink {
+          0%, 100% { opacity: 1; }
+          50%      { opacity: 0.3; }
+        }
+      `}</style>
+    </div>);
+
+}
+
+function ServicesOld({ onCTAClick }) {
+  return (
+    <section style={{ padding: "76px 0 52px", background: "var(--card)", borderTop: "1px solid var(--line2)", borderBottom: "1px solid var(--line2)" }}>
       <div className="wrap">
         <h2 className="display" style={{ fontSize: "clamp(40px, 6vw, 88px)", margin: "0 0 24px", maxWidth: 1000 }}>
           אתה מדבר.<br />
@@ -483,25 +4274,19 @@ function Services({ onCTAClick }) {
           אנחנו בונים את כל המכונה.
         </p>
 
-        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(6, 1fr)", gap: 20 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 20 }}>
           {SERVICES.map((s, i) => {
-            const colSpan = s.highlight ? 6 : i === 0 || i === 1 ? 3 : 3;
+            const span = s.highlight ? 6 : 3;
             return (
-              <div key={i} style={{
-                gridColumn: isMobile ? "span 1" : s.highlight ? "span 6" : "span 3",
-                background: s.highlight ? "var(--bg)" : "var(--bg)",
-                borderRadius: 20, padding: s.highlight ? 48 : 32,
-                border: `${s.highlight ? 2 : 1}px solid ${s.highlight ? "var(--accent)" : "var(--line2)"}`,
-                position: "relative", overflow: "hidden"
-              }}>
-                {s.highlight &&
+              <ServiceCard key={i} s={s} i={i} span={span}>
+                {s.highlight && false &&
                 <div className="mono" style={{
                   position: "absolute", top: 20, left: 20,
                   padding: "6px 12px", background: "var(--accent)", color: "#0A0A0A",
                   borderRadius: 999, fontSize: 11, fontWeight: 700, letterSpacing: "0.15em"
                 }}>
-                    AI-POWERED · הבידול שלנו
-                  </div>
+
+                </div>
                 }
                 <div style={{
                   position: "absolute", left: -10, bottom: -60,
@@ -514,54 +4299,109 @@ function Services({ onCTAClick }) {
                   {s.n}
                 </div>
                 <h3 className="display" style={{
-                  fontSize: s.highlight ? 44 : 28,
+                  fontSize: 28,
                   margin: "0 0 14px", fontWeight: 900,
-                  position: "relative", zIndex: 2,
-                  maxWidth: s.highlight ? 700 : "none"
+                  position: "relative", zIndex: 2, textAlign: "center"
+
                 }}>
                   {s.title}
                 </h3>
                 <p style={{
-                  fontSize: s.highlight ? 18 : 15,
+                  fontSize: 15,
                   lineHeight: 1.65, opacity: 0.85, margin: 0,
                   position: "relative", zIndex: 2,
-                  maxWidth: s.highlight ? 820 : "none"
+                  textAlign: "center"
                 }}>
                   {s.body}
                 </p>
                 {s.extra &&
-                <div style={{
-                  marginTop: 24, padding: 24,
-                  background: "rgba(255,213,0,0.08)",
-                  border: "1px solid rgba(255,213,0,0.25)",
-                  borderRadius: 14,
-                  position: "relative", zIndex: 2
-                }}>
-                    <p style={{ fontSize: 16, lineHeight: 1.65, margin: 0, opacity: 0.95 }}>
-                      <strong style={{ color: "var(--accent)" }}>כאן מתחיל ההבדל שלנו:</strong>
-                      {" "}
-                      אנחנו לא מחפשים את הרגעים החזקים בעין. אנחנו משתמשים ב־Descript, GPT ו־Claude כדי לנתח את כל הטקסט —
-                      ולזהות בדיוק את המשפטים, הסיפורים והרגעים שיעצרו גלילה. כל רגע ויראלי בפרק — נזהה אותו ונוציא ממנו מקסימום.
-                    </p>
-                  </div>
+                <>
+                    <div style={{
+                    marginTop: 24, padding: 24,
+                    background: "rgba(255,213,0,0.08)",
+                    border: "1px solid rgba(255,213,0,0.25)",
+                    borderRadius: 14,
+                    position: "relative", zIndex: 2
+                  }}>
+                      <p style={{ fontSize: 16, lineHeight: 1.65, margin: 0, opacity: 0.95 }}>
+                        <strong style={{ color: "var(--accent)" }}>כאן מתחיל ההבדל שלנו:</strong>
+                        {" "}
+                        אנחנו לא מחפשים את הרגעים החזקים בעין. אנחנו משתמשים ב־Descript, GPT ו־Claude כדי לנתח את כל הטקסט —
+                        ולזהות בדיוק את המשפטים, הסיפורים והרגעים שיעצרו גלילה. כל רגע ויראלי בפרק — נזהה אותו ונוציא ממנו מקסימום.
+                      </p>
+                    </div>
+                  </>
                 }
-              </div>);
+              </ServiceCard>);
 
           })}
         </div>
 
-        <div style={{ marginTop: 48, textAlign: "center" }}>
-          <button className="btn btn-primary" onClick={onCTAClick} style={{ padding: "20px 32px", fontSize: 17 }}>
-            אני רוצה לראות איך זה נראה בעסק שלי ←
-          </button>
-        </div>
       </div>
     </section>);
 
 }
 
-function HowItWorks() {
-  const isMobile = useIsMobile();
+function ServiceCard({ s, i, span, children }) {
+  const ref = React.useRef(null);
+  const [inView, setInView] = React.useState(false);
+  const [isHover, setIsHover] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!ref.current) return;
+    const io = new IntersectionObserver(
+      ([e]) => {if (e.isIntersecting) {setInView(true);io.disconnect();}},
+      { threshold: 0.2 }
+    );
+    io.observe(ref.current);
+    return () => io.disconnect();
+  }, []);
+
+  const delay = 0.08 * i;
+
+  return (
+    <div
+      ref={ref}
+      onMouseEnter={() => setIsHover(true)}
+      onMouseLeave={() => setIsHover(false)}
+      style={{
+        gridColumn: `span ${span}`,
+        background: "var(--bg)",
+        borderRadius: 20,
+        padding: 32,
+        border: `1px solid ${isHover ? "var(--accent)" : "var(--line2)"}`,
+        position: "relative",
+        overflow: "hidden",
+        opacity: inView ? 1 : 0,
+        transform: inView ?
+        isHover ? "translateY(-6px)" : "translateY(0)" :
+        "translateY(24px)",
+        boxShadow: isHover ?
+        "0 24px 60px -20px rgba(255,213,0,0.35), 0 0 0 1px rgba(255,213,0,0.2) inset" :
+        "0 0 0 0 rgba(0,0,0,0)",
+        transition: `opacity 0.6s ease ${delay}s, transform 0.6s cubic-bezier(0.2,0.8,0.2,1) ${delay}s, border-color 0.3s ease, box-shadow 0.35s ease`,
+        cursor: "default"
+      }}>
+      {React.Children.map(children, (child) => {
+        if (!child) return child;
+        // Inject hover style into the giant number div (the one with fontFamily display)
+        if (child.props && child.props.style && child.props.style.fontFamily === "var(--font-display)" && child.props.style.fontWeight === 900) {
+          return React.cloneElement(child, {
+            style: {
+              ...child.props.style,
+              opacity: isHover ? s.highlight ? 0.22 : 0.16 : s.highlight ? 0.12 : 0.07,
+              transform: isHover ? "translate(-6px, -8px)" : "translate(0, 0)",
+              transition: "opacity 0.4s ease, transform 0.5s cubic-bezier(0.2,0.8,0.2,1)"
+            }
+          });
+        }
+        return child;
+      })}
+    </div>);
+
+}
+
+function HowItWorksInteractive() {
   const [active, setActive] = React.useState(0);
   const [hover, setHover] = React.useState(-1);
 
@@ -577,13 +4417,13 @@ function HowItWorks() {
   const progress = shown / (STEPS.length - 1) * 100;
 
   return (
-    <section id="how" style={{ padding: isMobile ? "64px 0" : "120px 0" }}>
+    <section id="how" style={{ padding: "56px 0 76px" }}>
       <div className="wrap">
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "end", marginBottom: 48, gap: 40, flexWrap: "wrap" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "end", marginBottom: 64, gap: 40, flexWrap: "wrap" }}>
           <div>
-            <h2 className="display" style={{ fontSize: "clamp(40px, 6vw, 88px)", margin: "0", maxWidth: 900, color: "rgb(255, 213, 0)" }}>
+            <h2 className="display" style={{ fontSize: "clamp(40px, 6vw, 88px)", margin: "0", maxWidth: 900, color: "#FFFFFF" }}>
               שלושה שלבים.<br />
-              <span style={{ color: "rgb(255, 255, 255)" }}>ואתה כמעט לא מרגיש את זה.</span>
+              <span style={{ color: "#FFFFFF" }}>ואתה כמעט לא מרגיש את זה.</span>
             </h2>
           </div>
           <div className="mono" style={{ fontSize: 12, opacity: 0.5, letterSpacing: "0.15em" }}>
@@ -610,13 +4450,15 @@ function HowItWorks() {
             borderRadius: 2
           }} />
 
-          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 16, position: "relative", zIndex: 1 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24, position: "relative", zIndex: 1 }}>
             {STEPS.map((s, i) => {
               const isActive = shown === i;
               const reached = i <= shown;
+              const isHovering = hover === i;
               return (
                 <div
                   key={i}
+                  className="step-card"
                   onMouseEnter={() => setHover(i)}
                   onMouseLeave={() => setHover(-1)}
                   onClick={() => setActive(i)}
@@ -629,12 +4471,25 @@ function HowItWorks() {
                     position: "relative",
                     overflow: "hidden",
                     cursor: "pointer",
-                    transform: isActive ? "translateY(-8px)" : "translateY(0)",
+                    transform: isActive ? "translateY(-8px)" : isHovering ? "translateY(-4px)" : "translateY(0)",
                     boxShadow: isActive ?
                     "0 24px 60px -20px rgba(255,213,0,0.35), 0 0 0 1px rgba(255,213,0,0.2) inset" :
                     "0 0 0 0 rgba(0,0,0,0)",
                     transition: "transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s ease, border-color 0.3s ease, background 0.3s ease"
                   }}>
+
+                  {/* Scanline sweep on hover */}
+                  <div aria-hidden="true" style={{
+                    position: "absolute",
+                    top: 0, bottom: 0,
+                    width: 80,
+                    background: "linear-gradient(90deg, transparent, rgba(255,213,0,0.18), transparent)",
+                    transform: "skewX(-20deg)",
+                    pointerEvents: "none",
+                    zIndex: 1,
+                    opacity: isHovering ? 1 : 0,
+                    animation: isHovering ? "stepScan 1.6s ease-out infinite" : "none"
+                  }} />
                   
                   {/* Pulsing dot on timeline */}
                   <div style={{
@@ -737,188 +4592,343 @@ function HowItWorks() {
           0%   { transform: scale(1);   opacity: 0.8; }
           100% { transform: scale(2.2); opacity: 0; }
         }
+        @keyframes stepScan {
+          0%   { transform: translateX(-120%) skewX(-20deg); }
+          100% { transform: translateX(420%) skewX(-20deg); }
+        }
       `}</style>
     </section>);
 
 }
 
-function WhoItsFor() {
-  const isMobile = useIsMobile();
+function WhoItsForOld() {
+  const sectionRef = React.useRef(null);
+  const [inView, setInView] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!sectionRef.current) return;
+    const io = new IntersectionObserver(
+      ([e]) => {if (e.isIntersecting) setInView(true);},
+      { threshold: 0.15 }
+    );
+    io.observe(sectionRef.current);
+    return () => io.disconnect();
+  }, []);
+
   return (
-    <section style={{ padding: isMobile ? "64px 0" : "120px 0", background: "var(--card)", borderTop: "1px solid var(--line2)", borderBottom: "1px solid var(--line2)" }}>
+    <section ref={sectionRef} style={{ padding: "76px 0", background: "var(--card)", borderTop: "1px solid var(--line2)", borderBottom: "1px solid var(--line2)", overflow: "hidden" }}>
       <div className="wrap" style={{ maxWidth: 1100 }}>
         <h2 className="display" style={{ fontSize: "clamp(38px, 5.5vw, 78px)", margin: "0 0 56px", maxWidth: 1000 }}>
-          פודקאסט זה <span style={{ opacity: 0.55 }}>לא</span> לכל אחד.<br />
+          פודקאסט זה <span style={{ opacity: 0.55 }}>לא מתאים לכולם</span> <br />
           זה עובד חזק במיוחד ל:
         </h2>
 
-        <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 0 }}>
-          {AUDIENCE.map((a, i) =>
-          <li key={i} style={{
-            display: "flex", gap: 24, alignItems: "start",
-            padding: "28px 0",
-            borderBottom: i < AUDIENCE.length - 1 ? "1px solid var(--line2)" : "none"
-          }}>
-              <span style={{
-              flexShrink: 0, width: 36, height: 36, borderRadius: "50%",
-              background: "var(--accent)", color: "#0A0A0A",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              fontWeight: 900, fontSize: 16, marginTop: 2
-            }}>✓</span>
-              <p style={{ fontSize: 20, lineHeight: 1.55, margin: 0 }}>
-                <strong style={{ fontWeight: 800, fontFamily: "var(--font-display)" }}>{a.bold}</strong>{" — "}
-                <span style={{ opacity: 0.8 }}>{a.rest}</span>
-              </p>
-            </li>
-          )}
-        </ul>
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: 20,
+          marginBottom: 80
+        }}>
+          {[
+          {
+            icon: <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="6" /><path d="M15.5 13.5 L17 22 L12 19 L7 22 L8.5 13.5" /></svg>,
+            boldYellow: "יועצים ומומחים",
+            boldRest: "שמוכרים שירות יקר",
+            body: "לקוח שמגיע אחרי 10 פרקים שווה פי 3 מליד קר — הוא כבר מאמין לכם לפני שדיברתם."
+          },
+          {
+            icon: <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M12 6 L12 12 L16 14" /></svg>,
+            boldYellow: "בעלי עסקים",
+            boldRest: "עם מחזור מכירות ארוך",
+            body: "כל ליד קר עולה לכם זמן וכסף. פודקאסט מחמם אותו לפני שהוא מגיע אליכם."
+          },
+          {
+            icon: <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4" /><path d="M4 21 C 4 16, 8 14, 12 14 C 16 14, 20 16, 20 21" /></svg>,
+            boldYellow: "מומחים",
+            boldRest: "שרוצים לבנות מותג אישי",
+            body: "שרוצים שהשוק יכיר אותם — לא רק את השירות שהם מוכרים."
+          },
+          {
+            icon: <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="7" width="18" height="13" rx="2" /><path d="M9 7 V5 C 9 4, 10 3, 11 3 H13 C 14 3, 15 4, 15 5 V7" /></svg>,
+            boldYellow: "אנשי מקצוע",
+            boldRest: "שהמוניטין הוא הנכס שלהם",
+            body: "רואי חשבון, עורכי דין, אדריכלים — שהמוניטין שלהם שווה יותר מכל פרסומת."
+          }].
+          map((c, i) => {
+            const delay = 0.1 + i * 0.08;
+            return (
+              <div key={i} style={{
+                background: "#0F0F0F",
+                border: "1px solid var(--line2)",
+                borderRadius: 18,
+                padding: "30px 32px 28px",
+                position: "relative",
+                opacity: inView ? 1 : 0,
+                transform: inView ? "translateY(0)" : "translateY(16px)",
+                transition: `opacity 0.6s ease ${delay}s, transform 0.6s cubic-bezier(0.2,0.8,0.2,1) ${delay}s, border-color 0.3s ease`
+              }}>
+                <div style={{
+                  position: "absolute", top: 26, right: 28,
+                  color: "var(--accent)",
+                  display: "flex", alignItems: "center", justifyContent: "center"
+                }}>{c.icon}</div>
+                <h3 className="display" style={{
+                  fontSize: "clamp(20px, 1.7vw, 24px)",
+                  fontWeight: 800, margin: "44px 0 12px",
+                  paddingInlineEnd: 48,
+                  lineHeight: 1.35
+                }}>
+                  <span style={{ color: "var(--accent)" }}>{c.boldYellow}</span> <span>{c.boldRest}</span>
+                </h3>
+                <p style={{
+                  fontSize: 15, lineHeight: 1.65, color: "rgba(255,255,255,0.55)",
+                  margin: 0
+                }}>
+                  {c.body}
+                </p>
+              </div>);
+          })}
+        </div>
 
-        <InteractiveVerdict />
+        <InteractiveVerdictOld />
       </div>
+
+      <style>{`
+        @keyframes whoPulse {
+          0%   { box-shadow: 0 0 0 0 rgba(255,213,0,0.5); }
+          50%  { box-shadow: 0 0 0 14px rgba(255,213,0,0); }
+          100% { box-shadow: 0 0 0 0 rgba(255,213,0,0); }
+        }
+      `}</style>
     </section>);
 
 }
 
-function InteractiveVerdict() {
-  const [side, setSide] = React.useState(1); // 0 = not your tool, 1 = your tool
-  const [auto, setAuto] = React.useState(true);
+function InteractiveVerdictOld() {
+  const wrapRef = React.useRef(null);
+  const [inView, setInView] = React.useState(false);
 
   React.useEffect(() => {
-    if (!auto) return;
-    const id = setInterval(() => setSide((s) => 1 - s), 4200);
-    return () => clearInterval(id);
-  }, [auto]);
+    if (!wrapRef.current) return;
+    const io = new IntersectionObserver(
+      ([e]) => {if (e.isIntersecting) setInView(true);},
+      { threshold: 0.2 }
+    );
+    io.observe(wrapRef.current);
+    return () => io.disconnect();
+  }, []);
 
-  const VERDICTS = [
-  {
-    tag: "לא בשבילך",
-    headline: "אם אתה מוכר משהו שנקנה ב־30 שניות ללא מחשבה",
-    verdict: "פודקאסט הוא לא הכלי שלך.",
-    icon: "✗",
-    tone: "mute"
-  },
-  {
-    tag: "זה בשבילך",
-    headline: "אם אתה מוכר אמון, ניסיון, או ידע",
-    verdict: "כמעט ואין כלי שיעבוד בשבילך טוב יותר.",
-    icon: "✓",
-    tone: "accent"
-  }];
+  const NOT_FOR = [
+  "מוצרים שמוכרים בנפח גדול ומחיר נמוך",
+  "עסקים שצריכים תוצאות מיידיות בלבד",
+  "קמפיינים שרצים פחות מ־48 שעות",
+  "קהל שלא מתחבר לפורמט — רק מסרטון"];
+
+  const FOR_YOU = [
+  "מחזור מכירה ארוך שרוצים לקצר",
+  "מותג אישי שרוצים לבנות לאורך זמן",
+  "קהל יעד מוגדר שיודעים מה הוא צריך",
+  "רוצים לקוחות שמגיעים מוכנים — לא כאלה שצריך לשכנע"];
 
 
   return (
-    <div
-      onMouseLeave={() => setAuto(true)}
-      style={{ marginTop: 56, position: "relative" }}>
-      
-      {/* Tabs */}
-      <div style={{ display: "flex", gap: 10, marginBottom: 18 }}>
-        {VERDICTS.map((v, i) => {
-          const on = side === i;
-          return (
-            <button
-              key={i}
-              onMouseEnter={() => {setAuto(false);setSide(i);}}
-              onClick={() => {setAuto(false);setSide(i);}}
-              style={{
-                flex: 1,
-                textAlign: "right",
-                background: on ? i === 1 ? "var(--accent)" : "#1a1a1a" : "transparent",
-                color: on ? i === 1 ? "#0A0A0A" : "#fff" : "rgba(255,255,255,0.5)",
-                border: `1px solid ${on ? i === 1 ? "var(--accent)" : "#333" : "var(--line2)"}`,
-                borderRadius: 12,
-                padding: "14px 20px",
-                fontSize: 13,
-                fontWeight: 700,
-                letterSpacing: "0.12em",
-                fontFamily: "var(--font-mono)",
-                cursor: "pointer",
-                transition: "all 0.3s ease",
-                display: "flex", alignItems: "center", gap: 10
-              }}>
-              
-              <span style={{
-                display: "inline-flex", width: 22, height: 22, borderRadius: "50%",
-                alignItems: "center", justifyContent: "center",
-                background: on ? i === 1 ? "#0A0A0A" : "var(--accent)" : "rgba(255,255,255,0.1)",
-                color: on ? i === 1 ? "var(--accent)" : "#0A0A0A" : "rgba(255,255,255,0.4)",
-                fontSize: 13, fontWeight: 900
-              }}>{v.icon}</span>
-              {v.tag}
-            </button>);
-
-        })}
+    <div ref={wrapRef} style={{ marginTop: 12, position: "relative" }}>
+      {/* VERDICT label + headline */}
+      <div style={{ textAlign: "center", marginBottom: 36 }}>
+        <div className="mono" style={{
+          fontSize: 12, letterSpacing: "0.28em", fontWeight: 700,
+          color: "var(--accent)", marginBottom: 14,
+          opacity: inView ? 1 : 0,
+          transform: inView ? "translateY(0)" : "translateY(8px)",
+          transition: "opacity 0.5s ease 0.05s, transform 0.5s ease 0.05s"
+        }}></div>
+        <h3 className="display" style={{
+          fontSize: "clamp(28px, 3.4vw, 44px)",
+          fontWeight: 900, margin: 0, lineHeight: 1.1,
+          opacity: inView ? 1 : 0,
+          transform: inView ? "translateY(0)" : "translateY(10px)",
+          transition: "opacity 0.6s ease 0.15s, transform 0.6s cubic-bezier(0.2,0.8,0.2,1) 0.15s"
+        }}>איפה אתם נמצאים?</h3>
       </div>
 
-      {/* Stage */}
       <div style={{
-        position: "relative",
-        borderRadius: 18,
-        overflow: "hidden",
-        minHeight: 260,
-        background: side === 1 ? "rgba(255,213,0,0.08)" : "#0F0F0F",
-        border: `1.5px solid ${side === 1 ? "var(--accent)" : "#222"}`,
-        transition: "background 0.5s ease, border-color 0.5s ease"
+        display: "grid",
+        gridTemplateColumns: "1fr 1fr",
+        gap: 20,
+        alignItems: "stretch",
+        direction: "ltr"
       }}>
-        {/* Diagonal yellow wash that animates in on 'your tool' side */}
+        {/* LEFT — לא בשבילכם */}
         <div style={{
-          position: "absolute", inset: 0,
-          background: "linear-gradient(135deg, rgba(255,213,0,0.18) 0%, transparent 55%)",
-          opacity: side === 1 ? 1 : 0,
-          transition: "opacity 0.6s ease",
-          pointerEvents: "none"
-        }} />
-        {/* Giant ghost icon */}
-        <div style={{
-          position: "absolute", left: -30, bottom: -80,
-          fontFamily: "var(--font-display)", fontWeight: 900,
-          fontSize: 340, lineHeight: 0.85,
-          color: side === 1 ? "var(--accent)" : "#fff",
-          opacity: side === 1 ? 0.14 : 0.04,
-          transition: "all 0.6s ease",
-          pointerEvents: "none"
-        }}>{VERDICTS[side].icon}</div>
+          direction: "rtl",
+          position: "relative",
+          borderRadius: 20,
+          overflow: "hidden",
+          background: "#0E0E0E",
+          border: "1px solid var(--line2)",
+          padding: "32px 32px 28px",
+          display: "flex", flexDirection: "column",
+          opacity: inView ? 0.78 : 0,
+          transform: inView ? "translateY(0)" : "translateY(18px)",
+          transition: "opacity 0.6s ease 0.25s, transform 0.7s cubic-bezier(0.2,0.8,0.2,1) 0.25s"
+        }}>
+          {/* tag */}
+          <div style={{
+            display: "inline-flex", alignItems: "center", gap: 8,
+            padding: "8px 16px", borderRadius: 999,
+            background: "rgba(255,255,255,0.05)",
+            border: "1px solid rgba(255,255,255,0.12)",
+            color: "rgba(255,255,255,0.6)",
+            fontSize: 13, fontWeight: 700,
+            alignSelf: "flex-start",
+            marginBottom: 22
+          }}>
+            <span style={{ fontSize: 12 }}>✗</span>
+            <span>לא בשבילכם</span>
+          </div>
 
-        {/* Crossfade content */}
-        {VERDICTS.map((v, i) => {
-          const on = side === i;
-          return (
-            <div key={i} style={{
-              position: i === 0 ? "absolute" : "relative",
-              inset: i === 0 ? 0 : undefined,
-              padding: "44px 48px",
-              opacity: on ? 1 : 0,
-              transform: on ? "translateY(0)" : "translateY(12px)",
-              transition: "opacity 0.45s ease, transform 0.45s ease",
-              pointerEvents: on ? "auto" : "none",
-              zIndex: on ? 2 : 1
+          <p className="display" style={{
+            fontSize: "clamp(20px, 1.9vw, 26px)",
+            lineHeight: 1.4, margin: "0 0 24px", fontWeight: 800,
+            color: "rgba(255,255,255,0.75)"
+          }}>
+            אם אתם מוכרים מוצר שצריך להסביר ב־30 שניות — <span style={{ color: "#fff" }}>פודקאסט הוא לא הכלי הנכון.</span>
+          </p>
+
+          <ul style={{
+            listStyle: "none", padding: 0, margin: 0,
+            display: "flex", flexDirection: "column", gap: 12,
+            flex: 1
+          }}>
+            {NOT_FOR.map((pt, j) =>
+            <li key={j} style={{
+              display: "flex", alignItems: "start", gap: 12,
+              fontSize: 14, lineHeight: 1.5,
+              color: "rgba(255,255,255,0.5)",
+              opacity: inView ? 1 : 0,
+              transform: inView ? "translateX(0)" : "translateX(-10px)",
+              transition: `opacity 0.5s ease ${0.4 + j * 0.07}s, transform 0.5s ease ${0.4 + j * 0.07}s`
             }}>
-              <div className="mono" style={{
-                fontSize: 12, letterSpacing: "0.2em",
-                color: i === 1 ? "var(--accent)" : "rgba(255,255,255,0.45)",
-                marginBottom: 16
-              }}>VERDICT · 0{i + 1}</div>
-              <p className="display" style={{
-                fontSize: "clamp(22px, 2.6vw, 32px)",
-                lineHeight: 1.35, margin: 0, fontWeight: 700,
-                color: i === 1 ? "#fff" : "rgba(255,255,255,0.55)"
-              }}>
-                {v.headline} —<br />
-                <span style={{
-                  color: i === 1 ? "var(--accent)" : "#fff",
-                  fontWeight: 900
-                }}>{v.verdict}</span>
-              </p>
-            </div>);
+                <span aria-hidden="true" style={{
+                flexShrink: 0, width: 16, height: 16, marginTop: 3,
+                display: "inline-flex", alignItems: "center", justifyContent: "center",
+                color: "rgba(255,255,255,0.4)", fontWeight: 900, fontSize: 13
+              }}>✗</span>
+                <span>{pt}</span>
+              </li>
+            )}
+          </ul>
 
-        })}
+          {/* divider + footer */}
+          <div style={{
+            marginTop: 28, paddingTop: 22,
+            borderTop: "1px solid rgba(255,255,255,0.08)"
+          }}>
+            <p style={{
+              fontSize: 14, lineHeight: 1.55, margin: "0 0 16px",
+              color: "rgba(255,255,255,0.55)", textAlign: "center"
+            }}>
+              לא בטוחים לאיזה צד אתם שייכים?<br />
+              <strong style={{ color: "#fff", fontWeight: 800 }}>נגיד לכם בשיחה — בלי לחץ.</strong>
+            </p>
+            <a href="#contact" style={{
+              display: "block", textAlign: "center",
+              padding: "12px 20px", borderRadius: 12,
+              border: "1px solid rgba(255,255,255,0.2)",
+              color: "#fff", textDecoration: "none",
+              fontWeight: 700, fontSize: 14,
+              transition: "background 0.25s ease, border-color 0.25s ease"
+            }}
+            onMouseEnter={(e) => {e.currentTarget.style.background = "rgba(255,255,255,0.06)";e.currentTarget.style.borderColor = "rgba(255,255,255,0.32)";}}
+            onMouseLeave={(e) => {e.currentTarget.style.background = "transparent";e.currentTarget.style.borderColor = "rgba(255,255,255,0.2)";}}>
+              בואו נבדוק יחד →
+            </a>
+          </div>
+        </div>
+
+        {/* RIGHT — זה בשבילכם */}
+        <div style={{
+          direction: "rtl",
+          position: "relative",
+          borderRadius: 20,
+          overflow: "hidden",
+          background: "linear-gradient(180deg, rgba(255,213,0,0.07), rgba(255,213,0,0.02) 70%, transparent)",
+          border: "1.5px solid var(--accent)",
+          padding: "32px 32px 28px",
+          display: "flex", flexDirection: "column",
+          boxShadow: "0 0 48px rgba(255,213,0,0.12), inset 0 0 60px rgba(255,213,0,0.04)",
+          opacity: inView ? 1 : 0,
+          transform: inView ? "translateY(0)" : "translateY(18px)",
+          transition: "opacity 0.6s ease 0.3s, transform 0.7s cubic-bezier(0.2,0.8,0.2,1) 0.3s"
+        }}>
+          {/* huge watermark check */}
+          <svg aria-hidden="true" viewBox="0 0 24 24"
+          style={{
+            position: "absolute", left: -10, bottom: -30,
+            width: 260, height: 260, opacity: 0.08,
+            color: "var(--accent)", pointerEvents: "none"
+          }} fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4 12 L10 18 L20 6" />
+          </svg>
+
+          {/* tag */}
+          <div style={{
+            display: "inline-flex", alignItems: "center", gap: 8,
+            padding: "8px 16px", borderRadius: 999,
+            background: "var(--accent)",
+            color: "#0A0A0A",
+            fontSize: 13, fontWeight: 800,
+            alignSelf: "flex-start",
+            marginBottom: 22,
+            boxShadow: "0 0 24px rgba(255,213,0,0.4)"
+          }}>
+            <span style={{ fontSize: 12 }}>✓</span>
+            <span>זה בשבילכם</span>
+          </div>
+
+          <p className="display" style={{
+            fontSize: "clamp(20px, 1.9vw, 26px)",
+            lineHeight: 1.4, margin: "0 0 24px", fontWeight: 800,
+            color: "#fff",
+            position: "relative", zIndex: 1
+          }}>
+            אם אתם מוכרים אמון, ניסיון, או ידע — <span style={{ color: "var(--accent)", textShadow: "0 0 24px rgba(255,213,0,0.4)" }}>ואין לכם כלי שעובד בשבילכם 24/7 בלי לשלם על כל קליק.</span>
+          </p>
+
+          <ul style={{
+            listStyle: "none", padding: 0, margin: 0,
+            display: "flex", flexDirection: "column", gap: 12,
+            flex: 1, position: "relative", zIndex: 1
+          }}>
+            {FOR_YOU.map((pt, j) =>
+            <li key={j} style={{
+              display: "flex", alignItems: "start", gap: 12,
+              fontSize: 14, lineHeight: 1.5,
+              color: "rgba(255,255,255,0.92)",
+              opacity: inView ? 1 : 0,
+              transform: inView ? "translateX(0)" : "translateX(-10px)",
+              transition: `opacity 0.5s ease ${0.55 + j * 0.07}s, transform 0.5s ease ${0.55 + j * 0.07}s`
+            }}>
+                <span aria-hidden="true" style={{
+                flexShrink: 0, width: 18, height: 18, marginTop: 2,
+                display: "inline-flex", alignItems: "center", justifyContent: "center",
+                color: "var(--accent)"
+              }}>
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M4 12 L10 18 L20 6" />
+                  </svg>
+                </span>
+                <span>{pt}</span>
+              </li>
+            )}
+          </ul>
+        </div>
       </div>
     </div>);
 
 }
 
-function WhyUs() {
-  const isMobile = useIsMobile();
+function WhyUsOld() {
   const [hovered, setHovered] = React.useState(-1);
 
   // Interactive chip data for the AI highlight
@@ -952,14 +4962,14 @@ function WhyUs() {
   };
 
   return (
-    <section id="why" style={{ padding: isMobile ? "64px 0" : "120px 0" }}>
+    <section id="why" style={{ padding: "76px 0" }}>
       <div className="wrap">
-        <h2 className="display" style={{ fontSize: "clamp(38px, 6vw, 84px)", margin: "0 0 48px", maxWidth: 1100 }}>
+        <h2 className="display" style={{ fontSize: "clamp(38px, 6vw, 84px)", margin: "0 0 64px", maxWidth: 1100 }}>
           אנחנו לא חברת הפקה.<br />
           <span style={{ color: "var(--accent)" }}>אנחנו שותפים לתוצאה העסקית.</span>
         </h2>
 
-        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 20 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
           {WHY_US.map((w, i) => {
             const isHover = hovered === i;
             if (w.highlight) {
@@ -1174,388 +5184,53 @@ function WhyUs() {
 
 }
 
-function Results() {
-  const isMobile = useIsMobile();
+function SectionDivider() {
   return (
-    <section id="results" style={{ padding: isMobile ? "64px 0" : "120px 0", background: "var(--card)", borderTop: "1px solid var(--line2)", borderBottom: "1px solid var(--line2)" }}>
-      <div className="wrap">
-        <h2 className="display" style={{ fontSize: "clamp(38px, 6vw, 84px)", margin: "0 0 56px", maxWidth: 1100 }}>
-          המספרים מאחורי<br />
-          <span style={{ color: "var(--accent)" }}>הפודקאסטים שאנחנו מייצרים.</span>
-        </h2>
-
-        {/* Placeholder notice */}
-        <div style={{
-          padding: 24,
-          background: "rgba(255,213,0,0.06)",
-          border: "1px dashed rgba(255,213,0,0.35)",
-          borderRadius: 14,
-          marginBottom: 48,
-          display: "flex", gap: 14, alignItems: "center"
-        }}>
-          <span className="mono" style={{
-            fontSize: 11, fontWeight: 700, letterSpacing: "0.15em",
-            padding: "4px 10px", background: "var(--accent)", color: "#0A0A0A", borderRadius: 999
-          }}>PLACEHOLDER</span>
-          <span style={{ fontSize: 14, opacity: 0.75 }}>
-            נדרש תוכן אמיתי — שמות לקוחות, מספרים, ציטוטים. עד אז, מוצגות מסגרות ריקות ברורות.
-          </span>
-        </div>
-
-        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 20 }}>
-          {[1, 2, 3].map((i) =>
-          <div key={i} style={{
-            background: "var(--bg)", borderRadius: 20, padding: 32,
-            border: "1px dashed var(--line2)",
-            minHeight: 340, display: "flex", flexDirection: "column", justifyContent: "space-between"
-          }}>
-              <div>
-                <div className="mono" style={{ fontSize: 11, opacity: 0.4, marginBottom: 12 }}>
-                  CASE #{String(i).padStart(2, "0")}
-                </div>
-                <div style={{
-                width: 60, height: 60, borderRadius: 12,
-                border: "1px dashed var(--line2)", marginBottom: 18,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 11, color: "var(--muted)", opacity: 0.5
-              }}>לוגו</div>
-                <div style={{ fontSize: 15, fontWeight: 700, opacity: 0.5 }}>שם הלקוח / תחום</div>
-              </div>
-              <div>
-                <div className="display" style={{ fontSize: 56, color: "var(--accent)", opacity: 0.35, fontWeight: 900 }}>
-                  —
-                </div>
-                <div className="mono" style={{ fontSize: 11, opacity: 0.4, marginTop: 4 }}>
-                  KPI · לידים · צפיות
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Featured platforms */}
-        <div style={{ marginTop: 64 }}>
-          <div className="mono" style={{ fontSize: 12, opacity: 0.45, marginBottom: 16 }}>— הפרקים שלנו מופיעים ב:</div>
-          <LogoMarquee />
-        </div>
-      </div>
-    </section>);
+    <div aria-hidden="true" style={{
+      height: 1, width: "100%",
+      background: "linear-gradient(90deg, transparent, rgba(255,213,0,0.18) 30%, rgba(255,213,0,0.18) 70%, transparent)"
+    }} />);
 
 }
 
-function FAQSection() {
-  const isMobile = useIsMobile();
-  const [openIdx, setOpenIdx] = React.useState(0);
-  return (
-    <section id="faq" style={{ padding: isMobile ? "64px 0" : "120px 0" }}>
-      <div className="wrap" style={{ maxWidth: 1000 }}>
-        <span className="mono" style={{ fontSize: 13, opacity: 0.5 }}>09 / שאלות</span>
-        <h2 className="display" style={{ fontSize: "clamp(40px, 6vw, 88px)", margin: "12px 0 56px" }}>
-          שאלות <span style={{ color: "var(--accent)" }}>ותשובות.</span>
-        </h2>
-
-        <div>
-          {FAQ.map((f, i) => {
-            const isOpen = openIdx === i;
-            return (
-              <div key={i}
-              onClick={() => setOpenIdx(isOpen ? -1 : i)}
-              style={{
-                borderTop: i === 0 ? "1px solid var(--line2)" : "none",
-                borderBottom: "1px solid var(--line2)",
-                padding: "28px 4px",
-                cursor: "pointer",
-                background: isOpen ? "rgba(255,213,0,0.04)" : "transparent",
-                transition: "background .25s ease"
-              }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 20 }}>
-                  <div style={{ display: "flex", alignItems: "baseline", gap: 20, flex: 1 }}>
-                    <span className="mono" style={{
-                      fontSize: 12, opacity: isOpen ? 1 : 0.4,
-                      color: isOpen ? "var(--accent)" : "inherit", minWidth: 28
-                    }}>{String(i + 1).padStart(2, "0")}</span>
-                    <span style={{
-                      fontSize: 20, fontWeight: 700,
-                      color: isOpen ? "var(--accent)" : "inherit"
-                    }}>{f.q}</span>
-                  </div>
-                  <div style={{
-                    width: 36, height: 36, borderRadius: "50%",
-                    border: `1.5px solid ${isOpen ? "var(--accent)" : "var(--line2)"}`,
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    position: "relative", flexShrink: 0,
-                    transition: "border-color .25s, transform .3s",
-                    transform: isOpen ? "rotate(180deg)" : "rotate(0)",
-                    background: isOpen ? "var(--accent)" : "transparent"
-                  }}>
-                    <span style={{ width: 12, height: 1.5, background: isOpen ? "#0A0A0A" : "currentColor" }} />
-                    <span style={{
-                      width: 1.5, height: 12, background: isOpen ? "#0A0A0A" : "currentColor",
-                      position: "absolute",
-                      transform: isOpen ? "scaleY(0)" : "scaleY(1)",
-                      transition: "transform .25s"
-                    }} />
-                  </div>
-                </div>
-                <div style={{
-                  display: "grid",
-                  gridTemplateRows: isOpen ? "1fr" : "0fr",
-                  transition: "grid-template-rows .35s ease",
-                  marginTop: isOpen ? 18 : 0
-                }}>
-                  <div style={{ overflow: "hidden", paddingRight: 48 }}>
-                    <p style={{ margin: 0, fontSize: 17, lineHeight: 1.75, opacity: 0.85 }}>{f.a}</p>
-                  </div>
-                </div>
-              </div>);
-
-          })}
-        </div>
-      </div>
-    </section>);
-
-}
-
-function FinalCTA({ form }) {
-  const isMobile = useIsMobile();
-  const { values, setField, errors, touched, blur, submit, submitted } = form;
-  return (
-    <section id="cta" style={{ padding: isMobile ? "48px 0" : "120px 0 60px", position: "relative", overflow: "hidden" }}>
-      {/* Decorative giant type watermark */}
-      <div aria-hidden style={{
-        position: "absolute", right: "-2%", bottom: "-10%",
-        fontFamily: "var(--font-display)", fontWeight: 900,
-        fontSize: "clamp(200px, 28vw, 520px)",
-        letterSpacing: "-0.05em", lineHeight: 0.8,
-        color: "var(--accent)", opacity: 0.06,
-        pointerEvents: "none", userSelect: "none"
-      }}>PULL</div>
-
-      <div className="wrap" style={{ position: "relative", zIndex: 2 }}>
-        <div style={{
-          background: "var(--accent)", color: "#0A0A0A",
-          borderRadius: isMobile ? 20 : 28, padding: isMobile ? "40px 24px" : "80px 56px",
-          position: "relative", overflow: "hidden"
-        }}>
-          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1.2fr 1fr", gap: isMobile ? 32 : 60, alignItems: "center" }}>
-            <div>
-              <span className="mono" style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.15em" }}>
-                10 / שיחת היכרות
-              </span>
-              <h2 className="display" style={{
-                fontSize: "clamp(42px, 6.5vw, 96px)",
-                margin: "20px 0 28px", color: "#0A0A0A", fontWeight: 900
-              }}>
-                מוכן להפסיק<br />
-                לרדוף אחרי לקוחות?
-              </h2>
-              <p style={{ fontSize: 20, lineHeight: 1.55, margin: "0 0 16px", maxWidth: 520 }}>
-                במקום זה — בוא ניצור משהו שהם ירדפו אחריו.
-                שיחת היכרות של 30 דקות, ללא עלות וללא מחויבות.
-                נבין ביחד אם פודקאסט הוא הכלי הנכון לעסק שלך — ואם כן, איך נראה הפורמט שיעבוד בשבילך.
-              </p>
-            </div>
-
-            {submitted ?
-            <div style={{
-              background: "#0A0A0A", color: "#F5F2E8",
-              borderRadius: 20, padding: 40
-            }}>
-                <div style={{ fontSize: 56, marginBottom: 12, color: "var(--accent)" }}>✓</div>
-                <h3 className="display" style={{ fontSize: 36, margin: "0 0 12px", color: "var(--accent)" }}>קיבלנו!</h3>
-                <p style={{ fontSize: 17, lineHeight: 1.6, opacity: 0.85 }}>
-                  נחזור אליך תוך 24 שעות לקביעת שיחה.
-                  אין שיחת מכירה לוחצת — רק שיחת אבחון אמיתית.
-                </p>
-              </div> :
-
-            <form onSubmit={submit} style={{
-              background: "#0A0A0A", color: "#F5F2E8",
-              borderRadius: 20, padding: 32,
-              display: "flex", flexDirection: "column", gap: 14
-            }}>
-                <div className={`field ${errors.name && touched.name ? "error" : ""}`}>
-                  <label>שם מלא</label>
-                  <input value={values.name} onChange={(e) => setField("name", e.target.value)} onBlur={() => blur("name")} placeholder="משה לוי" />
-                  {errors.name && touched.name && <span className="err">{errors.name}</span>}
-                </div>
-                <div className={`field ${errors.phone && touched.phone ? "error" : ""}`}>
-                  <label>טלפון</label>
-                  <input dir="ltr" value={values.phone} onChange={(e) => setField("phone", e.target.value)} onBlur={() => blur("phone")} placeholder="054-000-0000" />
-                  {errors.phone && touched.phone && <span className="err">{errors.phone}</span>}
-                </div>
-                <div className={`field ${errors.email && touched.email ? "error" : ""}`}>
-                  <label>אימייל (לא חובה)</label>
-                  <input dir="ltr" value={values.email} onChange={(e) => setField("email", e.target.value)} onBlur={() => blur("email")} placeholder="you@company.com" />
-                  {errors.email && touched.email && <span className="err">{errors.email}</span>}
-                </div>
-                <button type="submit" className="btn btn-primary" style={{
-                marginTop: 8, justifyContent: "center", padding: "20px",
-                background: "var(--accent)", color: "#0A0A0A", fontSize: 17
-              }}>
-                  בוא נקבע שיחה ←
-                </button>
-                <p className="mono" style={{
-                fontSize: 11, opacity: 0.55, margin: "6px 0 0",
-                textAlign: "center", lineHeight: 1.6
-              }}>
-                  אין שיחת מכירה לוחצת. רק שיחת אבחון אמיתית —<br />
-                  גם אם בסוף נחליט שזה לא מתאים.
-                </p>
-              </form>
-            }
-          </div>
-        </div>
-      </div>
-    </section>);
-
-}
-
-function GuestStrip() {
-  return (
-    <section style={{
-      padding: "120px 0 100px",
-      position: "relative", overflow: "hidden",
-      background: "var(--bg)",
-      borderTop: "1px solid var(--line2)"
-    }}>
-      {/* Ambient glow */}
-      <div aria-hidden="true" style={{
-        position: "absolute", top: "30%", left: "50%",
-        transform: "translate(-50%, -50%)",
-        width: 900, height: 400,
-        background: "radial-gradient(ellipse, rgba(255,213,0,0.06), transparent 70%)",
-        pointerEvents: "none", filter: "blur(40px)"
-      }} />
-
-      <div className="wrap" style={{ position: "relative", zIndex: 2, marginBottom: 56 }}>
-        <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 32, flexWrap: "wrap" }}>
-          <div>
-            <div className="mono" style={{
-              display: "inline-flex", alignItems: "center", gap: 10,
-              padding: "8px 14px", borderRadius: 999,
-              background: "rgba(255,213,0,0.08)",
-              border: "1px solid rgba(255,213,0,0.3)",
-              fontSize: 11, letterSpacing: "0.18em",
-              color: "var(--accent)", marginBottom: 24
-            }}>
-              <span style={{
-                width: 7, height: 7, borderRadius: "50%",
-                background: "var(--accent)", boxShadow: "0 0 8px var(--accent)",
-                animation: "pulse 1.6s ease-in-out infinite"
-              }} />
-              FROM THE STUDIO
-            </div>
-            <h2 className="display" style={{
-              fontSize: "clamp(40px, 6vw, 88px)",
-              margin: 0, fontWeight: 900, lineHeight: 0.95,
-              maxWidth: 900
-            }}>
-              עשרות אורחים.<br />
-              <span style={{ color: "var(--accent)" }}>מאות פרקים.</span>
-            </h2>
-          </div>
-          <p style={{
-            fontSize: 18, lineHeight: 1.6, opacity: 0.7,
-            margin: 0, maxWidth: 380
-          }}>
-            מבעלי עסקים ומנכ״לים ועד יוצרי תוכן ומותגי צריכה — דוגמית מהאולפן שלנו, בפעולה.
-          </p>
-        </div>
-      </div>
-
-      {/* Marquee rows */}
-      <div style={{ position: "relative" }}>
-        {/* Edge vignettes */}
-        <div aria-hidden="true" style={{
-          position: "absolute", top: 0, bottom: 0, right: 0,
-          width: 140, zIndex: 3, pointerEvents: "none",
-          background: "linear-gradient(to left, var(--bg), transparent)"
-        }} />
-        <div aria-hidden="true" style={{
-          position: "absolute", top: 0, bottom: 0, left: 0,
-          width: 140, zIndex: 3, pointerEvents: "none",
-          background: "linear-gradient(to right, var(--bg), transparent)"
-        }} />
-
-        <div className="guest-marquee-row" style={{
-          display: "flex", gap: 0, marginBottom: 18,
-          animation: "marquee-rtl 60s linear infinite",
-          width: "max-content"
-        }}>
-          <img src="assets/guests-row-1.png" alt="" style={{ height: 260, width: "auto", display: "block", flexShrink: 0 }} />
-          <img src="assets/guests-row-1.png" alt="" style={{ height: 260, width: "auto", display: "block", flexShrink: 0 }} aria-hidden="true" />
-        </div>
-
-        <div className="guest-marquee-row" style={{
-          display: "flex", gap: 0,
-          animation: "marquee-ltr 75s linear infinite",
-          width: "max-content"
-        }}>
-          <img src="assets/guests-row-2.png" alt="" style={{ height: 260, width: "auto", display: "block", flexShrink: 0 }} />
-          <img src="assets/guests-row-2.png" alt="" style={{ height: 260, width: "auto", display: "block", flexShrink: 0 }} aria-hidden="true" />
-        </div>
-      </div>
-
-      <div className="wrap" style={{
-        marginTop: 56, display: "flex",
-        alignItems: "center", gap: 24, flexWrap: "wrap",
-        justifyContent: "space-between"
-      }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 32, flexWrap: "wrap" }}>
-          <div>
-            <div style={{ fontSize: 36, fontWeight: 900, lineHeight: 1, color: "var(--accent)" }}>+50</div>
-            <div className="mono" style={{ fontSize: 11, letterSpacing: "0.15em", opacity: 0.6, marginTop: 6 }}>אורחים</div>
-          </div>
-          <div style={{ width: 1, height: 40, background: "var(--line2)" }} />
-          <div>
-            <div style={{ fontSize: 36, fontWeight: 900, lineHeight: 1, color: "var(--accent)" }}>+300</div>
-            <div className="mono" style={{ fontSize: 11, letterSpacing: "0.15em", opacity: 0.6, marginTop: 6 }}>פרקים</div>
-          </div>
-          <div style={{ width: 1, height: 40, background: "var(--line2)" }} />
-          <div>
-            <div style={{ fontSize: 36, fontWeight: 900, lineHeight: 1, color: "var(--accent)" }}>4</div>
-            <div className="mono" style={{ fontSize: 11, letterSpacing: "0.15em", opacity: 0.6, marginTop: 6 }}>סטים באולפן</div>
-          </div>
-        </div>
-        <div className="mono" style={{ fontSize: 12, letterSpacing: "0.2em", opacity: 0.5 }}>
-          CUTS STUDIO · TEL AVIV
-        </div>
-      </div>
-
-      <style>{`
-        @keyframes marquee-rtl {
-          from { transform: translateX(0); }
-          to { transform: translateX(50%); }
-        }
-        @keyframes marquee-ltr {
-          from { transform: translateX(0); }
-          to { transform: translateX(-50%); }
-        }
-        .guest-marquee-row:hover { animation-play-state: paused; }
-        @media (max-width: 768px) {
-          .guest-marquee-row img { height: 180px !important; }
-        }
-      `}</style>
-    </section>);
-
-}
+// ---------- BOLD VARIATION (root) ----------
 
 function BoldVariation({ onCTAClick, form }) {
   return (
     <div className="fade-in">
-      <TopNav variant="bold" onCTAClick={onCTAClick} />
-      <Hero onCTAClick={onCTAClick} />
-      <MirrorMoment />
-      <TheShift />
-      <GuestStrip />
-      <CTAInline onCTAClick={onCTAClick} />
-      <Services onCTAClick={onCTAClick} />
-      <HowItWorks />
-      <WhoItsFor />
-      <FAQSection />
-      <FinalCTA form={form} />
-      <Footer variant="bold" />
+      {/* 01 */} <TopNav variant="bold" onCTAClick={onCTAClick} />
+      {/* 02 */} <Hero onCTAClick={onCTAClick} />
+      {/* 04 */} <SolutionOld />
+      <SectionDivider />
+      {/* 04b — inline lead form right after Solution */} <InlineLeadForm form={form} />
+      <SectionDivider />
+      {/* 05 */} <ProblemOld />
+      <SectionDivider />
+      {/* 06 */} <SocialProofSection onCTAClick={onCTAClick} />
+      <SectionDivider />
+      {/* 06b — mini lead stripe */} <MiniLeadStripe form={form} />
+      <SectionDivider />
+      {/* 08b — "פודקאסט זה לא לכל אחד" before the steps */} <WhoItsForOld />
+      <SectionDivider />
+      {/* 08 */} <HowItWorksInteractive />
+      <SectionDivider />
+      {/* moved: ServicesOld inserted between steps and results */} <ServicesOld onCTAClick={onCTAClick} />
+      <SectionDivider />
+      {/* 09d — studio booking lead capture (moved up) */} <StudioBookingLead form={form} />
+      <SectionDivider />
+      {/* 09c — results from previous version */} <Results />
+      <SectionDivider />
+      {/* 09b — guest strip from previous version */} <GuestStrip />
+      <SectionDivider />
+      {/* 13 */} <Guarantee onCTAClick={onCTAClick} />
+      <SectionDivider />
+      {/* 13b — lead stripe right after Guarantee */} <MiniLeadStripe form={form} />
+      <SectionDivider />
+      {/* 14 */} <FAQSection />
+      <SectionDivider />
+      {/* 15 */} <FinalCTA form={form} onCTAClick={onCTAClick} />
+
+      {/* 16 */} <Footer variant="bold" />
     </div>);
 
 }
