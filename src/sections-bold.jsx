@@ -4844,7 +4844,7 @@ function InteractiveVerdictOld() {
         direction: "ltr"
       }}>
         {/* LEFT — לא בשבילכם */}
-        <div style={{
+        <div className="verdict-card verdict-card--no" style={{
           direction: "rtl",
           position: "relative",
           borderRadius: 20,
@@ -4855,8 +4855,12 @@ function InteractiveVerdictOld() {
           display: "flex", flexDirection: "column",
           opacity: inView ? 0.78 : 0,
           transform: inView ? "translateY(0)" : "translateY(18px)",
-          transition: "opacity 0.6s ease 0.25s, transform 0.7s cubic-bezier(0.2,0.8,0.2,1) 0.25s"
+          transition: "opacity 0.6s ease 0.25s, transform 0.7s cubic-bezier(0.2,0.8,0.2,1) 0.25s, border-color 0.4s ease, box-shadow 0.4s ease"
         }}>
+          <span aria-hidden="true" className="verdict-card__static" />
+          <span aria-hidden="true" className="verdict-card__sheen" />
+          <span aria-hidden="true" className="verdict-card__corner verdict-card__corner--tl" />
+          <span aria-hidden="true" className="verdict-card__corner verdict-card__corner--br" />
           {/* tag */}
           <div style={{
             display: "inline-flex", alignItems: "center", gap: 8,
@@ -4886,27 +4890,28 @@ function InteractiveVerdictOld() {
             flex: 1
           }}>
             {NOT_FOR.map((pt, j) =>
-            <li key={j} style={{
+            <li key={j} className="verdict-item verdict-item--no" style={{
               display: "flex", alignItems: "start", gap: 12,
               fontSize: 14, lineHeight: 1.5,
               color: "rgba(255,255,255,0.5)",
               opacity: inView ? 1 : 0,
               transform: inView ? "translateX(0)" : "translateX(-10px)",
-              transition: `opacity 0.5s ease ${0.4 + j * 0.07}s, transform 0.5s ease ${0.4 + j * 0.07}s`
+              transition: `opacity 0.5s ease ${0.4 + j * 0.07}s, transform 0.5s ease ${0.4 + j * 0.07}s`,
+              position: "relative", zIndex: 1
             }}>
-                <span aria-hidden="true" style={{
+                <span aria-hidden="true" className="verdict-item__x" style={{
                 flexShrink: 0, width: 16, height: 16, marginTop: 3,
                 display: "inline-flex", alignItems: "center", justifyContent: "center",
                 color: "rgba(255,255,255,0.4)", fontWeight: 900, fontSize: 13
               }}>✗</span>
-                <span>{pt}</span>
+                <span className="verdict-item__text">{pt}</span>
               </li>
             )}
           </ul>
         </div>
 
         {/* RIGHT — זה בשבילכם */}
-        <div style={{
+        <div className="verdict-card verdict-card--yes" style={{
           direction: "rtl",
           position: "relative",
           borderRadius: 20,
@@ -4915,16 +4920,19 @@ function InteractiveVerdictOld() {
           border: "1.5px solid var(--accent)",
           padding: "32px 32px 28px",
           display: "flex", flexDirection: "column",
-          boxShadow: "0 0 48px rgba(255,213,0,0.12), inset 0 0 60px rgba(255,213,0,0.04)",
           opacity: inView ? 1 : 0,
           transform: inView ? "translateY(0)" : "translateY(18px)",
           transition: "opacity 0.6s ease 0.3s, transform 0.7s cubic-bezier(0.2,0.8,0.2,1) 0.3s"
         }}>
+          <span aria-hidden="true" className="verdict-card__aurora" />
+          <span aria-hidden="true" className="verdict-card__sheen verdict-card__sheen--yes" />
+          <span aria-hidden="true" className="verdict-card__corner verdict-card__corner--tl verdict-card__corner--yes" />
+          <span aria-hidden="true" className="verdict-card__corner verdict-card__corner--br verdict-card__corner--yes" />
           {/* huge watermark check */}
-          <svg aria-hidden="true" viewBox="0 0 24 24"
+          <svg aria-hidden="true" viewBox="0 0 24 24" className="verdict-card__check"
           style={{
             position: "absolute", left: -10, bottom: -30,
-            width: 260, height: 260, opacity: 0.08,
+            width: 260, height: 260,
             color: "var(--accent)", pointerEvents: "none"
           }} fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
             <path d="M4 12 L10 18 L20 6" />
@@ -4960,15 +4968,17 @@ function InteractiveVerdictOld() {
             flex: 1, position: "relative", zIndex: 1
           }}>
             {FOR_YOU.map((pt, j) =>
-            <li key={j} style={{
+            <li key={j} className="verdict-item verdict-item--yes" style={{
               display: "flex", alignItems: "start", gap: 12,
               fontSize: 14, lineHeight: 1.5,
               color: "rgba(255,255,255,0.92)",
               opacity: inView ? 1 : 0,
               transform: inView ? "translateX(0)" : "translateX(-10px)",
-              transition: `opacity 0.5s ease ${0.55 + j * 0.07}s, transform 0.5s ease ${0.55 + j * 0.07}s`
+              transition: `opacity 0.5s ease ${0.55 + j * 0.07}s, transform 0.5s ease ${0.55 + j * 0.07}s`,
+              position: "relative", zIndex: 1,
+              ["--ping-delay"]: `${j * 0.08}s`
             }}>
-                <span aria-hidden="true" style={{
+                <span aria-hidden="true" className="verdict-item__check" style={{
                 flexShrink: 0, width: 18, height: 18, marginTop: 2,
                 display: "inline-flex", alignItems: "center", justifyContent: "center",
                 color: "var(--accent)"
@@ -5011,6 +5021,215 @@ function InteractiveVerdictOld() {
           </div>
         </div>
       </div>
+
+      <style>{`
+        @keyframes verdictSheen {
+          0%   { transform: translateX(-130%) skewX(-18deg); }
+          60%  { transform: translateX(150%) skewX(-18deg); }
+          100% { transform: translateX(150%) skewX(-18deg); }
+        }
+        @keyframes verdictAurora {
+          0%   { transform: translate(0%, 0%) rotate(0deg); }
+          50%  { transform: translate(6%, -4%) rotate(180deg); }
+          100% { transform: translate(0%, 0%) rotate(360deg); }
+        }
+        @keyframes verdictGlowPulse {
+          0%, 100% {
+            box-shadow:
+              0 0 48px rgba(255,213,0,0.18),
+              inset 0 0 60px rgba(255,213,0,0.05),
+              0 0 0 0 rgba(255,213,0,0.0);
+          }
+          50% {
+            box-shadow:
+              0 0 64px rgba(255,213,0,0.32),
+              inset 0 0 80px rgba(255,213,0,0.08),
+              0 0 0 0 rgba(255,213,0,0.0);
+          }
+        }
+        @keyframes verdictDrift {
+          0%, 100% { transform: translateY(0); opacity: 0.06; }
+          50%      { transform: translateY(-6px); opacity: 0.12; }
+        }
+        @keyframes verdictCheckSpin {
+          from { transform: rotate(-3deg) scale(1); }
+          to   { transform: rotate(3deg) scale(1.04); }
+        }
+        @keyframes verdictPing {
+          0%   { box-shadow: 0 0 0 0 rgba(255,213,0,0.55); }
+          70%  { box-shadow: 0 0 0 10px rgba(255,213,0,0); }
+          100% { box-shadow: 0 0 0 0 rgba(255,213,0,0); }
+        }
+        @keyframes verdictXShake {
+          0%, 100% { transform: translateX(0); }
+          25%      { transform: translateX(-2px) rotate(-6deg); }
+          75%      { transform: translateX(2px) rotate(6deg); }
+        }
+
+        /* Continuous yellow glow pulse on the YES card */
+        .verdict-card--yes {
+          animation: verdictGlowPulse 4.2s ease-in-out infinite;
+          will-change: transform, box-shadow, border-color;
+        }
+        .verdict-card--yes:hover {
+          animation-play-state: paused;
+          transform: translateY(-6px) !important;
+          border-color: var(--accent) !important;
+          box-shadow:
+            0 24px 60px -12px rgba(0,0,0,0.55),
+            0 0 80px -8px rgba(255,213,0,0.45),
+            inset 0 0 80px rgba(255,213,0,0.08) !important;
+        }
+
+        /* NO card subtle hover lift + cool grey accent */
+        .verdict-card--no {
+          will-change: transform, opacity, border-color, box-shadow;
+        }
+        .verdict-card--no:hover {
+          transform: translateY(-4px) !important;
+          opacity: 1 !important;
+          border-color: rgba(255,255,255,0.22) !important;
+          box-shadow:
+            0 18px 46px -12px rgba(0,0,0,0.6),
+            inset 0 0 60px rgba(255,255,255,0.02) !important;
+        }
+
+        /* Diagonal sheen — slow continuous loop, faster on hover */
+        .verdict-card__sheen {
+          position: absolute; inset: 0;
+          pointer-events: none;
+          background: linear-gradient(
+            115deg,
+            transparent 0%, transparent 40%,
+            rgba(255,255,255,0.045) 50%,
+            transparent 60%, transparent 100%
+          );
+          transform: translateX(-130%) skewX(-18deg);
+          animation: verdictSheen 7.5s ease-in-out infinite;
+          z-index: 0;
+        }
+        .verdict-card__sheen--yes {
+          background: linear-gradient(
+            115deg,
+            transparent 0%, transparent 38%,
+            rgba(255,213,0,0.14) 50%,
+            transparent 62%, transparent 100%
+          );
+          animation-duration: 5.5s;
+          animation-delay: 1.2s;
+        }
+        .verdict-card:hover .verdict-card__sheen {
+          animation-duration: 2.4s;
+        }
+
+        /* Aurora blob inside YES card — slow rotating warm gradient */
+        .verdict-card__aurora {
+          position: absolute;
+          top: -40%; right: -25%;
+          width: 90%; height: 140%;
+          background: radial-gradient(
+            ellipse at center,
+            rgba(255,213,0,0.16) 0%,
+            rgba(255,213,0,0.06) 35%,
+            transparent 65%
+          );
+          filter: blur(30px);
+          pointer-events: none;
+          animation: verdictAurora 14s linear infinite, verdictDrift 5s ease-in-out infinite;
+          z-index: 0;
+        }
+
+        /* Static grain layer on NO card — drifts subtly */
+        .verdict-card__static {
+          position: absolute; inset: 0;
+          pointer-events: none;
+          background-image: repeating-linear-gradient(
+            0deg,
+            rgba(255,255,255,0.025) 0px,
+            rgba(255,255,255,0.025) 1px,
+            transparent 1px,
+            transparent 3px
+          );
+          animation: verdictDrift 6s ease-in-out infinite;
+          opacity: 0.06;
+          z-index: 0;
+        }
+
+        /* Corner brackets */
+        .verdict-card__corner {
+          position: absolute;
+          width: 22px; height: 22px;
+          border: 2px solid rgba(255,255,255,0.4);
+          opacity: 0;
+          transition: opacity 0.35s ease, transform 0.4s cubic-bezier(0.2,0.8,0.2,1);
+          z-index: 2;
+        }
+        .verdict-card__corner--yes { border-color: var(--accent); }
+        .verdict-card__corner--tl {
+          top: 14px; right: 14px;
+          border-left: none; border-bottom: none;
+          transform: translate(6px, -6px);
+        }
+        .verdict-card__corner--br {
+          left: 14px; bottom: 14px;
+          border-right: none; border-top: none;
+          transform: translate(-6px, 6px);
+        }
+        .verdict-card:hover .verdict-card__corner {
+          opacity: 1;
+          transform: translate(0, 0);
+        }
+
+        /* YES card — big check watermark slowly tilts + glows */
+        .verdict-card__check {
+          opacity: 0.08;
+          transform-origin: center;
+          animation: verdictCheckSpin 6s ease-in-out infinite alternate;
+          transition: opacity 0.4s ease, filter 0.4s ease;
+        }
+        .verdict-card--yes:hover .verdict-card__check {
+          opacity: 0.18;
+          filter: drop-shadow(0 0 24px rgba(255,213,0,0.5));
+        }
+
+        /* YES list item check icons — ping pulse on card hover, staggered */
+        .verdict-card--yes:hover .verdict-item__check {
+          animation: verdictPing 1.2s ease-out infinite;
+          animation-delay: var(--ping-delay, 0s);
+          border-radius: 999px;
+        }
+        .verdict-item--yes { transition: transform 0.3s ease, color 0.3s ease; }
+        .verdict-card--yes:hover .verdict-item--yes {
+          transform: translateX(4px);
+        }
+
+        /* NO list item — X icons shake when card hovered, text fades a touch */
+        .verdict-item__x { transition: color 0.3s ease, transform 0.3s ease; display: inline-flex; }
+        .verdict-card--no:hover .verdict-item__x {
+          color: rgba(255,255,255,0.7);
+          animation: verdictXShake 0.45s ease-in-out;
+        }
+        .verdict-item__text { transition: color 0.3s ease, text-decoration-color 0.3s ease; }
+        .verdict-card--no:hover .verdict-item__text {
+          text-decoration: line-through;
+          text-decoration-color: rgba(255,255,255,0.18);
+          text-decoration-thickness: 1px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .verdict-card,
+          .verdict-card *,
+          .verdict-card__sheen,
+          .verdict-card__aurora,
+          .verdict-card__static,
+          .verdict-card__check,
+          .verdict-item__check,
+          .verdict-item__x {
+            animation: none !important;
+            transition: none !important;
+          }
+        }
+      `}</style>
     </div>);
 
 }
