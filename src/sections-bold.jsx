@@ -516,7 +516,7 @@ function SocialProofSection({ onCTAClick }) {
           </p>
           <h2 className="display" style={{
             fontSize: "clamp(36px, 5.5vw, 64px)",
-            margin: 0, fontWeight: 900, lineHeight: 1.15,
+            margin: 0, fontWeight: 900, lineHeight: 1,
             textWrap: "balance"
           }}>
             <span style={{ display: "block", opacity: 0.92 }}>
@@ -3276,7 +3276,7 @@ function ProblemOld() {
         <h2 className="display" style={{
           fontSize: "clamp(40px, 6.4vw, 92px)",
           margin: "0 auto 28px", maxWidth: 1180,
-          fontWeight: 900, lineHeight: 1.05, textAlign: "center",
+          fontWeight: 900, lineHeight: 0.98, textAlign: "center",
           textWrap: "balance", letterSpacing: "-0.015em"
         }}>
           <span style={{
@@ -3761,7 +3761,7 @@ function SolutionOld() {
           margin: "0 auto 48px",
           fontWeight: 900,
           textAlign: "center",
-          lineHeight: 1.05,
+          lineHeight: 0.98,
           letterSpacing: "-0.02em",
           textWrap: "balance",
           maxWidth: 1180,
@@ -4043,7 +4043,7 @@ function ClosingPullQuote() {
       <p className="display" style={{
         position: "relative",
         fontSize: "clamp(28px, 3.6vw, 52px)",
-        lineHeight: 1.2,
+        lineHeight: 1.05,
         margin: 0,
         fontWeight: 800,
         letterSpacing: "-0.015em",
@@ -4629,7 +4629,7 @@ function WhoItsForOld() {
         <div style={{ textAlign: "center", marginBottom: 56, maxWidth: 1000, marginLeft: "auto", marginRight: "auto" }}>
           <h2 className="display" style={{
             fontSize: "clamp(36px, 5.5vw, 64px)",
-            margin: 0, fontWeight: 900, lineHeight: 1.15,
+            margin: 0, fontWeight: 900, lineHeight: 1,
             textWrap: "balance"
           }}>
             <span style={{ display: "block", opacity: 0.92 }}>
