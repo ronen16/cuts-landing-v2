@@ -4949,6 +4949,15 @@ function InteractiveVerdictOld() {
           <span aria-hidden="true" className="verdict-card__static" />
           <span aria-hidden="true" className="verdict-card__corner verdict-card__corner--tl" />
           <span aria-hidden="true" className="verdict-card__corner verdict-card__corner--br" />
+          {/* huge watermark X — mirror of YES card's check */}
+          <svg aria-hidden="true" viewBox="0 0 24 24" className="verdict-card__xmark"
+          style={{
+            position: "absolute", right: -10, bottom: -30,
+            width: 260, height: 260,
+            color: "rgba(255,255,255,0.85)", pointerEvents: "none"
+          }} fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M6 6 L18 18 M18 6 L6 18" />
+          </svg>
           {/* tag */}
           <div style={{
             display: "inline-flex", alignItems: "center", gap: 8,
@@ -5280,6 +5289,18 @@ function InteractiveVerdictOld() {
           filter: drop-shadow(0 0 24px rgba(255,213,0,0.5));
         }
 
+        /* NO card — big X watermark slowly tilts */
+        .verdict-card__xmark {
+          opacity: 0.06;
+          transform-origin: center;
+          animation: verdictCheckSpin 7s ease-in-out infinite alternate-reverse;
+          transition: opacity 0.4s ease, filter 0.4s ease;
+        }
+        .verdict-card--no:hover .verdict-card__xmark {
+          opacity: 0.14;
+          filter: drop-shadow(0 0 18px rgba(255,255,255,0.18));
+        }
+
         /* YES list item check icons — ping pulse on card hover, staggered */
         .verdict-card--yes:hover .verdict-item__check {
           animation: verdictPing 1.2s ease-out infinite;
@@ -5311,6 +5332,7 @@ function InteractiveVerdictOld() {
           .verdict-card__aurora,
           .verdict-card__static,
           .verdict-card__check,
+          .verdict-card__xmark,
           .verdict-item__check,
           .verdict-item__x {
             animation: none !important;
