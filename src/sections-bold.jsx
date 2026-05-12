@@ -5610,42 +5610,108 @@ function SectionDivider() {
 
 // ---------- BOLD VARIATION (root) ----------
 
-function BoldVariation({ onCTAClick, form }) {
+function BoldVariation({ onCTAClick, form, admin }) {
+  const DEFAULT_SECTIONS = React.useMemo(() => [
+    { id: "hero",             Comp: (p) => <Hero onCTAClick={onCTAClick} /> },
+    { id: "solution",         Comp: (p) => <SolutionOld /> },
+    { id: "inline-lead-1",    Comp: (p) => <InlineLeadForm form={form} /> },
+    { id: "problem",          Comp: (p) => <ProblemOld /> },
+    { id: "social-proof",     Comp: (p) => <SocialProofSection onCTAClick={onCTAClick} /> },
+    { id: "mini-lead-1",      Comp: (p) => <MiniLeadStripe form={form} /> },
+    { id: "who-its-for",      Comp: (p) => <WhoItsForOld /> },
+    { id: "how-it-works",     Comp: (p) => <HowItWorksInteractive /> },
+    { id: "services",         Comp: (p) => <ServicesOld onCTAClick={onCTAClick} /> },
+    { id: "studio-booking",   Comp: (p) => <StudioBookingLead form={form} /> },
+    { id: "results",          Comp: (p) => <Results /> },
+    { id: "guest-strip",      Comp: (p) => <GuestStrip /> },
+    { id: "guarantee",        Comp: (p) => <Guarantee onCTAClick={onCTAClick} /> },
+    { id: "mini-lead-2",      Comp: (p) => <MiniLeadStripe form={form} /> },
+    { id: "faq",              Comp: (p) => <FAQSection /> },
+    { id: "final-cta",        Comp: (p) => <FinalCTA form={form} onCTAClick={onCTAClick} /> },
+  ], [onCTAClick, form]);
+
+  // Compose ordered list based on admin.sectionOrder (if any)
+  const orderedSections = React.useMemo(() => {
+    if (!admin || !Array.isArray(admin.sectionOrder) || admin.sectionOrder.length === 0) {
+      return DEFAULT_SECTIONS;
+    }
+    const byId = new Map(DEFAULT_SECTIONS.map(s => [s.id, s]));
+    const ordered = [];
+    const seen = new Set();
+    for (const id of admin.sectionOrder) {
+      if (byId.has(id) && !seen.has(id)) {
+        ordered.push(byId.get(id));
+        seen.add(id);
+      }
+    }
+    // append any new sections that weren't in saved order
+    for (const s of DEFAULT_SECTIONS) {
+      if (!seen.has(s.id)) ordered.push(s);
+    }
+    return ordered;
+  }, [DEFAULT_SECTIONS, admin && admin.sectionOrder]);
+
+  const draggable = !!(admin && admin.draggingSections);
+  const dragSrc = React.useRef(null);
+
+  function handleDragStart(e, id) {
+    if (!draggable) return;
+    dragSrc.current = id;
+    e.dataTransfer.effectAllowed = "move";
+    e.currentTarget.classList.add("section-dragging");
+  }
+  function handleDragEnd(e) {
+    document.querySelectorAll(".section-dragging").forEach(el => el.classList.remove("section-dragging"));
+    document.querySelectorAll(".section-drop-target").forEach(el => el.classList.remove("section-drop-target"));
+    dragSrc.current = null;
+  }
+  function handleDragOver(e, id) {
+    if (!draggable) return;
+    if (!dragSrc.current || dragSrc.current === id) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    document.querySelectorAll(".section-drop-target").forEach(el => el.classList.remove("section-drop-target"));
+    e.currentTarget.classList.add("section-drop-target");
+  }
+  function handleDragLeave(e) {
+    e.currentTarget.classList.remove("section-drop-target");
+  }
+  function handleDrop(e, targetId) {
+    if (!draggable) return;
+    e.preventDefault();
+    e.currentTarget.classList.remove("section-drop-target");
+    const src = dragSrc.current;
+    if (!src || src === targetId) return;
+    const ids = orderedSections.map(s => s.id);
+    const fromIdx = ids.indexOf(src);
+    const toIdx = ids.indexOf(targetId);
+    if (fromIdx < 0 || toIdx < 0) return;
+    const next = ids.slice();
+    next.splice(fromIdx, 1);
+    next.splice(toIdx, 0, src);
+    if (admin && admin.updateSectionOrder) admin.updateSectionOrder(next);
+  }
+
   return (
     <div className="fade-in">
-      {/* 01 */} <TopNav variant="bold" onCTAClick={onCTAClick} />
-      {/* 02 */} <Hero onCTAClick={onCTAClick} />
-      {/* 04 */} <SolutionOld />
-      <SectionDivider />
-      {/* 04b — inline lead form right after Solution */} <InlineLeadForm form={form} />
-      <SectionDivider />
-      {/* 05 */} <ProblemOld />
-      <SectionDivider />
-      {/* 06 */} <SocialProofSection onCTAClick={onCTAClick} />
-      <SectionDivider />
-      {/* 06b — mini lead stripe */} <MiniLeadStripe form={form} />
-      <SectionDivider />
-      {/* 08b — "פודקאסט זה לא לכל אחד" before the steps */} <WhoItsForOld />
-      <SectionDivider />
-      {/* 08 */} <HowItWorksInteractive />
-      <SectionDivider />
-      {/* moved: ServicesOld inserted between steps and results */} <ServicesOld onCTAClick={onCTAClick} />
-      <SectionDivider />
-      {/* 09d — studio booking lead capture (moved up) */} <StudioBookingLead form={form} />
-      <SectionDivider />
-      {/* 09c — results from previous version */} <Results />
-      <SectionDivider />
-      {/* 09b — guest strip from previous version */} <GuestStrip />
-      <SectionDivider />
-      {/* 13 */} <Guarantee onCTAClick={onCTAClick} />
-      <SectionDivider />
-      {/* 13b — lead stripe right after Guarantee */} <MiniLeadStripe form={form} />
-      <SectionDivider />
-      {/* 14 */} <FAQSection />
-      <SectionDivider />
-      {/* 15 */} <FinalCTA form={form} onCTAClick={onCTAClick} />
-
-      {/* 16 */} <Footer variant="bold" />
+      <TopNav variant="bold" onCTAClick={onCTAClick} />
+      {orderedSections.map((s, i) => (
+        <React.Fragment key={s.id}>
+          <div
+            data-section-id={s.id}
+            draggable={draggable}
+            onDragStart={(e) => handleDragStart(e, s.id)}
+            onDragEnd={handleDragEnd}
+            onDragOver={(e) => handleDragOver(e, s.id)}
+            onDragLeave={handleDragLeave}
+            onDrop={(e) => handleDrop(e, s.id)}
+          >
+            <s.Comp />
+          </div>
+          {i < orderedSections.length - 1 && <SectionDivider />}
+        </React.Fragment>
+      ))}
+      <Footer variant="bold" />
     </div>);
 
 }

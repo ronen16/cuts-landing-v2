@@ -285,3 +285,124 @@ details.faq .answer { padding-top: 14px; color: var(--fg); opacity: 0.75; line-h
   .tweaks-panel { left: 12px; right: 12px; width: auto; }
   .var-switch { bottom: 12px; font-size: 10px; }
 }
+
+/* ============================================================
+   Admin Mode — inline text editor + section drag-to-reorder
+   ============================================================ */
+
+.admin-button {
+  position: fixed;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #0F0F0F;
+  border: 1.5px solid var(--accent, #FFD500);
+  color: var(--accent, #FFD500);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9998;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.5), 0 0 24px rgba(255,213,0,0.18);
+  transition: transform 0.18s ease, box-shadow 0.25s ease, background 0.25s ease;
+}
+.admin-button:hover {
+  transform: translateY(-50%) scale(1.06);
+  background: #181818;
+  box-shadow: 0 10px 32px rgba(0,0,0,0.55), 0 0 36px rgba(255,213,0,0.35);
+}
+.admin-button:active { transform: translateY(-50%) scale(0.97); }
+
+.admin-toolbar {
+  position: fixed;
+  right: 88px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 220px;
+  background: #0F0F0F;
+  border: 1px solid rgba(255,213,0,0.35);
+  border-radius: 14px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  z-index: 9998;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.6), 0 0 30px rgba(255,213,0,0.12);
+  font-family: 'Heebo', system-ui, sans-serif;
+}
+
+.admin-toolbar__row {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  color: rgba(255,255,255,0.9);
+  font: inherit;
+  font-size: 14px;
+  text-align: start;
+  padding: 9px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: background 0.2s ease, color 0.2s ease;
+  direction: rtl;
+}
+.admin-toolbar__row:hover { background: rgba(255,213,0,0.08); }
+.admin-toolbar__row.is-active {
+  background: var(--accent, #FFD500);
+  color: #0A0A0A;
+  font-weight: 700;
+}
+.admin-toolbar__icon { font-size: 16px; }
+.admin-toolbar__label { flex: 1; }
+.admin-toolbar__sep {
+  height: 1px;
+  background: rgba(255,255,255,0.08);
+  margin: 4px 6px;
+}
+
+/* Edit Text mode — outline editable elements on hover/focus */
+body.admin-editing-text [data-edit-id] {
+  cursor: text;
+  position: relative;
+}
+body.admin-editing-text [data-edit-id]:hover {
+  outline: 1px dashed rgba(255,213,0,0.45);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+body.admin-editing-text [data-edit-id][contenteditable="true"]:focus {
+  outline: 2px solid var(--accent, #FFD500);
+  outline-offset: 3px;
+  background: rgba(255,213,0,0.05);
+  border-radius: 2px;
+}
+
+/* Dragging Sections mode */
+body.admin-dragging-sections [data-section-id] {
+  position: relative;
+  outline: 2px dashed rgba(255,213,0,0.3);
+  outline-offset: -2px;
+  cursor: grab;
+}
+body.admin-dragging-sections [data-section-id]:hover {
+  outline-color: var(--accent, #FFD500);
+}
+body.admin-dragging-sections .section-dragging {
+  opacity: 0.5;
+  cursor: grabbing !important;
+}
+body.admin-dragging-sections .section-drop-target {
+  outline: 3px solid var(--accent, #FFD500) !important;
+  outline-offset: -3px;
+  box-shadow: 0 0 30px rgba(255,213,0,0.4);
+}
+
+@media (max-width: 768px) {
+  .admin-button { width: 48px; height: 48px; right: 12px; }
+  .admin-toolbar { right: 70px; width: 190px; }
+}

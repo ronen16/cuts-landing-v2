@@ -253,7 +253,7 @@ function TopNav({ variant, onCTAClick }) {
       borderBottom: "1px solid var(--line2)"
     }}>
       <div className="wrap" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: 72 }}>
-        <a href="#" style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <a href="#" onClick={(e) => { if (window.__cutsLogoClick) { e.preventDefault(); window.__cutsLogoClick(); } }} style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <img src={LOGO_SRC} alt="Cuts" style={{ height: 34 }} />
         </a>
         <ul style={{ display: "flex", gap: 28, listStyle: "none", margin: 0, padding: 0, fontSize: 15, fontWeight: 500 }}>
