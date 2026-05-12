@@ -4733,24 +4733,6 @@ function InteractiveVerdictOld() {
 
   return (
     <div ref={wrapRef} style={{ marginTop: 12, position: "relative" }}>
-      {/* VERDICT label + headline */}
-      <div style={{ textAlign: "center", marginBottom: 36 }}>
-        <div className="mono" style={{
-          fontSize: 12, letterSpacing: "0.28em", fontWeight: 700,
-          color: "var(--accent)", marginBottom: 14,
-          opacity: inView ? 1 : 0,
-          transform: inView ? "translateY(0)" : "translateY(8px)",
-          transition: "opacity 0.5s ease 0.05s, transform 0.5s ease 0.05s"
-        }}></div>
-        <h3 className="display" style={{
-          fontSize: "clamp(28px, 3.4vw, 44px)",
-          fontWeight: 900, margin: 0, lineHeight: 1.1,
-          opacity: inView ? 1 : 0,
-          transform: inView ? "translateY(0)" : "translateY(10px)",
-          transition: "opacity 0.6s ease 0.15s, transform 0.6s cubic-bezier(0.2,0.8,0.2,1) 0.15s"
-        }}>איפה אתם נמצאים?</h3>
-      </div>
-
       <div style={{
         display: "grid",
         gridTemplateColumns: "1fr 1fr",
