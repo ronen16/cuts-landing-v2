@@ -4703,9 +4703,9 @@ function WhoItsForOld() {
                 <span aria-hidden="true" className="who-card__bar" />
                 <span className="who-card__index mono" aria-hidden="true">{`0${i + 1} / 04`}</span>
                 <h3 className="display" style={{
-                  fontSize: "clamp(20px, 1.7vw, 24px)",
-                  fontWeight: 800, margin: "26px 0 12px",
-                  lineHeight: 1.35, position: "relative", zIndex: 1,
+                  fontSize: "clamp(22px, 2vw, 28px)",
+                  fontWeight: 800, margin: "20px 0 10px",
+                  lineHeight: 1.3, position: "relative", zIndex: 1,
                   display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap"
                 }}>
                   <span aria-hidden="true" className="who-card__dot" />
