@@ -519,16 +519,16 @@ function SocialProofSection({ onCTAClick }) {
             margin: 0, fontWeight: 900, lineHeight: 1.15,
             textWrap: "balance"
           }}>
-            <span style={{ display: "block", opacity: 0.92, marginBottom: 10, fontSize: "92px", whiteSpace: "nowrap" }}>
+            <span style={{ display: "block", opacity: 0.92, marginBottom: 10 }}>
               אל תאמינו למילה שאנחנו אומרים.
             </span>
-            <span style={{ display: "block", position: "relative", whiteSpace: "nowrap" }}>
+            <span style={{ display: "block", position: "relative" }}>
               <span style={{
                 color: "var(--accent)",
                 textShadow: "0 0 50px rgba(255,213,0,0.45), 0 0 90px rgba(255,213,0,0.2)",
                 position: "relative",
                 display: "inline-block",
-                paddingInline: "0.2em", fontSize: "92px"
+                paddingInline: "0.2em"
               }}>
                 זה מה שהלקוחות שלנו מספרים.
                 {/* soft underline */}
