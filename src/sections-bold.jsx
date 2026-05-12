@@ -4696,19 +4696,28 @@ function WhoItsForOld() {
                 transition: revealed ? whoHoverTransition : `opacity 0.6s ease ${delay}s, transform 0.6s cubic-bezier(0.2,0.8,0.2,1) ${delay}s`,
                 ["--who-delay"]: `${i * 0.7}s`
               }}>
+                <span aria-hidden="true" className="who-card__glow" />
                 <span aria-hidden="true" className="who-card__sheen" />
+                <span aria-hidden="true" className="who-card__edge" />
                 <span aria-hidden="true" className="who-card__corner who-card__corner--tr" />
                 <span aria-hidden="true" className="who-card__corner who-card__corner--bl" />
                 <span aria-hidden="true" className="who-card__bar" />
+                <span className="who-card__index mono" aria-hidden="true">{`0${i + 1} / 04`}</span>
                 <h3 className="display" style={{
                   fontSize: "clamp(20px, 1.7vw, 24px)",
-                  fontWeight: 800, margin: "0 0 12px",
-                  lineHeight: 1.35, position: "relative", zIndex: 1
+                  fontWeight: 800, margin: "26px 0 12px",
+                  lineHeight: 1.35, position: "relative", zIndex: 1,
+                  display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap"
                 }}>
-                  <span style={{ color: "var(--accent)" }}>{c.boldYellow}</span> <span>{c.boldRest}</span>
+                  <span aria-hidden="true" className="who-card__dot" />
+                  <span style={{
+                    color: "var(--accent)",
+                    textShadow: "0 0 22px rgba(255,213,0,0.25)"
+                  }}>{c.boldYellow}</span>
+                  <span>{c.boldRest}</span>
                 </h3>
                 <p style={{
-                  fontSize: 15, lineHeight: 1.65, color: "rgba(255,255,255,0.55)",
+                  fontSize: 15, lineHeight: 1.65, color: "rgba(255,255,255,0.62)",
                   margin: 0, position: "relative", zIndex: 1
                 }}>
                   {c.body}
@@ -4739,11 +4748,80 @@ function WhoItsForOld() {
         }
 
         .who-card {
-          background: #0F0F0F;
+          background:
+            radial-gradient(120% 80% at 100% 0%, rgba(255, 213, 0, 0.045), transparent 55%),
+            linear-gradient(180deg, #131313 0%, #0E0E0E 60%, #0C0C0C 100%);
           border: 1px solid var(--line2);
           overflow: hidden;
           isolation: isolate;
           will-change: transform, border-color, box-shadow;
+        }
+
+        /* soft inner glow that intensifies on hover */
+        .who-card__glow {
+          position: absolute;
+          top: -40%; right: -25%;
+          width: 80%; height: 120%;
+          background: radial-gradient(ellipse at center, rgba(255,213,0,0.08), transparent 60%);
+          filter: blur(28px);
+          opacity: 0.55;
+          pointer-events: none;
+          transition: opacity 0.45s ease, transform 0.6s ease;
+          z-index: 0;
+        }
+        .who-card:hover .who-card__glow {
+          opacity: 1;
+          transform: translate(-4%, 4%);
+        }
+
+        /* vertical accent strip on the start (right in RTL) edge */
+        .who-card__edge {
+          position: absolute;
+          top: 30px; bottom: 30px; right: 0;
+          width: 2px;
+          background: linear-gradient(180deg, transparent, rgba(255,213,0,0.55), transparent);
+          opacity: 0.45;
+          pointer-events: none;
+          transition: opacity 0.35s ease, width 0.3s ease, box-shadow 0.35s ease;
+          z-index: 1;
+        }
+        .who-card:hover .who-card__edge {
+          opacity: 1;
+          width: 3px;
+          box-shadow: 0 0 18px rgba(255,213,0,0.45);
+        }
+
+        /* small index "01 / 04" in the trailing top corner (left in RTL) */
+        .who-card__index {
+          position: absolute;
+          top: 22px; left: 28px;
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: 0.22em;
+          color: rgba(255,213,0,0.55);
+          pointer-events: none;
+          z-index: 2;
+          transition: color 0.3s ease, transform 0.35s cubic-bezier(0.2,0.8,0.2,1);
+        }
+        .who-card:hover .who-card__index {
+          color: var(--accent);
+          transform: translateY(-2px);
+          text-shadow: 0 0 12px rgba(255,213,0,0.45);
+        }
+
+        /* small accent dot before the yellow title word */
+        .who-card__dot {
+          width: 6px; height: 6px; border-radius: 999px;
+          background: var(--accent);
+          box-shadow: 0 0 12px rgba(255,213,0,0.7), 0 0 24px rgba(255,213,0,0.25);
+          display: inline-block;
+          flex-shrink: 0;
+          transform: translateY(-2px);
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .who-card:hover .who-card__dot {
+          transform: translateY(-2px) scale(1.25);
+          box-shadow: 0 0 16px rgba(255,213,0,0.95), 0 0 32px rgba(255,213,0,0.4);
         }
         .who-card,
         .who-card .who-card__bar,
