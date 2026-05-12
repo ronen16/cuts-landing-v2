@@ -4952,7 +4952,7 @@ function InteractiveVerdictOld() {
           {/* huge watermark X — mirror of YES card's check */}
           <svg aria-hidden="true" viewBox="0 0 24 24" className="verdict-card__xmark"
           style={{
-            position: "absolute", right: -10, bottom: -30,
+            position: "absolute", left: -10, bottom: -30,
             width: 260, height: 260,
             color: "rgba(255,255,255,0.85)", pointerEvents: "none"
           }} fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
