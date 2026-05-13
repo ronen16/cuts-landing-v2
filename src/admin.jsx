@@ -166,6 +166,7 @@ function useAdminMode() {
   const resetAll = React.useCallback(() => {
     setOverrides({});
     setSectionOrder(null);
+    if (window.__cutsRestoreOriginals) window.__cutsRestoreOriginals();
   }, []);
 
   const exitAdmin = React.useCallback(() => {
@@ -209,7 +210,9 @@ function computeEditId(el) {
     cur = parent;
   }
   const path = parts.join(">");
-  const text = (el.textContent || "").trim().slice(0, 60);
+  // Hash from the ORIGINAL text (captured before any edits) so the id stays
+  // stable while the user types. Fallback to current text on first encounter.
+  const text = (el.getAttribute("data-edit-original") || el.textContent || "").trim().slice(0, 60);
   let h = 0;
   for (let i = 0; i < text.length; i++) {
     h = (h * 31 + text.charCodeAt(i)) | 0;
@@ -230,7 +233,7 @@ const EDITABLE_TAGS = new Set([
 function isLeafTextElement(el) {
   if (!el || el.nodeType !== 1) return false;
   if (!EDITABLE_TAGS.has(el.tagName)) return false;
-  if (el.closest(".admin-button, .admin-toolbar")) return false;
+  if (el.closest(".admin-button, .admin-toolbar, .admin-modal-backdrop, .admin-modal, .tweaks-panel")) return false;
   if (el.getAttribute("aria-hidden") === "true") return false;
   const text = (el.textContent || "").trim();
   if (!text) return false;
@@ -256,23 +259,37 @@ function applyOverridesToDOM(overrides) {
   if (!overrides) overrides = {};
   const elements = getAllEditableElements();
   for (const el of elements) {
-    const id = computeEditId(el);
-    if (!id) continue;
-    el.setAttribute("data-edit-id", id);
+    // Skip the element currently being edited — never overwrite the user's cursor
+    if (document.activeElement === el) continue;
     // Capture original text the first time we see this element
+    // (must happen BEFORE computeEditId so the id hash is based on original)
     if (!el.hasAttribute("data-edit-original")) {
       el.setAttribute("data-edit-original", el.textContent || "");
     }
-    const original = el.getAttribute("data-edit-original");
+    const id = computeEditId(el);
+    if (!id) continue;
+    el.setAttribute("data-edit-id", id);
     if (Object.prototype.hasOwnProperty.call(overrides, id)) {
       const desired = overrides[id];
       if (el.textContent !== desired) el.textContent = desired;
-    } else {
-      // No override → ensure DOM matches original (restore if previously edited)
-      if (el.textContent !== original) el.textContent = original;
+    }
+    // Do NOT auto-restore non-overridden elements during normal renders —
+    // that would clobber in-progress edits. Reset is handled separately via
+    // restoreOriginals() in admin.resetAll.
+  }
+}
+
+function restoreOriginals() {
+  const elements = getAllEditableElements();
+  for (const el of elements) {
+    const original = el.getAttribute("data-edit-original");
+    if (original != null && el.textContent !== original) {
+      el.textContent = original;
     }
   }
 }
+
+window.__cutsRestoreOriginals = restoreOriginals;
 
 window.__cutsApplyOverrides = applyOverridesToDOM;
 
@@ -497,6 +514,10 @@ function attachInlineEditing(rootEl, editing, onChange) {
   function refresh() {
     const elements = getAllEditableElements();
     for (const el of elements) {
+      // Ensure data-edit-original is captured first so id hash uses original text
+      if (!el.hasAttribute("data-edit-original")) {
+        el.setAttribute("data-edit-original", el.textContent || "");
+      }
       const id = computeEditId(el);
       if (!id) continue;
       if (el.getAttribute("data-edit-id") !== id) {
