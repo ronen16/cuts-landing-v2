@@ -259,23 +259,33 @@ window.__cutsComputeEditId = computeEditId;
 
 // ---------- editable element identification ----------
 
-const EDITABLE_TAGS = new Set([
-  "H1", "H2", "H3", "H4", "H5", "H6",
-  "P", "SPAN", "LI", "A", "BUTTON", "STRONG", "EM", "LABEL", "FIGCAPTION",
+// Tags we never tag as editable (decorative / structural / media)
+const NON_EDITABLE_TAGS = new Set([
+  "SCRIPT", "STYLE", "BR", "HR", "META", "LINK",
+  "INPUT", "TEXTAREA", "SELECT", "OPTION", "PROGRESS", "METER",
+  "IMG", "VIDEO", "AUDIO", "PICTURE", "SOURCE", "TRACK", "CANVAS",
+  "SVG", "PATH", "CIRCLE", "RECT", "ELLIPSE", "LINE", "POLYGON",
+  "POLYLINE", "USE", "DEFS", "G", "TEXT", "TSPAN", "FOREIGNOBJECT",
+  "MASK", "CLIPPATH", "PATTERN", "FILTER", "STOP", "LINEARGRADIENT",
+  "RADIALGRADIENT", "SYMBOL", "MARKER", "TITLE", "DESC",
 ]);
 
 function isLeafTextElement(el) {
   if (!el || el.nodeType !== 1) return false;
-  if (!EDITABLE_TAGS.has(el.tagName)) return false;
+  // tagName for HTML is uppercase, for SVG it's lowercase — normalize.
+  if (NON_EDITABLE_TAGS.has(el.tagName.toUpperCase())) return false;
+  // Anything inside an <svg> is decorative graphics, not editable text.
+  if (el.closest("svg")) return false;
   if (el.closest(".admin-button, .admin-toolbar, .admin-modal-backdrop, .admin-modal, .tweaks-panel")) return false;
   if (el.getAttribute("aria-hidden") === "true") return false;
-  const text = (el.textContent || "").trim();
-  if (!text) return false;
-  // must be a "leaf" — no child element with non-empty text
-  const childWithText = Array.from(el.children).find(
-    (c) => (c.textContent || "").trim().length > 0
+  if (el.getAttribute("contenteditable") === "false") return false;
+  // Must have at least one DIRECT text-node child with non-whitespace content.
+  // (children may also include element children — we still allow it; the user
+  // gets to pick the edit target by clicking the right spot.)
+  const hasDirectText = Array.from(el.childNodes).some(
+    (n) => n.nodeType === 3 && (n.textContent || "").trim().length > 0
   );
-  if (childWithText) return false;
+  if (!hasDirectText) return false;
   return true;
 }
 
