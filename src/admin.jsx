@@ -3,9 +3,17 @@
 // Persistence: localStorage["cuts_admin_v1"]
 
 const ADMIN_STORAGE_KEY = "cuts_admin_v1";
+const PUBLISH_SETTINGS_KEY = "cuts_publish_settings_v1";
 const ADMIN_PASSWORD_HASH = "86e2b4e7068dff297e717358659f5e2ef4376e37019d3427bc68339869b9e224";
 const LOGO_CLICK_WINDOW_MS = 10000;
 const LOGO_CLICK_THRESHOLD = 5;
+const DEFAULT_PUBLISH_SETTINGS = {
+  owner: "ronen16",
+  repo: "cuts-landing-v2",
+  branch: "main",
+  path: "live-overrides.json",
+  token: "",
+};
 
 // ---------- crypto helper ----------
 
@@ -38,6 +46,85 @@ function loadAdminState() {
     return { unlocked: false, overrides: {}, sectionOrder: null, elementOffsets: {}, hiddenSections: [], publishedVersions: [] };
   }
 }
+
+function loadPublishSettings() {
+  try {
+    const raw = localStorage.getItem(PUBLISH_SETTINGS_KEY);
+    if (!raw) return { ...DEFAULT_PUBLISH_SETTINGS };
+    return { ...DEFAULT_PUBLISH_SETTINGS, ...JSON.parse(raw) };
+  } catch (e) {
+    return { ...DEFAULT_PUBLISH_SETTINGS };
+  }
+}
+
+function savePublishSettings(settings) {
+  try {
+    localStorage.setItem(PUBLISH_SETTINGS_KEY, JSON.stringify(settings));
+  } catch (e) {
+    console.warn("admin: failed to save publish settings", e);
+  }
+}
+
+// GitHub Contents API — commit JSON to {owner}/{repo}/{path} on {branch}.
+async function pushToGitHub(settings, payload) {
+  if (!settings.token) throw new Error("missing-token");
+  const apiBase = `https://api.github.com/repos/${settings.owner}/${settings.repo}/contents/${encodeURIComponent(settings.path)}`;
+  const headers = {
+    Authorization: `Bearer ${settings.token}`,
+    Accept: "application/vnd.github+json",
+    "X-GitHub-Api-Version": "2022-11-28",
+  };
+
+  // GET current sha (if file exists)
+  let sha = undefined;
+  try {
+    const getRes = await fetch(`${apiBase}?ref=${encodeURIComponent(settings.branch)}`, { headers });
+    if (getRes.ok) {
+      const cur = await getRes.json();
+      sha = cur.sha;
+    } else if (getRes.status === 401 || getRes.status === 403) {
+      throw new Error(`auth-${getRes.status}`);
+    }
+  } catch (e) {
+    if (String(e.message).startsWith("auth-")) throw e;
+    // 404 is fine — file just doesn't exist yet
+  }
+
+  const contentB64 = btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))));
+  const body = {
+    message: `chore: publish overrides ${new Date().toISOString()}`,
+    content: contentB64,
+    branch: settings.branch,
+  };
+  if (sha) body.sha = sha;
+
+  const putRes = await fetch(apiBase, {
+    method: "PUT",
+    headers: { ...headers, "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!putRes.ok) {
+    const text = await putRes.text();
+    throw new Error(`put-${putRes.status}: ${text.slice(0, 200)}`);
+  }
+  return await putRes.json();
+}
+
+// Fetch live overrides from raw.githubusercontent.com on page boot.
+async function fetchLiveOverrides(settings) {
+  if (!settings || !settings.owner || !settings.repo) return null;
+  const url = `https://raw.githubusercontent.com/${settings.owner}/${settings.repo}/${settings.branch}/${encodeURI(settings.path)}?_=${Date.now()}`;
+  try {
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (e) {
+    return null;
+  }
+}
+
+window.__cutsFetchLiveOverrides = fetchLiveOverrides;
+window.__cutsLoadPublishSettings = loadPublishSettings;
 
 function saveAdminState(state) {
   try {
@@ -193,7 +280,7 @@ function useAdminMode() {
   }, []);
 
   // Snapshot current state into the versions list (cap at MAX_VERSIONS).
-  const publishToLive = React.useCallback(() => {
+  const publishToLive = React.useCallback(async () => {
     const snapshot = {
       id: "v-" + Date.now() + "-" + Math.random().toString(36).slice(2, 8),
       timestamp: new Date().toISOString(),
@@ -204,7 +291,33 @@ function useAdminMode() {
       hiddenSections,
     };
     setPublishedVersions((prev) => [snapshot, ...prev].slice(0, MAX_VERSIONS));
-    return snapshot;
+
+    // Try to actually push to GitHub
+    const settings = loadPublishSettings();
+    if (!settings.token) {
+      window.dispatchEvent(new CustomEvent("cuts-publish-need-settings"));
+      return { snapshot, published: false, reason: "missing-token" };
+    }
+    try {
+      const payload = {
+        version: 1,
+        publishedAt: snapshot.timestamp,
+        overrides,
+        sectionOrder,
+        elementOffsets,
+        hiddenSections,
+      };
+      const commit = await pushToGitHub(settings, payload);
+      return { snapshot, published: true, commitUrl: commit.commit && commit.commit.html_url };
+    } catch (err) {
+      const msg = String(err.message || err);
+      if (msg.startsWith("auth-")) {
+        window.dispatchEvent(new CustomEvent("cuts-publish-need-settings"));
+        return { snapshot, published: false, reason: "auth" };
+      }
+      console.error("[cuts-admin] publish failed:", err);
+      return { snapshot, published: false, reason: msg };
+    }
   }, [overrides, sectionOrder, elementOffsets, hiddenSections]);
 
   const restoreVersion = React.useCallback((id) => {
@@ -522,6 +635,116 @@ function AdminVersionsModal({ admin }) {
 
 window.AdminVersionsModal = AdminVersionsModal;
 
+// ---------- Publish Settings Modal ----------
+
+function AdminPublishSettingsModal() {
+  const [open, setOpen] = React.useState(false);
+  const [settings, setSettings] = React.useState(() => loadPublishSettings());
+  const [savedToast, setSavedToast] = React.useState(false);
+
+  React.useEffect(() => {
+    const onOpen = () => {
+      setSettings(loadPublishSettings());
+      setOpen(true);
+    };
+    window.addEventListener("cuts-publish-need-settings", onOpen);
+    return () => window.removeEventListener("cuts-publish-need-settings", onOpen);
+  }, []);
+
+  if (!open) return null;
+
+  const update = (k, v) => setSettings((s) => ({ ...s, [k]: v }));
+
+  const save = () => {
+    savePublishSettings(settings);
+    setSavedToast(true);
+    setTimeout(() => { setSavedToast(false); setOpen(false); }, 700);
+  };
+
+  const tokenUrl = `https://github.com/settings/personal-access-tokens/new?name=cuts-admin-publish&target_name=${encodeURIComponent(settings.owner)}&description=Publish+overrides+from+admin+UI`;
+
+  return React.createElement("div", {
+    className: "admin-modal-backdrop",
+    onClick: () => setOpen(false)
+  },
+    React.createElement("div", {
+      className: "admin-modal admin-modal--wide",
+      onClick: (e) => e.stopPropagation(),
+      dir: "rtl"
+    },
+      React.createElement("h3", { className: "admin-modal__title" }, "הגדרות פרסום ללייב"),
+      React.createElement("p", { className: "admin-modal__hint" },
+        "הגדר פעם אחת. הכפתור 'העלאה ללייב' יעשה commit ישיר ל־GitHub והאתר הלייב יעדכן עצמו אוטומטית."
+      ),
+      React.createElement("div", { className: "admin-field" },
+        React.createElement("label", { className: "admin-field__label" }, "GitHub User / Org"),
+        React.createElement("input", {
+          type: "text", className: "admin-modal__input",
+          value: settings.owner,
+          onChange: (e) => update("owner", e.target.value)
+        })
+      ),
+      React.createElement("div", { className: "admin-field" },
+        React.createElement("label", { className: "admin-field__label" }, "שם הריפו"),
+        React.createElement("input", {
+          type: "text", className: "admin-modal__input",
+          value: settings.repo,
+          onChange: (e) => update("repo", e.target.value)
+        })
+      ),
+      React.createElement("div", { className: "admin-field" },
+        React.createElement("label", { className: "admin-field__label" }, "Branch"),
+        React.createElement("input", {
+          type: "text", className: "admin-modal__input",
+          value: settings.branch,
+          onChange: (e) => update("branch", e.target.value)
+        })
+      ),
+      React.createElement("div", { className: "admin-field" },
+        React.createElement("label", { className: "admin-field__label" }, "נתיב הקובץ"),
+        React.createElement("input", {
+          type: "text", className: "admin-modal__input",
+          value: settings.path,
+          onChange: (e) => update("path", e.target.value)
+        })
+      ),
+      React.createElement("div", { className: "admin-field" },
+        React.createElement("label", { className: "admin-field__label" },
+          "GitHub Token (PAT)",
+          React.createElement("a", {
+            href: tokenUrl, target: "_blank", rel: "noopener noreferrer",
+            className: "admin-field__link"
+          }, "צור Token חדש →")
+        ),
+        React.createElement("input", {
+          type: "password", className: "admin-modal__input",
+          placeholder: "github_pat_...",
+          value: settings.token || "",
+          onChange: (e) => update("token", e.target.value)
+        }),
+        React.createElement("p", { className: "admin-field__caption" },
+          "הרשאה נדרשת: Contents · Read and write עבור הריפו הזה."
+        )
+      ),
+      savedToast && React.createElement("div", { className: "admin-modal__success" }, "נשמר ✓"),
+      React.createElement("div", { className: "admin-modal__actions" },
+        React.createElement("button", {
+          type: "button",
+          className: "admin-modal__btn admin-modal__btn--ghost",
+          onClick: () => setOpen(false)
+        }, "ביטול"),
+        React.createElement("button", {
+          type: "button",
+          className: "admin-modal__btn admin-modal__btn--primary",
+          onClick: save
+        }, "שמור")
+      )
+    )
+  );
+}
+
+window.AdminPublishSettingsModal = AdminPublishSettingsModal;
+
 // ---------- AdminPanel UI ----------
 
 function AdminPanel({ admin }) {
@@ -567,16 +790,27 @@ function AdminPanel({ admin }) {
     React.createElement(ToolbarRow, {
       icon: "🚀",
       label: "העלאה ללייב",
-      onClick: () => {
-        admin.publishToLive();
-        exportJSON(admin);
-        window.alert("Snapshot נשמר ברשימת הגרסאות. הקובץ הורד — שלח לי בצ'אט כדי להעלות ללייב לכולם.");
+      onClick: async () => {
+        const result = await admin.publishToLive();
+        if (result.published) {
+          const url = result.commitUrl;
+          window.alert("פורסם ללייב בהצלחה ✓" + (url ? "\n\nקישור ל־commit:\n" + url : ""));
+        } else if (result.reason === "missing-token" || result.reason === "auth") {
+          // Settings modal will open via cuts-publish-need-settings event
+        } else {
+          window.alert("הפרסום נכשל: " + result.reason);
+        }
       }
     }),
     React.createElement(ToolbarRow, {
       icon: "🕓",
       label: "ניהול גרסאות",
       onClick: () => window.dispatchEvent(new CustomEvent("cuts-admin-versions"))
+    }),
+    React.createElement(ToolbarRow, {
+      icon: "⚙️",
+      label: "הגדרות פרסום",
+      onClick: () => window.dispatchEvent(new CustomEvent("cuts-publish-need-settings"))
     }),
     React.createElement("div", { className: "admin-toolbar__sep" }),
     React.createElement(ToolbarRow, {

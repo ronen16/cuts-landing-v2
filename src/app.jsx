@@ -23,10 +23,31 @@ function App() {
     return () => window.removeEventListener("message", handler);
   }, []);
 
+  // On boot, fetch live overrides from GitHub (raw.githubusercontent.com)
+  // and merge with the user's local overrides so the deployed site reflects
+  // the latest published state without any browser localStorage.
+  const [liveOverrides, setLiveOverrides] = React.useState(null);
+  React.useEffect(() => {
+    if (!window.__cutsFetchLiveOverrides || !window.__cutsLoadPublishSettings) return;
+    let cancelled = false;
+    (async () => {
+      const settings = window.__cutsLoadPublishSettings();
+      const data = await window.__cutsFetchLiveOverrides(settings);
+      if (!cancelled && data) setLiveOverrides(data);
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
+  // Merge: live values are the baseline; user's local overrides win on top.
+  const mergedOverrides = React.useMemo(() => {
+    if (!liveOverrides) return admin.overrides;
+    return { ...(liveOverrides.overrides || {}), ...(admin.overrides || {}) };
+  }, [liveOverrides, admin.overrides]);
+
   // Apply content overrides on every render + watch for re-renders
   React.useEffect(() => {
     if (!window.__cutsApplyOverrides) return;
-    const apply = () => window.__cutsApplyOverrides(admin.overrides);
+    const apply = () => window.__cutsApplyOverrides(mergedOverrides);
     apply();
     const rootEl = document.getElementById("root");
     if (!rootEl) return;
@@ -43,7 +64,7 @@ function App() {
       obs.disconnect();
       if (timer) clearTimeout(timer);
     };
-  }, [admin.overrides]);
+  }, [mergedOverrides]);
 
   // Wire inline editing
   React.useEffect(() => {
@@ -59,11 +80,16 @@ function App() {
     return window.__cutsAttachMoveListeners(rootEl, admin.movingElements, admin.updateElementOffset);
   }, [admin.movingElements, admin.updateElementOffset]);
 
-  // Apply saved element offsets to the DOM on render
+  // Apply saved element offsets to the DOM on render (live + local)
+  const mergedOffsets = React.useMemo(() => {
+    if (!liveOverrides) return admin.elementOffsets;
+    return { ...(liveOverrides.elementOffsets || {}), ...(admin.elementOffsets || {}) };
+  }, [liveOverrides, admin.elementOffsets]);
+
   React.useEffect(() => {
     if (!window.__cutsApplyElementOffsets) return;
-    window.__cutsApplyElementOffsets(admin.elementOffsets);
-  }, [admin.elementOffsets]);
+    window.__cutsApplyElementOffsets(mergedOffsets);
+  }, [mergedOffsets]);
 
   // Body class for admin mode (used by CSS to style editable elements)
   React.useEffect(() => {
@@ -79,18 +105,35 @@ function App() {
   const AdminPanel = window.AdminPanel;
   const AdminPasswordModal = window.AdminPasswordModal;
   const AdminVersionsModal = window.AdminVersionsModal;
+  const AdminPublishSettingsModal = window.AdminPublishSettingsModal;
 
   // Dark/light class — BOLD is dark by default; light is the inverted mode
   const dark = tweaks.dark;
   const modeClass = !dark ? "light" : "";
 
+  // Merge live + local for section order + hidden sections so visitors see
+  // the published structure even without any localStorage.
+  const effectiveAdmin = React.useMemo(() => {
+    if (!liveOverrides) return admin;
+    const liveOrder = Array.isArray(liveOverrides.sectionOrder) ? liveOverrides.sectionOrder : null;
+    const liveHidden = Array.isArray(liveOverrides.hiddenSections) ? liveOverrides.hiddenSections : [];
+    const localOrder = Array.isArray(admin.sectionOrder) ? admin.sectionOrder : null;
+    const localHidden = Array.isArray(admin.hiddenSections) ? admin.hiddenSections : [];
+    return {
+      ...admin,
+      sectionOrder: localOrder || liveOrder,
+      hiddenSections: Array.from(new Set([...(liveHidden || []), ...(localHidden || [])])),
+    };
+  }, [admin, liveOverrides]);
+
   return (
     <div className={`theme-bold ${modeClass}`}>
-      <Variant onCTAClick={onCTAClick} form={form} admin={admin} />
+      <Variant onCTAClick={onCTAClick} form={form} admin={effectiveAdmin} />
       <TweaksPanel open={tweaksOpen} tweaks={tweaks} setTweaks={setTweaks} />
       {AdminPanel && <AdminPanel admin={admin} />}
       {AdminPasswordModal && <AdminPasswordModal />}
       {AdminVersionsModal && <AdminVersionsModal admin={admin} />}
+      {AdminPublishSettingsModal && <AdminPublishSettingsModal />}
     </div>
   );
 }
