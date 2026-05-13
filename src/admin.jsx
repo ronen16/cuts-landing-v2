@@ -5,7 +5,7 @@
 const ADMIN_STORAGE_KEY = "cuts_admin_v1";
 const ADMIN_PASSWORD_HASH = "86e2b4e7068dff297e717358659f5e2ef4376e37019d3427bc68339869b9e224";
 const LOGO_CLICK_WINDOW_MS = 10000;
-const LOGO_CLICK_THRESHOLD = 3;
+const LOGO_CLICK_THRESHOLD = 5;
 
 // ---------- crypto helper ----------
 
@@ -54,28 +54,6 @@ function saveAdminState(state) {
 // ---------- logo click counter ----------
 
 let clickTimestamps = [];
-
-function showClickToast(count) {
-  let toast = document.getElementById("__cuts-click-toast");
-  if (!toast) {
-    toast = document.createElement("div");
-    toast.id = "__cuts-click-toast";
-    toast.style.cssText =
-      "position:fixed;top:80px;left:50%;transform:translateX(-50%);" +
-      "background:rgba(0,0,0,0.85);color:#FFD500;border:1px solid #FFD500;" +
-      "padding:10px 18px;border-radius:999px;font:600 14px 'JetBrains Mono',monospace;" +
-      "letter-spacing:0.1em;z-index:10000;pointer-events:none;direction:ltr;" +
-      "transition:opacity 0.3s ease;opacity:0;";
-    document.body.appendChild(toast);
-  }
-  toast.textContent = `${count} / ${LOGO_CLICK_THRESHOLD}`;
-  toast.style.opacity = "1";
-  clearTimeout(toast.__hideTimer);
-  toast.__hideTimer = setTimeout(() => {
-    toast.style.opacity = "0";
-  }, 1500);
-}
-
 let lastHandlerAt = 0;
 function handleLogoClick() {
   const now = Date.now();
@@ -87,11 +65,8 @@ function handleLogoClick() {
   clickTimestamps.push(now);
   const count = clickTimestamps.length;
   console.info(`[cuts-admin] logo click ${count}/${LOGO_CLICK_THRESHOLD}`);
-  showClickToast(count);
   if (count < LOGO_CLICK_THRESHOLD) return;
   clickTimestamps = [];
-  const toast = document.getElementById("__cuts-click-toast");
-  if (toast) toast.style.opacity = "0";
   window.dispatchEvent(new CustomEvent("cuts-admin-prompt"));
 }
 
