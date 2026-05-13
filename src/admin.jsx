@@ -76,40 +76,46 @@ function showClickToast(count) {
   }, 1500);
 }
 
-async function handleLogoClick() {
+function handleLogoClick() {
   const now = Date.now();
   clickTimestamps = clickTimestamps.filter((t) => now - t < LOGO_CLICK_WINDOW_MS);
   clickTimestamps.push(now);
   const count = clickTimestamps.length;
   console.info(`[cuts-admin] logo click ${count}/${LOGO_CLICK_THRESHOLD}`);
-  if (count < LOGO_CLICK_THRESHOLD) {
-    showClickToast(count);
-    return;
-  }
+  showClickToast(count);
+  if (count < LOGO_CLICK_THRESHOLD) return;
   clickTimestamps = [];
   const toast = document.getElementById("__cuts-click-toast");
   if (toast) toast.style.opacity = "0";
-  const entered = window.prompt("Admin password:");
-  if (entered == null) return;
+  window.dispatchEvent(new CustomEvent("cuts-admin-prompt"));
+}
+
+window.__cutsLogoClick = handleLogoClick;
+
+async function verifyPasswordAndUnlock(entered) {
+  if (entered == null) return { ok: false, reason: "cancel" };
   let hash;
   try {
     hash = await sha256Hex(entered);
   } catch (e) {
     console.error("[cuts-admin] hashing failed (need HTTPS/localhost for crypto.subtle):", e);
-    window.alert("Crypto API unavailable. Open the site via http://localhost.");
-    return;
+    return { ok: false, reason: "crypto" };
   }
-  if (hash !== ADMIN_PASSWORD_HASH) {
-    window.alert("Wrong password.");
-    return;
-  }
+  if (hash !== ADMIN_PASSWORD_HASH) return { ok: false, reason: "wrong" };
   const state = loadAdminState();
   state.unlocked = true;
   saveAdminState(state);
   window.dispatchEvent(new CustomEvent("cuts-admin-unlock"));
+  return { ok: true };
 }
 
-window.__cutsLogoClick = handleLogoClick;
+// keyboard shortcut: Ctrl/Cmd + Shift + A → open admin prompt directly
+window.addEventListener("keydown", (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === "A" || e.key === "a")) {
+    e.preventDefault();
+    window.dispatchEvent(new CustomEvent("cuts-admin-prompt"));
+  }
+});
 
 // ---------- useAdminMode hook ----------
 
@@ -261,6 +267,74 @@ function applyOverridesToDOM(overrides) {
 }
 
 window.__cutsApplyOverrides = applyOverridesToDOM;
+
+// ---------- Password Modal ----------
+
+function AdminPasswordModal() {
+  const [open, setOpen] = React.useState(false);
+  const [value, setValue] = React.useState("");
+  const [error, setError] = React.useState("");
+  const inputRef = React.useRef(null);
+
+  React.useEffect(() => {
+    const onPrompt = () => {
+      setValue("");
+      setError("");
+      setOpen(true);
+      setTimeout(() => inputRef.current && inputRef.current.focus(), 50);
+    };
+    window.addEventListener("cuts-admin-prompt", onPrompt);
+    return () => window.removeEventListener("cuts-admin-prompt", onPrompt);
+  }, []);
+
+  if (!open) return null;
+
+  const submit = async () => {
+    const result = await verifyPasswordAndUnlock(value);
+    if (result.ok) {
+      setOpen(false);
+      return;
+    }
+    if (result.reason === "wrong") setError("סיסמה שגויה");
+    else if (result.reason === "crypto") setError("Crypto API לא זמין. השתמש ב־http://localhost");
+    else setError("");
+  };
+
+  const onKey = (e) => {
+    if (e.key === "Enter") { e.preventDefault(); submit(); }
+    else if (e.key === "Escape") { e.preventDefault(); setOpen(false); }
+  };
+
+  return React.createElement("div", {
+    className: "admin-modal-backdrop",
+    onClick: () => setOpen(false)
+  },
+    React.createElement("div", {
+      className: "admin-modal",
+      onClick: (e) => e.stopPropagation(),
+      dir: "rtl"
+    },
+      React.createElement("h3", { className: "admin-modal__title" }, "כניסת מנהל"),
+      React.createElement("input", {
+        ref: inputRef,
+        type: "password",
+        className: "admin-modal__input",
+        placeholder: "סיסמה",
+        value: value,
+        onChange: (e) => setValue(e.target.value),
+        onKeyDown: onKey,
+        autoComplete: "off"
+      }),
+      error && React.createElement("div", { className: "admin-modal__error" }, error),
+      React.createElement("div", { className: "admin-modal__actions" },
+        React.createElement("button", { type: "button", className: "admin-modal__btn admin-modal__btn--ghost", onClick: () => setOpen(false) }, "ביטול"),
+        React.createElement("button", { type: "button", className: "admin-modal__btn admin-modal__btn--primary", onClick: submit }, "כניסה")
+      )
+    )
+  );
+}
+
+window.AdminPasswordModal = AdminPasswordModal;
 
 // ---------- AdminPanel UI ----------
 
