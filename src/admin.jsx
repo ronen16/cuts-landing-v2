@@ -19,10 +19,12 @@ async function sha256Hex(input) {
 
 // ---------- storage helpers ----------
 
+const MAX_VERSIONS = 10;
+
 function loadAdminState() {
   try {
     const raw = localStorage.getItem(ADMIN_STORAGE_KEY);
-    if (!raw) return { unlocked: false, overrides: {}, sectionOrder: null, elementOffsets: {}, hiddenSections: [] };
+    if (!raw) return { unlocked: false, overrides: {}, sectionOrder: null, elementOffsets: {}, hiddenSections: [], publishedVersions: [] };
     const parsed = JSON.parse(raw);
     return {
       unlocked: !!parsed.unlocked,
@@ -30,9 +32,10 @@ function loadAdminState() {
       sectionOrder: Array.isArray(parsed.sectionOrder) ? parsed.sectionOrder : null,
       elementOffsets: parsed.elementOffsets || {},
       hiddenSections: Array.isArray(parsed.hiddenSections) ? parsed.hiddenSections : [],
+      publishedVersions: Array.isArray(parsed.publishedVersions) ? parsed.publishedVersions : [],
     };
   } catch (e) {
-    return { unlocked: false, overrides: {}, sectionOrder: null, elementOffsets: {}, hiddenSections: [] };
+    return { unlocked: false, overrides: {}, sectionOrder: null, elementOffsets: {}, hiddenSections: [], publishedVersions: [] };
   }
 }
 
@@ -48,6 +51,7 @@ function saveAdminState(state) {
         sectionOrder: state.sectionOrder,
         elementOffsets: state.elementOffsets || {},
         hiddenSections: state.hiddenSections || [],
+        publishedVersions: state.publishedVersions || [],
       })
     );
   } catch (e) {
@@ -141,6 +145,7 @@ function useAdminMode() {
   const [sectionOrder, setSectionOrder] = React.useState(initial.sectionOrder);
   const [elementOffsets, setElementOffsets] = React.useState(initial.elementOffsets);
   const [hiddenSections, setHiddenSections] = React.useState(initial.hiddenSections);
+  const [publishedVersions, setPublishedVersions] = React.useState(initial.publishedVersions);
 
   React.useEffect(() => {
     const onUnlock = () => setUnlocked(true);
@@ -149,8 +154,8 @@ function useAdminMode() {
   }, []);
 
   React.useEffect(() => {
-    saveAdminState({ unlocked, overrides, sectionOrder, elementOffsets, hiddenSections });
-  }, [unlocked, overrides, sectionOrder, elementOffsets, hiddenSections]);
+    saveAdminState({ unlocked, overrides, sectionOrder, elementOffsets, hiddenSections, publishedVersions });
+  }, [unlocked, overrides, sectionOrder, elementOffsets, hiddenSections, publishedVersions]);
 
   // mutual exclusion
   const setEditingTextSafe = React.useCallback((v) => {
@@ -187,6 +192,34 @@ function useAdminMode() {
     });
   }, []);
 
+  // Snapshot current state into the versions list (cap at MAX_VERSIONS).
+  const publishToLive = React.useCallback(() => {
+    const snapshot = {
+      id: "v-" + Date.now() + "-" + Math.random().toString(36).slice(2, 8),
+      timestamp: new Date().toISOString(),
+      label: new Date().toLocaleString("he-IL"),
+      overrides,
+      sectionOrder,
+      elementOffsets,
+      hiddenSections,
+    };
+    setPublishedVersions((prev) => [snapshot, ...prev].slice(0, MAX_VERSIONS));
+    return snapshot;
+  }, [overrides, sectionOrder, elementOffsets, hiddenSections]);
+
+  const restoreVersion = React.useCallback((id) => {
+    const v = publishedVersions.find((x) => x.id === id);
+    if (!v) return;
+    setOverrides(v.overrides || {});
+    setSectionOrder(v.sectionOrder || null);
+    setElementOffsets(v.elementOffsets || {});
+    setHiddenSections(v.hiddenSections || []);
+  }, [publishedVersions]);
+
+  const deleteVersion = React.useCallback((id) => {
+    setPublishedVersions((prev) => prev.filter((v) => v.id !== id));
+  }, []);
+
   const resetAll = React.useCallback(() => {
     setOverrides({});
     setSectionOrder(null);
@@ -212,6 +245,7 @@ function useAdminMode() {
     sectionOrder,
     elementOffsets,
     hiddenSections,
+    publishedVersions,
     setEditingText: setEditingTextSafe,
     setDraggingSections: setDraggingSectionsSafe,
     setMovingElements: setMovingElementsSafe,
@@ -219,6 +253,9 @@ function useAdminMode() {
     updateSectionOrder,
     updateElementOffset,
     toggleSectionHidden,
+    publishToLive,
+    restoreVersion,
+    deleteVersion,
     resetAll,
     exitAdmin,
   };
@@ -409,6 +446,82 @@ function AdminPasswordModal() {
 
 window.AdminPasswordModal = AdminPasswordModal;
 
+// ---------- Versions Modal ----------
+
+function AdminVersionsModal({ admin }) {
+  const [open, setOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    const onOpen = () => setOpen(true);
+    window.addEventListener("cuts-admin-versions", onOpen);
+    return () => window.removeEventListener("cuts-admin-versions", onOpen);
+  }, []);
+
+  if (!open) return null;
+
+  const versions = admin.publishedVersions || [];
+
+  return React.createElement("div", {
+    className: "admin-modal-backdrop",
+    onClick: () => setOpen(false)
+  },
+    React.createElement("div", {
+      className: "admin-modal admin-modal--wide",
+      onClick: (e) => e.stopPropagation(),
+      dir: "rtl"
+    },
+      React.createElement("h3", { className: "admin-modal__title" }, "ניהול גרסאות"),
+      React.createElement("p", { className: "admin-modal__hint" },
+        versions.length === 0
+          ? "עוד לא העלית גרסה ללייב. לחץ על \"העלאה ללייב\" כדי לשמור snapshot."
+          : `${versions.length} גרסאות אחרונות. שחזור מחיל את ה־snapshot על המצב הנוכחי.`
+      ),
+      versions.length > 0 && React.createElement("ul", { className: "admin-versions" },
+        versions.map((v) =>
+          React.createElement("li", { key: v.id, className: "admin-versions__row" },
+            React.createElement("div", { className: "admin-versions__info" },
+              React.createElement("div", { className: "admin-versions__label" }, v.label),
+              React.createElement("div", { className: "admin-versions__meta" },
+                `${Object.keys(v.overrides || {}).length} עריכות · ` +
+                `${Object.keys(v.elementOffsets || {}).length} הזזות · ` +
+                `${(v.hiddenSections || []).length} מוסתרים`
+              )
+            ),
+            React.createElement("div", { className: "admin-versions__actions" },
+              React.createElement("button", {
+                type: "button",
+                className: "admin-versions__btn",
+                onClick: () => {
+                  if (window.confirm("לשחזר את הגרסה הזאת? המצב הנוכחי יוחלף.")) {
+                    admin.restoreVersion(v.id);
+                    setOpen(false);
+                  }
+                }
+              }, "שחזר"),
+              React.createElement("button", {
+                type: "button",
+                className: "admin-versions__btn admin-versions__btn--danger",
+                onClick: () => {
+                  if (window.confirm("למחוק את הגרסה הזאת?")) admin.deleteVersion(v.id);
+                }
+              }, "מחק")
+            )
+          )
+        )
+      ),
+      React.createElement("div", { className: "admin-modal__actions" },
+        React.createElement("button", {
+          type: "button",
+          className: "admin-modal__btn admin-modal__btn--primary",
+          onClick: () => setOpen(false)
+        }, "סגור")
+      )
+    )
+  );
+}
+
+window.AdminVersionsModal = AdminVersionsModal;
+
 // ---------- AdminPanel UI ----------
 
 function AdminPanel({ admin }) {
@@ -449,6 +562,21 @@ function AdminPanel({ admin }) {
       label: "הזזת אלמנטים",
       active: admin.movingElements,
       onClick: () => admin.setMovingElements(!admin.movingElements)
+    }),
+    React.createElement("div", { className: "admin-toolbar__sep" }),
+    React.createElement(ToolbarRow, {
+      icon: "🚀",
+      label: "העלאה ללייב",
+      onClick: () => {
+        admin.publishToLive();
+        exportJSON(admin);
+        window.alert("Snapshot נשמר ברשימת הגרסאות. הקובץ הורד — שלח לי בצ'אט כדי להעלות ללייב לכולם.");
+      }
+    }),
+    React.createElement(ToolbarRow, {
+      icon: "🕓",
+      label: "ניהול גרסאות",
+      onClick: () => window.dispatchEvent(new CustomEvent("cuts-admin-versions"))
     }),
     React.createElement("div", { className: "admin-toolbar__sep" }),
     React.createElement(ToolbarRow, {

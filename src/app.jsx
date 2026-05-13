@@ -78,6 +78,7 @@ function App() {
   const Variant = window.BoldVariation;
   const AdminPanel = window.AdminPanel;
   const AdminPasswordModal = window.AdminPasswordModal;
+  const AdminVersionsModal = window.AdminVersionsModal;
 
   // Dark/light class — BOLD is dark by default; light is the inverted mode
   const dark = tweaks.dark;
@@ -89,6 +90,7 @@ function App() {
       <TweaksPanel open={tweaksOpen} tweaks={tweaks} setTweaks={setTweaks} />
       {AdminPanel && <AdminPanel admin={admin} />}
       {AdminPasswordModal && <AdminPasswordModal />}
+      {AdminVersionsModal && <AdminVersionsModal admin={admin} />}
     </div>
   );
 }
