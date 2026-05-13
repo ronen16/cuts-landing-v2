@@ -564,9 +564,10 @@ function attachInlineEditing(rootEl, editing, onChange) {
 
   const onKeydown = (e) => {
     if (!e.target || !e.target.hasAttribute || !e.target.hasAttribute("data-edit-id")) return;
+    // Enter → insert newline (use <br> for single-line elements to keep layout clean)
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      e.target.blur();
+      document.execCommand("insertLineBreak");
     } else if (e.key === "Escape") {
       e.preventDefault();
       e.target.blur();
