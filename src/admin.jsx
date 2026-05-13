@@ -305,17 +305,21 @@ function applyOverridesToDOM(overrides) {
   for (const el of elements) {
     // Skip the element currently being edited — never overwrite the user's cursor
     if (document.activeElement === el) continue;
-    // Capture original text the first time we see this element
-    // (must happen BEFORE computeEditId so the id hash is based on original)
+    // Capture original text + html the first time we see this element.
+    // textContent is used to make computeEditId stable; innerHTML is what we
+    // restore from on reset (so nested styled spans survive).
     if (!el.hasAttribute("data-edit-original")) {
       el.setAttribute("data-edit-original", el.textContent || "");
+    }
+    if (el.dataset.editOriginalHtml == null) {
+      el.dataset.editOriginalHtml = el.innerHTML;
     }
     const id = computeEditId(el);
     if (!id) continue;
     el.setAttribute("data-edit-id", id);
     if (Object.prototype.hasOwnProperty.call(overrides, id)) {
       const desired = overrides[id];
-      if (el.textContent !== desired) el.textContent = desired;
+      if (el.innerHTML !== desired) el.innerHTML = desired;
     }
     // Do NOT auto-restore non-overridden elements during normal renders —
     // that would clobber in-progress edits. Reset is handled separately via
@@ -326,9 +330,9 @@ function applyOverridesToDOM(overrides) {
 function restoreOriginals() {
   const elements = getAllEditableElements();
   for (const el of elements) {
-    const original = el.getAttribute("data-edit-original");
-    if (original != null && el.textContent !== original) {
-      el.textContent = original;
+    const originalHtml = el.dataset.editOriginalHtml;
+    if (originalHtml != null && el.innerHTML !== originalHtml) {
+      el.innerHTML = originalHtml;
     }
   }
 }
@@ -558,8 +562,9 @@ function attachInlineEditing(rootEl, editing, onChange) {
     const el = e.target;
     if (!el || !el.hasAttribute || !el.hasAttribute("data-edit-id")) return;
     const id = el.getAttribute("data-edit-id");
-    const newText = (el.textContent || "").replace(/\s+$/g, "");
-    onChange(id, newText);
+    // Save innerHTML so <br> from Enter (and any inline styling) survives reload.
+    const newHtml = (el.innerHTML || "").replace(/(?:&nbsp;|\s)+$/g, "");
+    onChange(id, newHtml);
   };
 
   const onKeydown = (e) => {
