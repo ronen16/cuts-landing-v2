@@ -4271,7 +4271,7 @@ function ServicesOld({ onCTAClick }) {
             textWrap: "balance"
           }}>
             <span style={{ display: "block", opacity: 0.92 }}>
-              אתה מדבר.
+              אתם מדברים.
             </span>
             <span style={{ display: "block", position: "relative" }}>
               <span style={{
@@ -4280,7 +4280,7 @@ function ServicesOld({ onCTAClick }) {
                 position: "relative",
                 display: "inline-block"
               }}>
-                אנחנו נדאג לכל השאר.
+                אנחנו דואגים לכל השאר.
                 <span aria-hidden="true" style={{
                   position: "absolute", left: "3%", right: "3%", bottom: "-0.06em",
                   height: 5,
