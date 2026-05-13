@@ -4264,9 +4264,9 @@ function ServicesOld({ onCTAClick }) {
   return (
     <section style={{ padding: "76px 0 52px", background: "var(--card)", borderTop: "1px solid var(--line2)", borderBottom: "1px solid var(--line2)" }}>
       <div className="wrap">
-        <div style={{ textAlign: "center", marginBottom: 24, maxWidth: 1000, marginLeft: "auto", marginRight: "auto" }}>
+        <div style={{ textAlign: "center", marginBottom: 24, maxWidth: 1100, marginLeft: "auto", marginRight: "auto" }}>
           <h2 className="display" style={{
-            fontSize: "clamp(36px, 5.5vw, 64px)",
+            fontSize: "clamp(40px, 6vw, 84px)",
             margin: 0, fontWeight: 900, lineHeight: 1,
             textWrap: "balance"
           }}>
