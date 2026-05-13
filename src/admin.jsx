@@ -791,6 +791,7 @@ function AdminPanel({ admin }) {
       icon: "🚀",
       label: "העלאה ללייב",
       onClick: async () => {
+        if (!window.confirm("אתה בטוח שאתה רוצה להעלות את השינויים האלה ללייב?\nהכל יוצג לכל מבקר באתר.")) return;
         const result = await admin.publishToLive();
         if (result.published) {
           const url = result.commitUrl;
