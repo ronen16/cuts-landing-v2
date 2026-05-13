@@ -506,3 +506,61 @@ body.admin-moving-active * { cursor: grabbing !important; }
   z-index: 9990 !important;
   position: relative !important;
 }
+
+/* Section hide-toggle (visible only in drag-sections admin mode) */
+[data-section-id] { position: relative; }
+.section-hide-toggle {
+  position: absolute;
+  top: 12px;
+  inset-inline-start: 12px;
+  z-index: 50;
+  appearance: none;
+  border: 1px solid var(--accent, #FFD500);
+  background: rgba(0, 0, 0, 0.85);
+  color: var(--accent, #FFD500);
+  font: 700 12px 'Heebo', system-ui, sans-serif;
+  letter-spacing: 0.04em;
+  padding: 6px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+body.admin-dragging-sections .section-hide-toggle { display: inline-flex; }
+.section-hide-toggle:hover { background: var(--accent, #FFD500); color: #0A0A0A; }
+
+/* Hidden section in admin view — dim + striped overlay */
+.section-hidden-admin {
+  opacity: 0.4;
+  filter: grayscale(0.5);
+  position: relative;
+}
+.section-hidden-admin::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(255, 213, 0, 0.06) 0,
+    rgba(255, 213, 0, 0.06) 12px,
+    transparent 12px,
+    transparent 24px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+.section-hidden-badge {
+  position: absolute;
+  top: 14px;
+  inset-inline-end: 12px;
+  z-index: 50;
+  background: rgba(0, 0, 0, 0.85);
+  color: #ff8a8a;
+  border: 1px solid rgba(255, 80, 80, 0.5);
+  font: 700 12px 'Heebo', system-ui, sans-serif;
+  padding: 6px 12px;
+  border-radius: 999px;
+  letter-spacing: 0.04em;
+}

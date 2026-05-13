@@ -5713,25 +5713,50 @@ function BoldVariation({ onCTAClick, form, admin }) {
     if (admin && admin.updateSectionOrder) admin.updateSectionOrder(next);
   }
 
+  const isUnlocked = !!(admin && admin.unlocked);
+  const hiddenSet = new Set((admin && admin.hiddenSections) || []);
+  // Visitors see only non-hidden sections. Admins see all (with overlay) so
+  // they can toggle visibility.
+  const visibleSections = isUnlocked
+    ? orderedSections
+    : orderedSections.filter((s) => !hiddenSet.has(s.id));
+
   return (
     <div className="fade-in">
       <TopNav variant="bold" onCTAClick={onCTAClick} />
-      {orderedSections.map((s, i) => (
-        <React.Fragment key={s.id}>
-          <div
-            data-section-id={s.id}
-            draggable={draggable}
-            onDragStart={(e) => handleDragStart(e, s.id)}
-            onDragEnd={handleDragEnd}
-            onDragOver={(e) => handleDragOver(e, s.id)}
-            onDragLeave={handleDragLeave}
-            onDrop={(e) => handleDrop(e, s.id)}
-          >
-            <s.Comp />
-          </div>
-          {i < orderedSections.length - 1 && <SectionDivider />}
-        </React.Fragment>
-      ))}
+      {visibleSections.map((s, i) => {
+        const isHidden = hiddenSet.has(s.id);
+        return (
+          <React.Fragment key={s.id}>
+            <div
+              data-section-id={s.id}
+              className={isHidden ? "section-hidden-admin" : undefined}
+              draggable={draggable}
+              onDragStart={(e) => handleDragStart(e, s.id)}
+              onDragEnd={handleDragEnd}
+              onDragOver={(e) => handleDragOver(e, s.id)}
+              onDragLeave={handleDragLeave}
+              onDrop={(e) => handleDrop(e, s.id)}
+            >
+              {draggable && admin && admin.toggleSectionHidden && (
+                <button
+                  type="button"
+                  className="section-hide-toggle"
+                  onClick={(e) => { e.stopPropagation(); admin.toggleSectionHidden(s.id); }}
+                  title={isHidden ? "החזר לתצוגה" : "הסתר מהאתר"}
+                >
+                  {isHidden ? "👁 הצג" : "🚫 הסתר"}
+                </button>
+              )}
+              {isHidden && isUnlocked && (
+                <div className="section-hidden-badge">מוסתר באתר הלייב</div>
+              )}
+              <s.Comp />
+            </div>
+            {i < visibleSections.length - 1 && <SectionDivider />}
+          </React.Fragment>
+        );
+      })}
       <Footer variant="bold" />
     </div>);
 

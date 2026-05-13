@@ -22,16 +22,17 @@ async function sha256Hex(input) {
 function loadAdminState() {
   try {
     const raw = localStorage.getItem(ADMIN_STORAGE_KEY);
-    if (!raw) return { unlocked: false, overrides: {}, sectionOrder: null, elementOffsets: {} };
+    if (!raw) return { unlocked: false, overrides: {}, sectionOrder: null, elementOffsets: {}, hiddenSections: [] };
     const parsed = JSON.parse(raw);
     return {
       unlocked: !!parsed.unlocked,
       overrides: parsed.overrides || {},
       sectionOrder: Array.isArray(parsed.sectionOrder) ? parsed.sectionOrder : null,
       elementOffsets: parsed.elementOffsets || {},
+      hiddenSections: Array.isArray(parsed.hiddenSections) ? parsed.hiddenSections : [],
     };
   } catch (e) {
-    return { unlocked: false, overrides: {}, sectionOrder: null, elementOffsets: {} };
+    return { unlocked: false, overrides: {}, sectionOrder: null, elementOffsets: {}, hiddenSections: [] };
   }
 }
 
@@ -46,6 +47,7 @@ function saveAdminState(state) {
         overrides: state.overrides,
         sectionOrder: state.sectionOrder,
         elementOffsets: state.elementOffsets || {},
+        hiddenSections: state.hiddenSections || [],
       })
     );
   } catch (e) {
@@ -138,6 +140,7 @@ function useAdminMode() {
   const [overrides, setOverrides] = React.useState(initial.overrides);
   const [sectionOrder, setSectionOrder] = React.useState(initial.sectionOrder);
   const [elementOffsets, setElementOffsets] = React.useState(initial.elementOffsets);
+  const [hiddenSections, setHiddenSections] = React.useState(initial.hiddenSections);
 
   React.useEffect(() => {
     const onUnlock = () => setUnlocked(true);
@@ -146,8 +149,8 @@ function useAdminMode() {
   }, []);
 
   React.useEffect(() => {
-    saveAdminState({ unlocked, overrides, sectionOrder, elementOffsets });
-  }, [unlocked, overrides, sectionOrder, elementOffsets]);
+    saveAdminState({ unlocked, overrides, sectionOrder, elementOffsets, hiddenSections });
+  }, [unlocked, overrides, sectionOrder, elementOffsets, hiddenSections]);
 
   // mutual exclusion
   const setEditingTextSafe = React.useCallback((v) => {
@@ -175,10 +178,20 @@ function useAdminMode() {
     setElementOffsets((prev) => ({ ...prev, [id]: { x, y } }));
   }, []);
 
+  const toggleSectionHidden = React.useCallback((id) => {
+    setHiddenSections((prev) => {
+      const set = new Set(prev);
+      if (set.has(id)) set.delete(id);
+      else set.add(id);
+      return Array.from(set);
+    });
+  }, []);
+
   const resetAll = React.useCallback(() => {
     setOverrides({});
     setSectionOrder(null);
     setElementOffsets({});
+    setHiddenSections([]);
     if (window.__cutsRestoreOriginals) window.__cutsRestoreOriginals();
     if (window.__cutsClearAllTransforms) window.__cutsClearAllTransforms();
   }, []);
@@ -198,12 +211,14 @@ function useAdminMode() {
     overrides,
     sectionOrder,
     elementOffsets,
+    hiddenSections,
     setEditingText: setEditingTextSafe,
     setDraggingSections: setDraggingSectionsSafe,
     setMovingElements: setMovingElementsSafe,
     updateOverride,
     updateSectionOrder,
     updateElementOffset,
+    toggleSectionHidden,
     resetAll,
     exitAdmin,
   };
@@ -474,6 +489,8 @@ function exportJSON(admin) {
     exportedAt: new Date().toISOString(),
     overrides: admin.overrides,
     sectionOrder: admin.sectionOrder,
+    elementOffsets: admin.elementOffsets,
+    hiddenSections: admin.hiddenSections,
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
@@ -502,6 +519,16 @@ function importJSON(admin) {
       }
       if (Array.isArray(parsed.sectionOrder)) {
         admin.updateSectionOrder(parsed.sectionOrder);
+      }
+      if (parsed.elementOffsets && typeof parsed.elementOffsets === "object") {
+        Object.entries(parsed.elementOffsets).forEach(([id, p]) => {
+          if (p && typeof p.x === "number" && typeof p.y === "number") admin.updateElementOffset(id, p.x, p.y);
+        });
+      }
+      if (Array.isArray(parsed.hiddenSections)) {
+        // Reset current and apply each from import
+        const cur = new Set(admin.hiddenSections);
+        parsed.hiddenSections.forEach((id) => { if (!cur.has(id)) admin.toggleSectionHidden(id); });
       }
       window.alert("Imported successfully.");
     } catch (err) {
