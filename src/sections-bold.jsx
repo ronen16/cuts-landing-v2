@@ -4264,11 +4264,36 @@ function ServicesOld({ onCTAClick }) {
   return (
     <section style={{ padding: "76px 0 52px", background: "var(--card)", borderTop: "1px solid var(--line2)", borderBottom: "1px solid var(--line2)" }}>
       <div className="wrap">
-        <h2 className="display" style={{ fontSize: "clamp(40px, 6vw, 88px)", margin: "0 0 24px", maxWidth: 1000 }}>
-          אתה מדבר.<br />
-          <span style={{ color: "var(--accent)" }}>אנחנו נדאג לכל השאר.</span>
-        </h2>
-        <p style={{ fontSize: 19, lineHeight: 1.7, opacity: 0.85, maxWidth: 860, margin: "0 0 64px" }}>
+        <div style={{ textAlign: "center", marginBottom: 24, maxWidth: 1000, marginLeft: "auto", marginRight: "auto" }}>
+          <h2 className="display" style={{
+            fontSize: "clamp(36px, 5.5vw, 64px)",
+            margin: 0, fontWeight: 900, lineHeight: 1,
+            textWrap: "balance"
+          }}>
+            <span style={{ display: "block", opacity: 0.92 }}>
+              אתה מדבר.
+            </span>
+            <span style={{ display: "block", position: "relative" }}>
+              <span style={{
+                color: "var(--accent)",
+                textShadow: "0 0 50px rgba(255,213,0,0.45), 0 0 90px rgba(255,213,0,0.2)",
+                position: "relative",
+                display: "inline-block"
+              }}>
+                אנחנו נדאג לכל השאר.
+                <span aria-hidden="true" style={{
+                  position: "absolute", left: "3%", right: "3%", bottom: "-0.06em",
+                  height: 5,
+                  background: "linear-gradient(90deg, transparent, var(--accent) 15%, var(--accent) 85%, transparent)",
+                  opacity: 0.55,
+                  borderRadius: 3,
+                  filter: "blur(0.5px)"
+                }} />
+              </span>
+            </span>
+          </h2>
+        </div>
+        <p style={{ fontSize: 19, lineHeight: 1.7, opacity: 0.85, maxWidth: 760, margin: "0 auto 64px", textAlign: "center", textWrap: "balance" }}>
           אתה לא צריך סטודיו. לא צריך עורך. לא צריך לדעת איך מעלים פרק לספוטיפיי או איך מעצבים thumbnail ליוטיוב. {"\n"}
           אנחנו בונים את כל המכונה.
         </p>
