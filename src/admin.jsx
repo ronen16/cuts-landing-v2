@@ -4,8 +4,8 @@
 
 const ADMIN_STORAGE_KEY = "cuts_admin_v1";
 const ADMIN_PASSWORD_HASH = "86e2b4e7068dff297e717358659f5e2ef4376e37019d3427bc68339869b9e224";
-const LOGO_CLICK_WINDOW_MS = 5000;
-const LOGO_CLICK_THRESHOLD = 5;
+const LOGO_CLICK_WINDOW_MS = 10000;
+const LOGO_CLICK_THRESHOLD = 3;
 
 // ---------- crypto helper ----------
 
@@ -76,8 +76,13 @@ function showClickToast(count) {
   }, 1500);
 }
 
+let lastHandlerAt = 0;
 function handleLogoClick() {
   const now = Date.now();
+  // Dedupe: pointerdown + click + React onClick all fire on a single tap.
+  // Ignore extra triggers within 120ms of the previous count.
+  if (now - lastHandlerAt < 120) return;
+  lastHandlerAt = now;
   clickTimestamps = clickTimestamps.filter((t) => now - t < LOGO_CLICK_WINDOW_MS);
   clickTimestamps.push(now);
   const count = clickTimestamps.length;
@@ -116,6 +121,34 @@ window.addEventListener("keydown", (e) => {
     window.dispatchEvent(new CustomEvent("cuts-admin-prompt"));
   }
 });
+
+// Native delegated pointer listener — fires even if React's onClick is swallowed.
+// Triggers on the logo <img> or its parent anchor.
+function isLogoTarget(target) {
+  if (!target) return false;
+  const img = target.closest("nav img[alt='Cuts']");
+  if (img) return true;
+  const anchor = target.closest("nav a[href='#']");
+  if (anchor && anchor.querySelector("img[alt='Cuts']")) return true;
+  return false;
+}
+
+let lastNativeClickAt = 0;
+function nativeLogoTap(e) {
+  if (!isLogoTarget(e.target)) return;
+  // Debounce duplicate events for the same tap (pointerdown + click on same gesture)
+  const now = Date.now();
+  if (now - lastNativeClickAt < 80) return;
+  lastNativeClickAt = now;
+  handleLogoClick();
+  // Prevent navigation only if the user is actively counting
+  if (clickTimestamps.length > 0) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+}
+document.addEventListener("pointerdown", nativeLogoTap, true);
+document.addEventListener("click", nativeLogoTap, true);
 
 // ---------- useAdminMode hook ----------
 
