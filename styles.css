@@ -487,3 +487,22 @@ body.admin-dragging-sections .section-drop-target {
   color: #0A0A0A;
   box-shadow: 0 0 24px rgba(255, 213, 0, 0.3);
 }
+
+/* Move-any-element mode */
+body.admin-moving-elements [data-section-id],
+body.admin-moving-elements * {
+  user-select: none;
+}
+body.admin-moving-elements #root *:not(.admin-button):not(.admin-toolbar):not(.admin-modal):not(.admin-modal *):hover {
+  outline: 1px dashed rgba(255, 213, 0, 0.5);
+  outline-offset: 2px;
+  cursor: grab;
+}
+body.admin-moving-active * { cursor: grabbing !important; }
+.admin-moving {
+  outline: 2px solid var(--accent, #FFD500) !important;
+  outline-offset: 4px;
+  box-shadow: 0 0 40px rgba(255, 213, 0, 0.4) !important;
+  z-index: 9990 !important;
+  position: relative !important;
+}

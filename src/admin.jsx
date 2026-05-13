@@ -22,15 +22,16 @@ async function sha256Hex(input) {
 function loadAdminState() {
   try {
     const raw = localStorage.getItem(ADMIN_STORAGE_KEY);
-    if (!raw) return { unlocked: false, overrides: {}, sectionOrder: null };
+    if (!raw) return { unlocked: false, overrides: {}, sectionOrder: null, elementOffsets: {} };
     const parsed = JSON.parse(raw);
     return {
       unlocked: !!parsed.unlocked,
       overrides: parsed.overrides || {},
       sectionOrder: Array.isArray(parsed.sectionOrder) ? parsed.sectionOrder : null,
+      elementOffsets: parsed.elementOffsets || {},
     };
   } catch (e) {
-    return { unlocked: false, overrides: {}, sectionOrder: null };
+    return { unlocked: false, overrides: {}, sectionOrder: null, elementOffsets: {} };
   }
 }
 
@@ -44,6 +45,7 @@ function saveAdminState(state) {
         unlocked: state.unlocked,
         overrides: state.overrides,
         sectionOrder: state.sectionOrder,
+        elementOffsets: state.elementOffsets || {},
       })
     );
   } catch (e) {
@@ -132,8 +134,10 @@ function useAdminMode() {
   const [unlocked, setUnlocked] = React.useState(initial.unlocked);
   const [editingText, setEditingText] = React.useState(false);
   const [draggingSections, setDraggingSections] = React.useState(false);
+  const [movingElements, setMovingElements] = React.useState(false);
   const [overrides, setOverrides] = React.useState(initial.overrides);
   const [sectionOrder, setSectionOrder] = React.useState(initial.sectionOrder);
+  const [elementOffsets, setElementOffsets] = React.useState(initial.elementOffsets);
 
   React.useEffect(() => {
     const onUnlock = () => setUnlocked(true);
@@ -142,17 +146,21 @@ function useAdminMode() {
   }, []);
 
   React.useEffect(() => {
-    saveAdminState({ unlocked, overrides, sectionOrder });
-  }, [unlocked, overrides, sectionOrder]);
+    saveAdminState({ unlocked, overrides, sectionOrder, elementOffsets });
+  }, [unlocked, overrides, sectionOrder, elementOffsets]);
 
   // mutual exclusion
   const setEditingTextSafe = React.useCallback((v) => {
     setEditingText(v);
-    if (v) setDraggingSections(false);
+    if (v) { setDraggingSections(false); setMovingElements(false); }
   }, []);
   const setDraggingSectionsSafe = React.useCallback((v) => {
     setDraggingSections(v);
-    if (v) setEditingText(false);
+    if (v) { setEditingText(false); setMovingElements(false); }
+  }, []);
+  const setMovingElementsSafe = React.useCallback((v) => {
+    setMovingElements(v);
+    if (v) { setEditingText(false); setDraggingSections(false); }
   }, []);
 
   const updateOverride = React.useCallback((id, text) => {
@@ -163,28 +171,39 @@ function useAdminMode() {
     setSectionOrder(order);
   }, []);
 
+  const updateElementOffset = React.useCallback((id, x, y) => {
+    setElementOffsets((prev) => ({ ...prev, [id]: { x, y } }));
+  }, []);
+
   const resetAll = React.useCallback(() => {
     setOverrides({});
     setSectionOrder(null);
+    setElementOffsets({});
     if (window.__cutsRestoreOriginals) window.__cutsRestoreOriginals();
+    if (window.__cutsClearAllTransforms) window.__cutsClearAllTransforms();
   }, []);
 
   const exitAdmin = React.useCallback(() => {
     setUnlocked(false);
     setEditingText(false);
     setDraggingSections(false);
+    setMovingElements(false);
   }, []);
 
   return {
     unlocked,
     editingText,
     draggingSections,
+    movingElements,
     overrides,
     sectionOrder,
+    elementOffsets,
     setEditingText: setEditingTextSafe,
     setDraggingSections: setDraggingSectionsSafe,
+    setMovingElements: setMovingElementsSafe,
     updateOverride,
     updateSectionOrder,
+    updateElementOffset,
     resetAll,
     exitAdmin,
   };
@@ -396,6 +415,12 @@ function AdminPanel({ admin }) {
       active: admin.draggingSections,
       onClick: () => admin.setDraggingSections(!admin.draggingSections)
     }),
+    React.createElement(ToolbarRow, {
+      icon: "✋",
+      label: "הזזת אלמנטים",
+      active: admin.movingElements,
+      onClick: () => admin.setMovingElements(!admin.movingElements)
+    }),
     React.createElement("div", { className: "admin-toolbar__sep" }),
     React.createElement(ToolbarRow, {
       icon: "💾",
@@ -555,4 +580,175 @@ function attachInlineEditing(rootEl, editing, onChange) {
 }
 
 window.__cutsAttachInlineEditing = attachInlineEditing;
+
+// ---------- Move-any-element drag ----------
+
+function applyElementOffsets(offsets) {
+  if (!offsets) return;
+  const root = document.getElementById("root");
+  if (!root) return;
+  // First, clear stale transforms from elements that no longer have an offset
+  root.querySelectorAll("[data-move-id]").forEach((el) => {
+    const id = el.getAttribute("data-move-id");
+    if (!offsets[id]) {
+      el.style.transform = "";
+      el.style.willChange = "";
+    }
+  });
+  // Then, apply current offsets
+  for (const [id, { x, y }] of Object.entries(offsets)) {
+    // Try to find the element by path
+    const el = findElementByPath(id);
+    if (!el) continue;
+    el.setAttribute("data-move-id", id);
+    el.style.transform = `translate(${x}px, ${y}px)`;
+    el.style.willChange = "transform";
+  }
+}
+
+function findElementByPath(id) {
+  if (!id) return null;
+  const pathPart = id.split("#h:")[0];
+  const segments = pathPart.split(">").filter(Boolean);
+  let cur = document.getElementById("root");
+  for (const seg of segments) {
+    if (!cur) return null;
+    const m = seg.match(/^([a-z0-9]+)\[(\d+)\]$/i);
+    if (!m) return null;
+    const tag = m[1].toUpperCase();
+    const idx = parseInt(m[2], 10);
+    const sameTag = Array.from(cur.children).filter((c) => c.tagName === tag);
+    cur = sameTag[idx];
+  }
+  return cur || null;
+}
+
+function clearAllTransforms() {
+  const root = document.getElementById("root");
+  if (!root) return;
+  root.querySelectorAll("[data-move-id]").forEach((el) => {
+    el.style.transform = "";
+    el.style.willChange = "";
+    el.removeAttribute("data-move-id");
+  });
+}
+
+window.__cutsApplyElementOffsets = applyElementOffsets;
+window.__cutsClearAllTransforms = clearAllTransforms;
+
+// Drag state — module-level (single drag at a time)
+let moveDragState = null;
+
+function isInsideAdminUI(el) {
+  return !!(el && el.closest && el.closest(".admin-button, .admin-toolbar, .admin-modal, .admin-modal-backdrop, .tweaks-panel"));
+}
+
+function pickMoveTarget(start) {
+  // Walk up from the click target until we find an element inside #root.
+  // Skip text-leaf spans (those are for text editing); prefer block-level
+  // ancestors when the user clicks directly on text.
+  const root = document.getElementById("root");
+  if (!root || !root.contains(start)) return null;
+  let el = start;
+  // If the target is a leaf text element (h1>span, etc.), use its parent
+  // unless the user clicked a button/anchor directly (those are usually
+  // standalone moveable units).
+  if (el.tagName === "SPAN" || el.tagName === "STRONG" || el.tagName === "EM") {
+    el = el.parentElement || el;
+  }
+  return el;
+}
+
+function attachMoveListeners(rootEl, moving, onCommit) {
+  if (!rootEl) return () => {};
+  const cleanup = [];
+
+  function onPointerDown(e) {
+    if (!moving) return;
+    if (e.button !== undefined && e.button !== 0) return;
+    if (isInsideAdminUI(e.target)) return;
+    const target = pickMoveTarget(e.target);
+    if (!target) return;
+
+    // Compute or read move id
+    let moveId = target.getAttribute("data-move-id");
+    if (!moveId) {
+      // Reuse the edit-id scheme so persistence keys are stable
+      if (!target.hasAttribute("data-edit-original")) {
+        target.setAttribute("data-edit-original", target.textContent || "");
+      }
+      moveId = computeEditId(target);
+      if (!moveId) return;
+      target.setAttribute("data-move-id", moveId);
+    }
+
+    // Read current offset from inline transform
+    const cur = target.style.transform || "";
+    const m = cur.match(/translate\(\s*(-?\d+(?:\.\d+)?)px\s*,\s*(-?\d+(?:\.\d+)?)px\s*\)/);
+    const startX = m ? parseFloat(m[1]) : 0;
+    const startY = m ? parseFloat(m[2]) : 0;
+
+    moveDragState = {
+      el: target,
+      id: moveId,
+      startClientX: e.clientX,
+      startClientY: e.clientY,
+      startX,
+      startY,
+    };
+
+    target.classList.add("admin-moving");
+    document.body.classList.add("admin-moving-active");
+
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  function onPointerMove(e) {
+    if (!moveDragState) return;
+    const dx = e.clientX - moveDragState.startClientX;
+    const dy = e.clientY - moveDragState.startClientY;
+    const x = moveDragState.startX + dx;
+    const y = moveDragState.startY + dy;
+    moveDragState.el.style.transform = `translate(${x}px, ${y}px)`;
+    moveDragState.el.style.willChange = "transform";
+    moveDragState.latestX = x;
+    moveDragState.latestY = y;
+    e.preventDefault();
+  }
+
+  function onPointerUp(e) {
+    if (!moveDragState) return;
+    const { el, id, latestX, latestY, startX, startY } = moveDragState;
+    const finalX = latestX != null ? latestX : startX;
+    const finalY = latestY != null ? latestY : startY;
+    el.classList.remove("admin-moving");
+    document.body.classList.remove("admin-moving-active");
+    moveDragState = null;
+    onCommit(id, finalX, finalY);
+    e.preventDefault();
+  }
+
+  // Suppress click events that follow drags (so buttons inside don't fire)
+  function suppressClick(e) {
+    if (!moving) return;
+    if (isInsideAdminUI(e.target)) return;
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  rootEl.addEventListener("pointerdown", onPointerDown, true);
+  window.addEventListener("pointermove", onPointerMove, true);
+  window.addEventListener("pointerup", onPointerUp, true);
+  rootEl.addEventListener("click", suppressClick, true);
+
+  cleanup.push(() => rootEl.removeEventListener("pointerdown", onPointerDown, true));
+  cleanup.push(() => window.removeEventListener("pointermove", onPointerMove, true));
+  cleanup.push(() => window.removeEventListener("pointerup", onPointerUp, true));
+  cleanup.push(() => rootEl.removeEventListener("click", suppressClick, true));
+
+  return () => cleanup.forEach((fn) => fn());
+}
+
+window.__cutsAttachMoveListeners = attachMoveListeners;
 

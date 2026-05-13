@@ -52,12 +52,26 @@ function App() {
     return window.__cutsAttachInlineEditing(rootEl, admin.editingText, admin.updateOverride);
   }, [admin.editingText, admin.updateOverride]);
 
+  // Wire element-move dragging
+  React.useEffect(() => {
+    if (!window.__cutsAttachMoveListeners) return;
+    const rootEl = document.getElementById("root");
+    return window.__cutsAttachMoveListeners(rootEl, admin.movingElements, admin.updateElementOffset);
+  }, [admin.movingElements, admin.updateElementOffset]);
+
+  // Apply saved element offsets to the DOM on render
+  React.useEffect(() => {
+    if (!window.__cutsApplyElementOffsets) return;
+    window.__cutsApplyElementOffsets(admin.elementOffsets);
+  }, [admin.elementOffsets]);
+
   // Body class for admin mode (used by CSS to style editable elements)
   React.useEffect(() => {
     const cls = document.body.classList;
     cls.toggle("admin-editing-text", admin.editingText);
     cls.toggle("admin-dragging-sections", admin.draggingSections);
-  }, [admin.editingText, admin.draggingSections]);
+    cls.toggle("admin-moving-elements", admin.movingElements);
+  }, [admin.editingText, admin.draggingSections, admin.movingElements]);
 
   const onCTAClick = () => scrollToId("#cta");
 
