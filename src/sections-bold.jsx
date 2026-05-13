@@ -4418,14 +4418,35 @@ function HowItWorksInteractive() {
   return (
     <section id="how" style={{ padding: "56px 0 76px" }}>
       <div className="wrap">
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "end", marginBottom: 64, gap: 40, flexWrap: "wrap" }}>
-          <div>
-            <h2 className="display" style={{ fontSize: "clamp(40px, 6vw, 88px)", margin: "0", maxWidth: 900, color: "#FFFFFF" }}>
-              שלושה שלבים.<br />
-              <span style={{ color: "#FFFFFF" }}>ואתה כמעט לא מרגיש את זה.</span>
-            </h2>
-          </div>
-          <div className="mono" style={{ fontSize: 12, opacity: 0.5, letterSpacing: "0.15em" }}>
+        <div style={{ textAlign: "center", marginBottom: 64, maxWidth: 1000, marginLeft: "auto", marginRight: "auto" }}>
+          <h2 className="display" style={{
+            fontSize: "clamp(36px, 5.5vw, 64px)",
+            margin: 0, fontWeight: 900, lineHeight: 1,
+            textWrap: "balance"
+          }}>
+            <span style={{ display: "block", opacity: 0.92 }}>
+              שלושה שלבים.
+            </span>
+            <span style={{ display: "block", position: "relative" }}>
+              <span style={{
+                color: "var(--accent)",
+                textShadow: "0 0 50px rgba(255,213,0,0.45), 0 0 90px rgba(255,213,0,0.2)",
+                position: "relative",
+                display: "inline-block"
+              }}>
+                ואתה כמעט לא מרגיש את זה.
+                <span aria-hidden="true" style={{
+                  position: "absolute", left: "3%", right: "3%", bottom: "-0.06em",
+                  height: 5,
+                  background: "linear-gradient(90deg, transparent, var(--accent) 15%, var(--accent) 85%, transparent)",
+                  opacity: 0.55,
+                  borderRadius: 3,
+                  filter: "blur(0.5px)"
+                }} />
+              </span>
+            </span>
+          </h2>
+          <div className="mono" style={{ fontSize: 12, opacity: 0.5, letterSpacing: "0.15em", marginTop: 20 }}>
             {String(shown + 1).padStart(2, "0")} / {String(STEPS.length).padStart(2, "0")}
           </div>
         </div>
