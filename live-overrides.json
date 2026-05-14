@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "publishedAt": "2026-05-14T10:26:42.768Z",
+  "publishedAt": "2026-05-14T10:44:47.119Z",
   "overrides": {
     "sec:how-it-works>button[0]#h:d901835d": "👁 הצג",
     "sec:services>section[0]>div[0]>div[1]>div[0]>h3[0]#h:a5c90c46": "צילום מקצועי",
@@ -8,13 +8,18 @@
     "sec:services>section[0]>div[0]>div[1]>div[1]>p[0]#h:dddfb300": "כל פרק עובר עריכה מקצועית וקפדנית -&nbsp;חיתוכים, מוזיקה, ניתוב זוויות ועריכת צבע וסאונד.<br style=\"app-region: no-drag !important;\">פרק שתצלמו היום ימשיך להביא לקוחות גם עוד שנתיים.",
     "sec:services>section[0]>div[0]>div[1]>div[2]>p[0]#h:0c659154": "<blockquote class=\"ml-2 border-l-4 border-border-300/10 pl-4 text-text-300\"><p class=\"font-claude-response-body break-words whitespace-normal leading-[1.7]\" data-edit-original=\"מכל פרק אנחנו מחלצים 10-15 רגעים שמדברים — ומהפכים אותם לרילסים שעוצרים את הגלילה באינסטגרם, טיקטוק, ולינקדאין. תוכן שעובד בשבילכם גם בין פרק לפרק.\" data-edit-original-html=\"מכל פרק אנחנו מחלצים 10-15 רגעים שמדברים — ומהפכים אותם לרילסים שעוצרים את הגלילה באינסטגרם, טיקטוק, ולינקדאין. תוכן שעובד בשבילכם גם בין פרק לפרק.\" data-edit-id=\"sec:services&gt;section[0]&gt;div[0]&gt;div[1]&gt;div[2]&gt;p[0]&gt;blockquote[0]&gt;p[0]#h:7f4c59a1\" contenteditable=\"true\" spellcheck=\"false\">מכל פרק אנחנו נוציא את הרילסים הכי טובים ונהפוך את הפודקאסט שלכם למכונת תוכן שתמשיך להביא לכם עוקבים, קהל, צופים לפרקים המלאים, והכי חשוב לקוחות משלמים.</p>\n</blockquote>",
     "sec:services>section[0]>div[0]>div[1]>div[3]>h3[0]#h:789ee55c": "טאמבניילים ליוטיוב וספוטיפיי",
-    "sec:services>section[0]>div[0]>div[1]>div[3]>p[0]#h:e7a98dc5": "<blockquote class=\"ml-2 border-l-4 border-border-300/10 pl-4 text-text-300\"><p class=\"font-claude-response-body break-words whitespace-normal leading-[1.7]\" data-edit-original=\"הבדל של מאות אחוזים בצפיות — בגלל תמונה אחת. אנחנו מעצבים אותה בסגנון המותג שלכם.\" data-edit-id=\"sec:services&gt;section[0]&gt;div[0]&gt;div[1]&gt;div[3]&gt;p[0]&gt;blockquote[0]&gt;p[0]#h:68ca7f04\" contenteditable=\"true\" spellcheck=\"false\" data-edit-original-html=\"הבדל של מאות אחוזים בצפיות — בגלל תמונה אחת. אנחנו מעצבים אותה בסגנון המותג שלכם.\">טאמבניילים הם הפנים של הפרקים שלכם,&nbsp; לפי הטאמבנייל אנשים מחליטים אם להיכנס לפרק המלא או לא<br>לפי הטאמבנייל אנשים מחליטים אם להיכנס לפרק המלא או לא, אנחנו נעצב לכם טאמבנייל</p>\n</blockquote>\n<blockquote class=\"ml-2 border-l-4 border-border-300/10 pl-4 text-text-300\">\n<p class=\"font-claude-response-body break-words whitespace-normal leading-[1.7]\" data-edit-original=\"רוב האנשים מחליטים אם ללחוץ לפני שהם קוראים את הכותרת. ה-Thumbnail הוא הרושם הראשון.\" data-edit-id=\"sec:services&gt;section[0]&gt;div[0]&gt;div[1]&gt;div[3]&gt;p[0]&gt;blockquote[1]&gt;p[0]#h:2bdc2a22\" contenteditable=\"true\" spellcheck=\"false\" data-edit-original-html=\"רוב האנשים מחליטים אם ללחוץ לפני שהם קוראים את הכותרת. ה-Thumbnail הוא הרושם הראשון.\">רוב האנשים מחליטים אם ללחוץ לפני שהם קוראים את הכותרת. ה-Thumbnail הוא הרושם הראשון.</p>\n</blockquote>",
+    "sec:services>section[0]>div[0]>div[1]>div[3]>p[0]#h:e7a98dc5": "<span style=\"background-color: rgb(10, 10, 10);\" data-edit-original=\"טאמבניילים הם הפנים של הפרקים שלכם,&nbsp; לפי הטאמבנייל אנשים מחליטים אם להיכנס לפרק המלא או לא\" data-edit-id=\"sec:services&gt;section[0]&gt;div[0]&gt;div[1]&gt;div[3]&gt;p[0]&gt;span[0]#h:18a41203\" contenteditable=\"true\" spellcheck=\"false\" data-edit-original-html=\"טאמבניילים הם הפנים של הפרקים שלכם,&amp;nbsp; לפי הטאמבנייל אנשים מחליטים אם להיכנס לפרק המלא או לא\">טאמבניילים הם הפנים של הפרקים שלכם, זה מה שקובע אם אנשים יכנסו לצפות בפרקים או לא.</span><br style=\"background-color: rgb(10, 10, 10); app-region: no-drag !important;\"><span style=\"background-color: rgb(10, 10, 10);\" data-edit-original=\"לפי הטאמבנייל אנשים מחליטים אם להיכנס לפרק המלא או לא, אנחנו נעצב לכם טאמבנייל\" data-edit-id=\"sec:services&gt;section[0]&gt;div[0]&gt;div[1]&gt;div[3]&gt;p[0]&gt;span[1]#h:771db105\" contenteditable=\"true\" spellcheck=\"false\" data-edit-original-html=\"לפי הטאמבנייל אנשים מחליטים אם להיכנס לפרק המלא או לא, אנחנו נעצב לכם טאמבנייל\">אנחנו נעצב לכם טאמבניילים מושכים לפי המיתוג שלכם שיגרמו לאנשים ללחוץ דווקא על הפרק שלכם.</span>",
     "sec:services>section[0]>div[0]>div[1]>div[3]>p[0]>blockquote[0]>p[0]#h:68ca7f04": "טאמבניילים הם הפנים של הפרקים שלכם,&nbsp; לפי הטאמבנייל אנשים מחליטים אם להיכנס לפרק המלא או לא<br>לפי הטאמבנייל אנשים מחליטים אם להיכנס לפרק המלא או לא, אנחנו נעצב לכם טאמבנייל",
-    "sec:services>section[0]>div[0]>div[1]>div[3]>p[0]>blockquote[1]>p[0]#h:2bdc2a22": "",
+    "sec:services>section[0]>div[0]>div[1]>div[3]>p[0]>blockquote[1]>p[0]#h:2bdc2a22": "׳",
     "sec:services>section[0]>div[0]>div[1]>div[2]>p[0]>blockquote[0]>p[0]#h:7f4c59a1": "מכל פרק אנחנו נוציא את הרילסים הכי טובים ונהפוך את הפודקאסט שלכם למכונת תוכן שתמשיך להביא לכם עוקבים, קהל, צופים לפרקים המלאים, והכי חשוב לקוחות משלמים."
   },
   "sectionOrder": null,
-  "elementOffsets": {},
+  "elementOffsets": {
+    "sec:services>section[0]>div[0]>div[1]>div[3]>p[0]>blockquote[1]>p[0]#h:2bdc2a22": {
+      "x": 0,
+      "y": 0
+    }
+  },
   "hiddenSections": [
     "how-it-works"
   ]
