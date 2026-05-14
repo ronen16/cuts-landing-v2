@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "publishedAt": "2026-05-14T14:43:37.243Z",
+  "publishedAt": "2026-05-14T14:46:31.765Z",
   "overrides": {
     "sec:how-it-works>button[0]#h:d901835d": "👁 הצג",
     "sec:services>section[0]>div[0]>div[1]>div[0]>h3[0]#h:a5c90c46": "צילום מקצועי",
@@ -20,7 +20,8 @@
     "sec:guarantee>section[0]>div[2]>div[3]>div[1]>div[0]>div[1]#h:3924d0b7": "ממשיכים עם חבילה מותאמת <span class=\"yes-highlight\" data-edit-original=\"+ 15% הנחה.\" data-edit-original-html=\"+ 15% הנחה.\" data-edit-id=\"sec:guarantee&gt;section[0]&gt;div[2]&gt;div[3]&gt;div[1]&gt;div[0]&gt;div[1]&gt;span[0]#h:9f14a2d1\" contenteditable=\"true\" spellcheck=\"false\">+ 25% הנחה.</span>",
     "sec:guarantee>section[0]>div[2]>div[4]>div[1]>span[3]>span[2]#h:90e58d3a": "הבונוסים האלה ניתנים רק למי שמצטרף עד יום ראשון",
     "sec:guarantee>section[0]>div[2]>div[4]>p[0]#h:68c55888": "4 מדריכים דיגיטליים בחינם — שיעזרו לכם להפיק את המקסימום מהפודקאסטים שלכם.",
-    "sec:guarantee>section[0]>div[2]>div[3]>div[1]>div[0]>div[1]>span[0]#h:9f14a2d1": "+ 25% הנחה."
+    "sec:guarantee>section[0]>div[2]>div[3]>div[1]>div[0]>div[1]>span[0]#h:9f14a2d1": "+ 25% הנחה.",
+    "sec:mini-lead-2>section[0]>div[1]>div[0]>div[0]>h3[0]#h:c9a61bd7": "רוצים לראות אם זה מתאים לכם? <span style=\"color: var(--accent);\" data-edit-original=\"השאר פרטים.\" data-edit-id=\"sec:mini-lead-2&gt;section[0]&gt;div[1]&gt;div[0]&gt;div[0]&gt;h3[0]&gt;span[0]#h:e2b28f49\" contenteditable=\"true\" spellcheck=\"false\" data-edit-original-html=\"השאר פרטים.\">השאירו פרטים</span>"
   },
   "sectionOrder": null,
   "elementOffsets": {
