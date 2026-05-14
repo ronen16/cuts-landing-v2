@@ -952,10 +952,11 @@ function attachInlineEditing(rootEl, editing, onChange) {
   if (!rootEl) return () => {};
   let cleanup = [];
 
-  // Sync the current value of an edited element to both localStorage AND React state.
-  // Called on every input (keystroke) as well as on blur — guarantees the latest
-  // text is persisted before Publish reads it, regardless of focus timing.
-  const captureEdit = (el) => {
+  // Persist the in-progress edit to localStorage ONLY (no React setState),
+  // so Publish can read fresh from localStorage even mid-typing. Avoiding
+  // setOverrides on every keystroke prevents the re-render that would wipe
+  // out the contenteditable cursor.
+  const persistEditToStorage = (el) => {
     if (!el || !el.hasAttribute || !el.hasAttribute("data-edit-id")) return;
     const id = el.getAttribute("data-edit-id");
     const newHtml = (el.innerHTML || "").replace(/(?:&nbsp;|\s)+$/g, "");
@@ -967,11 +968,20 @@ function attachInlineEditing(rootEl, editing, onChange) {
       cur.version = 1;
       localStorage.setItem(ADMIN_STORAGE_KEY, JSON.stringify(cur));
     } catch (_) {}
+  };
+
+  // On blur: also sync the value into React state (one re-render at most).
+  const onBlur = (e) => {
+    const el = e.target;
+    if (!el || !el.hasAttribute || !el.hasAttribute("data-edit-id")) return;
+    persistEditToStorage(el);
+    const id = el.getAttribute("data-edit-id");
+    const newHtml = (el.innerHTML || "").replace(/(?:&nbsp;|\s)+$/g, "");
     onChange(id, newHtml);
   };
 
-  const onBlur = (e) => { captureEdit(e.target); };
-  const onInput = (e) => { captureEdit(e.target); };
+  // On every keystroke: just localStorage, no setState — keeps cursor alive.
+  const onInput = (e) => { persistEditToStorage(e.target); };
 
   const onKeydown = (e) => {
     if (!e.target || !e.target.hasAttribute || !e.target.hasAttribute("data-edit-id")) return;
