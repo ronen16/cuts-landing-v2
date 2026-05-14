@@ -2271,7 +2271,7 @@ function Guarantee({ onCTAClick }) {
             <span className="week-only-banner__text">
               <span className="week-only-banner__pill">השבוע בלבד</span>
               <span className="week-only-banner__sep">·</span>
-              <span className="week-only-banner__sub">הבונוסים האלה ניתנים רק למי שמצטרף עד יום ראשון</span>
+              <span className="week-only-banner__sub">הבונוסים האלה ניתנים רק למי שמשאיר פרטים השבוע</span>
             </span>
             <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" className="week-only-banner__bolt">
               <path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" />
