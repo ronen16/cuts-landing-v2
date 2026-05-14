@@ -2637,34 +2637,30 @@ function GuestStrip() {
       }} />
 
       <div className="wrap" style={{ position: "relative", zIndex: 2, marginBottom: 56 }}>
-        <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 32, flexWrap: "wrap" }}>
-          <div>
-            <div className="mono" style={{
-              display: "inline-flex", alignItems: "center", gap: 10,
-              padding: "8px 14px", borderRadius: 999,
-              background: "rgba(255,213,0,0.08)",
-              border: "1px solid rgba(255,213,0,0.3)",
-              fontSize: 11, letterSpacing: "0.18em",
-              color: "var(--accent)", marginBottom: 24
+        <div style={{ textAlign: "center", maxWidth: 1100, marginLeft: "auto", marginRight: "auto" }}>
+          <h2 className="display" style={{
+            fontSize: "clamp(40px, 6vw, 84px)",
+            margin: 0, fontWeight: 900, lineHeight: 1.1,
+            textWrap: "balance"
+          }}>
+            <span style={{ opacity: 0.92 }}>כאן אנחנו הופכים </span>
+            <span style={{
+              color: "var(--accent)",
+              textShadow: "0 0 50px rgba(255,213,0,0.45), 0 0 90px rgba(255,213,0,0.2)",
+              position: "relative",
+              display: "inline-block"
             }}>
-              <span style={{
-                width: 7, height: 7, borderRadius: "50%",
-                background: "var(--accent)", boxShadow: "0 0 8px var(--accent)"
+              מומחים למותגים.
+              <span aria-hidden="true" style={{
+                position: "absolute", left: "3%", right: "3%", bottom: "-0.06em",
+                height: 5,
+                background: "linear-gradient(90deg, transparent, var(--accent) 15%, var(--accent) 85%, transparent)",
+                opacity: 0.55,
+                borderRadius: 3,
+                filter: "blur(0.5px)"
               }} />
-              מהאולפן
-            </div>
-            <h2 className="display" style={{
-              fontSize: "clamp(40px, 6vw, 88px)",
-              margin: 0, fontWeight: 900, lineHeight: 0.95,
-              maxWidth: 900
-            }}>
-              עשרות אורחים.<br />
-              <span style={{ color: "var(--accent)" }}>מאות פרקים.</span>
-            </h2>
-          </div>
-          <p style={{ fontSize: 18, lineHeight: 1.6, opacity: 0.7, margin: 0, maxWidth: 380 }}>
-            מבעלי עסקים ומנכ״לים ועד יוצרי תוכן ומותגי צריכה — דוגמית מהאולפן שלנו, בפעולה.
-          </p>
+            </span>
+          </h2>
         </div>
       </div>
 
