@@ -1,11 +1,12 @@
 {
   "version": 1,
-  "publishedAt": "2026-05-14T09:54:10.266Z",
+  "publishedAt": "2026-05-14T09:58:26.472Z",
   "overrides": {
     "sec:how-it-works>button[0]#h:d901835d": "👁 הצג",
     "sec:services>section[0]>div[0]>div[1]>div[0]>h3[0]#h:a5c90c46": "צילום מקצועי",
     "sec:services>section[0]>div[0]>div[1]>div[0]>p[0]#h:dddfb300": "צילום מקצועי עם מספר מצלמות וסאונד נקי, ואפילו מתאימים את התאורה לצבעי המותג שלכם.<br style=\"app-region: no-drag !important;\">ואתם יוצאים עם תוכן שנראה כמו תוכנית בנטפליקס.",
-    "sec:services>section[0]>div[0]>div[1]>div[1]>p[0]#h:dddfb300": "כל פרק עובר עריכה מקצועית וקפדנית -&nbsp;חיתוכים, מוזיקה, ניתוב זוויות ועריכת צבע וסאונד.<br style=\"app-region: no-drag !important;\">פרק שתצלמו היום ימשיך להביא לקוחות גם עוד שנתיים."
+    "sec:services>section[0]>div[0]>div[1]>div[1]>p[0]#h:dddfb300": "כל פרק עובר עריכה מקצועית וקפדנית -&nbsp;חיתוכים, מוזיקה, ניתוב זוויות ועריכת צבע וסאונד.<br style=\"app-region: no-drag !important;\">פרק שתצלמו היום ימשיך להביא לקוחות גם עוד שנתיים.",
+    "sec:services>section[0]>div[0]>div[1]>div[2]>p[0]#h:0c659154": "<blockquote class=\"ml-2 border-l-4 border-border-300/10 pl-4 text-text-300\"><p class=\"font-claude-response-body break-words whitespace-normal leading-[1.7]\" data-edit-original=\"מכל פרק אנחנו מחלצים 10-15 רגעים שמדברים — ומהפכים אותם לרילסים שעוצרים את הגלילה באינסטגרם, טיקטוק, ולינקדאין. תוכן שעובד בשבילכם גם בין פרק לפרק.\" data-edit-original-html=\"מכל פרק אנחנו מחלצים 10-15 רגעים שמדברים — ומהפכים אותם לרילסים שעוצרים את הגלילה באינסטגרם, טיקטוק, ולינקדאין. תוכן שעובד בשבילכם גם בין פרק לפרק.\" data-edit-id=\"sec:services&gt;section[0]&gt;div[0]&gt;div[1]&gt;div[2]&gt;p[0]&gt;blockquote[0]&gt;p[0]#h:7f4c59a1\" contenteditable=\"true\" spellcheck=\"false\">מכל פרק אנחנו נוציא את הרילסים הכי טובים ונהפוך את הפודקאסט שלכם למכונת תוכן שימשיך להביא לכם עוקבים, קהל, צופים לפרקים המלאים, והכי חשוב לקוחות משלמים.</p>\n</blockquote>"
   },
   "sectionOrder": null,
   "elementOffsets": {},
