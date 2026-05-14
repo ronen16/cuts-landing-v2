@@ -2763,25 +2763,6 @@ function GuestStrip() {
         )}
       </div>
 
-      <div className="wrap" style={{ marginTop: 72, display: "flex", justifyContent: "center" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 56, flexWrap: "wrap", justifyContent: "center" }}>
-          <div style={{ textAlign: "center" }}>
-            <div className="display" style={{ fontSize: "clamp(64px, 8vw, 120px)", fontWeight: 900, lineHeight: 1, color: "var(--accent)" }}>+50</div>
-            <div className="mono" style={{ fontSize: 13, letterSpacing: "0.2em", opacity: 0.7, marginTop: 14 }}>אורחים</div>
-          </div>
-          <div style={{ width: 1, height: 80, background: "var(--line2)" }} />
-          <div style={{ textAlign: "center" }}>
-            <div className="display" style={{ fontSize: "clamp(64px, 8vw, 120px)", fontWeight: 900, lineHeight: 1, color: "var(--accent)" }}>+300</div>
-            <div className="mono" style={{ fontSize: 13, letterSpacing: "0.2em", opacity: 0.7, marginTop: 14 }}>פרקים</div>
-          </div>
-          <div style={{ width: 1, height: 80, background: "var(--line2)" }} />
-          <div style={{ textAlign: "center" }}>
-            <div className="display" style={{ fontSize: "clamp(64px, 8vw, 120px)", fontWeight: 900, lineHeight: 1, color: "var(--accent)" }}>4</div>
-            <div className="mono" style={{ fontSize: 13, letterSpacing: "0.2em", opacity: 0.7, marginTop: 14 }}>סטים באולפן</div>
-          </div>
-        </div>
-      </div>
-
       <style>{`
         @keyframes marquee-rtl { from { transform: translateX(-33.3333%); } to { transform: translateX(0); } }
         @keyframes marquee-ltr { from { transform: translateX(0); } to { transform: translateX(-33.3333%); } }
