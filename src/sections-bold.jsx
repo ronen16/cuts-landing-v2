@@ -2674,8 +2674,8 @@ function GuestStrip() {
 
         {/* Two-row branded marquee — rows scroll in opposite directions */}
         {[
-          { dir: "rtl", offset: 0, duration: 36, count: 10, width: 140, aspect: "9 / 16" },
-          { dir: "ltr", offset: 10, duration: 40, count: 6,  width: 320, aspect: "16 / 9" },
+          { dir: "rtl", offset: 0, duration: 22, count: 10, width: 140, aspect: "9 / 16" },
+          { dir: "ltr", offset: 10, duration: 26, count: 6,  width: 320, aspect: "16 / 9" },
         ].map((row, rowIdx) =>
         <div key={rowIdx} className="guest-marquee-row" style={{
           display: "flex", gap: 14,
@@ -2779,7 +2779,7 @@ function GuestStrip() {
 
       <style>{`
         @keyframes marquee-rtl { from { transform: translateX(0); } to { transform: translateX(50%); } }
-        @keyframes marquee-ltr { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+        @keyframes marquee-ltr { from { transform: translateX(0); } to { transform: translateX(-50%); } }
         @keyframes guestRec {
           0%, 100% { opacity: 1; transform: scale(1); }
           50% { opacity: 0.3; transform: scale(0.7); }
