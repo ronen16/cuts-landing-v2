@@ -815,6 +815,13 @@ function AdminPanel({ admin }) {
       icon: "🚀",
       label: "העלאה ללייב",
       onClick: async () => {
+        // Force-blur the active editable element so any in-flight edit is
+        // captured in localStorage before publishToLive reads it.
+        const active = document.activeElement;
+        if (active && active.hasAttribute && active.hasAttribute("data-edit-id")) {
+          active.blur();
+          await new Promise((r) => setTimeout(r, 50));
+        }
         if (!window.confirm("אתה בטוח שאתה רוצה להעלות את השינויים האלה ללייב?\nהכל יוצג לכל מבקר באתר.")) return;
         const result = await admin.publishToLive();
         if (result.published) {
@@ -951,6 +958,16 @@ function attachInlineEditing(rootEl, editing, onChange) {
     const id = el.getAttribute("data-edit-id");
     // Save innerHTML so <br> from Enter (and any inline styling) survives reload.
     const newHtml = (el.innerHTML || "").replace(/(?:&nbsp;|\s)+$/g, "");
+    // Persist to localStorage SYNCHRONOUSLY so that a publish click immediately
+    // after blur picks up the latest edit (the React state path is async).
+    try {
+      const cur = JSON.parse(localStorage.getItem(ADMIN_STORAGE_KEY) || "{}");
+      cur.overrides = cur.overrides || {};
+      cur.overrides[id] = newHtml;
+      cur.updated = new Date().toISOString();
+      cur.version = 1;
+      localStorage.setItem(ADMIN_STORAGE_KEY, JSON.stringify(cur));
+    } catch (_) {}
     onChange(id, newHtml);
   };
 
