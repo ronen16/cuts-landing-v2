@@ -2678,7 +2678,7 @@ function GuestStrip() {
           { dir: "ltr", offset: 10, duration: 26, count: 6,  width: 320, aspect: "16 / 9" },
         ].map((row, rowIdx) =>
         <div key={rowIdx} className="guest-marquee-row" style={{
-          display: "flex", gap: 14,
+          display: "flex",
           animation: `marquee-${row.dir} ${row.duration}s linear infinite`,
           width: "max-content",
           padding: "4px 0"
@@ -2692,6 +2692,7 @@ function GuestStrip() {
             style={{
               flexShrink: 0,
               width: row.width, aspectRatio: row.aspect,
+              marginInlineEnd: 14,
               background: "var(--card)",
               border: "1px solid var(--line2)",
               borderRadius: 12,
