@@ -1,10 +1,8 @@
 {
   "version": 1,
-  "publishedAt": "2026-05-14T09:37:57.844Z",
+  "publishedAt": "2026-05-14T09:41:46.887Z",
   "overrides": {
-    "div[0]>div[0]>div[14]>button[0]#h:d901835d": "👁 הצג",
-    "div[0]>div[0]>div[16]>section[0]>div[0]>div[1]>div[0]>h3[0]#h:a5c90c46": "צילום מקצועי",
-    "div[0]>div[0]>div[16]>section[0]>div[0]>div[1]>div[0]>p[0]#h:dddfb300": "צילום מקצועי עם מספר מצלמות וסאונד נקי ואפילו מתאימים את התאורה לצבעי המותג שלכם,<br style=\"app-region: no-drag !important;\">ואתם יוצאים עם תוכן שנראה כמו תוכנית בנטפליקס!"
+    "div[0]>div[0]>div[0]>section[0]>div[1]>div[0]>div[1]>h1[0]>span[0]#h:e82d681d": "תיקון ממש 1778751705858"
   },
   "sectionOrder": null,
   "elementOffsets": {},
