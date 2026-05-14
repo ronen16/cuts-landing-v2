@@ -2268,9 +2268,7 @@ function Guarantee({ onCTAClick }) {
               }}>
                 <span aria-hidden="true" className="bonus-card__num-watermark">0{i + 1}</span>
 
-                <span className="bonus-card__week-stamp">השבוע בלבד</span>
-
-                <div className="bonus-card__head" style={{ marginTop: 18 }}>
+                <div className="bonus-card__head">
                   <span className="bonus-card__tag">
                     בונוס 0{i + 1}
                   </span>
