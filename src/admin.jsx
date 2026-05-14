@@ -114,14 +114,26 @@ async function pushToGitHub(settings, payload) {
   return await putRes.json();
 }
 
-// Fetch live overrides from raw.githubusercontent.com on page boot.
+// Fetch live overrides on page boot.
+// Uses api.github.com (no CDN cache) instead of raw.githubusercontent.com
+// (which has ~5 min Fastly cache and delays publishes from showing up).
+// Falls back to raw.githubusercontent.com on rate-limit / network error.
 async function fetchLiveOverrides(settings) {
   if (!settings || !settings.owner || !settings.repo) return null;
-  const url = `https://raw.githubusercontent.com/${settings.owner}/${settings.repo}/${settings.branch}/${encodeURI(settings.path)}?_=${Date.now()}`;
+  const apiUrl = `https://api.github.com/repos/${settings.owner}/${settings.repo}/contents/${encodeURIComponent(settings.path)}?ref=${encodeURIComponent(settings.branch)}&_=${Date.now()}`;
   try {
-    const res = await fetch(url, { cache: "no-store" });
-    if (!res.ok) return null;
-    return await res.json();
+    const res = await fetch(apiUrl, {
+      headers: { Accept: "application/vnd.github.raw" },
+      cache: "no-store",
+    });
+    if (res.ok) return await res.json();
+    if (res.status !== 404) {
+      // Fallback to raw.githubusercontent.com (may be stale up to ~5 min)
+      const rawUrl = `https://raw.githubusercontent.com/${settings.owner}/${settings.repo}/${settings.branch}/${encodeURI(settings.path)}?_=${Date.now()}`;
+      const raw = await fetch(rawUrl, { cache: "no-store" });
+      if (raw.ok) return await raw.json();
+    }
+    return null;
   } catch (e) {
     return null;
   }
