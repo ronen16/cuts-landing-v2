@@ -2678,8 +2678,8 @@ function GuestStrip() {
             That keeps the seam invisible AND prevents any moment where the
             wrapper's edge is inside the viewport (the "disappearing" gap). */}
         {[
-          { dir: "rtl", offset: 0, duration: 22, count: 10, width: 175, aspect: "9 / 16" },
-          { dir: "ltr", offset: 10, duration: 26, count: 6,  width: 400, aspect: "16 / 9" },
+          { dir: "rtl", offset: 0, duration: 26, count: 10, width: 219, aspect: "9 / 16" },
+          { dir: "ltr", offset: 10, duration: 42, count: 6,  width: 500, aspect: "16 / 9" },
         ].map((row, rowIdx) =>
         <div key={rowIdx} className="guest-marquee-row" style={{
           // Force LTR so the wrapper anchors to the viewport's LEFT edge.
