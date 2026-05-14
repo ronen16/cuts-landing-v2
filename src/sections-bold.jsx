@@ -2674,8 +2674,8 @@ function GuestStrip() {
 
         {/* Two-row branded marquee — rows scroll in opposite directions */}
         {[
-          { dir: "rtl", offset: 0, duration: 36 },
-          { dir: "ltr", offset: 10, duration: 40 },
+          { dir: "rtl", offset: 0, duration: 36, count: 10, width: 140, aspect: "9 / 16" },
+          { dir: "ltr", offset: 10, duration: 40, count: 6,  width: 320, aspect: "16 / 9" },
         ].map((row, rowIdx) =>
         <div key={rowIdx} className="guest-marquee-row" style={{
           display: "flex", gap: 14,
@@ -2684,14 +2684,14 @@ function GuestStrip() {
           padding: "4px 0"
         }}>
           {[...Array(2)].flatMap((_, dup) =>
-          [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n, i) =>
+          Array.from({ length: row.count }, (_, k) => k + 1).map((n, i) =>
           <div
             key={`${rowIdx}-${dup}-${i}`}
             aria-hidden={dup === 1 ? "true" : undefined}
             data-guest-num={row.offset + n}
             style={{
               flexShrink: 0,
-              width: 140, aspectRatio: "9 / 16",
+              width: row.width, aspectRatio: row.aspect,
               background: "var(--card)",
               border: "1px solid var(--line2)",
               borderRadius: 12,
