@@ -2339,97 +2339,17 @@ function Guarantee({ onCTAClick }) {
             )}
           </div>
 
-          {/* Total — dramatic centerpiece */}
-          <div className="bonus-total">
-            <span aria-hidden="true" className="bonus-total__aurora" />
-            <span aria-hidden="true" className="bonus-total__sheen" />
-            <span aria-hidden="true" className="bonus-total__corner bonus-total__corner--tl" />
-            <span aria-hidden="true" className="bonus-total__corner bonus-total__corner--tr" />
-            <span aria-hidden="true" className="bonus-total__corner bonus-total__corner--bl" />
-            <span aria-hidden="true" className="bonus-total__corner bonus-total__corner--br" />
-
-            <div className="bonus-total__inner">
-              <div className="bonus-total__pill">
-                <span className="bonus-total__pill-dot" />
-                שווי כולל
-              </div>
-
-              <div className="bonus-total__compare">
-                <div className="bonus-total__col">
-                  <div className="bonus-total__col-label">מחיר רגיל</div>
-                  <div className="bonus-total__regular-price">
-                    <span className="bonus-total__regular-num">₪940</span>
-                  </div>
-                </div>
-
-                <span aria-hidden="true" className="bonus-total__arrow">←</span>
-
-                <div className="bonus-total__col">
-                  <div className="bonus-total__col-label bonus-total__col-label--accent">היום עבורכם</div>
-                  <div className="bonus-total__free-wrap">
-                    <span className="bonus-total__free">חינם</span>
-                    <span aria-hidden="true" className="bonus-total__free-underline" />
-                  </div>
-                </div>
-              </div>
-
-              <div className="bonus-total__savings">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-                <span>חוסכים <span className="bonus-total__savings-amount">₪940</span> — מתנה רק למצטרפים השבוע</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Urgency notice — clean callout matching site style */}
-        <div style={{
-          maxWidth: 820, margin: "0 auto 56px",
-          padding: "32px 36px",
-          background: "rgba(255,255,255,0.02)",
-          border: "1px solid var(--line2)",
-          borderRadius: 14,
-          position: "relative",
-          opacity: inView ? 1 : 0,
-          transform: inView ? "translateY(0)" : "translateY(12px)",
-          transition: "opacity 0.7s ease 0.55s, transform 0.7s ease 0.55s"
-        }}>
-          {/* Small label badge — top center */}
+          {/* Countdown — sits where the bonus-total used to be */}
           <div style={{
-            position: "absolute", top: -14, left: "50%", transform: "translateX(-50%)",
-            background: "var(--accent)", color: "#0A0A0A",
-            padding: "6px 16px", borderRadius: 999,
-            fontSize: 11, fontWeight: 800, letterSpacing: "0.18em",
-            animation: "monthBadgeFloat 3s ease-in-out infinite",
-            boxShadow: "0 4px 24px rgba(255,213,0,0.4)",
-            display: "flex", alignItems: "center", gap: 8
-          }} className="mono">
-            <span style={{
-              width: 6, height: 6, borderRadius: "50%",
-              background: "#0A0A0A",
-              animation: "urgencyDot 1.1s ease-in-out infinite"
-            }} />
-            מסתיים בקרוב
-          </div>
-
-          <div style={{ position: "relative", zIndex: 1, textAlign: "center" }}>
-            <h3 className="display" style={{
-              fontSize: "clamp(22px, 2.2vw, 30px)", fontWeight: 900,
-              lineHeight: 1.25, margin: "0 0 12px",
-              color: "rgb(255,255,255)"
-            }}>
-              הבונוסים ניתנים רק למי שמצטרף <span style={{
-                color: "var(--accent)",
-                background: "linear-gradient(180deg, transparent 65%, rgba(255,213,0,0.25) 65%)",
-                padding: "0 6px"
-              }}>בשבוע הקרוב</span>.
-            </h3>
-
+            marginTop: 36,
+            position: "relative",
+            textAlign: "center"
+          }}>
             <div className="display" style={{
               fontSize: "clamp(18px, 1.7vw, 22px)", fontWeight: 800,
               lineHeight: 1.4,
-              color: "rgb(255,255,255)"
+              color: "rgb(255,255,255)",
+              marginBottom: 18
             }}>
               ההטבה נגמרת ברגע שהשעון מגיע <span style={{
                 color: "var(--accent)",
@@ -2439,11 +2359,9 @@ function Guarantee({ onCTAClick }) {
               }}>לאפס</span>.
             </div>
 
-            {/* Countdown Timer — inside the callout */}
             <div style={{
               display: "flex", alignItems: "flex-start", justifyContent: "center",
-              gap: "clamp(10px, 1.4vw, 22px)",
-              marginTop: 26
+              gap: "clamp(10px, 1.4vw, 22px)"
             }}>
               <CountdownDigit value={time.s} label="שניות" />
               <div className="display" style={{
