@@ -2668,28 +2668,33 @@ function GuestStrip() {
         </div>
       </div>
 
-      <div style={{ position: "relative" }}>
+      <div style={{ position: "relative", display: "flex", flexDirection: "column", gap: 20 }}>
         <div aria-hidden="true" style={{ position: "absolute", top: 0, bottom: 0, right: 0, width: 220, zIndex: 3, pointerEvents: "none", background: "linear-gradient(to left, var(--bg), transparent)" }} />
         <div aria-hidden="true" style={{ position: "absolute", top: 0, bottom: 0, left: 0, width: 220, zIndex: 3, pointerEvents: "none", background: "linear-gradient(to right, var(--bg), transparent)" }} />
 
-        {/* Single-row branded marquee — placeholder guest frames */}
-        <div className="guest-marquee-row" style={{
-          display: "flex", gap: 24,
-          animation: "marquee-rtl 28s linear infinite",
+        {/* Two-row branded marquee — rows scroll in opposite directions */}
+        {[
+          { dir: "rtl", offset: 0, duration: 38 },
+          { dir: "ltr", offset: 10, duration: 42 },
+        ].map((row, rowIdx) =>
+        <div key={rowIdx} className="guest-marquee-row" style={{
+          display: "flex", gap: 18,
+          animation: `marquee-${row.dir} ${row.duration}s linear infinite`,
           width: "max-content",
-          padding: "10px 0"
+          padding: "6px 0"
         }}>
           {[...Array(2)].flatMap((_, dup) =>
-          [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map((n, i) =>
+          [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n, i) =>
           <div
-            key={`${dup}-${i}`}
+            key={`${rowIdx}-${dup}-${i}`}
             aria-hidden={dup === 1 ? "true" : undefined}
+            data-guest-num={row.offset + n}
             style={{
               flexShrink: 0,
-              width: 240, aspectRatio: "9 / 16",
+              width: 180, aspectRatio: "9 / 16",
               background: "var(--card)",
               border: "1px solid var(--line2)",
-              borderRadius: 16,
+              borderRadius: 14,
               position: "relative",
               overflow: "hidden"
             }}>
@@ -2719,7 +2724,7 @@ function GuestStrip() {
                   <span className="mono" style={{
                 fontSize: 11, letterSpacing: "0.2em",
                 color: "var(--accent)", fontWeight: 700
-              }}>GUEST · {String(n).padStart(2, "0")}</span>
+              }}>GUEST · {String(row.offset + n).padStart(2, "0")}</span>
                   <span style={{
                 display: "inline-flex", alignItems: "center", gap: 6,
                 fontFamily: "var(--font-mono)", fontSize: 9, letterSpacing: "0.18em",
@@ -2740,7 +2745,7 @@ function GuestStrip() {
               display: "flex", alignItems: "center", justifyContent: "center",
               zIndex: 2
             }}>
-                  <svg width="110" height="110" viewBox="0 0 90 90" fill="none" aria-hidden="true">
+                  <svg width="86" height="86" viewBox="0 0 90 90" fill="none" aria-hidden="true">
                     <circle cx="45" cy="32" r="18" stroke="rgba(255,213,0,0.4)" strokeWidth="1.5" strokeDasharray="3 3" />
                     <path d="M14 84 C 14 64, 30 56, 45 56 C 60 56, 76 64, 76 84"
                 stroke="rgba(255,213,0,0.4)" strokeWidth="1.5" strokeDasharray="3 3" fill="none" />
@@ -2750,6 +2755,7 @@ function GuestStrip() {
           )
           )}
         </div>
+        )}
       </div>
 
       <div className="wrap" style={{ marginTop: 72, display: "flex", justifyContent: "center" }}>
@@ -2773,13 +2779,14 @@ function GuestStrip() {
 
       <style>{`
         @keyframes marquee-rtl { from { transform: translateX(0); } to { transform: translateX(50%); } }
+        @keyframes marquee-ltr { from { transform: translateX(-50%); } to { transform: translateX(0); } }
         @keyframes guestRec {
           0%, 100% { opacity: 1; transform: scale(1); }
           50% { opacity: 0.3; transform: scale(0.7); }
         }
         .guest-marquee-row:hover { animation-play-state: paused; }
         @media (max-width: 768px) {
-          .guest-marquee-row > div { width: 180px !important; }
+          .guest-marquee-row > div { width: 140px !important; }
         }
       `}</style>
     </section>);
