@@ -1722,7 +1722,7 @@ function Guarantee({ onCTAClick }) {
           position: relative;
           padding: 28px 26px 24px;
           background: var(--card);
-          border: 1px solid var(--line2);
+          border: 1px solid rgba(255,213,0,0.18);
           border-radius: 16px;
           text-align: right;
           overflow: hidden;
@@ -1736,16 +1736,54 @@ function Guarantee({ onCTAClick }) {
             border-color 0.3s ease,
             box-shadow 0.35s ease;
         }
+        /* Glowing accent edges (top + bottom) on every card */
+        .bonus-card::before,
+        .bonus-card::after {
+          content: "";
+          position: absolute;
+          left: 12%; right: 12%;
+          height: 2px;
+          background: linear-gradient(90deg,
+            transparent 0%,
+            rgba(255,213,0,0.85) 50%,
+            transparent 100%);
+          box-shadow: 0 0 14px rgba(255,213,0,0.45);
+          opacity: 0.85;
+          pointer-events: none;
+          z-index: 1;
+          transition: opacity 0.35s ease, left 0.5s ease, right 0.5s ease, box-shadow 0.35s ease;
+        }
+        .bonus-card::before { top: 0; }
+        .bonus-card::after  { bottom: 0; }
         .bonus-card:hover {
           transform: translateY(-4px);
           border-color: rgba(255,213,0,0.55);
           box-shadow: 0 16px 40px -10px rgba(0,0,0,0.55),
                       0 0 32px -8px rgba(255,213,0,0.3);
         }
-        .bonus-card--popular {
-          background:
-            linear-gradient(180deg, rgba(255,213,0,0.07) 0%, var(--card) 65%);
-          border-color: rgba(255,213,0,0.45);
+        .bonus-card:hover::before,
+        .bonus-card:hover::after {
+          opacity: 1;
+          left: 4%; right: 4%;
+          box-shadow: 0 0 22px rgba(255,213,0,0.7);
+        }
+        /* Yellow corner brackets — 4 corners */
+        .bonus-card__corner {
+          position: absolute;
+          width: 16px; height: 16px;
+          border: 1.5px solid var(--accent);
+          opacity: 0.7;
+          pointer-events: none;
+          z-index: 2;
+          transition: opacity 0.3s ease, width 0.3s ease, height 0.3s ease;
+        }
+        .bonus-card__corner--tl { top: 10px; left: 10px; border-right: none; border-bottom: none; border-top-left-radius: 4px; }
+        .bonus-card__corner--tr { top: 10px; right: 10px; border-left: none; border-bottom: none; border-top-right-radius: 4px; }
+        .bonus-card__corner--bl { bottom: 10px; left: 10px; border-right: none; border-top: none; border-bottom-left-radius: 4px; }
+        .bonus-card__corner--br { bottom: 10px; right: 10px; border-left: none; border-top: none; border-bottom-right-radius: 4px; }
+        .bonus-card:hover .bonus-card__corner {
+          opacity: 1;
+          width: 22px; height: 22px;
         }
         .bonus-card__num-watermark {
           position: absolute;
@@ -2264,12 +2302,16 @@ function Guarantee({ onCTAClick }) {
             { t: "מדריך: איך עובדים עם ManyChat", s: "הגדרה מלאה של אוטומציה שמביאה לידים מהפודקאסט ישירות לוואטסאפ — צעד אחר צעד.", price: "250", popular: false }].
             map((b, i) =>
             <div key={i}
-              className={`bonus-card${b.popular ? " bonus-card--popular" : ""}`}
+              className="bonus-card"
               style={{
                 opacity: 0,
                 animation: inView ? `bonusEnter 0.7s cubic-bezier(0.2,0.8,0.2,1) ${0.6 + i * 0.12}s forwards` : "none",
               }}>
                 <span aria-hidden="true" className="bonus-card__num-watermark">0{i + 1}</span>
+                <span aria-hidden="true" className="bonus-card__corner bonus-card__corner--tl" />
+                <span aria-hidden="true" className="bonus-card__corner bonus-card__corner--tr" />
+                <span aria-hidden="true" className="bonus-card__corner bonus-card__corner--bl" />
+                <span aria-hidden="true" className="bonus-card__corner bonus-card__corner--br" />
 
                 <div className="bonus-card__head">
                   <span className="bonus-card__tag">
