@@ -1,7 +1,9 @@
 {
   "version": 1,
-  "publishedAt": "2026-05-14T09:50:30.944Z",
-  "overrides": {},
+  "publishedAt": "2026-05-14T09:51:31.887Z",
+  "overrides": {
+    "sec:hero>section[0]>div[1]>div[0]>div[1]>h1[0]>span[0]#h:e82d681d": "בדיקה סופית"
+  },
   "sectionOrder": null,
   "elementOffsets": {},
   "hiddenSections": []
