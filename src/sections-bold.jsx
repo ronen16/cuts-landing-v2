@@ -1176,6 +1176,155 @@ function Guarantee({ onCTAClick }) {
           pointer-events: none;
           z-index: 0;
         }
+
+        /* === 3-step "How it works" cards === */
+        .guarantee-step {
+          position: relative;
+          padding: 24px 22px 22px;
+          background:
+            radial-gradient(120% 80% at 100% 0%, rgba(255, 213, 0, 0.05), transparent 55%),
+            linear-gradient(180deg, #131313 0%, #0E0E0E 60%, #0C0C0C 100%);
+          border: 1px solid var(--line2);
+          border-radius: 14px;
+          overflow: hidden;
+          isolation: isolate;
+          will-change: transform, border-color, box-shadow;
+          transition:
+            transform 0.32s cubic-bezier(0.2,0.8,0.2,1),
+            border-color 0.3s ease,
+            box-shadow 0.35s ease;
+        }
+        .guarantee-step__glow {
+          position: absolute;
+          top: -40%; right: -25%;
+          width: 80%; height: 120%;
+          background: radial-gradient(ellipse at center, rgba(255,213,0,0.10), transparent 60%);
+          filter: blur(28px);
+          opacity: 0.55;
+          pointer-events: none;
+          transition: opacity 0.45s ease, transform 0.6s ease;
+          z-index: 0;
+        }
+        .guarantee-step:hover .guarantee-step__glow {
+          opacity: 1;
+          transform: translate(-4%, 4%);
+        }
+        .guarantee-step__edge {
+          position: absolute;
+          top: 30px; bottom: 30px; right: 0;
+          width: 2px;
+          background: linear-gradient(180deg, transparent, rgba(255,213,0,0.55), transparent);
+          opacity: 0.45;
+          pointer-events: none;
+          transition: opacity 0.35s ease, width 0.3s ease, box-shadow 0.35s ease;
+          z-index: 1;
+        }
+        .guarantee-step:hover .guarantee-step__edge {
+          opacity: 1;
+          width: 3px;
+          box-shadow: 0 0 18px rgba(255,213,0,0.45);
+        }
+        .guarantee-step__corner {
+          position: absolute;
+          width: 16px; height: 16px;
+          border: 2px solid var(--accent);
+          opacity: 0;
+          transition: opacity 0.35s ease, transform 0.4s cubic-bezier(0.2,0.8,0.2,1);
+          z-index: 2;
+        }
+        .guarantee-step__corner--tr {
+          top: 10px; right: 10px;
+          border-left: none; border-bottom: none;
+          transform: translate(6px, -6px);
+        }
+        .guarantee-step__corner--bl {
+          left: 10px; bottom: 10px;
+          border-right: none; border-top: none;
+          transform: translate(-6px, 6px);
+        }
+        .guarantee-step:hover .guarantee-step__corner {
+          opacity: 1;
+          transform: translate(0, 0);
+        }
+        .guarantee-step__bar {
+          position: absolute;
+          left: 50%; bottom: 0;
+          width: 0%; height: 2px;
+          background: linear-gradient(90deg, transparent, var(--accent), transparent);
+          box-shadow: 0 0 18px rgba(255,213,0,0.6);
+          transform: translateX(-50%);
+          opacity: 0;
+          z-index: 2;
+          transition: width 0.4s ease, opacity 0.3s ease;
+        }
+        .guarantee-step:hover .guarantee-step__bar {
+          width: 88%;
+          opacity: 1;
+        }
+        .guarantee-step:hover {
+          transform: translateY(-6px);
+          border-color: var(--accent);
+          box-shadow:
+            0 18px 50px -10px rgba(0,0,0,0.55),
+            0 0 0 1px rgba(255,213,0,0.35) inset,
+            0 0 60px -10px rgba(255,213,0,0.35);
+        }
+        .guarantee-step__num {
+          position: relative; z-index: 1;
+          font-size: 12px; letter-spacing: 0.22em; font-weight: 800;
+          color: var(--accent);
+          margin-bottom: 12px;
+          display: inline-block;
+          text-shadow: 0 0 10px rgba(255,213,0,0.25);
+        }
+        .guarantee-step__title {
+          position: relative; z-index: 1;
+          font-size: clamp(16px, 1.4vw, 19px); font-weight: 800;
+          margin-bottom: 6px; line-height: 1.3;
+        }
+        .guarantee-step__sub {
+          position: relative; z-index: 1;
+          font-size: clamp(13px, 1.05vw, 14px);
+          opacity: 0.62; line-height: 1.5;
+        }
+
+        /* === Reassurance rows (no icons, animated vertical accent bar) === */
+        .guarantee-row {
+          position: relative;
+          padding: 6px 18px 6px 0;
+          display: flex; align-items: center; gap: 0;
+          flex-direction: row-reverse;
+          text-align: right;
+          isolation: isolate;
+        }
+        .guarantee-row__bar {
+          position: relative;
+          flex-shrink: 0;
+          width: 3px;
+          align-self: stretch;
+          margin-inline-start: 16px;
+          border-radius: 999px;
+          background: linear-gradient(180deg, transparent, var(--accent), transparent);
+          box-shadow: 0 0 16px rgba(255,213,0,0.4);
+          transform-origin: center;
+          animation: rowBarPulse 3.6s ease-in-out infinite;
+          animation-delay: var(--row-delay, 0s);
+        }
+        @keyframes rowBarPulse {
+          0%, 100% { transform: scaleY(0.7); opacity: 0.55; }
+          50%      { transform: scaleY(1); opacity: 1; }
+        }
+        .guarantee-row__content { flex: 1; }
+        .guarantee-row__main {
+          font-size: clamp(15px, 1.2vw, 17px);
+          font-weight: 700;
+          line-height: 1.4;
+        }
+        .guarantee-row__sub {
+          font-size: clamp(13px, 1vw, 14px);
+          opacity: 0.55; margin-top: 4px;
+          line-height: 1.5;
+        }
         @keyframes secondsPulse {
           0%, 100% { opacity: 1; }
           50% { opacity: 0.6; }
@@ -1336,34 +1485,19 @@ function Guarantee({ onCTAClick }) {
           { n: "02", t: "אתם רואים את התוצאה.", s: "פרק מוגמר עם 2 רילסים." },
           { n: "03", t: "אתם מחליטים.", s: "ממשיכים או עוצרים — בחירתכם." }].
           map((step, i) =>
-          <div key={i} style={{
-            position: "relative",
-            padding: "22px 22px 20px",
-            background: "rgba(255,255,255,0.02)",
-            border: "1px solid var(--line2)",
-            borderRadius: 14,
-            textAlign: "right"
-          }}>
-              <span aria-hidden="true" style={{
-              position: "absolute", top: 8, right: 8, width: 12, height: 12,
-              borderTop: "2px solid var(--accent)", borderRight: "2px solid var(--accent)"
-            }} />
-              <span aria-hidden="true" style={{
-              position: "absolute", bottom: 8, left: 8, width: 12, height: 12,
-              borderBottom: "2px solid var(--accent)", borderLeft: "2px solid var(--accent)"
-            }} />
-              <div className="mono" style={{
-              fontSize: 11, letterSpacing: "0.2em", fontWeight: 700,
-              color: "var(--accent)", opacity: 0.85, marginBottom: 10
-            }}>{step.n}</div>
-              <div style={{
-              fontSize: "clamp(16px, 1.4vw, 19px)", fontWeight: 800,
-              marginBottom: 4, lineHeight: 1.3
-            }}>{step.t}</div>
-              <div style={{
-              fontSize: "clamp(13px, 1.05vw, 14px)",
-              opacity: 0.6, lineHeight: 1.5
-            }}>{step.s}</div>
+          <div
+            key={i}
+            className="guarantee-step"
+            style={{ ["--step-delay"]: `${i * 0.7}s`, textAlign: "right" }}
+          >
+              <span aria-hidden="true" className="guarantee-step__glow" />
+              <span aria-hidden="true" className="guarantee-step__edge" />
+              <span aria-hidden="true" className="guarantee-step__corner guarantee-step__corner--tr" />
+              <span aria-hidden="true" className="guarantee-step__corner guarantee-step__corner--bl" />
+              <span aria-hidden="true" className="guarantee-step__bar" />
+              <div className="mono guarantee-step__num">{step.n}</div>
+              <div className="guarantee-step__title">{step.t}</div>
+              <div className="guarantee-step__sub">{step.s}</div>
             </div>
           )}
         </div>
@@ -1382,45 +1516,19 @@ function Guarantee({ onCTAClick }) {
         }}>
           {[
           {
-            icon:
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="10" />
-                  <polyline points="9 12 11 14 15 10" />
-                </svg>,
-
             main: "לא אהבתם? עוצרים. בלי שאלות, בלי לחץ.",
             sub: "אנחנו לא מאמינים בלקוחות שנשארים כי הם חייבים."
           },
           {
-            icon:
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="20 12 20 22 4 22 4 12" />
-                  <rect x="2" y="7" width="20" height="5" />
-                  <line x1="12" y1="22" x2="12" y2="7" />
-                  <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z" />
-                  <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z" />
-                </svg>,
-
             main: "אהבתם? ממשיכים עם חבילה מותאמת + 15% הנחה.",
             sub: "כי סמכתם עלינו מהצעד הראשון."
           }].
           map((row, i) =>
-          <div key={i} style={{
-            display: "flex", alignItems: "flex-start", gap: 14,
-            flexDirection: "row-reverse", textAlign: "right"
-          }}>
-              <span style={{
-              flex: "0 0 auto", color: "var(--accent)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              width: 28, height: 28, marginTop: 2
-            }}>{row.icon}</span>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: "clamp(15px, 1.2vw, 17px)", fontWeight: 700, lineHeight: 1.4 }}>
-                  {row.main}
-                </div>
-                <div style={{ fontSize: "clamp(13px, 1vw, 14px)", opacity: 0.55, marginTop: 4, lineHeight: 1.5 }}>
-                  {row.sub}
-                </div>
+          <div key={i} className="guarantee-row" style={{ ["--row-delay"]: `${i * 0.4}s` }}>
+              <span aria-hidden="true" className="guarantee-row__bar" />
+              <div className="guarantee-row__content">
+                <div className="guarantee-row__main">{row.main}</div>
+                <div className="guarantee-row__sub">{row.sub}</div>
               </div>
             </div>
           )}
