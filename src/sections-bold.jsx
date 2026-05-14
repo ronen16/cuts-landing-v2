@@ -1567,6 +1567,153 @@ function Guarantee({ onCTAClick }) {
           0%, 100% { opacity: 0.4; transform: scaleX(0.7); }
           50% { opacity: 1; transform: scaleX(1); }
         }
+        /* === Week-only attention banner === */
+        .week-only-banner {
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 14px;
+          margin: -8px auto 0;
+          padding: 12px 28px;
+          max-width: 720px;
+          background:
+            linear-gradient(180deg, var(--accent) 0%, #ffc800 100%);
+          color: #0A0A0A;
+          border-radius: 999px;
+          font-weight: 900;
+          letter-spacing: 0.04em;
+          box-shadow:
+            0 14px 38px -8px rgba(255,213,0,0.55),
+            inset 0 0 0 2px rgba(0,0,0,0.08);
+          overflow: hidden;
+          isolation: isolate;
+          animation: weekBannerPulse 2.4s ease-in-out infinite;
+        }
+        @keyframes weekBannerPulse {
+          0%, 100% {
+            box-shadow:
+              0 14px 32px -10px rgba(255,213,0,0.45),
+              inset 0 0 0 2px rgba(0,0,0,0.08);
+            transform: translateY(0) scale(1);
+          }
+          50% {
+            box-shadow:
+              0 18px 44px -8px rgba(255,213,0,0.75),
+              inset 0 0 0 2px rgba(0,0,0,0.08);
+            transform: translateY(-1px) scale(1.005);
+          }
+        }
+        .week-only-banner__sheen {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(110deg,
+            transparent 30%,
+            rgba(255,255,255,0.55) 50%,
+            transparent 70%);
+          transform: translateX(-100%);
+          animation: weekBannerSheen 3.6s ease-in-out infinite;
+          pointer-events: none;
+        }
+        @keyframes weekBannerSheen {
+          0%   { transform: translateX(-130%); }
+          55%  { transform: translateX(130%); }
+          100% { transform: translateX(130%); }
+        }
+        .week-only-banner__dot {
+          width: 8px; height: 8px;
+          border-radius: 50%;
+          background: #0A0A0A;
+          flex-shrink: 0;
+          animation: urgencyDot 1.1s ease-in-out infinite;
+        }
+        .week-only-banner__bolt {
+          color: #0A0A0A;
+          flex-shrink: 0;
+          animation: boltShake 2.2s ease-in-out infinite;
+          filter: drop-shadow(0 1px 0 rgba(255,255,255,0.4));
+        }
+        @keyframes boltShake {
+          0%, 100% { transform: rotate(-6deg) scale(1); }
+          25%      { transform: rotate(6deg) scale(1.08); }
+          50%      { transform: rotate(-4deg) scale(1); }
+          75%      { transform: rotate(4deg) scale(1.05); }
+        }
+        .week-only-banner__text {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          flex-wrap: wrap;
+          justify-content: center;
+        }
+        .week-only-banner__pill {
+          display: inline-block;
+          padding: 4px 14px;
+          background: #0A0A0A;
+          color: var(--accent);
+          border-radius: 999px;
+          font-size: 13px;
+          font-weight: 900;
+          letter-spacing: 0.22em;
+          text-shadow: 0 0 12px rgba(255,213,0,0.5);
+        }
+        .week-only-banner__sep {
+          font-size: 14px;
+          opacity: 0.55;
+          font-weight: 900;
+        }
+        .week-only-banner__sub {
+          font-size: 13.5px;
+          font-weight: 800;
+          letter-spacing: 0.01em;
+        }
+        @media (max-width: 640px) {
+          .week-only-banner {
+            padding: 10px 18px;
+            gap: 8px;
+          }
+          .week-only-banner__sep { display: none; }
+          .week-only-banner__sub {
+            display: block;
+            font-size: 12px;
+            line-height: 1.35;
+            text-align: center;
+            max-width: 220px;
+          }
+        }
+
+        /* === "Only this week" stamp on each bonus card === */
+        .bonus-card__week-stamp {
+          position: absolute;
+          top: 12px; left: 12px;
+          z-index: 2;
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          padding: 4px 9px;
+          background: rgba(255,80,80,0.10);
+          border: 1px solid rgba(255,80,80,0.45);
+          color: #ff8a8a;
+          border-radius: 6px;
+          font-size: 10px;
+          font-weight: 900;
+          letter-spacing: 0.18em;
+          text-transform: uppercase;
+          animation: weekStampPulse 2.4s ease-in-out infinite;
+        }
+        .bonus-card__week-stamp::before {
+          content: "";
+          width: 5px; height: 5px;
+          border-radius: 50%;
+          background: #ff5050;
+          box-shadow: 0 0 8px rgba(255,80,80,0.8);
+          animation: urgencyDot 1.1s ease-in-out infinite;
+        }
+        @keyframes weekStampPulse {
+          0%, 100% { border-color: rgba(255,80,80,0.45); }
+          50%      { border-color: rgba(255,80,80,0.85); }
+        }
+
         /* === Bonus cards === */
         .bonus-card {
           position: relative;
@@ -2072,26 +2219,35 @@ function Guarantee({ onCTAClick }) {
             }} />
           </div>
 
-          <div style={{
-            position: "absolute", top: -14, left: "50%", transform: "translateX(-50%)",
-            background: "var(--accent)", color: "#0A0A0A",
-            padding: "6px 16px", borderRadius: 999,
-            fontSize: 11, fontWeight: 800, letterSpacing: "0.18em",
-            animation: "monthBadgeFloat 3s ease-in-out infinite",
-            boxShadow: "0 4px 24px rgba(255,213,0,0.4)"
-          }} className="mono">רק למצטרפים השבוע</div>
+          {/* WEEK-ONLY banner — bold attention-grabbing strip */}
+          <div className="week-only-banner" aria-label="רק למצטרפים השבוע">
+            <span aria-hidden="true" className="week-only-banner__sheen" />
+            <span aria-hidden="true" className="week-only-banner__dot week-only-banner__dot--start" />
+            <span aria-hidden="true" className="week-only-banner__dot week-only-banner__dot--end" />
+            <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" className="week-only-banner__bolt">
+              <path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" />
+            </svg>
+            <span className="week-only-banner__text">
+              <span className="week-only-banner__pill">השבוע בלבד</span>
+              <span className="week-only-banner__sep">·</span>
+              <span className="week-only-banner__sub">הבונוסים האלה ניתנים רק למי שמצטרף עד יום ראשון</span>
+            </span>
+            <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" className="week-only-banner__bolt">
+              <path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" />
+            </svg>
+          </div>
 
           <h3 className="display" style={{
             fontSize: "clamp(24px, 2.4vw, 32px)", fontWeight: 900,
-            textAlign: "center", margin: "8px 0 10px", lineHeight: 1.2
+            textAlign: "center", margin: "24px 0 10px", lineHeight: 1.2
           }}>
-            סוגרים עכשיו — <span style={{ color: "var(--accent)" }}>מקבלים גם את זה.</span>
+            סוגרים <span style={{ color: "var(--accent)" }}>השבוע</span> — מקבלים גם את זה.
           </h3>
           <p style={{
             textAlign: "center", maxWidth: 640, margin: "0 auto 28px",
-            fontSize: 15, opacity: 0.6, lineHeight: 1.55
-          }}>כל מי שמתחיל פרק השבוע מקבל 4 מדריכים דיגיטליים בחינם — שיעזרו לכם להפיק את המקסימום מהפודקאסטים שלכם.
-
+            fontSize: 15, opacity: 0.7, lineHeight: 1.55
+          }}>
+            רק מי שמתחיל פרק <strong style={{ color: "var(--accent)", fontWeight: 800 }}>השבוע</strong> מקבל 4 מדריכים דיגיטליים בחינם — שיעזרו לכם להפיק את המקסימום מהפודקאסטים שלכם.
           </p>
 
           <div style={{
@@ -2112,7 +2268,9 @@ function Guarantee({ onCTAClick }) {
               }}>
                 <span aria-hidden="true" className="bonus-card__num-watermark">0{i + 1}</span>
 
-                <div className="bonus-card__head">
+                <span className="bonus-card__week-stamp">השבוע בלבד</span>
+
+                <div className="bonus-card__head" style={{ marginTop: 18 }}>
                   <span className="bonus-card__tag">
                     בונוס 0{i + 1}
                   </span>
@@ -2179,7 +2337,7 @@ function Guarantee({ onCTAClick }) {
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
-                <span>חוסכים <span className="bonus-total__savings-amount">₪940</span> — מתנה למצטרפים החודש</span>
+                <span>חוסכים <span className="bonus-total__savings-amount">₪940</span> — מתנה רק למצטרפים השבוע</span>
               </div>
             </div>
           </div>
