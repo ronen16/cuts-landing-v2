@@ -406,9 +406,17 @@ function computeEditId(el) {
   if (!el || el.nodeType !== 1) return null;
   const root = document.getElementById("root");
   if (!root) return null;
+  // Walk up to the nearest [data-section-id] ancestor — that's our anchor.
+  // The path BELOW the section is stable across hidden/reordered sections,
+  // unlike the path from #root which shifts every time the layout changes.
+  const sectionAncestor = el.closest("[data-section-id]");
+  const anchor = sectionAncestor || root;
+  const anchorTag = sectionAncestor
+    ? `sec:${sectionAncestor.getAttribute("data-section-id")}`
+    : "root";
   const parts = [];
   let cur = el;
-  while (cur && cur !== root && cur.parentElement) {
+  while (cur && cur !== anchor && cur.parentElement) {
     const parent = cur.parentElement;
     const siblings = Array.from(parent.children).filter(
       (c) => c.tagName === cur.tagName
@@ -426,7 +434,7 @@ function computeEditId(el) {
     h = (h * 31 + text.charCodeAt(i)) | 0;
   }
   const hashHex = (h >>> 0).toString(16).padStart(8, "0");
-  return `${path}#h:${hashHex}`;
+  return `${anchorTag}>${path}#h:${hashHex}`;
 }
 
 window.__cutsComputeEditId = computeEditId;
@@ -1071,9 +1079,25 @@ function findElementByPath(id) {
   if (!id) return null;
   const pathPart = id.split("#h:")[0];
   const segments = pathPart.split(">").filter(Boolean);
-  let cur = document.getElementById("root");
-  for (const seg of segments) {
+  if (segments.length === 0) return null;
+  // First segment is the anchor — either "sec:<id>" or "root"
+  const first = segments[0];
+  let cur;
+  if (first.startsWith("sec:")) {
+    const sectionId = first.slice(4);
+    cur = document.querySelector(`[data-section-id="${CSS.escape(sectionId)}"]`);
     if (!cur) return null;
+  } else if (first === "root") {
+    cur = document.getElementById("root");
+  } else {
+    // Legacy id without anchor prefix — assume root-relative
+    cur = document.getElementById("root");
+    segments.unshift(""); // pad so the loop below picks up from segment 0 again
+    segments[0] = ""; // first segment is the placeholder we'll skip
+  }
+  for (let i = 1; i < segments.length; i++) {
+    if (!cur) return null;
+    const seg = segments[i];
     const m = seg.match(/^([a-z0-9]+)\[(\d+)\]$/i);
     if (!m) return null;
     const tag = m[1].toUpperCase();
