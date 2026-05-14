@@ -2838,8 +2838,8 @@ function Results() {
     <section id="results" style={{ padding: "76px 0 52px", background: "var(--card)", borderTop: "1px solid var(--line2)", borderBottom: "1px solid var(--line2)" }}>
       <div className="wrap">
         <h2 className="display" style={{ fontSize: "clamp(38px, 6vw, 84px)", margin: "0 0 56px", maxWidth: 1100 }}>
-          המספרים מאחורי<br />
-          <span style={{ color: "var(--accent)" }}>הפודקאסטים שאנחנו מייצרים.</span>
+          ככה נראים<br />
+          <span style={{ color: "var(--accent)" }}>הפודקאסטים שאנחנו בונים.</span>
         </h2>
       </div>
 
