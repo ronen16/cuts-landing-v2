@@ -2672,10 +2672,14 @@ function GuestStrip() {
         <div aria-hidden="true" style={{ position: "absolute", top: 0, bottom: 0, right: 0, width: 220, zIndex: 3, pointerEvents: "none", background: "linear-gradient(to left, var(--bg), transparent)" }} />
         <div aria-hidden="true" style={{ position: "absolute", top: 0, bottom: 0, left: 0, width: 220, zIndex: 3, pointerEvents: "none", background: "linear-gradient(to right, var(--bg), transparent)" }} />
 
-        {/* Two-row branded marquee — rows scroll in opposite directions */}
+        {/* Two-row branded marquee — rows scroll in opposite directions.
+            Items are rendered 3× so the wrapper is always ≥3× wider than the
+            viewport, and the animation moves exactly one set width (33.333%).
+            That keeps the seam invisible AND prevents any moment where the
+            wrapper's edge is inside the viewport (the "disappearing" gap). */}
         {[
-          { dir: "rtl", offset: 0, duration: 22, count: 10, width: 140, aspect: "9 / 16" },
-          { dir: "ltr", offset: 10, duration: 26, count: 6,  width: 320, aspect: "16 / 9" },
+          { dir: "rtl", offset: 0, duration: 22, count: 10, width: 175, aspect: "9 / 16" },
+          { dir: "ltr", offset: 10, duration: 26, count: 6,  width: 400, aspect: "16 / 9" },
         ].map((row, rowIdx) =>
         <div key={rowIdx} className="guest-marquee-row" style={{
           display: "flex",
@@ -2683,11 +2687,11 @@ function GuestStrip() {
           width: "max-content",
           padding: "4px 0"
         }}>
-          {[...Array(2)].flatMap((_, dup) =>
+          {[...Array(3)].flatMap((_, dup) =>
           Array.from({ length: row.count }, (_, k) => k + 1).map((n, i) =>
           <div
             key={`${rowIdx}-${dup}-${i}`}
-            aria-hidden={dup === 1 ? "true" : undefined}
+            aria-hidden={dup > 0 ? "true" : undefined}
             data-guest-num={row.offset + n}
             style={{
               flexShrink: 0,
@@ -2779,8 +2783,8 @@ function GuestStrip() {
       </div>
 
       <style>{`
-        @keyframes marquee-rtl { from { transform: translateX(0); } to { transform: translateX(50%); } }
-        @keyframes marquee-ltr { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        @keyframes marquee-rtl { from { transform: translateX(-33.3333%); } to { transform: translateX(0); } }
+        @keyframes marquee-ltr { from { transform: translateX(0); } to { transform: translateX(-33.3333%); } }
         @keyframes guestRec {
           0%, 100% { opacity: 1; transform: scale(1); }
           50% { opacity: 0.3; transform: scale(0.7); }
