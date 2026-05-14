@@ -1,9 +1,11 @@
 {
   "version": 1,
-  "publishedAt": "2026-05-14T09:53:03.742Z",
+  "publishedAt": "2026-05-14T09:54:10.266Z",
   "overrides": {
     "sec:how-it-works>button[0]#h:d901835d": "👁 הצג",
-    "sec:services>section[0]>div[0]>div[1]>div[0]>h3[0]#h:a5c90c46": "צילום מקצועי"
+    "sec:services>section[0]>div[0]>div[1]>div[0]>h3[0]#h:a5c90c46": "צילום מקצועי",
+    "sec:services>section[0]>div[0]>div[1]>div[0]>p[0]#h:dddfb300": "צילום מקצועי עם מספר מצלמות וסאונד נקי, ואפילו מתאימים את התאורה לצבעי המותג שלכם.<br style=\"app-region: no-drag !important;\">ואתם יוצאים עם תוכן שנראה כמו תוכנית בנטפליקס.",
+    "sec:services>section[0]>div[0]>div[1]>div[1]>p[0]#h:dddfb300": "כל פרק עובר עריכה מקצועית וקפדנית -&nbsp;חיתוכים, מוזיקה, ניתוב זוויות ועריכת צבע וסאונד.<br style=\"app-region: no-drag !important;\">פרק שתצלמו היום ימשיך להביא לקוחות גם עוד שנתיים."
   },
   "sectionOrder": null,
   "elementOffsets": {},
