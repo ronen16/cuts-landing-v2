@@ -1160,19 +1160,19 @@ function Guarantee({ onCTAClick }) {
           }
         }
         @keyframes urgentBadgeShine {
-          0% { transform: translateX(-160%) skewX(-22deg); }
-          55% { transform: translateX(160%) skewX(-22deg); }
-          100% { transform: translateX(160%) skewX(-22deg); }
+          0%   { transform: translateX(-260%) skewX(-22deg); }
+          45%  { transform: translateX(360%) skewX(-22deg); }
+          100% { transform: translateX(360%) skewX(-22deg); }
         }
         .urgent-badge {
           animation: urgentBadgePulse 2.6s ease-in-out infinite;
         }
         .urgent-badge__shine {
           position: absolute;
-          top: 0; bottom: 0; left: 0; width: 35%;
+          top: 0; bottom: 0; left: 0; width: 30%;
           background: linear-gradient(115deg, transparent 0%, rgba(255,255,255,0.55) 50%, transparent 100%);
-          transform: translateX(-160%) skewX(-22deg);
-          animation: urgentBadgeShine 3.4s cubic-bezier(0.3, 0.1, 0.7, 1) infinite;
+          transform: translateX(-260%) skewX(-22deg);
+          animation: urgentBadgeShine 3.6s linear infinite;
           pointer-events: none;
           z-index: 0;
         }
