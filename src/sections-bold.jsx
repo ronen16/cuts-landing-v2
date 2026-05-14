@@ -1567,10 +1567,387 @@ function Guarantee({ onCTAClick }) {
           0%, 100% { opacity: 0.4; transform: scaleX(0.7); }
           50% { opacity: 1; transform: scaleX(1); }
         }
+        /* === Bonus cards === */
+        .bonus-card {
+          position: relative;
+          padding: 26px 24px 22px;
+          background:
+            radial-gradient(120% 80% at 100% 0%, rgba(255, 213, 0, 0.05), transparent 55%),
+            linear-gradient(180deg, #131313 0%, #0E0E0E 60%, #0C0C0C 100%);
+          border: 1px solid var(--line2);
+          border-radius: 16px;
+          text-align: right;
+          overflow: hidden;
+          isolation: isolate;
+          display: flex;
+          flex-direction: column;
+          will-change: transform, border-color, box-shadow;
+          transition:
+            transform 0.32s cubic-bezier(0.2,0.8,0.2,1),
+            border-color 0.3s ease,
+            box-shadow 0.35s ease;
+        }
+        .bonus-card--popular {
+          background: linear-gradient(180deg, rgba(255,213,0,0.07) 0%, rgba(255,213,0,0.02) 70%, transparent);
+          border: 1.5px solid var(--accent);
+          animation: bonusPopularPulse 4s ease-in-out infinite;
+        }
+        @keyframes bonusPopularPulse {
+          0%, 100% {
+            box-shadow:
+              0 0 36px rgba(255,213,0,0.18),
+              inset 0 0 50px rgba(255,213,0,0.04);
+          }
+          50% {
+            box-shadow:
+              0 0 52px rgba(255,213,0,0.32),
+              inset 0 0 70px rgba(255,213,0,0.08);
+          }
+        }
+        .bonus-card__glow {
+          position: absolute;
+          top: -40%; right: -25%;
+          width: 80%; height: 120%;
+          background: radial-gradient(ellipse at center, rgba(255,213,0,0.10), transparent 60%);
+          filter: blur(28px);
+          opacity: 0.5;
+          pointer-events: none;
+          transition: opacity 0.45s ease, transform 0.6s ease;
+          z-index: 0;
+        }
+        .bonus-card--popular .bonus-card__glow { opacity: 0.85; }
+        .bonus-card:hover .bonus-card__glow {
+          opacity: 1;
+          transform: translate(-4%, 4%);
+        }
+        .bonus-card__sheen {
+          position: absolute; inset: 0;
+          pointer-events: none;
+          background: linear-gradient(
+            115deg,
+            transparent 0%, transparent 38%,
+            rgba(255,213,0,0.08) 50%,
+            transparent 62%, transparent 100%
+          );
+          transform: translateX(-130%) skewX(-18deg);
+          animation: bonusSheen 7s ease-in-out infinite;
+          z-index: 0;
+        }
+        .bonus-card--popular .bonus-card__sheen {
+          background: linear-gradient(
+            115deg,
+            transparent 0%, transparent 38%,
+            rgba(255,213,0,0.18) 50%,
+            transparent 62%, transparent 100%
+          );
+          animation-duration: 4s;
+        }
+        @keyframes bonusSheen {
+          0%   { transform: translateX(-130%) skewX(-18deg); }
+          60%  { transform: translateX(150%) skewX(-18deg); }
+          100% { transform: translateX(150%) skewX(-18deg); }
+        }
+        .bonus-card__corner {
+          position: absolute;
+          width: 16px; height: 16px;
+          border: 2px solid var(--accent);
+          opacity: 0;
+          transition: opacity 0.35s ease, transform 0.4s cubic-bezier(0.2,0.8,0.2,1);
+          z-index: 2;
+        }
+        .bonus-card__corner--tr {
+          top: 10px; right: 10px;
+          border-left: none; border-bottom: none;
+          transform: translate(6px, -6px);
+        }
+        .bonus-card__corner--bl {
+          left: 10px; bottom: 10px;
+          border-right: none; border-top: none;
+          transform: translate(-6px, 6px);
+        }
+        .bonus-card:hover .bonus-card__corner {
+          opacity: 1;
+          transform: translate(0, 0);
+        }
+        .bonus-card--popular .bonus-card__corner { opacity: 0.5; }
         .bonus-card:hover {
-          transform: translateY(-4px);
-          border-color: rgba(255,213,0,0.6) !important;
-          box-shadow: 0 12px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,213,0,0.2);
+          transform: translateY(-6px);
+          border-color: var(--accent);
+          box-shadow:
+            0 18px 50px -10px rgba(0,0,0,0.55),
+            0 0 0 1px rgba(255,213,0,0.35) inset,
+            0 0 60px -10px rgba(255,213,0,0.4);
+        }
+        .bonus-card__popular-pill {
+          position: absolute;
+          top: 14px; left: 14px;
+          background: var(--accent);
+          color: #0A0A0A;
+          padding: 5px 12px;
+          border-radius: 999px;
+          font: 800 11px/1 "Heebo", system-ui, sans-serif;
+          letter-spacing: 0.16em;
+          box-shadow: 0 4px 20px rgba(255,213,0,0.5);
+          z-index: 3;
+        }
+        .bonus-card__index {
+          position: relative; z-index: 1;
+          display: inline-block;
+          font: 800 10px/1 "JetBrains Mono", monospace;
+          letter-spacing: 0.22em;
+          color: var(--accent);
+          padding: 5px 10px;
+          border: 1px solid rgba(255,213,0,0.4);
+          border-radius: 4px;
+          background: rgba(255,213,0,0.06);
+          margin-bottom: 14px;
+          text-shadow: 0 0 10px rgba(255,213,0,0.25);
+        }
+        .bonus-card__title {
+          position: relative; z-index: 1;
+          font-size: 17px;
+          font-weight: 800;
+          line-height: 1.35;
+          margin-bottom: 8px;
+          color: #fff;
+        }
+        .bonus-card__sub {
+          position: relative; z-index: 1;
+          font-size: 13.5px;
+          opacity: 0.6;
+          line-height: 1.55;
+          margin-bottom: 18px;
+        }
+        .bonus-card__footer {
+          position: relative; z-index: 1;
+          margin-top: auto;
+          padding-top: 16px;
+          border-top: 1px dashed rgba(255,213,0,0.22);
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+        .bonus-card__price {
+          font: 600 12px/1 "JetBrains Mono", monospace;
+          opacity: 0.55;
+          letter-spacing: 0.05em;
+        }
+        .bonus-card__price-num {
+          text-decoration: line-through;
+          text-decoration-color: rgba(255,255,255,0.4);
+          text-decoration-thickness: 1.5px;
+          font-size: 15px;
+          font-weight: 700;
+          margin-inline-start: 4px;
+        }
+        .bonus-card__free {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          font: 900 13px/1 "Heebo", system-ui, sans-serif;
+          letter-spacing: 0.04em;
+          color: #0A0A0A;
+          background: var(--accent);
+          padding: 7px 14px;
+          border-radius: 999px;
+          box-shadow: 0 0 20px rgba(255,213,0,0.4);
+          animation: bonusFreePulse 2.4s ease-in-out infinite;
+        }
+        @keyframes bonusFreePulse {
+          0%, 100% { box-shadow: 0 0 20px rgba(255,213,0,0.4); transform: scale(1); }
+          50%      { box-shadow: 0 0 32px rgba(255,213,0,0.7); transform: scale(1.04); }
+        }
+
+        /* === Bonus TOTAL — dramatic centerpiece === */
+        .bonus-total {
+          margin-top: 32px;
+          padding: 40px 40px 36px;
+          position: relative;
+          background: linear-gradient(180deg, rgba(255,213,0,0.12), rgba(255,213,0,0.025) 70%, transparent);
+          border: 2px solid var(--accent);
+          border-radius: 24px;
+          overflow: hidden;
+          isolation: isolate;
+          animation: bonusTotalPulse 4.2s ease-in-out infinite;
+        }
+        @keyframes bonusTotalPulse {
+          0%, 100% {
+            box-shadow:
+              0 0 64px rgba(255,213,0,0.22),
+              inset 0 0 80px rgba(255,213,0,0.06);
+          }
+          50% {
+            box-shadow:
+              0 0 96px rgba(255,213,0,0.4),
+              inset 0 0 100px rgba(255,213,0,0.12);
+          }
+        }
+        .bonus-total__aurora {
+          position: absolute;
+          top: -30%; right: -15%;
+          width: 70%; height: 130%;
+          background: radial-gradient(
+            ellipse at center,
+            rgba(255,213,0,0.22) 0%,
+            rgba(255,213,0,0.08) 35%,
+            transparent 65%
+          );
+          filter: blur(40px);
+          pointer-events: none;
+          animation: bonusAuroraRot 16s linear infinite;
+          z-index: 0;
+        }
+        @keyframes bonusAuroraRot {
+          0%   { transform: translate(0%, 0%) rotate(0deg); }
+          50%  { transform: translate(8%, -5%) rotate(180deg); }
+          100% { transform: translate(0%, 0%) rotate(360deg); }
+        }
+        .bonus-total__sheen {
+          position: absolute; inset: 0;
+          background: linear-gradient(
+            115deg,
+            transparent 0%, transparent 42%,
+            rgba(255,255,255,0.10) 50%,
+            transparent 58%, transparent 100%
+          );
+          transform: translateX(-130%) skewX(-18deg);
+          animation: bonusSheen 5s ease-in-out infinite;
+          animation-delay: 1.5s;
+          pointer-events: none;
+          z-index: 0;
+        }
+        .bonus-total__corner {
+          position: absolute;
+          width: 22px; height: 22px;
+          border: 2px solid var(--accent);
+          z-index: 2;
+        }
+        .bonus-total__corner--tl { top: 12px; left: 12px; border-right: none; border-bottom: none; }
+        .bonus-total__corner--tr { top: 12px; right: 12px; border-left: none; border-bottom: none; }
+        .bonus-total__corner--bl { bottom: 12px; left: 12px; border-right: none; border-top: none; }
+        .bonus-total__corner--br { bottom: 12px; right: 12px; border-left: none; border-top: none; }
+        .bonus-total__inner {
+          position: relative;
+          z-index: 1;
+          text-align: center;
+        }
+        .bonus-total__pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          padding: 8px 20px;
+          background: rgba(255,213,0,0.10);
+          border: 1px solid rgba(255,213,0,0.45);
+          border-radius: 999px;
+          font: 800 12px/1 "JetBrains Mono", monospace;
+          letter-spacing: 0.30em;
+          color: var(--accent);
+          margin-bottom: 32px;
+        }
+        .bonus-total__pill-dot {
+          width: 7px; height: 7px;
+          border-radius: 50%;
+          background: var(--accent);
+          box-shadow: 0 0 8px var(--accent);
+          animation: urgencyDot 1.1s ease-in-out infinite;
+        }
+        .bonus-total__compare {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: clamp(28px, 4vw, 64px);
+          flex-wrap: wrap;
+        }
+        .bonus-total__col {
+          text-align: center;
+        }
+        .bonus-total__col-label {
+          font: 700 11px/1 "JetBrains Mono", monospace;
+          letter-spacing: 0.26em;
+          opacity: 0.55;
+          margin-bottom: 14px;
+        }
+        .bonus-total__col-label--accent {
+          color: var(--accent);
+          opacity: 1;
+          font-weight: 800;
+        }
+        .bonus-total__regular-price {
+          position: relative;
+          display: inline-block;
+        }
+        .bonus-total__regular-num {
+          color: #fff;
+          font-size: clamp(54px, 7vw, 96px);
+          font-weight: 900;
+          line-height: 1;
+          letter-spacing: -0.03em;
+          opacity: 0.72;
+          text-decoration: line-through;
+          text-decoration-color: rgba(255,80,80,0.85);
+          text-decoration-thickness: 4px;
+        }
+        .bonus-total__arrow {
+          color: var(--accent);
+          font-size: clamp(34px, 3.4vw, 52px);
+          margin-top: 26px;
+          opacity: 0.9;
+          animation: arrowSlide 1.8s ease-in-out infinite;
+          text-shadow: 0 0 16px rgba(255,213,0,0.6);
+        }
+        .bonus-total__free-wrap {
+          position: relative;
+          display: inline-block;
+          animation: freePop 2.4s ease-in-out infinite;
+        }
+        .bonus-total__free {
+          display: inline-block;
+          font-family: "FbTypograph2", "Heebo", system-ui, sans-serif;
+          font-size: clamp(72px, 9vw, 132px);
+          font-weight: 900;
+          color: var(--accent);
+          line-height: 1;
+          letter-spacing: -0.04em;
+          text-shadow:
+            0 0 36px rgba(255,213,0,0.7),
+            0 0 80px rgba(255,213,0,0.4),
+            0 0 8px rgba(255,213,0,0.5);
+        }
+        .bonus-total__free-underline {
+          position: absolute;
+          left: 4%; right: 4%; bottom: -10px;
+          height: 5px;
+          background: linear-gradient(90deg, transparent, var(--accent), transparent);
+          border-radius: 5px;
+          box-shadow: 0 0 16px rgba(255,213,0,0.7);
+          animation: underlineSweep 2.4s ease-in-out infinite;
+        }
+        .bonus-total__savings {
+          margin-top: 36px;
+          display: inline-flex;
+          align-items: center;
+          gap: 12px;
+          padding: 12px 24px;
+          background: rgba(255,213,0,0.10);
+          border: 1.5px solid rgba(255,213,0,0.45);
+          border-radius: 999px;
+          font: 800 clamp(15px, 1.2vw, 18px)/1 "Heebo", system-ui, sans-serif;
+          color: #fff;
+          box-shadow: 0 0 32px rgba(255,213,0,0.18);
+        }
+        .bonus-total__savings svg { color: var(--accent); }
+        .bonus-total__savings-amount {
+          color: var(--accent);
+          font-weight: 900;
+          font-size: 1.1em;
+          text-shadow: 0 0 12px rgba(255,213,0,0.6);
+        }
+
+        @media (max-width: 768px) {
+          .bonus-total { padding: 28px 22px 24px; }
+          .bonus-total__compare { gap: 18px; }
+          .bonus-total__arrow { display: none; }
+          .bonus-total__savings { padding: 10px 18px; font-size: 13px; }
         }
       `}</style>
 
@@ -1800,238 +2177,78 @@ function Guarantee({ onCTAClick }) {
             { t: "מדריך: איך עובדים עם ManyChat", s: "הגדרה מלאה של אוטומציה שמביאה לידים מהפודקאסט ישירות לוואטסאפ — צעד אחר צעד.", price: "250", popular: false }].
             map((b, i) =>
             <div key={i}
-            className="bonus-card"
-            style={{
-              position: "relative",
-              padding: "24px 22px 20px",
-              background: b.popular ?
-              "linear-gradient(180deg, rgba(255,213,0,0.04) 0%, var(--bg) 60%)" :
-              "var(--bg)",
-              border: b.popular ? "1px solid rgba(255,213,0,0.55)" : "1px solid var(--line2)",
-              borderRadius: 14,
-              textAlign: "right",
-              overflow: "hidden",
-              display: "flex",
-              flexDirection: "column",
-              opacity: 0,
-              animation: inView ? `bonusEnter 0.7s cubic-bezier(0.2,0.8,0.2,1) ${0.6 + i * 0.12}s forwards` : "none",
-              transition: "transform 0.35s cubic-bezier(0.2,0.8,0.2,1), border-color 0.35s ease, box-shadow 0.35s ease",
-              cursor: "default"
-            }}>
-                {/* Corner brackets — yellow */}
-                <span aria-hidden="true" style={{
-                position: "absolute", top: 8, right: 8,
-                width: 14, height: 14,
-                borderTop: "1.5px solid var(--accent)",
-                borderRight: "1.5px solid var(--accent)",
-                opacity: 0.85
-              }} />
-                <span aria-hidden="true" style={{
-                position: "absolute", bottom: 8, left: 8,
-                width: 14, height: 14,
-                borderBottom: "1.5px solid var(--accent)",
-                borderLeft: "1.5px solid var(--accent)",
-                opacity: 0.85
-              }} />
-
-                {b.popular &&
-              <>
-                <div aria-hidden="true" style={{
-                  position: "absolute", top: 0, bottom: 0, width: "30%",
-                  background: "linear-gradient(90deg, transparent, rgba(255,213,0,0.08), transparent)",
-                  animation: "popularSweep 3.5s ease-in-out infinite",
-                  pointerEvents: "none"
-                }} />
-                <div style={{
-                  position: "absolute", top: 12, left: 14,
-                  background: "var(--accent)", color: "#0A0A0A",
-                  padding: "4px 11px", borderRadius: 999,
-                  fontSize: 10, fontWeight: 800, letterSpacing: "0.15em",
-                  boxShadow: "0 4px 16px rgba(255,213,0,0.5)",
-                  zIndex: 2
-                }} className="mono">הכי פופולרי</div>
-              </>
-              }
-
-                {/* Bonus index pill */}
-                <div style={{
-                display: "flex", alignItems: "center", gap: 10,
-                marginBottom: 14, position: "relative", zIndex: 1
+              className={`bonus-card${b.popular ? " bonus-card--popular" : ""}`}
+              style={{
+                opacity: 0,
+                animation: inView ? `bonusEnter 0.7s cubic-bezier(0.2,0.8,0.2,1) ${0.6 + i * 0.12}s forwards` : "none",
               }}>
-                  <span className="mono" style={{
-                  fontSize: 10, fontWeight: 800, letterSpacing: "0.18em",
-                  color: "var(--accent)",
-                  padding: "4px 8px",
-                  border: "1px solid rgba(255,213,0,0.35)",
-                  borderRadius: 4,
-                  background: "rgba(255,213,0,0.05)"
-                }}>בונוס 0{i + 1}</span>
-                </div>
+                <span aria-hidden="true" className="bonus-card__glow" />
+                <span aria-hidden="true" className="bonus-card__sheen" />
+                <span aria-hidden="true" className="bonus-card__corner bonus-card__corner--tr" />
+                <span aria-hidden="true" className="bonus-card__corner bonus-card__corner--bl" />
 
-                <div style={{
-                fontSize: 17, fontWeight: 800, marginBottom: 8, lineHeight: 1.35,
-                position: "relative", zIndex: 1
-              }}>{b.t}</div>
-                <div style={{ fontSize: 13, opacity: 0.55, lineHeight: 1.55, marginBottom: 16, position: "relative", zIndex: 1 }}>{b.s}</div>
-                <div style={{ borderTop: "1px dashed rgba(255,213,0,0.2)", paddingTop: 14,
-                marginTop: "auto",
-                display: "flex", justifyContent: "space-between", alignItems: "center",
-                fontSize: 13, position: "relative", zIndex: 1
-              }}>
-                  <span style={{ opacity: 0.55 }} className="mono">
-                    שווי <span style={{ textDecoration: "line-through" }}>₪{b.price}</span>
+                {b.popular && (
+                  <span className="bonus-card__popular-pill">הכי פופולרי</span>
+                )}
+
+                <div className="bonus-card__index">בונוס 0{i + 1}</div>
+                <div className="bonus-card__title">{b.t}</div>
+                <div className="bonus-card__sub">{b.s}</div>
+
+                <div className="bonus-card__footer">
+                  <span className="bonus-card__price">
+                    שווי <span className="bonus-card__price-num">₪{b.price}</span>
                   </span>
-                  <span className="mono" style={{
-                  fontSize: 14, fontWeight: 900, color: "var(--accent)",
-                  padding: "5px 12px",
-                  background: "rgba(255,213,0,0.1)",
-                  border: "1px solid rgba(255,213,0,0.3)",
-                  borderRadius: 999,
-                  animation: `freeBlink 2.5s ease-in-out ${i * 0.3}s infinite`
-                }}>חינם ✓</span>
+                  <span className="bonus-card__free" style={{ animationDelay: `${i * 0.25}s` }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M4 12 L10 18 L20 6" />
+                    </svg>
+                    חינם
+                  </span>
                 </div>
               </div>
             )}
           </div>
 
-          {/* Total — dramatic */}
-          <div style={{
-            marginTop: 28,
-            padding: "28px 32px",
-            background: "linear-gradient(135deg, rgba(255,213,0,0.12) 0%, rgba(255,213,0,0.04) 100%)",
-            border: "1.5px solid rgba(255,213,0,0.5)",
-            borderRadius: 16,
-            position: "relative", overflow: "hidden",
-            boxShadow: "0 0 48px rgba(255,213,0,0.08), inset 0 0 32px rgba(255,213,0,0.04)",
-            zoom: 0.65
-          }}>
-            <div aria-hidden="true" style={{
-              position: "absolute", inset: 0,
-              background: "linear-gradient(90deg, transparent, rgba(255,213,0,0.18), transparent)",
-              transform: "translateX(-100%)",
-              animation: inView ? "bonusGlowSweep 4s ease-in-out 2s infinite" : "none",
-              pointerEvents: "none"
-            }} />
+          {/* Total — dramatic centerpiece */}
+          <div className="bonus-total">
+            <span aria-hidden="true" className="bonus-total__aurora" />
+            <span aria-hidden="true" className="bonus-total__sheen" />
+            <span aria-hidden="true" className="bonus-total__corner bonus-total__corner--tl" />
+            <span aria-hidden="true" className="bonus-total__corner bonus-total__corner--tr" />
+            <span aria-hidden="true" className="bonus-total__corner bonus-total__corner--bl" />
+            <span aria-hidden="true" className="bonus-total__corner bonus-total__corner--br" />
 
-            {/* Corner brackets */}
-            <span aria-hidden="true" style={{
-              position: "absolute", top: 10, right: 10,
-              width: 18, height: 18,
-              borderTop: "2px solid var(--accent)",
-              borderRight: "2px solid var(--accent)"
-            }} />
-            <span aria-hidden="true" style={{
-              position: "absolute", top: 10, left: 10,
-              width: 18, height: 18,
-              borderTop: "2px solid var(--accent)",
-              borderLeft: "2px solid var(--accent)"
-            }} />
-            <span aria-hidden="true" style={{
-              position: "absolute", bottom: 10, right: 10,
-              width: 18, height: 18,
-              borderBottom: "2px solid var(--accent)",
-              borderRight: "2px solid var(--accent)"
-            }} />
-            <span aria-hidden="true" style={{
-              position: "absolute", bottom: 10, left: 10,
-              width: 18, height: 18,
-              borderBottom: "2px solid var(--accent)",
-              borderLeft: "2px solid var(--accent)"
-            }} />
-
-            <div style={{
-              position: "relative", zIndex: 1, textAlign: "center"
-            }}>
-              <div className="mono" style={{
-                fontSize: 12, letterSpacing: "0.32em",
-                color: "var(--accent)", opacity: 0.95, marginBottom: 28,
-                display: "inline-flex", alignItems: "center", gap: 10,
-                padding: "7px 18px",
-                border: "1px solid rgba(255,213,0,0.4)",
-                borderRadius: 999,
-                background: "rgba(255,213,0,0.08)"
-              }}>
-                <span style={{
-                  width: 6, height: 6, borderRadius: "50%",
-                  background: "var(--accent)",
-                  animation: "urgencyDot 1.1s ease-in-out infinite"
-                }} />
+            <div className="bonus-total__inner">
+              <div className="bonus-total__pill">
+                <span className="bonus-total__pill-dot" />
                 שווי כולל
               </div>
 
-              <div style={{
-                display: "flex", alignItems: "center", justifyContent: "center",
-                gap: "clamp(28px, 4vw, 56px)", flexWrap: "wrap"
-              }}>
-                <div style={{ textAlign: "center" }}>
-                  <div className="mono" style={{
-                    fontSize: 11, letterSpacing: "0.24em",
-                    opacity: 0.55, marginBottom: 10, fontWeight: 700
-                  }}>מחיר רגיל</div>
-                  <span className="mono" style={{
-                    textDecoration: "line-through",
-                    textDecorationColor: "rgba(255,213,0,0.7)",
-                    textDecorationThickness: "3px",
-                    opacity: 0.75,
-                    fontSize: "clamp(54px, 6.8vw, 92px)",
-                    fontWeight: 900,
-                    lineHeight: 1,
-                    letterSpacing: "-0.03em",
-                    display: "inline-block"
-                  }}><span style={{ color: "rgb(255, 255, 255)" }}>₪940</span></span>
+              <div className="bonus-total__compare">
+                <div className="bonus-total__col">
+                  <div className="bonus-total__col-label">מחיר רגיל</div>
+                  <div className="bonus-total__regular-price">
+                    <span className="bonus-total__regular-num">₪940</span>
+                  </div>
                 </div>
 
-                <span style={{
-                  opacity: 0.8,
-                  fontSize: "clamp(34px, 3.4vw, 48px)",
-                  color: "var(--accent)",
-                  marginTop: 26,
-                  animation: "arrowSlide 2.4s ease-in-out infinite"
-                }}>←</span>
+                <span aria-hidden="true" className="bonus-total__arrow">←</span>
 
-                <div style={{ textAlign: "center" }}>
-                  <div className="mono" style={{
-                    fontSize: 11, letterSpacing: "0.24em",
-                    color: "var(--accent)", marginBottom: 10, fontWeight: 800
-                  }}>היום עבורכם</div>
-                  <div style={{
-                    position: "relative", display: "inline-block",
-                    animation: "freePop 2.6s ease-in-out infinite"
-                  }}>
-                    <span className="display" style={{
-                      fontSize: "clamp(64px, 8vw, 120px)", fontWeight: 900,
-                      color: "var(--accent)",
-                      lineHeight: 1,
-                      textShadow: "0 0 36px rgba(255,213,0,0.6), 0 0 8px rgba(255,213,0,0.4)",
-                      letterSpacing: "-0.03em",
-                      display: "inline-block"
-                    }}>חינם</span>
-                    {/* Underline accent */}
-                    <span aria-hidden="true" style={{
-                      position: "absolute", bottom: -8, left: 0, right: 0,
-                      height: 3,
-                      background: "linear-gradient(90deg, transparent, var(--accent), transparent)",
-                      animation: "underlineSweep 2.6s ease-in-out infinite"
-                    }} />
+                <div className="bonus-total__col">
+                  <div className="bonus-total__col-label bonus-total__col-label--accent">היום עבורכם</div>
+                  <div className="bonus-total__free-wrap">
+                    <span className="bonus-total__free">חינם</span>
+                    <span aria-hidden="true" className="bonus-total__free-underline" />
                   </div>
                 </div>
               </div>
 
-              <div style={{
-                marginTop: 32,
-                fontSize: "clamp(14px, 1.15vw, 17px)",
-                opacity: 0.85,
-                fontWeight: 700,
-                display: "inline-flex", alignItems: "center", gap: 10,
-                padding: "8px 18px",
-                background: "rgba(255,213,0,0.06)",
-                border: "1px solid rgba(255,213,0,0.2)",
-                borderRadius: 999
-              }}>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--accent)" }}>
+              <div className="bonus-total__savings">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
-                <span>חוסכים <span style={{ color: "var(--accent)", fontWeight: 900 }}>₪940</span> — מתנה למצטרפים החודש</span>
+                <span>חוסכים <span className="bonus-total__savings-amount">₪940</span> — מתנה למצטרפים החודש</span>
               </div>
             </div>
           </div>
