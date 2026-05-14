@@ -1573,10 +1573,10 @@ function Guarantee({ onCTAClick }) {
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 14px;
+          gap: 18px;
           margin: -8px auto 0;
-          padding: 12px 28px;
-          max-width: 720px;
+          padding: 18px 36px;
+          max-width: 860px;
           background:
             linear-gradient(180deg, var(--accent) 0%, #ffc800 100%);
           color: #0A0A0A;
@@ -1621,7 +1621,7 @@ function Guarantee({ onCTAClick }) {
           100% { transform: translateX(130%); }
         }
         .week-only-banner__dot {
-          width: 8px; height: 8px;
+          width: 10px; height: 10px;
           border-radius: 50%;
           background: #0A0A0A;
           flex-shrink: 0;
@@ -1630,6 +1630,7 @@ function Guarantee({ onCTAClick }) {
         .week-only-banner__bolt {
           color: #0A0A0A;
           flex-shrink: 0;
+          width: 28px; height: 28px;
           animation: boltShake 2.2s ease-in-out infinite;
           filter: drop-shadow(0 1px 0 rgba(255,255,255,0.4));
         }
@@ -1642,43 +1643,45 @@ function Guarantee({ onCTAClick }) {
         .week-only-banner__text {
           display: inline-flex;
           align-items: center;
-          gap: 10px;
+          gap: 14px;
           flex-wrap: wrap;
           justify-content: center;
         }
         .week-only-banner__pill {
           display: inline-block;
-          padding: 4px 14px;
+          padding: 7px 20px;
           background: #0A0A0A;
           color: var(--accent);
           border-radius: 999px;
-          font-size: 13px;
+          font-size: 18px;
           font-weight: 900;
-          letter-spacing: 0.22em;
-          text-shadow: 0 0 12px rgba(255,213,0,0.5);
+          letter-spacing: 0.18em;
+          text-shadow: 0 0 14px rgba(255,213,0,0.55);
         }
         .week-only-banner__sep {
-          font-size: 14px;
+          font-size: 20px;
           opacity: 0.55;
           font-weight: 900;
         }
         .week-only-banner__sub {
-          font-size: 13.5px;
-          font-weight: 800;
+          font-size: 18px;
+          font-weight: 900;
           letter-spacing: 0.01em;
         }
         @media (max-width: 640px) {
           .week-only-banner {
-            padding: 10px 18px;
-            gap: 8px;
+            padding: 14px 20px;
+            gap: 10px;
           }
+          .week-only-banner__pill { font-size: 14px; padding: 5px 14px; }
+          .week-only-banner__bolt { width: 22px; height: 22px; }
           .week-only-banner__sep { display: none; }
           .week-only-banner__sub {
             display: block;
-            font-size: 12px;
+            font-size: 14px;
             line-height: 1.35;
             text-align: center;
-            max-width: 220px;
+            max-width: 240px;
           }
         }
 
