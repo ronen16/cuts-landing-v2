@@ -1288,42 +1288,110 @@ function Guarantee({ onCTAClick }) {
           opacity: 0.62; line-height: 1.5;
         }
 
-        /* === Reassurance rows (no icons, animated vertical accent bar) === */
+        /* === Reassurance outcome cards (no icons) === */
         .guarantee-row {
           position: relative;
-          padding: 6px 18px 6px 0;
-          display: flex; align-items: center; gap: 0;
-          flex-direction: row-reverse;
+          padding: 26px 28px 24px;
           text-align: right;
+          background:
+            radial-gradient(120% 80% at 100% 0%, rgba(255, 213, 0, 0.05), transparent 55%),
+            linear-gradient(180deg, #131313 0%, #0E0E0E 60%, #0C0C0C 100%);
+          border: 1px solid var(--line2);
+          border-radius: 16px;
+          overflow: hidden;
           isolation: isolate;
+          will-change: transform, border-color, box-shadow;
+          transition:
+            transform 0.32s cubic-bezier(0.2,0.8,0.2,1),
+            border-color 0.3s ease,
+            box-shadow 0.35s ease;
+        }
+        .guarantee-row__glow {
+          position: absolute;
+          top: -40%; right: -25%;
+          width: 80%; height: 120%;
+          background: radial-gradient(ellipse at center, rgba(255,213,0,0.10), transparent 60%);
+          filter: blur(28px);
+          opacity: 0.55;
+          pointer-events: none;
+          transition: opacity 0.45s ease, transform 0.6s ease;
+          z-index: 0;
+        }
+        .guarantee-row:hover .guarantee-row__glow {
+          opacity: 1;
+          transform: translate(-4%, 4%);
         }
         .guarantee-row__bar {
-          position: relative;
-          flex-shrink: 0;
+          position: absolute;
+          top: 24px; bottom: 24px; right: 0;
           width: 3px;
-          align-self: stretch;
-          margin-inline-start: 16px;
-          border-radius: 999px;
           background: linear-gradient(180deg, transparent, var(--accent), transparent);
           box-shadow: 0 0 16px rgba(255,213,0,0.4);
           transform-origin: center;
           animation: rowBarPulse 3.6s ease-in-out infinite;
           animation-delay: var(--row-delay, 0s);
+          z-index: 1;
+        }
+        .guarantee-row__corner {
+          position: absolute;
+          width: 16px; height: 16px;
+          border: 2px solid var(--accent);
+          opacity: 0;
+          transition: opacity 0.35s ease, transform 0.4s cubic-bezier(0.2,0.8,0.2,1);
+          z-index: 2;
+        }
+        .guarantee-row__corner--tr {
+          top: 10px; right: 10px;
+          border-left: none; border-bottom: none;
+          transform: translate(6px, -6px);
+        }
+        .guarantee-row__corner--bl {
+          left: 10px; bottom: 10px;
+          border-right: none; border-top: none;
+          transform: translate(-6px, 6px);
+        }
+        .guarantee-row:hover .guarantee-row__corner {
+          opacity: 1;
+          transform: translate(0, 0);
+        }
+        .guarantee-row:hover {
+          transform: translateY(-4px);
+          border-color: var(--accent);
+          box-shadow:
+            0 18px 50px -10px rgba(0,0,0,0.55),
+            0 0 0 1px rgba(255,213,0,0.35) inset,
+            0 0 60px -10px rgba(255,213,0,0.35);
         }
         @keyframes rowBarPulse {
           0%, 100% { transform: scaleY(0.7); opacity: 0.55; }
           50%      { transform: scaleY(1); opacity: 1; }
         }
-        .guarantee-row__content { flex: 1; }
+        .guarantee-row__content { position: relative; z-index: 1; padding-inline-end: 14px; }
+        .guarantee-row__label {
+          display: inline-block;
+          font-family: "Heebo", system-ui, sans-serif;
+          font-size: 11px; letter-spacing: 0.24em; font-weight: 800;
+          color: var(--accent);
+          text-shadow: 0 0 10px rgba(255,213,0,0.3);
+          padding: 5px 12px;
+          border: 1px solid rgba(255,213,0,0.35);
+          border-radius: 999px;
+          background: rgba(255,213,0,0.06);
+          margin-bottom: 14px;
+        }
         .guarantee-row__main {
-          font-size: clamp(15px, 1.2vw, 17px);
-          font-weight: 700;
-          line-height: 1.4;
+          font-size: clamp(17px, 1.45vw, 20px);
+          font-weight: 800;
+          line-height: 1.35;
+          color: #fff;
         }
         .guarantee-row__sub {
-          font-size: clamp(13px, 1vw, 14px);
-          opacity: 0.55; margin-top: 4px;
-          line-height: 1.5;
+          font-size: clamp(13px, 1.05vw, 14.5px);
+          opacity: 0.6; margin-top: 8px;
+          line-height: 1.55;
+        }
+        @media (max-width: 768px) {
+          .guarantee-row__main { font-size: 16px; }
         }
         @keyframes secondsPulse {
           0%, 100% { opacity: 1; }
@@ -1502,31 +1570,33 @@ function Guarantee({ onCTAClick }) {
           )}
         </div>
 
-        {/* Reassurance lines */}
+        {/* Reassurance pair — two outcome cards */}
         <div style={{
-          maxWidth: 760, margin: "0 auto 56px",
-          padding: "22px 26px",
-          background: "rgba(255,255,255,0.02)",
-          border: "1px solid var(--line2)",
-          borderRadius: 14,
-          display: "flex", flexDirection: "column", gap: 14,
+          maxWidth: 980, margin: "0 auto 56px",
+          display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 18,
           opacity: inView ? 1 : 0,
           transform: inView ? "translateY(0)" : "translateY(12px)",
           transition: "opacity 0.7s ease 0.4s, transform 0.7s ease 0.4s"
         }}>
           {[
           {
-            main: "לא אהבתם? עוצרים. בלי שאלות, בלי לחץ.",
+            label: "אם לא אהבתם",
+            main: "עוצרים. בלי שאלות, בלי לחץ.",
             sub: "אנחנו לא מאמינים בלקוחות שנשארים כי הם חייבים."
           },
           {
-            main: "אהבתם? ממשיכים עם חבילה מותאמת + 15% הנחה.",
+            label: "אם אהבתם",
+            main: "ממשיכים עם חבילה מותאמת + 15% הנחה.",
             sub: "כי סמכתם עלינו מהצעד הראשון."
           }].
           map((row, i) =>
-          <div key={i} className="guarantee-row" style={{ ["--row-delay"]: `${i * 0.4}s` }}>
+          <div key={i} className="guarantee-row" style={{ ["--row-delay"]: `${i * 0.6}s` }}>
+              <span aria-hidden="true" className="guarantee-row__glow" />
+              <span aria-hidden="true" className="guarantee-row__corner guarantee-row__corner--tr" />
+              <span aria-hidden="true" className="guarantee-row__corner guarantee-row__corner--bl" />
               <span aria-hidden="true" className="guarantee-row__bar" />
               <div className="guarantee-row__content">
+                <div className="guarantee-row__label">{row.label}</div>
                 <div className="guarantee-row__main">{row.main}</div>
                 <div className="guarantee-row__sub">{row.sub}</div>
               </div>
