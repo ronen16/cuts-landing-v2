@@ -284,15 +284,23 @@ function useAdminMode() {
   }, []);
 
   // Snapshot current state into the versions list (cap at MAX_VERSIONS).
+  // Reads fresh from localStorage to avoid stale React closure bugs (edits
+  // made just before clicking Publish need to be included).
   const publishToLive = React.useCallback(async () => {
+    const current = loadAdminState();
+    const liveOverrides = current.overrides || {};
+    const liveSectionOrder = current.sectionOrder;
+    const liveElementOffsets = current.elementOffsets || {};
+    const liveHiddenSections = current.hiddenSections || [];
+
     const snapshot = {
       id: "v-" + Date.now() + "-" + Math.random().toString(36).slice(2, 8),
       timestamp: new Date().toISOString(),
       label: new Date().toLocaleString("he-IL"),
-      overrides,
-      sectionOrder,
-      elementOffsets,
-      hiddenSections,
+      overrides: liveOverrides,
+      sectionOrder: liveSectionOrder,
+      elementOffsets: liveElementOffsets,
+      hiddenSections: liveHiddenSections,
     };
     setPublishedVersions((prev) => [snapshot, ...prev].slice(0, MAX_VERSIONS));
 
@@ -306,10 +314,10 @@ function useAdminMode() {
       const payload = {
         version: 1,
         publishedAt: snapshot.timestamp,
-        overrides,
-        sectionOrder,
-        elementOffsets,
-        hiddenSections,
+        overrides: liveOverrides,
+        sectionOrder: liveSectionOrder,
+        elementOffsets: liveElementOffsets,
+        hiddenSections: liveHiddenSections,
       };
       const commit = await pushToGitHub(settings, payload);
       return { snapshot, published: true, commitUrl: commit.commit && commit.commit.html_url };
@@ -322,7 +330,7 @@ function useAdminMode() {
       console.error("[cuts-admin] publish failed:", err);
       return { snapshot, published: false, reason: msg };
     }
-  }, [overrides, sectionOrder, elementOffsets, hiddenSections]);
+  }, []);
 
   const restoreVersion = React.useCallback((id) => {
     const v = publishedVersions.find((x) => x.id === id);
