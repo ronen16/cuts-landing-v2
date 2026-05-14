@@ -1288,65 +1288,137 @@ function Guarantee({ onCTAClick }) {
           opacity: 0.62; line-height: 1.5;
         }
 
-        /* === Reassurance outcome cards (no icons) === */
+        /* === Reassurance outcome cards (mirrors the verdict-card pattern) === */
         .guarantee-row {
           position: relative;
-          padding: 26px 28px 24px;
+          padding: 32px 32px 30px;
           text-align: right;
-          background:
-            radial-gradient(120% 80% at 100% 0%, rgba(255, 213, 0, 0.05), transparent 55%),
-            linear-gradient(180deg, #131313 0%, #0E0E0E 60%, #0C0C0C 100%);
-          border: 1px solid var(--line2);
-          border-radius: 16px;
+          border-radius: 20px;
           overflow: hidden;
           isolation: isolate;
           will-change: transform, border-color, box-shadow;
           transition:
-            transform 0.32s cubic-bezier(0.2,0.8,0.2,1),
-            border-color 0.3s ease,
-            box-shadow 0.35s ease;
+            transform 0.45s cubic-bezier(0.2,0.8,0.2,1),
+            border-color 0.4s ease,
+            box-shadow 0.4s ease,
+            opacity 0.4s ease;
         }
-        .guarantee-row__glow {
+        /* NO — muted, cold */
+        .guarantee-row--no {
+          background: #0E0E0E;
+          border: 1px solid var(--line2);
+          opacity: 0.78;
+        }
+        .guarantee-row--no:hover {
+          transform: translateY(-4px);
+          opacity: 1;
+          border-color: rgba(255,255,255,0.22);
+          box-shadow:
+            0 18px 46px -12px rgba(0,0,0,0.6),
+            inset 0 0 60px rgba(255,255,255,0.02);
+        }
+        /* YES — bright, warm, pulsing glow halo */
+        .guarantee-row--yes {
+          background: linear-gradient(180deg, rgba(255,213,0,0.08), rgba(255,213,0,0.025) 70%, transparent);
+          border: 1.5px solid var(--accent);
+          animation: guaranteeYesPulse 4.2s ease-in-out infinite;
+        }
+        .guarantee-row--yes:hover {
+          animation-play-state: paused;
+          transform: translateY(-6px);
+          box-shadow:
+            0 24px 60px -12px rgba(0,0,0,0.55),
+            0 0 80px -8px rgba(255,213,0,0.5),
+            inset 0 0 80px rgba(255,213,0,0.10);
+        }
+        @keyframes guaranteeYesPulse {
+          0%, 100% {
+            box-shadow:
+              0 0 48px rgba(255,213,0,0.20),
+              inset 0 0 60px rgba(255,213,0,0.06);
+          }
+          50% {
+            box-shadow:
+              0 0 64px rgba(255,213,0,0.34),
+              inset 0 0 80px rgba(255,213,0,0.10);
+          }
+        }
+        /* Aurora warm blob (YES only) */
+        .guarantee-row__aurora {
           position: absolute;
           top: -40%; right: -25%;
-          width: 80%; height: 120%;
-          background: radial-gradient(ellipse at center, rgba(255,213,0,0.10), transparent 60%);
-          filter: blur(28px);
-          opacity: 0.55;
+          width: 90%; height: 140%;
+          background: radial-gradient(
+            ellipse at center,
+            rgba(255,213,0,0.18) 0%,
+            rgba(255,213,0,0.07) 35%,
+            transparent 65%
+          );
+          filter: blur(30px);
           pointer-events: none;
-          transition: opacity 0.45s ease, transform 0.6s ease;
+          animation: guaranteeAurora 14s linear infinite, guaranteeDrift 5s ease-in-out infinite;
           z-index: 0;
         }
-        .guarantee-row:hover .guarantee-row__glow {
-          opacity: 1;
-          transform: translate(-4%, 4%);
+        @keyframes guaranteeAurora {
+          0%   { transform: translate(0%, 0%) rotate(0deg); }
+          50%  { transform: translate(6%, -4%) rotate(180deg); }
+          100% { transform: translate(0%, 0%) rotate(360deg); }
         }
-        .guarantee-row__bar {
-          position: absolute;
-          top: 24px; bottom: 24px; right: 0;
-          width: 3px;
-          background: linear-gradient(180deg, transparent, var(--accent), transparent);
-          box-shadow: 0 0 16px rgba(255,213,0,0.4);
-          transform-origin: center;
-          animation: rowBarPulse 3.6s ease-in-out infinite;
-          animation-delay: var(--row-delay, 0s);
-          z-index: 1;
+        @keyframes guaranteeDrift {
+          0%, 100% { transform: translateY(0); opacity: 0.06; }
+          50%      { transform: translateY(-6px); opacity: 0.12; }
         }
+        /* Sheen sweep */
+        .guarantee-row__sheen {
+          position: absolute; inset: 0;
+          pointer-events: none;
+          z-index: 0;
+        }
+        .guarantee-row__sheen--yes {
+          background: linear-gradient(
+            115deg,
+            transparent 0%, transparent 38%,
+            rgba(255,213,0,0.14) 50%,
+            transparent 62%, transparent 100%
+          );
+          transform: translateX(-130%) skewX(-18deg);
+          animation: guaranteeSheen 5.5s ease-in-out infinite;
+          animation-delay: 1.2s;
+        }
+        .guarantee-row__sheen--no {
+          background: linear-gradient(
+            115deg,
+            transparent 0%, transparent 40%,
+            rgba(255,255,255,0.045) 50%,
+            transparent 60%, transparent 100%
+          );
+          transform: translateX(-130%) skewX(-18deg);
+          animation: guaranteeSheen 7.5s ease-in-out infinite;
+        }
+        @keyframes guaranteeSheen {
+          0%   { transform: translateX(-130%) skewX(-18deg); }
+          60%  { transform: translateX(150%) skewX(-18deg); }
+          100% { transform: translateX(150%) skewX(-18deg); }
+        }
+        .guarantee-row:hover .guarantee-row__sheen { animation-duration: 2.4s; }
+
+        /* Corner brackets */
         .guarantee-row__corner {
           position: absolute;
-          width: 16px; height: 16px;
-          border: 2px solid var(--accent);
+          width: 18px; height: 18px;
+          border: 2px solid rgba(255,255,255,0.4);
           opacity: 0;
           transition: opacity 0.35s ease, transform 0.4s cubic-bezier(0.2,0.8,0.2,1);
           z-index: 2;
         }
+        .guarantee-row--yes .guarantee-row__corner { border-color: var(--accent); }
         .guarantee-row__corner--tr {
-          top: 10px; right: 10px;
+          top: 12px; right: 12px;
           border-left: none; border-bottom: none;
           transform: translate(6px, -6px);
         }
         .guarantee-row__corner--bl {
-          left: 10px; bottom: 10px;
+          left: 12px; bottom: 12px;
           border-right: none; border-top: none;
           transform: translate(-6px, 6px);
         }
@@ -1354,44 +1426,86 @@ function Guarantee({ onCTAClick }) {
           opacity: 1;
           transform: translate(0, 0);
         }
-        .guarantee-row:hover {
-          transform: translateY(-4px);
-          border-color: var(--accent);
-          box-shadow:
-            0 18px 50px -10px rgba(0,0,0,0.55),
-            0 0 0 1px rgba(255,213,0,0.35) inset,
-            0 0 60px -10px rgba(255,213,0,0.35);
+
+        /* Big watermark check (YES) — slowly tilts + glows on hover */
+        .guarantee-row__check {
+          opacity: 0.08;
+          transform-origin: center;
+          animation: guaranteeCheckTilt 6s ease-in-out infinite alternate;
+          transition: opacity 0.4s ease, filter 0.4s ease;
         }
-        @keyframes rowBarPulse {
-          0%, 100% { transform: scaleY(0.7); opacity: 0.55; }
-          50%      { transform: scaleY(1); opacity: 1; }
+        .guarantee-row--yes:hover .guarantee-row__check {
+          opacity: 0.20;
+          filter: drop-shadow(0 0 24px rgba(255,213,0,0.55));
         }
-        .guarantee-row__content { position: relative; z-index: 1; padding-inline-end: 14px; }
+        @keyframes guaranteeCheckTilt {
+          from { transform: rotate(-3deg) scale(1); }
+          to   { transform: rotate(3deg) scale(1.04); }
+        }
+        /* Big watermark X (NO) */
+        .guarantee-row__xmark {
+          opacity: 0.06;
+          transform-origin: center;
+          animation: guaranteeCheckTilt 7s ease-in-out infinite alternate-reverse;
+          transition: opacity 0.4s ease, filter 0.4s ease;
+        }
+        .guarantee-row--no:hover .guarantee-row__xmark {
+          opacity: 0.14;
+          filter: drop-shadow(0 0 18px rgba(255,255,255,0.18));
+        }
+
+        .guarantee-row__content { position: relative; z-index: 1; }
+
+        /* Label pill */
         .guarantee-row__label {
-          display: inline-block;
+          display: inline-flex; align-items: center; gap: 8px;
           font-family: "Heebo", system-ui, sans-serif;
-          font-size: 11px; letter-spacing: 0.24em; font-weight: 800;
-          color: var(--accent);
-          text-shadow: 0 0 10px rgba(255,213,0,0.3);
-          padding: 5px 12px;
-          border: 1px solid rgba(255,213,0,0.35);
+          font-size: 12px; letter-spacing: 0.20em; font-weight: 800;
+          padding: 7px 14px;
           border-radius: 999px;
-          background: rgba(255,213,0,0.06);
-          margin-bottom: 14px;
+          margin-bottom: 18px;
         }
+        .guarantee-row--no .guarantee-row__label {
+          background: rgba(255,255,255,0.05);
+          border: 1px solid rgba(255,255,255,0.12);
+          color: rgba(255,255,255,0.6);
+        }
+        .guarantee-row--no .guarantee-row__label::before {
+          content: "✗"; color: rgba(255,255,255,0.5);
+          font-size: 12px;
+        }
+        .guarantee-row--yes .guarantee-row__label {
+          background: var(--accent);
+          color: #0A0A0A;
+          box-shadow: 0 0 24px rgba(255,213,0,0.4);
+        }
+        .guarantee-row--yes .guarantee-row__label::before {
+          content: "✓"; color: #0A0A0A;
+          font-size: 11px; font-weight: 900;
+        }
+
+        /* Main + sub copy */
         .guarantee-row__main {
-          font-size: clamp(17px, 1.45vw, 20px);
+          font-size: clamp(18px, 1.5vw, 22px);
           font-weight: 800;
           line-height: 1.35;
-          color: #fff;
+        }
+        .guarantee-row--no .guarantee-row__main { color: rgba(255,255,255,0.85); }
+        .guarantee-row--yes .guarantee-row__main { color: #fff; }
+        .guarantee-row--yes .guarantee-row__main .yes-highlight {
+          color: var(--accent);
+          text-shadow: 0 0 24px rgba(255,213,0,0.4);
         }
         .guarantee-row__sub {
-          font-size: clamp(13px, 1.05vw, 14.5px);
-          opacity: 0.6; margin-top: 8px;
+          font-size: clamp(13px, 1.05vw, 15px);
+          margin-top: 10px;
           line-height: 1.55;
+          color: rgba(255,255,255,0.55);
         }
+
         @media (max-width: 768px) {
-          .guarantee-row__main { font-size: 16px; }
+          .guarantee-row { padding: 24px 22px 22px; }
+          .guarantee-row__main { font-size: 17px; }
         }
         @keyframes secondsPulse {
           0%, 100% { opacity: 1; }
@@ -1580,21 +1694,43 @@ function Guarantee({ onCTAClick }) {
         }}>
           {[
           {
+            kind: "no",
             label: "אם לא אהבתם",
-            main: "עוצרים. בלי שאלות, בלי לחץ.",
+            main: <>עוצרים. בלי שאלות, בלי לחץ.</>,
             sub: "אנחנו לא מאמינים בלקוחות שנשארים כי הם חייבים."
           },
           {
+            kind: "yes",
             label: "אם אהבתם",
-            main: "ממשיכים עם חבילה מותאמת + 15% הנחה.",
+            main: <>ממשיכים עם חבילה מותאמת <span className="yes-highlight">+ 15% הנחה.</span></>,
             sub: "כי סמכתם עלינו מהצעד הראשון."
           }].
           map((row, i) =>
-          <div key={i} className="guarantee-row" style={{ ["--row-delay"]: `${i * 0.6}s` }}>
-              <span aria-hidden="true" className="guarantee-row__glow" />
+          <div key={i} className={`guarantee-row guarantee-row--${row.kind}`} style={{ ["--row-delay"]: `${i * 0.6}s` }}>
+              {row.kind === "yes" && <span aria-hidden="true" className="guarantee-row__aurora" />}
+              <span aria-hidden="true" className={`guarantee-row__sheen guarantee-row__sheen--${row.kind}`} />
               <span aria-hidden="true" className="guarantee-row__corner guarantee-row__corner--tr" />
               <span aria-hidden="true" className="guarantee-row__corner guarantee-row__corner--bl" />
-              <span aria-hidden="true" className="guarantee-row__bar" />
+              {row.kind === "yes" && (
+                <svg aria-hidden="true" viewBox="0 0 24 24" className="guarantee-row__check"
+                  style={{
+                    position: "absolute", left: -10, bottom: -30,
+                    width: 220, height: 220,
+                    color: "var(--accent)", pointerEvents: "none"
+                  }} fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 12 L10 18 L20 6" />
+                </svg>
+              )}
+              {row.kind === "no" && (
+                <svg aria-hidden="true" viewBox="0 0 24 24" className="guarantee-row__xmark"
+                  style={{
+                    position: "absolute", left: -10, bottom: -30,
+                    width: 220, height: 220,
+                    color: "rgba(255,255,255,0.85)", pointerEvents: "none"
+                  }} fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M6 6 L18 18 M18 6 L6 18" />
+                </svg>
+              )}
               <div className="guarantee-row__content">
                 <div className="guarantee-row__label">{row.label}</div>
                 <div className="guarantee-row__main">{row.main}</div>
