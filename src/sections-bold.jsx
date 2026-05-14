@@ -1149,6 +1149,33 @@ function Guarantee({ onCTAClick }) {
           0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,213,0,0.4); }
           50% { transform: scale(1.04); box-shadow: 0 0 0 8px rgba(255,213,0,0); }
         }
+        @keyframes urgentBadgePulse {
+          0%, 100% {
+            transform: scale(1);
+            box-shadow: 0 0 0 4px rgba(255,213,0,0.18), 0 0 32px rgba(255,213,0,0.45), 0 12px 32px rgba(0,0,0,0.45);
+          }
+          50% {
+            transform: scale(1.035);
+            box-shadow: 0 0 0 8px rgba(255,213,0,0.0), 0 0 48px rgba(255,213,0,0.6), 0 14px 36px rgba(0,0,0,0.5);
+          }
+        }
+        @keyframes urgentBadgeShine {
+          0% { transform: translateX(-160%) skewX(-22deg); }
+          55% { transform: translateX(160%) skewX(-22deg); }
+          100% { transform: translateX(160%) skewX(-22deg); }
+        }
+        .urgent-badge {
+          animation: urgentBadgePulse 2.6s ease-in-out infinite;
+        }
+        .urgent-badge__shine {
+          position: absolute;
+          top: 0; bottom: 0; left: 0; width: 35%;
+          background: linear-gradient(115deg, transparent 0%, rgba(255,255,255,0.55) 50%, transparent 100%);
+          transform: translateX(-160%) skewX(-22deg);
+          animation: urgentBadgeShine 3.4s cubic-bezier(0.3, 0.1, 0.7, 1) infinite;
+          pointer-events: none;
+          z-index: 0;
+        }
         @keyframes secondsPulse {
           0%, 100% { opacity: 1; }
           50% { opacity: 0.6; }
@@ -1217,53 +1244,75 @@ function Guarantee({ onCTAClick }) {
       `}</style>
 
       <div className="wrap" style={{ position: "relative", zIndex: 1 }}>
-        {/* Urgent badge — pulsing */}
+        {/* Urgent badge — bold yellow chip with shine sweep + rotating ring */}
         <div style={{
-          display: "flex", justifyContent: "center", marginBottom: 32,
+          display: "flex", justifyContent: "center", marginBottom: 36,
           opacity: inView ? 1 : 0,
           transform: inView ? "translateY(0)" : "translateY(8px)",
           transition: "all 0.6s ease 0.05s"
         }}>
-          <div style={{
+          <div className="urgent-badge" style={{
+            position: "relative",
             display: "inline-flex", alignItems: "center", gap: 12,
-            padding: "10px 22px",
-            background: "rgba(255,213,0,0.08)",
-            border: "1px solid rgba(255,213,0,0.4)",
+            padding: "12px 26px",
+            background: "var(--accent)",
+            color: "#0A0A0A",
             borderRadius: 999,
-            animation: "urgentPulse 2.4s ease-in-out infinite"
+            boxShadow: "0 0 0 4px rgba(255,213,0,0.18), 0 0 32px rgba(255,213,0,0.45), 0 12px 32px rgba(0,0,0,0.45)",
+            overflow: "hidden",
+            isolation: "isolate"
           }}>
+            <span aria-hidden="true" className="urgent-badge__shine" />
             <span style={{
-              width: 8, height: 8, borderRadius: "50%",
-              background: "var(--accent)",
-              boxShadow: "0 0 12px var(--accent)",
-              animation: "studioRec 1.2s ease-in-out infinite"
+              width: 9, height: 9, borderRadius: "50%",
+              background: "#0A0A0A",
+              animation: "studioRec 1.05s ease-in-out infinite",
+              position: "relative", zIndex: 1
             }} />
-            <span className="mono" style={{
-              fontSize: 11, letterSpacing: "0.28em",
-              color: "var(--accent)", fontWeight: 800
+            <span style={{
+              fontSize: 13, letterSpacing: "0.22em",
+              fontWeight: 900,
+              fontFamily: "'Heebo', system-ui, sans-serif",
+              position: "relative", zIndex: 1
             }}>מבצע לזמן מוגבל</span>
           </div>
         </div>
 
-        {/* Headline */}
-        <h2 className="display" style={{
-          fontSize: "clamp(40px, 6.5vw, 88px)",
+        {/* Headline — same centered + accent + glow + soft underline pattern */}
+        <div style={{
           textAlign: "center", margin: "0 auto 24px", maxWidth: 1100,
-          fontWeight: 900, lineHeight: 1.05, textWrap: "balance",
-          letterSpacing: "-0.02em",
           opacity: inView ? 1 : 0,
           transform: inView ? "translateY(0)" : "translateY(16px)",
           transition: "opacity 0.7s ease 0.15s, transform 0.7s cubic-bezier(0.2,0.8,0.2,1) 0.15s"
         }}>
-          <span style={{ color: "rgb(255, 255, 255)" }}>פרק ניסיון בלי התחייבות.</span>
-          <br />
-          <span style={{
-            color: "var(--accent)",
-            background: "linear-gradient(180deg, transparent 65%, rgba(255,213,0,0.18) 65%)",
-            padding: "0 8px"
+          <h2 className="display" style={{
+            fontSize: "clamp(40px, 6vw, 84px)",
+            margin: 0, fontWeight: 900, lineHeight: 1,
+            textWrap: "balance"
           }}>
-אפס סיכון.</span>
-        </h2>
+            <span style={{ display: "block", opacity: 0.92 }}>
+              פרק ניסיון בלי התחייבות.
+            </span>
+            <span style={{ display: "block", position: "relative", marginTop: 6 }}>
+              <span style={{
+                color: "var(--accent)",
+                textShadow: "0 0 50px rgba(255,213,0,0.45), 0 0 90px rgba(255,213,0,0.2)",
+                position: "relative",
+                display: "inline-block"
+              }}>
+                אפס סיכון.
+                <span aria-hidden="true" style={{
+                  position: "absolute", left: "3%", right: "3%", bottom: "-0.06em",
+                  height: 5,
+                  background: "linear-gradient(90deg, transparent, var(--accent) 15%, var(--accent) 85%, transparent)",
+                  opacity: 0.55,
+                  borderRadius: 3,
+                  filter: "blur(0.5px)"
+                }} />
+              </span>
+            </span>
+          </h2>
+        </div>
 
         <p style={{ fontSize: "clamp(16px, 1.4vw, 20px)",
           textAlign: "center", margin: "0 auto 56px", maxWidth: 600,
