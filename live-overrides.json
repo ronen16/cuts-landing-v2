@@ -1,8 +1,10 @@
 {
   "version": 1,
-  "publishedAt": "2026-05-14T09:32:05.578Z",
+  "publishedAt": "2026-05-14T09:33:37.708Z",
   "overrides": {
-    "div[0]>div[0]>div[14]>button[0]#h:d901835d": "👁 הצג"
+    "div[0]>div[0]>div[14]>button[0]#h:d901835d": "👁 הצג",
+    "div[0]>div[0]>div[16]>section[0]>div[0]>div[1]>div[0]>h3[0]#h:a5c90c46": "צילום מקצועי",
+    "div[0]>div[0]>div[16]>section[0]>div[0]>div[1]>div[0]>p[0]#h:dddfb300": "צילום מקצועי עם מספר מצלמות וסאונד נקי ואפילו מתאימים את התאורה לצבעי המותג שלכם,<br style=\"app-region: no-drag !important;\">ואתם יוצאים עם תוכן שנראה כמו תוכנית בנטפליקס."
   },
   "sectionOrder": null,
   "elementOffsets": {},
