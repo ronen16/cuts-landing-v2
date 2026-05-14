@@ -1,8 +1,13 @@
 {
   "version": 1,
-  "publishedAt": "2026-05-14T09:52:16.608Z",
-  "overrides": {},
+  "publishedAt": "2026-05-14T09:53:03.742Z",
+  "overrides": {
+    "sec:how-it-works>button[0]#h:d901835d": "👁 הצג",
+    "sec:services>section[0]>div[0]>div[1]>div[0]>h3[0]#h:a5c90c46": "צילום מקצועי"
+  },
   "sectionOrder": null,
   "elementOffsets": {},
-  "hiddenSections": []
+  "hiddenSections": [
+    "how-it-works"
+  ]
 }
