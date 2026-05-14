@@ -952,14 +952,13 @@ function attachInlineEditing(rootEl, editing, onChange) {
   if (!rootEl) return () => {};
   let cleanup = [];
 
-  const onBlur = (e) => {
-    const el = e.target;
+  // Sync the current value of an edited element to both localStorage AND React state.
+  // Called on every input (keystroke) as well as on blur — guarantees the latest
+  // text is persisted before Publish reads it, regardless of focus timing.
+  const captureEdit = (el) => {
     if (!el || !el.hasAttribute || !el.hasAttribute("data-edit-id")) return;
     const id = el.getAttribute("data-edit-id");
-    // Save innerHTML so <br> from Enter (and any inline styling) survives reload.
     const newHtml = (el.innerHTML || "").replace(/(?:&nbsp;|\s)+$/g, "");
-    // Persist to localStorage SYNCHRONOUSLY so that a publish click immediately
-    // after blur picks up the latest edit (the React state path is async).
     try {
       const cur = JSON.parse(localStorage.getItem(ADMIN_STORAGE_KEY) || "{}");
       cur.overrides = cur.overrides || {};
@@ -970,6 +969,9 @@ function attachInlineEditing(rootEl, editing, onChange) {
     } catch (_) {}
     onChange(id, newHtml);
   };
+
+  const onBlur = (e) => { captureEdit(e.target); };
+  const onInput = (e) => { captureEdit(e.target); };
 
   const onKeydown = (e) => {
     if (!e.target || !e.target.hasAttribute || !e.target.hasAttribute("data-edit-id")) return;
@@ -1007,8 +1009,10 @@ function attachInlineEditing(rootEl, editing, onChange) {
 
   refresh();
   rootEl.addEventListener("blur", onBlur, true);
+  rootEl.addEventListener("input", onInput, true);
   rootEl.addEventListener("keydown", onKeydown, true);
   cleanup.push(() => rootEl.removeEventListener("blur", onBlur, true));
+  cleanup.push(() => rootEl.removeEventListener("input", onInput, true));
   cleanup.push(() => rootEl.removeEventListener("keydown", onKeydown, true));
 
   // MutationObserver — re-tag and re-apply on React re-renders
