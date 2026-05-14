@@ -2668,7 +2668,7 @@ function GuestStrip() {
         </div>
       </div>
 
-      <div style={{ position: "relative", display: "flex", flexDirection: "column", gap: 14 }}>
+      <div style={{ position: "relative", display: "flex", flexDirection: "column", gap: 14, direction: "ltr", overflow: "hidden" }}>
         <div aria-hidden="true" style={{ position: "absolute", top: 0, bottom: 0, right: 0, width: 220, zIndex: 3, pointerEvents: "none", background: "linear-gradient(to left, var(--bg), transparent)" }} />
         <div aria-hidden="true" style={{ position: "absolute", top: 0, bottom: 0, left: 0, width: 220, zIndex: 3, pointerEvents: "none", background: "linear-gradient(to right, var(--bg), transparent)" }} />
 
@@ -2682,6 +2682,10 @@ function GuestStrip() {
           { dir: "ltr", offset: 10, duration: 26, count: 6,  width: 400, aspect: "16 / 9" },
         ].map((row, rowIdx) =>
         <div key={rowIdx} className="guest-marquee-row" style={{
+          // Force LTR so the wrapper anchors to the viewport's LEFT edge.
+          // Without this, the parent's RTL pushes the wrapper to the right
+          // and translateX leaves an empty band on whichever side gets vacated.
+          direction: "ltr",
           display: "flex",
           animation: `marquee-${row.dir} ${row.duration}s linear infinite`,
           width: "max-content",
