@@ -2837,10 +2837,31 @@ function Results() {
   return (
     <section id="results" style={{ padding: "76px 0 52px", background: "var(--card)", borderTop: "1px solid var(--line2)", borderBottom: "1px solid var(--line2)" }}>
       <div className="wrap">
-        <h2 className="display" style={{ fontSize: "clamp(38px, 6vw, 84px)", margin: "0 0 56px", maxWidth: 1100 }}>
-          ככה נראים<br />
-          <span style={{ color: "var(--accent)" }}>הפודקאסטים שאנחנו בונים.</span>
-        </h2>
+        <div style={{ textAlign: "center", marginBottom: 56, maxWidth: 1100, marginLeft: "auto", marginRight: "auto" }}>
+          <h2 className="display" style={{
+            fontSize: "clamp(40px, 6vw, 84px)",
+            margin: 0, fontWeight: 900, lineHeight: 1.1,
+            textWrap: "balance"
+          }}>
+            <span style={{ opacity: 0.92 }}>ככה נראים </span>
+            <span style={{
+              color: "var(--accent)",
+              textShadow: "0 0 50px rgba(255,213,0,0.45), 0 0 90px rgba(255,213,0,0.2)",
+              position: "relative",
+              display: "inline-block"
+            }}>
+              הפודקאסטים שאנחנו בונים.
+              <span aria-hidden="true" style={{
+                position: "absolute", left: "3%", right: "3%", bottom: "-0.06em",
+                height: 5,
+                background: "linear-gradient(90deg, transparent, var(--accent) 15%, var(--accent) 85%, transparent)",
+                opacity: 0.55,
+                borderRadius: 3,
+                filter: "blur(0.5px)"
+              }} />
+            </span>
+          </h2>
+        </div>
       </div>
 
       {/* Carousel — full-bleed wrapper for arrows */}
