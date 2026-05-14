@@ -1,8 +1,12 @@
 {
   "version": 1,
-  "publishedAt": "2026-05-14T09:30:48.165Z",
-  "overrides": {},
+  "publishedAt": "2026-05-14T09:32:05.578Z",
+  "overrides": {
+    "div[0]>div[0]>div[14]>button[0]#h:d901835d": "👁 הצג"
+  },
   "sectionOrder": null,
   "elementOffsets": {},
-  "hiddenSections": []
+  "hiddenSections": [
+    "how-it-works"
+  ]
 }
