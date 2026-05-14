@@ -1570,10 +1570,8 @@ function Guarantee({ onCTAClick }) {
         /* === Bonus cards === */
         .bonus-card {
           position: relative;
-          padding: 26px 24px 22px;
-          background:
-            radial-gradient(120% 80% at 100% 0%, rgba(255, 213, 0, 0.05), transparent 55%),
-            linear-gradient(180deg, #131313 0%, #0E0E0E 60%, #0C0C0C 100%);
+          padding: 28px 26px 24px;
+          background: var(--card);
           border: 1px solid var(--line2);
           border-radius: 16px;
           text-align: right;
@@ -1581,245 +1579,179 @@ function Guarantee({ onCTAClick }) {
           isolation: isolate;
           display: flex;
           flex-direction: column;
+          gap: 12px;
           will-change: transform, border-color, box-shadow;
           transition:
             transform 0.32s cubic-bezier(0.2,0.8,0.2,1),
             border-color 0.3s ease,
             box-shadow 0.35s ease;
         }
-        .bonus-card--popular {
-          background: linear-gradient(180deg, rgba(255,213,0,0.07) 0%, rgba(255,213,0,0.02) 70%, transparent);
-          border: 1.5px solid var(--accent);
-          animation: bonusPopularPulse 4s ease-in-out infinite;
-        }
-        @keyframes bonusPopularPulse {
-          0%, 100% {
-            box-shadow:
-              0 0 36px rgba(255,213,0,0.18),
-              inset 0 0 50px rgba(255,213,0,0.04);
-          }
-          50% {
-            box-shadow:
-              0 0 52px rgba(255,213,0,0.32),
-              inset 0 0 70px rgba(255,213,0,0.08);
-          }
-        }
-        .bonus-card__glow {
-          position: absolute;
-          top: -40%; right: -25%;
-          width: 80%; height: 120%;
-          background: radial-gradient(ellipse at center, rgba(255,213,0,0.10), transparent 60%);
-          filter: blur(28px);
-          opacity: 0.5;
-          pointer-events: none;
-          transition: opacity 0.45s ease, transform 0.6s ease;
-          z-index: 0;
-        }
-        .bonus-card--popular .bonus-card__glow { opacity: 0.85; }
-        .bonus-card:hover .bonus-card__glow {
-          opacity: 1;
-          transform: translate(-4%, 4%);
-        }
-        .bonus-card__sheen {
-          position: absolute; inset: 0;
-          pointer-events: none;
-          background: linear-gradient(
-            115deg,
-            transparent 0%, transparent 38%,
-            rgba(255,213,0,0.08) 50%,
-            transparent 62%, transparent 100%
-          );
-          transform: translateX(-130%) skewX(-18deg);
-          animation: bonusSheen 7s ease-in-out infinite;
-          z-index: 0;
-        }
-        .bonus-card--popular .bonus-card__sheen {
-          background: linear-gradient(
-            115deg,
-            transparent 0%, transparent 38%,
-            rgba(255,213,0,0.18) 50%,
-            transparent 62%, transparent 100%
-          );
-          animation-duration: 4s;
-        }
-        @keyframes bonusSheen {
-          0%   { transform: translateX(-130%) skewX(-18deg); }
-          60%  { transform: translateX(150%) skewX(-18deg); }
-          100% { transform: translateX(150%) skewX(-18deg); }
-        }
-        .bonus-card__corner {
-          position: absolute;
-          width: 16px; height: 16px;
-          border: 2px solid var(--accent);
-          opacity: 0;
-          transition: opacity 0.35s ease, transform 0.4s cubic-bezier(0.2,0.8,0.2,1);
-          z-index: 2;
-        }
-        .bonus-card__corner--tr {
-          top: 10px; right: 10px;
-          border-left: none; border-bottom: none;
-          transform: translate(6px, -6px);
-        }
-        .bonus-card__corner--bl {
-          left: 10px; bottom: 10px;
-          border-right: none; border-top: none;
-          transform: translate(-6px, 6px);
-        }
-        .bonus-card:hover .bonus-card__corner {
-          opacity: 1;
-          transform: translate(0, 0);
-        }
-        .bonus-card--popular .bonus-card__corner { opacity: 0.5; }
         .bonus-card:hover {
-          transform: translateY(-6px);
-          border-color: var(--accent);
-          box-shadow:
-            0 18px 50px -10px rgba(0,0,0,0.55),
-            0 0 0 1px rgba(255,213,0,0.35) inset,
-            0 0 60px -10px rgba(255,213,0,0.4);
+          transform: translateY(-4px);
+          border-color: rgba(255,213,0,0.55);
+          box-shadow: 0 16px 40px -10px rgba(0,0,0,0.55),
+                      0 0 32px -8px rgba(255,213,0,0.3);
+        }
+        .bonus-card--popular {
+          background:
+            linear-gradient(180deg, rgba(255,213,0,0.07) 0%, var(--card) 65%);
+          border-color: rgba(255,213,0,0.45);
+        }
+        .bonus-card__num-watermark {
+          position: absolute;
+          bottom: -28px; left: -14px;
+          font-family: inherit;
+          font-size: 180px;
+          font-weight: 900;
+          line-height: 0.8;
+          background: linear-gradient(180deg, rgba(255,213,0,0.16), rgba(255,213,0,0.02));
+          -webkit-background-clip: text;
+          background-clip: text;
+          -webkit-text-fill-color: transparent;
+          pointer-events: none;
+          letter-spacing: -0.06em;
+          z-index: 0;
+        }
+        .bonus-card__ribbon {
+          position: absolute;
+          top: 14px; right: -38px;
+          background: var(--accent);
+          color: #0A0A0A;
+          padding: 4px 42px;
+          font-size: 10px;
+          font-weight: 900;
+          letter-spacing: 0.28em;
+          transform: rotate(45deg);
+          transform-origin: center;
+          box-shadow: 0 4px 14px rgba(255,213,0,0.45);
+          z-index: 3;
+          pointer-events: none;
+        }
+        .bonus-card__ribbon::before,
+        .bonus-card__ribbon::after {
+          content: "";
+          position: absolute;
+          width: 0; height: 0;
+          border-style: solid;
+        }
+        .bonus-card__head {
+          position: relative; z-index: 1;
+          display: flex; align-items: center; justify-content: space-between;
+          gap: 12px;
+        }
+        .bonus-card__tag {
+          display: inline-block;
+          font-size: 11px; letter-spacing: 0.22em; font-weight: 800;
+          color: var(--accent);
+          padding: 5px 12px;
+          border: 1px solid rgba(255,213,0,0.45);
+          border-radius: 999px;
+          background: rgba(255,213,0,0.06);
         }
         .bonus-card__popular-pill {
-          position: absolute;
-          top: 14px; left: 14px;
+          display: inline-block;
           background: var(--accent);
           color: #0A0A0A;
           padding: 5px 12px;
           border-radius: 999px;
-          font: 800 11px/1 "Heebo", system-ui, sans-serif;
-          letter-spacing: 0.16em;
-          box-shadow: 0 4px 20px rgba(255,213,0,0.5);
-          z-index: 3;
+          font-size: 11px; font-weight: 900;
+          letter-spacing: 0.14em;
+          box-shadow: 0 0 16px rgba(255,213,0,0.5);
+          animation: popularBlink 2.6s ease-in-out infinite;
         }
-        .bonus-card__index {
-          position: relative; z-index: 1;
-          display: inline-block;
-          font: 800 10px/1 "JetBrains Mono", monospace;
-          letter-spacing: 0.22em;
-          color: var(--accent);
-          padding: 5px 10px;
-          border: 1px solid rgba(255,213,0,0.4);
-          border-radius: 4px;
-          background: rgba(255,213,0,0.06);
-          margin-bottom: 14px;
-          text-shadow: 0 0 10px rgba(255,213,0,0.25);
+        @keyframes popularBlink {
+          0%, 100% { box-shadow: 0 0 16px rgba(255,213,0,0.5); }
+          50%      { box-shadow: 0 0 28px rgba(255,213,0,0.85); }
         }
         .bonus-card__title {
           position: relative; z-index: 1;
-          font-size: 17px;
+          font-size: clamp(18px, 1.5vw, 21px);
           font-weight: 800;
-          line-height: 1.35;
-          margin-bottom: 8px;
+          line-height: 1.3;
           color: #fff;
+          margin-top: 4px;
         }
         .bonus-card__sub {
           position: relative; z-index: 1;
           font-size: 13.5px;
-          opacity: 0.6;
+          opacity: 0.58;
           line-height: 1.55;
-          margin-bottom: 18px;
+          flex: 1;
         }
-        .bonus-card__footer {
+        .bonus-card__value-row {
           position: relative; z-index: 1;
-          margin-top: auto;
-          padding-top: 16px;
+          margin-top: 8px;
+          padding-top: 18px;
           border-top: 1px dashed rgba(255,213,0,0.22);
           display: flex;
           align-items: center;
           justify-content: space-between;
+          gap: 14px;
         }
-        .bonus-card__price {
-          font: 600 12px/1 "JetBrains Mono", monospace;
-          opacity: 0.55;
-          letter-spacing: 0.05em;
+        .bonus-card__value-old {
+          display: inline-flex;
+          align-items: baseline;
+          gap: 6px;
         }
-        .bonus-card__price-num {
-          text-decoration: line-through;
-          text-decoration-color: rgba(255,255,255,0.4);
-          text-decoration-thickness: 1.5px;
-          font-size: 15px;
+        .bonus-card__value-label {
+          font-size: 11px;
+          letter-spacing: 0.16em;
+          opacity: 0.5;
           font-weight: 700;
-          margin-inline-start: 4px;
         }
-        .bonus-card__free {
+        .bonus-card__value-num {
+          font-size: 22px;
+          font-weight: 900;
+          color: #fff;
+          opacity: 0.78;
+          text-decoration: line-through;
+          text-decoration-color: rgba(255,80,80,0.8);
+          text-decoration-thickness: 3px;
+          letter-spacing: -0.01em;
+        }
+        .bonus-card__value-arrow {
+          color: var(--accent);
+          font-size: 22px;
+          opacity: 0.85;
+          animation: arrowSlide 1.8s ease-in-out infinite;
+        }
+        .bonus-card__value-new {
           display: inline-flex;
           align-items: center;
-          gap: 6px;
-          font: 900 13px/1 "Heebo", system-ui, sans-serif;
-          letter-spacing: 0.04em;
-          color: #0A0A0A;
+          gap: 8px;
+          padding: 10px 20px;
           background: var(--accent);
-          padding: 7px 14px;
-          border-radius: 999px;
-          box-shadow: 0 0 20px rgba(255,213,0,0.4);
+          color: #0A0A0A;
+          border-radius: 12px;
+          font-size: 18px;
+          font-weight: 900;
+          letter-spacing: 0.02em;
+          box-shadow: 0 0 28px rgba(255,213,0,0.55);
           animation: bonusFreePulse 2.4s ease-in-out infinite;
         }
         @keyframes bonusFreePulse {
-          0%, 100% { box-shadow: 0 0 20px rgba(255,213,0,0.4); transform: scale(1); }
-          50%      { box-shadow: 0 0 32px rgba(255,213,0,0.7); transform: scale(1.04); }
+          0%, 100% { box-shadow: 0 0 20px rgba(255,213,0,0.45); transform: scale(1); }
+          50%      { box-shadow: 0 0 32px rgba(255,213,0,0.7); transform: scale(1.03); }
         }
 
-        /* === Bonus TOTAL — dramatic centerpiece === */
+        /* === Bonus TOTAL — value summary === */
         .bonus-total {
-          margin-top: 32px;
-          padding: 40px 40px 36px;
+          margin-top: 36px;
+          padding: 34px 36px 30px;
           position: relative;
-          background: linear-gradient(180deg, rgba(255,213,0,0.12), rgba(255,213,0,0.025) 70%, transparent);
-          border: 2px solid var(--accent);
-          border-radius: 24px;
+          background:
+            radial-gradient(120% 80% at 50% 0%, rgba(255,213,0,0.10), transparent 60%),
+            var(--card);
+          border: 1.5px solid rgba(255,213,0,0.55);
+          border-radius: 18px;
           overflow: hidden;
           isolation: isolate;
-          animation: bonusTotalPulse 4.2s ease-in-out infinite;
-        }
-        @keyframes bonusTotalPulse {
-          0%, 100% {
-            box-shadow:
-              0 0 64px rgba(255,213,0,0.22),
-              inset 0 0 80px rgba(255,213,0,0.06);
-          }
-          50% {
-            box-shadow:
-              0 0 96px rgba(255,213,0,0.4),
-              inset 0 0 100px rgba(255,213,0,0.12);
-          }
-        }
-        .bonus-total__aurora {
-          position: absolute;
-          top: -30%; right: -15%;
-          width: 70%; height: 130%;
-          background: radial-gradient(
-            ellipse at center,
-            rgba(255,213,0,0.22) 0%,
-            rgba(255,213,0,0.08) 35%,
-            transparent 65%
-          );
-          filter: blur(40px);
-          pointer-events: none;
-          animation: bonusAuroraRot 16s linear infinite;
-          z-index: 0;
-        }
-        @keyframes bonusAuroraRot {
-          0%   { transform: translate(0%, 0%) rotate(0deg); }
-          50%  { transform: translate(8%, -5%) rotate(180deg); }
-          100% { transform: translate(0%, 0%) rotate(360deg); }
-        }
-        .bonus-total__sheen {
-          position: absolute; inset: 0;
-          background: linear-gradient(
-            115deg,
-            transparent 0%, transparent 42%,
-            rgba(255,255,255,0.10) 50%,
-            transparent 58%, transparent 100%
-          );
-          transform: translateX(-130%) skewX(-18deg);
-          animation: bonusSheen 5s ease-in-out infinite;
-          animation-delay: 1.5s;
-          pointer-events: none;
-          z-index: 0;
         }
         .bonus-total__corner {
           position: absolute;
-          width: 22px; height: 22px;
+          width: 18px; height: 18px;
           border: 2px solid var(--accent);
+          opacity: 0.85;
           z-index: 2;
         }
         .bonus-total__corner--tl { top: 12px; left: 12px; border-right: none; border-bottom: none; }
@@ -1834,18 +1766,19 @@ function Guarantee({ onCTAClick }) {
         .bonus-total__pill {
           display: inline-flex;
           align-items: center;
-          gap: 10px;
-          padding: 8px 20px;
+          gap: 9px;
+          padding: 7px 18px;
           background: rgba(255,213,0,0.10);
           border: 1px solid rgba(255,213,0,0.45);
           border-radius: 999px;
-          font: 800 12px/1 "JetBrains Mono", monospace;
-          letter-spacing: 0.30em;
+          font-size: 11px;
+          font-weight: 800;
+          letter-spacing: 0.3em;
           color: var(--accent);
-          margin-bottom: 32px;
+          margin-bottom: 24px;
         }
         .bonus-total__pill-dot {
-          width: 7px; height: 7px;
+          width: 6px; height: 6px;
           border-radius: 50%;
           background: var(--accent);
           box-shadow: 0 0 8px var(--accent);
@@ -1855,99 +1788,94 @@ function Guarantee({ onCTAClick }) {
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: clamp(28px, 4vw, 64px);
+          gap: clamp(24px, 4vw, 48px);
           flex-wrap: wrap;
         }
-        .bonus-total__col {
-          text-align: center;
-        }
+        .bonus-total__col { text-align: center; }
         .bonus-total__col-label {
-          font: 700 11px/1 "JetBrains Mono", monospace;
-          letter-spacing: 0.26em;
-          opacity: 0.55;
-          margin-bottom: 14px;
+          font-size: 11px;
+          letter-spacing: 0.24em;
+          opacity: 0.5;
+          font-weight: 700;
+          margin-bottom: 10px;
         }
         .bonus-total__col-label--accent {
           color: var(--accent);
           opacity: 1;
           font-weight: 800;
         }
-        .bonus-total__regular-price {
-          position: relative;
-          display: inline-block;
-        }
         .bonus-total__regular-num {
           color: #fff;
-          font-size: clamp(54px, 7vw, 96px);
+          font-size: clamp(48px, 6vw, 80px);
           font-weight: 900;
           line-height: 1;
           letter-spacing: -0.03em;
-          opacity: 0.72;
+          opacity: 0.7;
           text-decoration: line-through;
           text-decoration-color: rgba(255,80,80,0.85);
           text-decoration-thickness: 4px;
+          display: inline-block;
         }
         .bonus-total__arrow {
           color: var(--accent);
-          font-size: clamp(34px, 3.4vw, 52px);
-          margin-top: 26px;
-          opacity: 0.9;
+          font-size: clamp(28px, 3vw, 44px);
+          margin-top: 22px;
+          opacity: 0.85;
           animation: arrowSlide 1.8s ease-in-out infinite;
-          text-shadow: 0 0 16px rgba(255,213,0,0.6);
         }
         .bonus-total__free-wrap {
           position: relative;
           display: inline-block;
-          animation: freePop 2.4s ease-in-out infinite;
+          animation: freePop 2.6s ease-in-out infinite;
         }
         .bonus-total__free {
           display: inline-block;
-          font-family: "FbTypograph2", "Heebo", system-ui, sans-serif;
-          font-size: clamp(72px, 9vw, 132px);
+          font-size: clamp(64px, 8vw, 112px);
           font-weight: 900;
           color: var(--accent);
           line-height: 1;
-          letter-spacing: -0.04em;
+          letter-spacing: -0.03em;
           text-shadow:
-            0 0 36px rgba(255,213,0,0.7),
-            0 0 80px rgba(255,213,0,0.4),
-            0 0 8px rgba(255,213,0,0.5);
+            0 0 28px rgba(255,213,0,0.55),
+            0 0 60px rgba(255,213,0,0.3);
         }
         .bonus-total__free-underline {
           position: absolute;
-          left: 4%; right: 4%; bottom: -10px;
-          height: 5px;
+          left: 4%; right: 4%; bottom: -8px;
+          height: 4px;
           background: linear-gradient(90deg, transparent, var(--accent), transparent);
-          border-radius: 5px;
-          box-shadow: 0 0 16px rgba(255,213,0,0.7);
-          animation: underlineSweep 2.4s ease-in-out infinite;
+          border-radius: 4px;
+          box-shadow: 0 0 12px rgba(255,213,0,0.6);
+          animation: underlineSweep 2.6s ease-in-out infinite;
         }
         .bonus-total__savings {
-          margin-top: 36px;
+          margin-top: 28px;
           display: inline-flex;
           align-items: center;
-          gap: 12px;
-          padding: 12px 24px;
-          background: rgba(255,213,0,0.10);
-          border: 1.5px solid rgba(255,213,0,0.45);
+          gap: 10px;
+          padding: 10px 22px;
+          background: rgba(255,213,0,0.08);
+          border: 1px solid rgba(255,213,0,0.4);
           border-radius: 999px;
-          font: 800 clamp(15px, 1.2vw, 18px)/1 "Heebo", system-ui, sans-serif;
+          font-size: clamp(14px, 1.1vw, 16px);
+          font-weight: 800;
           color: #fff;
-          box-shadow: 0 0 32px rgba(255,213,0,0.18);
         }
         .bonus-total__savings svg { color: var(--accent); }
         .bonus-total__savings-amount {
           color: var(--accent);
           font-weight: 900;
           font-size: 1.1em;
-          text-shadow: 0 0 12px rgba(255,213,0,0.6);
         }
 
         @media (max-width: 768px) {
-          .bonus-total { padding: 28px 22px 24px; }
-          .bonus-total__compare { gap: 18px; }
+          .bonus-card__num-watermark { font-size: 120px; }
+          .bonus-card__title { font-size: 17px; }
+          .bonus-card__value-num { font-size: 16px; }
+          .bonus-card__value-new { font-size: 14px; padding: 7px 14px; }
+          .bonus-total { padding: 24px 20px 22px; }
+          .bonus-total__compare { gap: 16px; }
           .bonus-total__arrow { display: none; }
-          .bonus-total__savings { padding: 10px 18px; font-size: 13px; }
         }
       `}</style>
 
@@ -2182,29 +2110,32 @@ function Guarantee({ onCTAClick }) {
                 opacity: 0,
                 animation: inView ? `bonusEnter 0.7s cubic-bezier(0.2,0.8,0.2,1) ${0.6 + i * 0.12}s forwards` : "none",
               }}>
-                <span aria-hidden="true" className="bonus-card__glow" />
-                <span aria-hidden="true" className="bonus-card__sheen" />
-                <span aria-hidden="true" className="bonus-card__corner bonus-card__corner--tr" />
-                <span aria-hidden="true" className="bonus-card__corner bonus-card__corner--bl" />
+                <span aria-hidden="true" className="bonus-card__num-watermark">0{i + 1}</span>
 
-                {b.popular && (
-                  <span className="bonus-card__popular-pill">הכי פופולרי</span>
-                )}
+                <div className="bonus-card__head">
+                  <span className="bonus-card__tag">
+                    בונוס 0{i + 1}
+                  </span>
+                  {b.popular && (
+                    <span className="bonus-card__popular-pill">הכי פופולרי</span>
+                  )}
+                </div>
 
-                <div className="bonus-card__index">בונוס 0{i + 1}</div>
                 <div className="bonus-card__title">{b.t}</div>
                 <div className="bonus-card__sub">{b.s}</div>
 
-                <div className="bonus-card__footer">
-                  <span className="bonus-card__price">
-                    שווי <span className="bonus-card__price-num">₪{b.price}</span>
-                  </span>
-                  <span className="bonus-card__free" style={{ animationDelay: `${i * 0.25}s` }}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <div className="bonus-card__value-row">
+                  <div className="bonus-card__value-old">
+                    <span className="bonus-card__value-label">שווי</span>
+                    <span className="bonus-card__value-num">₪{b.price}</span>
+                  </div>
+                  <span aria-hidden="true" className="bonus-card__value-arrow">←</span>
+                  <div className="bonus-card__value-new">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                       <path d="M4 12 L10 18 L20 6" />
                     </svg>
-                    חינם
-                  </span>
+                    <span>חינם</span>
+                  </div>
                 </div>
               </div>
             )}
