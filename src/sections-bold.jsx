@@ -2623,9 +2623,10 @@ function FinalCTA({ form, onCTAClick }) {
 function GuestStrip() {
   return (
     <section style={{
-      padding: "0 0 64px",
+      padding: "76px 0 64px",
       position: "relative", overflow: "hidden",
-      background: "var(--card)"
+      background: "var(--bg)",
+      borderTop: "1px solid var(--line2)"
     }}>
       <div aria-hidden="true" style={{
         position: "absolute", top: "30%", left: "50%",
@@ -2635,9 +2636,41 @@ function GuestStrip() {
         pointerEvents: "none", filter: "blur(40px)"
       }} />
 
+      <div className="wrap" style={{ position: "relative", zIndex: 2, marginBottom: 56 }}>
+        <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 32, flexWrap: "wrap" }}>
+          <div>
+            <div className="mono" style={{
+              display: "inline-flex", alignItems: "center", gap: 10,
+              padding: "8px 14px", borderRadius: 999,
+              background: "rgba(255,213,0,0.08)",
+              border: "1px solid rgba(255,213,0,0.3)",
+              fontSize: 11, letterSpacing: "0.18em",
+              color: "var(--accent)", marginBottom: 24
+            }}>
+              <span style={{
+                width: 7, height: 7, borderRadius: "50%",
+                background: "var(--accent)", boxShadow: "0 0 8px var(--accent)"
+              }} />
+              מהאולפן
+            </div>
+            <h2 className="display" style={{
+              fontSize: "clamp(40px, 6vw, 88px)",
+              margin: 0, fontWeight: 900, lineHeight: 0.95,
+              maxWidth: 900
+            }}>
+              עשרות אורחים.<br />
+              <span style={{ color: "var(--accent)" }}>מאות פרקים.</span>
+            </h2>
+          </div>
+          <p style={{ fontSize: 18, lineHeight: 1.6, opacity: 0.7, margin: 0, maxWidth: 380 }}>
+            מבעלי עסקים ומנכ״לים ועד יוצרי תוכן ומותגי צריכה — דוגמית מהאולפן שלנו, בפעולה.
+          </p>
+        </div>
+      </div>
+
       <div style={{ position: "relative", display: "flex", flexDirection: "column", gap: 14, direction: "ltr", overflow: "hidden" }}>
-        <div aria-hidden="true" style={{ position: "absolute", top: 0, bottom: 0, right: 0, width: 220, zIndex: 3, pointerEvents: "none", background: "linear-gradient(to left, var(--card), transparent)" }} />
-        <div aria-hidden="true" style={{ position: "absolute", top: 0, bottom: 0, left: 0, width: 220, zIndex: 3, pointerEvents: "none", background: "linear-gradient(to right, var(--card), transparent)" }} />
+        <div aria-hidden="true" style={{ position: "absolute", top: 0, bottom: 0, right: 0, width: 220, zIndex: 3, pointerEvents: "none", background: "linear-gradient(to left, var(--bg), transparent)" }} />
+        <div aria-hidden="true" style={{ position: "absolute", top: 0, bottom: 0, left: 0, width: 220, zIndex: 3, pointerEvents: "none", background: "linear-gradient(to right, var(--bg), transparent)" }} />
 
         {/* Two-row branded marquee — rows scroll in opposite directions.
             Items are rendered 3× so the wrapper is always ≥3× wider than the
@@ -2818,7 +2851,7 @@ function Results() {
   };
 
   return (
-    <section id="results" style={{ padding: "76px 0 32px", background: "var(--card)", borderTop: "1px solid var(--line2)" }}>
+    <section id="results" style={{ padding: "76px 0 52px", background: "var(--card)", borderTop: "1px solid var(--line2)", borderBottom: "1px solid var(--line2)" }}>
       <div className="wrap">
         <div style={{ textAlign: "center", marginBottom: 56, maxWidth: 1100, marginLeft: "auto", marginRight: "auto" }}>
           <h2 className="display" style={{
@@ -5782,10 +5815,7 @@ function BoldVariation({ onCTAClick, form, admin }) {
               )}
               <s.Comp />
             </div>
-            {/* No divider between Results and GuestStrip — they form a unified visual block */}
-            {i < visibleSections.length - 1
-              && !(s.id === "results" && visibleSections[i + 1] && visibleSections[i + 1].id === "guest-strip")
-              && <SectionDivider />}
+            {i < visibleSections.length - 1 && <SectionDivider />}
           </React.Fragment>
         );
       })}
