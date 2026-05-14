@@ -1,7 +1,9 @@
 {
   "version": 1,
-  "publishedAt": "2026-05-14T08:45:40.802Z",
-  "overrides": {},
+  "publishedAt": "2026-05-14T08:58:40.845Z",
+  "overrides": {
+    "div[0]>div[0]>div[0]>section[0]>div[1]>div[0]>div[1]>h1[0]>span[0]#h:e82d681d": "בדיקת LIVE 11:58:38"
+  },
   "sectionOrder": null,
   "elementOffsets": {},
   "hiddenSections": []
