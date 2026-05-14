@@ -2866,7 +2866,7 @@ function Results() {
               position: "relative",
               display: "inline-block"
             }}>
-              הפודקאסטים שאנחנו בונים.
+              הפודקאסטים אצלנו.
               <span aria-hidden="true" style={{
                 position: "absolute", left: "3%", right: "3%", bottom: "-0.06em",
                 height: 5,
