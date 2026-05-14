@@ -2668,20 +2668,20 @@ function GuestStrip() {
         </div>
       </div>
 
-      <div style={{ position: "relative", display: "flex", flexDirection: "column", gap: 20 }}>
+      <div style={{ position: "relative", display: "flex", flexDirection: "column", gap: 14 }}>
         <div aria-hidden="true" style={{ position: "absolute", top: 0, bottom: 0, right: 0, width: 220, zIndex: 3, pointerEvents: "none", background: "linear-gradient(to left, var(--bg), transparent)" }} />
         <div aria-hidden="true" style={{ position: "absolute", top: 0, bottom: 0, left: 0, width: 220, zIndex: 3, pointerEvents: "none", background: "linear-gradient(to right, var(--bg), transparent)" }} />
 
         {/* Two-row branded marquee — rows scroll in opposite directions */}
         {[
-          { dir: "rtl", offset: 0, duration: 38 },
-          { dir: "ltr", offset: 10, duration: 42 },
+          { dir: "rtl", offset: 0, duration: 36 },
+          { dir: "ltr", offset: 10, duration: 40 },
         ].map((row, rowIdx) =>
         <div key={rowIdx} className="guest-marquee-row" style={{
-          display: "flex", gap: 18,
+          display: "flex", gap: 14,
           animation: `marquee-${row.dir} ${row.duration}s linear infinite`,
           width: "max-content",
-          padding: "6px 0"
+          padding: "4px 0"
         }}>
           {[...Array(2)].flatMap((_, dup) =>
           [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n, i) =>
@@ -2691,21 +2691,21 @@ function GuestStrip() {
             data-guest-num={row.offset + n}
             style={{
               flexShrink: 0,
-              width: 180, aspectRatio: "9 / 16",
+              width: 140, aspectRatio: "9 / 16",
               background: "var(--card)",
               border: "1px solid var(--line2)",
-              borderRadius: 14,
+              borderRadius: 12,
               position: "relative",
               overflow: "hidden"
             }}>
             
                 {/* yellow corner brackets */}
                 <span aria-hidden="true" style={{
-              position: "absolute", top: 12, right: 12, width: 18, height: 18,
+              position: "absolute", top: 10, right: 10, width: 14, height: 14,
               borderTop: "2px solid var(--accent)", borderRight: "2px solid var(--accent)"
             }} />
                 <span aria-hidden="true" style={{
-              position: "absolute", bottom: 12, left: 12, width: 18, height: 18,
+              position: "absolute", bottom: 10, left: 10, width: 14, height: 14,
               borderBottom: "2px solid var(--accent)", borderLeft: "2px solid var(--accent)"
             }} />
 
@@ -2717,12 +2717,12 @@ function GuestStrip() {
 
                 {/* Top: index + REC dot */}
                 <div style={{
-              position: "absolute", top: 22, left: 22, right: 22,
+              position: "absolute", top: 18, left: 18, right: 18,
               display: "flex", justifyContent: "space-between", alignItems: "center",
               zIndex: 2
             }}>
                   <span className="mono" style={{
-                fontSize: 11, letterSpacing: "0.2em",
+                fontSize: 9, letterSpacing: "0.18em",
                 color: "var(--accent)", fontWeight: 700
               }}>GUEST · {String(row.offset + n).padStart(2, "0")}</span>
                   <span style={{
@@ -2745,7 +2745,7 @@ function GuestStrip() {
               display: "flex", alignItems: "center", justifyContent: "center",
               zIndex: 2
             }}>
-                  <svg width="86" height="86" viewBox="0 0 90 90" fill="none" aria-hidden="true">
+                  <svg width="66" height="66" viewBox="0 0 90 90" fill="none" aria-hidden="true">
                     <circle cx="45" cy="32" r="18" stroke="rgba(255,213,0,0.4)" strokeWidth="1.5" strokeDasharray="3 3" />
                     <path d="M14 84 C 14 64, 30 56, 45 56 C 60 56, 76 64, 76 84"
                 stroke="rgba(255,213,0,0.4)" strokeWidth="1.5" strokeDasharray="3 3" fill="none" />
@@ -2786,7 +2786,7 @@ function GuestStrip() {
         }
         .guest-marquee-row:hover { animation-play-state: paused; }
         @media (max-width: 768px) {
-          .guest-marquee-row > div { width: 140px !important; }
+          .guest-marquee-row > div { width: 110px !important; }
         }
       `}</style>
     </section>);
