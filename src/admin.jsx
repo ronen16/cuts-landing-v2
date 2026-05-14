@@ -75,10 +75,14 @@ async function pushToGitHub(settings, payload) {
     "X-GitHub-Api-Version": "2022-11-28",
   };
 
-  // GET current sha (if file exists)
+  // GET current sha (if file exists) — bypass any HTTP cache so we always
+  // see the latest committed sha, otherwise PUT will fail with a 409 mismatch.
   let sha = undefined;
   try {
-    const getRes = await fetch(`${apiBase}?ref=${encodeURIComponent(settings.branch)}`, { headers });
+    const getRes = await fetch(
+      `${apiBase}?ref=${encodeURIComponent(settings.branch)}&_=${Date.now()}`,
+      { headers, cache: "no-store" }
+    );
     if (getRes.ok) {
       const cur = await getRes.json();
       sha = cur.sha;
