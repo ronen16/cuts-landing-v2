@@ -2274,9 +2274,6 @@ function Guarantee({ onCTAClick }) {
                   <span className="bonus-card__tag">
                     בונוס 0{i + 1}
                   </span>
-                  {b.popular && (
-                    <span className="bonus-card__popular-pill">הכי פופולרי</span>
-                  )}
                 </div>
 
                 <div className="bonus-card__title">{b.t}</div>
