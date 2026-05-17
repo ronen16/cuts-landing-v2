@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "publishedAt": "2026-05-14T14:46:31.765Z",
+  "publishedAt": "2026-05-17T14:50:13.425Z",
   "overrides": {
     "sec:how-it-works>button[0]#h:d901835d": "👁 הצג",
     "sec:services>section[0]>div[0]>div[1]>div[0]>h3[0]#h:a5c90c46": "צילום מקצועי",
@@ -21,7 +21,20 @@
     "sec:guarantee>section[0]>div[2]>div[4]>div[1]>span[3]>span[2]#h:90e58d3a": "הבונוסים האלה ניתנים רק למי שמצטרף עד יום ראשון",
     "sec:guarantee>section[0]>div[2]>div[4]>p[0]#h:68c55888": "4 מדריכים דיגיטליים בחינם — שיעזרו לכם להפיק את המקסימום מהפודקאסטים שלכם.",
     "sec:guarantee>section[0]>div[2]>div[3]>div[1]>div[0]>div[1]>span[0]#h:9f14a2d1": "+ 25% הנחה.",
-    "sec:mini-lead-2>section[0]>div[1]>div[0]>div[0]>h3[0]#h:c9a61bd7": "רוצים לראות אם זה מתאים לכם? <span style=\"color: var(--accent);\" data-edit-original=\"השאר פרטים.\" data-edit-id=\"sec:mini-lead-2&gt;section[0]&gt;div[1]&gt;div[0]&gt;div[0]&gt;h3[0]&gt;span[0]#h:e2b28f49\" contenteditable=\"true\" spellcheck=\"false\" data-edit-original-html=\"השאר פרטים.\">השאירו פרטים</span>"
+    "sec:mini-lead-2>section[0]>div[1]>div[0]>div[0]>h3[0]#h:c9a61bd7": "רוצים לראות אם זה מתאים לכם? <span style=\"color: var(--accent);\" data-edit-original=\"השאר פרטים.\" data-edit-id=\"sec:mini-lead-2&gt;section[0]&gt;div[1]&gt;div[0]&gt;div[0]&gt;h3[0]&gt;span[0]#h:e2b28f49\" contenteditable=\"true\" spellcheck=\"false\" data-edit-original-html=\"השאר פרטים.\">השאירו פרטים</span>",
+    "sec:faq>section[0]>div[0]>div[0]>div[1]>div[0]>div[0]>span[1]#h:45b97e4b": "<li class=\"font-claude-response-body whitespace-normal break-words pl-2\" data-edit-original=\"מה קורה אם לא אהבתי את הפרק הראשון?\" data-edit-original-html=\"מה קורה אם לא אהבתי את הפרק הראשון?\" data-edit-id=\"sec:faq&gt;section[0]&gt;div[0]&gt;div[0]&gt;div[1]&gt;div[0]&gt;div[0]&gt;span[1]&gt;li[0]#h:835cd024\" contenteditable=\"true\" spellcheck=\"false\">מה קורה אם לא אהבתי את הפרק הראשון?</li>",
+    "sec:faq>section[0]>div[0]>div[0]>div[1]>div[0]>div[0]>span[1]>li[0]#h:835cd024": "מה קורה אם לא אהבתי את הפרק הראשון?",
+    "sec:faq>section[0]>div[0]>div[0]>div[4]>div[0]>div[0]>span[1]#h:3b0a30f3": "הפודקאסט הוא שלי או שלכם?",
+    "sec:faq>section[0]>div[0]>div[0]>div[3]>div[0]>div[0]>span[1]#h:2d8c72b1": "מה אם אין לי אורחים?",
+    "sec:faq>section[0]>div[0]>div[0]>div[2]>div[0]>div[0]>span[1]#h:9c1258fe": "שאלה #3 — כמה זמן אני צריך להקדיש לזה בכל חודש?",
+    "sec:final-cta>section[0]>div[0]>div[0]>div[0]>div[0]>div[0]#h:72d80a19": "<span style=\"width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: rgba(255, 213, 0, 0.2) 0px 0px 0px 4px; animation: 2s ease-in-out 0s infinite normal none running ctaPulse;\"></span>מקומות מוגבלים החודש",
+    "sec:final-cta>section[0]>div[0]>div[0]>form[0]>div[2]>div[0]>label[0]#h:689960c6": "שם מלא",
+    "sec:final-cta>section[0]>div[0]>div[0]>div[0]>h2[0]#h:b83dc521": "<span style=\"color: var(--accent);\" data-edit-original=\"למה אנשים זקוקים לפעול היום (יצירת דחיפות).\" data-edit-original-html=\"למה אנשים זקוקים לפעול היום (יצירת דחיפות).\" data-edit-id=\"sec:final-cta&gt;section[0]&gt;div[0]&gt;div[0]&gt;div[0]&gt;h2[0]&gt;span[0]#h:07990c57\" contenteditable=\"true\" spellcheck=\"false\">עד כאן קראתם - הגיע הזמן להתחיל.</span>",
+    "sec:final-cta>section[0]>div[0]>div[0]>div[0]>h2[0]>span[0]#h:07990c57": "עד כאן קראתם - הגיע הזמן לדבר.",
+    "sec:final-cta>section[0]>div[0]>div[0]>div[0]>p[1]#h:2ed9100f": "השאירו פרטים ונחזור אליכם תוך 24 שעות לשיחה קצרה, נבין אם פודקאסט מתאים לכם, ואם כן - נצא לדרך.",
+    "sec:studio-booking>section[0]>div[2]>div[0]>div[0]>div[0]>h2[0]#h:c016ae3e": "בואו נראה איך <span style=\"color: var(--accent); background: linear-gradient(transparent 65%, rgba(255, 213, 0, 0.18) 65%); padding: 0px 6px;\" data-edit-original=\"הפודקאסט שלך\" data-edit-original-html=\"הפודקאסט שלך\" data-edit-id=\"sec:studio-booking&gt;section[0]&gt;div[2]&gt;div[0]&gt;div[0]&gt;div[0]&gt;h2[0]&gt;span[0]#h:1c5c94d5\" contenteditable=\"true\" spellcheck=\"false\">הפודקאסט שלכם</span>&nbsp;ייראה.",
+    "sec:mini-lead-1>section[0]>div[1]>div[0]>div[0]>h3[0]#h:c9a61bd7": "רוצים לראות אם זה מתאים לכם? <span style=\"color: var(--accent);\" data-edit-original=\"השאר פרטים.\" data-edit-original-html=\"השאר פרטים.\" data-edit-id=\"sec:mini-lead-1&gt;section[0]&gt;div[1]&gt;div[0]&gt;div[0]&gt;h3[0]&gt;span[0]#h:e2b28f49\" contenteditable=\"true\" spellcheck=\"false\">השאירו פרטים.</span>",
+    "sec:inline-lead-1>section[0]>div[1]>div[0]>div[0]>h2[0]#h:8ac9b1e7": "מוכנים לבנות פודקאסט<br><span style=\"color: var(--accent);\" data-edit-original=\"שמייצר לך לקוחות?\" data-edit-original-html=\"שמייצר לך לקוחות?\" data-edit-id=\"sec:inline-lead-1&gt;section[0]&gt;div[1]&gt;div[0]&gt;div[0]&gt;h2[0]&gt;span[0]#h:a5b1a044\" contenteditable=\"true\" spellcheck=\"false\">שמייצר לכם לקוחות?</span>"
   },
   "sectionOrder": null,
   "elementOffsets": {
