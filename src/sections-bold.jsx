@@ -416,9 +416,10 @@ function SocialProofBar1() {
 
 function SocialProofSection({ onCTAClick }) {
   // === עדויות וידאו ===
-  // כדי לחבר קליפ אמיתי: הדבק את ה-Vimeo ID בשדה vimeoId.
-  // לדוגמה: לינק https://vimeo.com/123456789  →  vimeoId: "123456789"
-  // כרטיס בלי vimeoId נשאר placeholder מעוצב (בלי iframe, בלי עומס).
+  // name = השם שמופיע על הכרטיס.
+  // role = התיאור מתחת לשם (תפקיד / עסק). תמלא בעצמך — ריק = לא מוצג.
+  //        לדוגמה: role: "מייסד · DavidovTech"
+  // vimeoId = ה-ID מתוך לינק Vimeo. https://vimeo.com/123456789 → "123456789"
   const videos = [
   { name: "תמיר מנדבוסקי", role: "", tag: "", duration: "", vimeoId: "1108140265" },
   { name: "עומר מיראן", role: "", tag: "", duration: "", vimeoId: "1108139977" },
@@ -785,13 +786,19 @@ function SocialProofSection({ onCTAClick }) {
                 </svg>
                 }
 
-                <div style={{
-                width: 56, height: 56, borderRadius: "50%",
+                <div className="vid-play-btn" style={{
+                position: "relative",
+                width: 62, height: 62, borderRadius: "50%",
                 background: "var(--accent)",
                 display: "flex", alignItems: "center", justifyContent: "center",
-                boxShadow: "0 8px 24px rgba(255,213,0,0.35)"
+                boxShadow: "0 10px 30px rgba(255,213,0,0.45)"
               }}>
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <span aria-hidden="true" className="vid-play-ring" style={{
+                  position: "absolute", inset: -10,
+                  borderRadius: "50%",
+                  border: "1.5px solid rgba(255,213,0,0.5)"
+                }} />
+                  <svg width="22" height="22" viewBox="0 0 20 20" fill="none">
                     <path d="M6 4 L16 10 L6 16 Z" fill="#0A0A0A" />
                   </svg>
                 </div>
@@ -799,13 +806,13 @@ function SocialProofSection({ onCTAClick }) {
 
               <div style={{
               position: "absolute", bottom: 0, left: 0, right: 0,
-              padding: "60px 22px 22px",
-              background: "linear-gradient(to top, rgba(0,0,0,0.85) 30%, transparent)",
+              padding: "78px 22px 24px",
+              background: "linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.78) 38%, rgba(0,0,0,0.25) 75%, transparent 100%)",
               zIndex: 2
             }}>
                 {v.tag &&
                 <span className="mono" style={{
-                display: "inline-block", marginBottom: 10,
+                display: "inline-block", marginBottom: 12,
                 padding: "3px 9px",
                 background: "rgba(255,213,0,0.12)",
                 border: "1px solid rgba(255,213,0,0.3)",
@@ -814,10 +821,27 @@ function SocialProofSection({ onCTAClick }) {
                 color: "var(--accent)"
               }}>{v.tag}</span>
                 }
-                <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 3, lineHeight: 1.2 }}>{v.name}</div>
-                {v.role &&
-                <div style={{ fontSize: 11.5, opacity: 0.65, lineHeight: 1.3 }}>{v.role}</div>
-                }
+                <div style={{ display: "flex", alignItems: "stretch", gap: 12 }}>
+                  <span aria-hidden="true" style={{
+                  flex: "0 0 3px", borderRadius: 3,
+                  background: "linear-gradient(180deg, var(--accent), rgba(255,213,0,0.35))",
+                  boxShadow: "0 0 12px rgba(255,213,0,0.5)"
+                }} />
+                  <div style={{ minWidth: 0 }}>
+                    <div className="display" style={{
+                    fontSize: 19, fontWeight: 800, lineHeight: 1.15,
+                    color: "#fff", letterSpacing: "-0.01em",
+                    textShadow: "0 2px 12px rgba(0,0,0,0.7)"
+                  }}>{v.name}</div>
+                    {v.role &&
+                    <div style={{
+                    marginTop: 5, fontSize: 12.5, lineHeight: 1.4,
+                    color: "rgba(255,213,0,0.85)", fontWeight: 600,
+                    letterSpacing: "0.01em"
+                  }}>{v.role}</div>
+                    }
+                  </div>
+                </div>
               </div>
             </div>);
         })}
@@ -827,6 +851,13 @@ function SocialProofSection({ onCTAClick }) {
       <style>{`
         .testimonial-video-scroller::-webkit-scrollbar { display: none; }
         @keyframes vidSpin { to { transform: rotate(360deg); } }
+        .vid-play-btn { transition: transform 0.3s cubic-bezier(0.2,0.8,0.2,1); }
+        [data-vid-card]:hover .vid-play-btn { transform: scale(1.08); }
+        .vid-play-ring { animation: vidPlayPulse 2.4s ease-in-out infinite; }
+        @keyframes vidPlayPulse {
+          0%, 100% { transform: scale(1); opacity: 0.6; }
+          50%      { transform: scale(1.14); opacity: 0; }
+        }
         @media (max-width: 900px) {
           .testimonial-video-scroller > [data-vid-card] {
             flex: 0 0 calc((100% - 20px) / 2) !important;
