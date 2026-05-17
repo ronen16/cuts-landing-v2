@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "publishedAt": "2026-05-17T14:50:13.425Z",
+  "publishedAt": "2026-05-17T14:58:47.800Z",
   "overrides": {
     "sec:how-it-works>button[0]#h:d901835d": "👁 הצג",
     "sec:services>section[0]>div[0]>div[1]>div[0]>h3[0]#h:a5c90c46": "צילום מקצועי",
@@ -34,7 +34,17 @@
     "sec:final-cta>section[0]>div[0]>div[0]>div[0]>p[1]#h:2ed9100f": "השאירו פרטים ונחזור אליכם תוך 24 שעות לשיחה קצרה, נבין אם פודקאסט מתאים לכם, ואם כן - נצא לדרך.",
     "sec:studio-booking>section[0]>div[2]>div[0]>div[0]>div[0]>h2[0]#h:c016ae3e": "בואו נראה איך <span style=\"color: var(--accent); background: linear-gradient(transparent 65%, rgba(255, 213, 0, 0.18) 65%); padding: 0px 6px;\" data-edit-original=\"הפודקאסט שלך\" data-edit-original-html=\"הפודקאסט שלך\" data-edit-id=\"sec:studio-booking&gt;section[0]&gt;div[2]&gt;div[0]&gt;div[0]&gt;div[0]&gt;h2[0]&gt;span[0]#h:1c5c94d5\" contenteditable=\"true\" spellcheck=\"false\">הפודקאסט שלכם</span>&nbsp;ייראה.",
     "sec:mini-lead-1>section[0]>div[1]>div[0]>div[0]>h3[0]#h:c9a61bd7": "רוצים לראות אם זה מתאים לכם? <span style=\"color: var(--accent);\" data-edit-original=\"השאר פרטים.\" data-edit-original-html=\"השאר פרטים.\" data-edit-id=\"sec:mini-lead-1&gt;section[0]&gt;div[1]&gt;div[0]&gt;div[0]&gt;h3[0]&gt;span[0]#h:e2b28f49\" contenteditable=\"true\" spellcheck=\"false\">השאירו פרטים.</span>",
-    "sec:inline-lead-1>section[0]>div[1]>div[0]>div[0]>h2[0]#h:8ac9b1e7": "מוכנים לבנות פודקאסט<br><span style=\"color: var(--accent);\" data-edit-original=\"שמייצר לך לקוחות?\" data-edit-original-html=\"שמייצר לך לקוחות?\" data-edit-id=\"sec:inline-lead-1&gt;section[0]&gt;div[1]&gt;div[0]&gt;div[0]&gt;h2[0]&gt;span[0]#h:a5b1a044\" contenteditable=\"true\" spellcheck=\"false\">שמייצר לכם לקוחות?</span>"
+    "sec:inline-lead-1>section[0]>div[1]>div[0]>div[0]>h2[0]#h:8ac9b1e7": "מוכנים לבנות פודקאסט<br><span style=\"color: var(--accent);\" data-edit-original=\"שמייצר לך לקוחות?\" data-edit-original-html=\"שמייצר לך לקוחות?\" data-edit-id=\"sec:inline-lead-1&gt;section[0]&gt;div[1]&gt;div[0]&gt;div[0]&gt;h2[0]&gt;span[0]#h:a5b1a044\" contenteditable=\"true\" spellcheck=\"false\">שמייצר לכם לקוחות?</span>",
+    "root>div[0]>div[0]>nav[0]>div[0]>ul[0]>li[0]>a[0]#h:357f1988": "איך זה עובד",
+    "root>div[0]>div[0]>nav[0]>div[0]>ul[0]>li[1]>a[0]#h:15370cee": "למה אנחנו",
+    "root>div[0]>div[0]>nav[0]>div[0]>ul[0]>li[2]>a[0]#h:6c7d248a": "תוצאות",
+    "root>div[0]>div[0]>nav[0]>div[0]>ul[0]>li[3]>a[0]#h:56040b2a": "שאלות",
+    "sec:final-cta>section[0]>div[0]>div[0]>div[0]>ul[0]>li[0]>span[1]#h:3ee96e40": "מבינים את העסק שלכם ואת קהל היעד.",
+    "sec:final-cta>section[0]>div[0]>div[0]>div[0]>ul[0]>li[1]>span[1]#h:3ee96e41": "בודקים אם פודקאסט מתאים לעסק שלכם.",
+    "sec:final-cta>section[0]>div[0]>div[0]>div[0]>ul[0]>li[2]>span[1]#h:3ee96e42": "מראים לכם תוצאות של לקוחות אמיתיים.",
+    "sec:final-cta>section[0]>div[0]>div[0]>div[0]>div[0]>div[1]>span[2]#h:dab20478": "<span style=\"color: var(--accent);\" data-edit-original=\"✓\" data-edit-original-html=\"✓\" data-edit-id=\"sec:final-cta&gt;section[0]&gt;div[0]&gt;div[0]&gt;div[0]&gt;div[0]&gt;div[1]&gt;span[2]&gt;span[0]#h:00002713\" contenteditable=\"true\" spellcheck=\"false\">✓</span> מענה תוך 24 שעות",
+    "sec:final-cta>section[0]>div[0]>div[0]>div[0]>div[0]>p[0]#h:280ba64b": "האולפן עובד בתפוסה כמעט מלאה, כדי להמשיך לתת את השירות הטוב ביותר<br>לכל לקוח אנחנו פותחים מקום ללקוחות חדשים פעם בחודש.",
+    "sec:final-cta>section[0]>div[0]>div[0]>form[0]>div[1]>h3[0]#h:35d112ed": "קביעת שיחה"
   },
   "sectionOrder": null,
   "elementOffsets": {
