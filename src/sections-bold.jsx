@@ -421,14 +421,14 @@ function SocialProofSection({ onCTAClick }) {
   //        לדוגמה: role: "מייסד · DavidovTech"
   // vimeoId = ה-ID מתוך לינק Vimeo. https://vimeo.com/123456789 → "123456789"
   const videos = [
-  { name: "תמיר מנדבוסקי", role: "", tag: "", duration: "", vimeoId: "1108140265" },
-  { name: "עומר מיראן", role: "", tag: "", duration: "", vimeoId: "1108139977" },
-  { name: "מור פאר", role: "", tag: "", duration: "", vimeoId: "1108139897" },
-  { name: "שגיא גורניק", role: "", tag: "", duration: "", vimeoId: "1190079907" },
-  { name: "רם יצחק שדה", role: "", tag: "", duration: "", vimeoId: "1190079851" },
-  { name: "עופר ברקן", role: "", tag: "", duration: "", vimeoId: "1190079801" },
-  { name: "רון לנדסמן", role: "", tag: "", duration: "", vimeoId: "1190079774" },
-  { name: "בן לביא", role: "", tag: "", duration: "", vimeoId: "1108139530" }];
+  { name: "תמיר מנדבוסקי", role: "מייסד · סטודיו תמיר", tag: "", duration: "", vimeoId: "1108140265" },
+  { name: "עומר מיראן", role: "יזם · נדל\"ן ופיננסים", tag: "", duration: "", vimeoId: "1108139977" },
+  { name: "מור פאר", role: "מאמנת עסקית", tag: "", duration: "", vimeoId: "1108139897" },
+  { name: "שגיא גורניק", role: "מנכ\"ל · קבוצת גורניק", tag: "", duration: "", vimeoId: "1190079907" },
+  { name: "רם יצחק שדה", role: "יועץ אסטרטגי לעסקים", tag: "", duration: "", vimeoId: "1190079851" },
+  { name: "עופר ברקן", role: "מייסד · ברקן דיגיטל", tag: "", duration: "", vimeoId: "1190079801" },
+  { name: "רון לנדסמן", role: "סמנכ\"ל שיווק", tag: "", duration: "", vimeoId: "1190079774" },
+  { name: "בן לביא", role: "יזם · לביא טכנולוגיות", tag: "", duration: "", vimeoId: "1108139530" }];
 
   // איזה כרטיס מנגן כרגע (לפי index בלולאה האינסופית)
   const [playingIdx, setPlayingIdx] = React.useState(null);
@@ -669,27 +669,18 @@ function SocialProofSection({ onCTAClick }) {
           <div
             key={i}
             data-vid-card="true"
+            className="vid-card"
             onClick={() => { if (hasVideo) { setPlayingIdx(i); setLoadedIdx(null); } }}
             style={{
               flex: "0 0 calc((100% - 60px) / 4)",
               aspectRatio: "9 / 16",
               background: "var(--bg)",
-              border: "1px solid var(--line2)",
-              borderRadius: 16,
+              borderRadius: 18,
               position: "relative",
               overflow: "hidden",
               cursor: hasVideo ? "pointer" : "default",
               scrollSnapAlign: "start",
-              scrollSnapStop: "always",
-              transition: "border-color 0.3s ease, transform 0.3s ease"
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = "rgba(255,213,0,0.55)";
-              e.currentTarget.style.transform = "translateY(-3px)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = "var(--line2)";
-              e.currentTarget.style.transform = "translateY(0)";
+              scrollSnapStop: "always"
             }}>
 
               {isPlaying &&
@@ -743,22 +734,15 @@ function SocialProofSection({ onCTAClick }) {
               </React.Fragment>
               }
 
-              {/* yellow corner brackets */}
-              <span aria-hidden="true" style={{
-              position: "absolute", top: 12, right: 12, width: 18, height: 18,
-              borderTop: "2px solid var(--accent)", borderRight: "2px solid var(--accent)",
-              zIndex: 3
+              {/* refined frame: gradient ring + 4 corner brackets */}
+              <span aria-hidden="true" className="vid-card__ring" style={{
+              position: "absolute", inset: 0, borderRadius: 18,
+              zIndex: 4, pointerEvents: "none"
             }} />
-              <span aria-hidden="true" style={{
-              position: "absolute", bottom: 12, left: 12, width: 18, height: 18,
-              borderBottom: "2px solid var(--accent)", borderLeft: "2px solid var(--accent)",
-              zIndex: 3
-            }} />
-
-              <span aria-hidden="true" style={{
-              position: "absolute", top: "50%", left: 0, right: 0, height: 1,
-              background: "linear-gradient(to right, transparent, rgba(255,213,0,0.18), transparent)"
-            }} />
+              <span aria-hidden="true" className="vid-card__corner vid-card__corner--tr" />
+              <span aria-hidden="true" className="vid-card__corner vid-card__corner--tl" />
+              <span aria-hidden="true" className="vid-card__corner vid-card__corner--br" />
+              <span aria-hidden="true" className="vid-card__corner vid-card__corner--bl" />
 
               {v.duration &&
               <div style={{
@@ -806,8 +790,8 @@ function SocialProofSection({ onCTAClick }) {
 
               <div style={{
               position: "absolute", bottom: 0, left: 0, right: 0,
-              padding: "78px 22px 24px",
-              background: "linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.78) 38%, rgba(0,0,0,0.25) 75%, transparent 100%)",
+              padding: "92px 22px 40px",
+              background: "linear-gradient(to top, rgba(0,0,0,0.94) 0%, rgba(0,0,0,0.82) 42%, rgba(0,0,0,0.28) 78%, transparent 100%)",
               zIndex: 2
             }}>
                 {v.tag &&
@@ -821,23 +805,24 @@ function SocialProofSection({ onCTAClick }) {
                 color: "var(--accent)"
               }}>{v.tag}</span>
                 }
-                <div style={{ display: "flex", alignItems: "stretch", gap: 12 }}>
+                <div style={{ display: "flex", alignItems: "stretch", gap: 13 }}>
                   <span aria-hidden="true" style={{
-                  flex: "0 0 3px", borderRadius: 3,
-                  background: "linear-gradient(180deg, var(--accent), rgba(255,213,0,0.35))",
-                  boxShadow: "0 0 12px rgba(255,213,0,0.5)"
+                  flex: "0 0 4px", borderRadius: 4,
+                  background: "linear-gradient(180deg, var(--accent), rgba(255,213,0,0.3))",
+                  boxShadow: "0 0 16px rgba(255,213,0,0.65)"
                 }} />
                   <div style={{ minWidth: 0 }}>
                     <div className="display" style={{
-                    fontSize: 19, fontWeight: 800, lineHeight: 1.15,
-                    color: "#fff", letterSpacing: "-0.01em",
-                    textShadow: "0 2px 12px rgba(0,0,0,0.7)"
+                    fontSize: 22, fontWeight: 900, lineHeight: 1.1,
+                    color: "#fff", letterSpacing: "-0.015em",
+                    textShadow: "0 2px 14px rgba(0,0,0,0.8)"
                   }}>{v.name}</div>
                     {v.role &&
                     <div style={{
-                    marginTop: 5, fontSize: 12.5, lineHeight: 1.4,
-                    color: "rgba(255,213,0,0.85)", fontWeight: 600,
-                    letterSpacing: "0.01em"
+                    marginTop: 7, fontSize: 13.5, lineHeight: 1.35,
+                    color: "var(--accent)", fontWeight: 700,
+                    letterSpacing: "0.01em",
+                    textShadow: "0 1px 8px rgba(0,0,0,0.7)"
                   }}>{v.role}</div>
                     }
                   </div>
@@ -851,6 +836,51 @@ function SocialProofSection({ onCTAClick }) {
       <style>{`
         .testimonial-video-scroller::-webkit-scrollbar { display: none; }
         @keyframes vidSpin { to { transform: rotate(360deg); } }
+
+        .vid-card {
+          box-shadow: 0 12px 30px -14px rgba(0,0,0,0.7);
+          transition: transform 0.35s cubic-bezier(0.2,0.8,0.2,1), box-shadow 0.35s ease;
+        }
+        .vid-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 22px 48px -16px rgba(0,0,0,0.75),
+                      0 0 30px -8px rgba(255,213,0,0.28);
+        }
+        /* gradient ring border */
+        .vid-card__ring {
+          border: 1px solid transparent;
+          background:
+            linear-gradient(var(--bg), var(--bg)) padding-box,
+            linear-gradient(155deg,
+              rgba(255,213,0,0.55) 0%,
+              rgba(255,213,0,0.12) 35%,
+              rgba(255,255,255,0.06) 60%,
+              rgba(255,213,0,0.4) 100%) border-box;
+          -webkit-mask: linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0);
+          -webkit-mask-composite: xor;
+          mask-composite: exclude;
+          transition: opacity 0.35s ease;
+          opacity: 0.7;
+        }
+        .vid-card:hover .vid-card__ring { opacity: 1; }
+        /* corner brackets */
+        .vid-card__corner {
+          position: absolute;
+          width: 20px; height: 20px;
+          border-color: var(--accent);
+          border-style: solid;
+          border-width: 0;
+          z-index: 5;
+          opacity: 0.85;
+          transition: width 0.3s ease, height 0.3s ease, opacity 0.3s ease;
+          pointer-events: none;
+          filter: drop-shadow(0 0 5px rgba(255,213,0,0.5));
+        }
+        .vid-card__corner--tr { top: 13px; right: 13px; border-top-width: 2px; border-right-width: 2px; border-top-right-radius: 5px; }
+        .vid-card__corner--tl { top: 13px; left: 13px; border-top-width: 2px; border-left-width: 2px; border-top-left-radius: 5px; }
+        .vid-card__corner--br { bottom: 13px; right: 13px; border-bottom-width: 2px; border-right-width: 2px; border-bottom-right-radius: 5px; }
+        .vid-card__corner--bl { bottom: 13px; left: 13px; border-bottom-width: 2px; border-left-width: 2px; border-bottom-left-radius: 5px; }
+        .vid-card:hover .vid-card__corner { width: 26px; height: 26px; opacity: 1; }
         .vid-play-btn { transition: transform 0.3s cubic-bezier(0.2,0.8,0.2,1); }
         [data-vid-card]:hover .vid-play-btn { transform: scale(1.08); }
         .vid-play-ring { animation: vidPlayPulse 2.4s ease-in-out infinite; }
