@@ -3609,14 +3609,20 @@ function Results({ admin }) {
 
 
 
-  // Transform-based track (no native scroll — RTL scrollLeft is
-  // unreliable in this engine: smooth resets, snap jump-backs).
+  // Infinite-loop transform track (no native scroll — RTL scrollLeft is
+  // unreliable in this engine). Render 3 copies; start in the middle
+  // copy and silently re-center on transitionend so it never hits an
+  // edge — endless in both directions, no jump.
   const viewportRef = React.useRef(null);
-  const [idx, setIdx] = React.useState(0);
-  const [cardW, setCardW] = React.useState(0);
   const PER_VIEW = 3;
   const GAP = 20;
-  const maxIdx = Math.max(0, cases.length - PER_VIEW);
+  const N = cases.length;
+  const loopItems = N > 0 ? [...cases, ...cases, ...cases] : [];
+  const [cardW, setCardW] = React.useState(0);
+  const [idx, setIdx] = React.useState(N);
+  const [withAnim, setWithAnim] = React.useState(true);
+  const idxRef = React.useRef(N);
+  React.useEffect(() => { idxRef.current = idx; }, [idx]);
   const step = cardW + GAP;
 
   const measure = React.useCallback(() => {
@@ -3632,16 +3638,40 @@ function Results({ admin }) {
     return () => window.removeEventListener("resize", measure);
   }, [measure]);
 
-  // Clamp idx if the list shrinks (admin hide/reorder).
+  // Re-center to the middle copy whenever the list changes.
   React.useEffect(() => {
-    setIdx((i) => Math.min(i, maxIdx));
-  }, [maxIdx]);
+    setWithAnim(false);
+    setIdx(N);
+  }, [N]);
 
-  const go = (dir) => setIdx((i) => Math.max(0, Math.min(maxIdx, i + dir)));
-  const atStart = idx <= 0;
-  const atEnd = idx >= maxIdx;
+  // After a non-animated re-center, restore the transition next paint.
+  React.useEffect(() => {
+    if (withAnim) return;
+    const t = setTimeout(() => setWithAnim(true), 30);
+    return () => clearTimeout(t);
+  }, [withAnim, idx]);
+
+  const go = (dir) => {
+    setWithAnim(true);
+    idxRef.current = idxRef.current + dir;
+    setIdx((i) => i + dir);
+  };
+  const onTrackTransitionEnd = (e) => {
+    // Ignore transitionend bubbling up from child cards (hover etc.).
+    if (e.target !== e.currentTarget || e.propertyName !== "transform") return;
+    if (N <= 0) return;
+    const cur = idxRef.current;
+    // Keep idx inside the middle copy [N, 2N): identical visual card,
+    // but room to keep scrolling either way forever.
+    if (cur >= 2 * N || cur < N) {
+      const norm = N + (((cur - N) % N) + N) % N;
+      setWithAnim(false);
+      idxRef.current = norm;
+      setIdx(norm);
+    }
+  };
   const scrollByCard = go;
-  const scrollState = { atStart, atEnd };
+  const scrollState = { atStart: false, atEnd: false };
 
   return (
     <section id="results" style={{ padding: "76px 0 52px", background: "var(--card)", borderTop: "1px solid var(--line2)", borderBottom: "1px solid var(--line2)" }}>
@@ -3717,15 +3747,18 @@ function Results({ admin }) {
           ref={viewportRef}
           style={{ overflow: "hidden", paddingBlock: 10 }}>
           <div
+            onTransitionEnd={onTrackTransitionEnd}
             style={{
               display: "flex", gap: GAP,
               direction: "ltr",
               transform: `translateX(${-idx * step}px)`,
-              transition: "transform 0.45s cubic-bezier(0.22,0.61,0.36,1)",
+              transition: withAnim
+                ? "transform 0.45s cubic-bezier(0.22,0.61,0.36,1)"
+                : "none",
               willChange: "transform"
             }}>
 
-          {cases.map((c, i) => {
+          {loopItems.map((c, i) => {
           const hasVideo = Boolean(c.youtubeId);
           const isPlaying = playingIdx === i;
           return (
