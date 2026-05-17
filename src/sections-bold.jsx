@@ -813,7 +813,7 @@ function SocialProofSection({ onCTAClick, admin }) {
 
               <div style={{
               position: "absolute", bottom: 0, left: 0, right: 0,
-              padding: "100px 22px 58px",
+              padding: "100px 22px 30px",
               background: "linear-gradient(to top, rgba(0,0,0,0.94) 0%, rgba(0,0,0,0.82) 46%, rgba(0,0,0,0.28) 80%, transparent 100%)",
               zIndex: 2
             }}>
