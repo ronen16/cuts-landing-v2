@@ -3609,32 +3609,6 @@ function Results({ admin }) {
     [admin && admin.podcastOrder, admin && admin.hiddenPodcasts]
   );
 
-  // משיכת כותרות הפרקים מ-YouTube oEmbed (JSON קטן, בלי iframe)
-  const [ytTitles, setYtTitles] = React.useState({});
-  React.useEffect(() => {
-    const ids = Array.from(new Set(PODCAST_VIDEOS.map((v) => v.youtubeId).filter(Boolean)));
-    let cancelled = false;
-    Promise.all(
-      ids.map(async (id) => {
-        try {
-          const res = await fetch(
-            `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${id}&format=json`
-          );
-          if (!res.ok) return null;
-          const data = await res.json();
-          return data && data.title ? [id, data.title] : null;
-        } catch {
-          return null;
-        }
-      })
-    ).then((pairs) => {
-      if (cancelled) return;
-      const next = {};
-      pairs.forEach((p) => { if (p) next[p[0]] = p[1]; });
-      setYtTitles(next);
-    });
-    return () => { cancelled = true; };
-  }, []);
 
 
   const checkScrollState = React.useCallback(() => {
@@ -3786,8 +3760,7 @@ function Results({ admin }) {
               <div style={{
               position: "relative",
               aspectRatio: "16 / 9",
-              background: "linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%)",
-              borderBottom: "1px solid var(--line2)"
+              background: "linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%)"
             }}>
                 {isPlaying ?
                 <iframe
@@ -3851,20 +3824,6 @@ function Results({ admin }) {
                 }
               </div>
 
-              {/* Card body */}
-              {(c.title || ytTitles[c.youtubeId] || c.sub) &&
-              <div style={{ padding: "18px 22px 20px", display: "flex", flexDirection: "column", gap: 6 }}>
-                {(c.title || ytTitles[c.youtubeId]) &&
-                <div style={{
-                  fontSize: 16, fontWeight: 800, lineHeight: 1.3, color: "#fff",
-                  display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden"
-                }}>{c.title || ytTitles[c.youtubeId]}</div>
-                }
-                {c.sub &&
-                <div style={{ fontSize: 13, opacity: 0.6, lineHeight: 1.35 }}>{c.sub}</div>
-                }
-              </div>
-              }
             </div>);
         })}
         </div>
