@@ -420,14 +420,14 @@ function SocialProofSection({ onCTAClick }) {
   // לדוגמה: לינק https://vimeo.com/123456789  →  vimeoId: "123456789"
   // כרטיס בלי vimeoId נשאר placeholder מעוצב (בלי iframe, בלי עומס).
   const videos = [
-  { name: "אריק דוידוב", role: "מייסד · DavidovTech", tag: "B2B SaaS", duration: "0:47", vimeoId: "" },
-  { name: "מאיה לוי", role: "מנכ\"ל · Loop Studio", tag: "Creative", duration: "1:12", vimeoId: "" },
-  { name: "יואב ברנע", role: "יועץ עסקי", tag: "Consulting", duration: "0:58", vimeoId: "" },
-  { name: "תמר כהן", role: "מאמנת מנהלים בכירים", tag: "Coaching", duration: "1:03", vimeoId: "" },
-  { name: "רון אלמוג", role: "מייסד · NorthBound", tag: "Fintech", duration: "0:52", vimeoId: "" },
-  { name: "שירה גולן", role: "מנכ\"לית · Glow Brands", tag: "DTC Brand", duration: "1:18", vimeoId: "" },
-  { name: "עמית בר-און", role: "שותף מייסד · Vector42", tag: "Agency", duration: "0:44", vimeoId: "" },
-  { name: "נועה שטרן", role: "סמנכ\"ל שיווק · Pulse", tag: "B2B SaaS", duration: "1:07", vimeoId: "" }];
+  { name: "תמיר מנדבוסקי", role: "", tag: "", duration: "", vimeoId: "1108140265" },
+  { name: "עומר מיראן", role: "", tag: "", duration: "", vimeoId: "1108139977" },
+  { name: "מור פאר", role: "", tag: "", duration: "", vimeoId: "1108139897" },
+  { name: "שגיא גורניק", role: "", tag: "", duration: "", vimeoId: "1190079907" },
+  { name: "רם יצחק שדה", role: "", tag: "", duration: "", vimeoId: "1190079851" },
+  { name: "עופר ברקן", role: "", tag: "", duration: "", vimeoId: "1190079801" },
+  { name: "רון לנדסמן", role: "", tag: "", duration: "", vimeoId: "1190079774" },
+  { name: "בן לביא", role: "", tag: "", duration: "", vimeoId: "1108139530" }];
 
   // איזה כרטיס מנגן כרגע (לפי index בלולאה האינסופית)
   const [playingIdx, setPlayingIdx] = React.useState(null);
@@ -703,10 +703,12 @@ function SocialProofSection({ onCTAClick }) {
                 fontSize: 11, letterSpacing: "0.2em",
                 color: "var(--accent)", fontWeight: 700
               }}>CLIENT · {String(i + 1).padStart(2, "0")}</span>
+                {v.duration &&
                 <span className="mono" style={{
                 fontSize: 10, letterSpacing: "0.15em",
                 color: "rgba(255,255,255,0.55)", fontWeight: 600
               }}>{v.duration}</span>
+                }
               </div>
 
               <div style={{
@@ -739,6 +741,7 @@ function SocialProofSection({ onCTAClick }) {
               background: "linear-gradient(to top, rgba(0,0,0,0.85) 30%, transparent)",
               zIndex: 2
             }}>
+                {v.tag &&
                 <span className="mono" style={{
                 display: "inline-block", marginBottom: 10,
                 padding: "3px 9px",
@@ -748,8 +751,11 @@ function SocialProofSection({ onCTAClick }) {
                 fontSize: 9, letterSpacing: "0.1em", fontWeight: 700,
                 color: "var(--accent)"
               }}>{v.tag}</span>
+                }
                 <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 3, lineHeight: 1.2 }}>{v.name}</div>
+                {v.role &&
                 <div style={{ fontSize: 11.5, opacity: 0.65, lineHeight: 1.3 }}>{v.role}</div>
+                }
               </div>
             </div>);
         })}
