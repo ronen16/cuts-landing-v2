@@ -415,19 +415,22 @@ function SocialProofBar1() {
 // ---------- 04 · SOCIAL PROOF SECTION (3 proof cards + CTA) ----------
 
 function SocialProofSection({ onCTAClick }) {
+  // === עדויות וידאו ===
+  // כדי לחבר קליפ אמיתי: הדבק את ה-Vimeo ID בשדה vimeoId.
+  // לדוגמה: לינק https://vimeo.com/123456789  →  vimeoId: "123456789"
+  // כרטיס בלי vimeoId נשאר placeholder מעוצב (בלי iframe, בלי עומס).
   const videos = [
-  { name: "אריק דוידוב", role: "מייסד · DavidovTech", tag: "B2B SaaS", duration: "0:47" },
-  { name: "מאיה לוי", role: "מנכ\"ל · Loop Studio", tag: "Creative", duration: "1:12" },
-  { name: "יואב ברנע", role: "יועץ עסקי", tag: "Consulting", duration: "0:58" },
-  { name: "תמר כהן", role: "מאמנת מנהלים בכירים", tag: "Coaching", duration: "1:03" },
-  { name: "רון אלמוג", role: "מייסד · NorthBound", tag: "Fintech", duration: "0:52" },
-  { name: "שירה גולן", role: "מנכ\"לית · Glow Brands", tag: "DTC Brand", duration: "1:18" },
-  { name: "עמית בר-און", role: "שותף מייסד · Vector42", tag: "Agency", duration: "0:44" },
-  { name: "נועה שטרן", role: "סמנכ\"ל שיווק · Pulse", tag: "B2B SaaS", duration: "1:07" },
-  { name: "דניאל פרץ", role: "מנכ\"ל · Lavi Capital", tag: "Investment", duration: "0:55" },
-  { name: "ליאת אבני", role: "מייסדת · Sora Studio", tag: "Education", duration: "1:21" },
-  { name: "גיל אמיר", role: "VP Sales · Helix", tag: "Enterprise", duration: "0:49" },
-  { name: "הילה פרידמן", role: "אסטרטגית מותג", tag: "Branding", duration: "1:10" }];
+  { name: "אריק דוידוב", role: "מייסד · DavidovTech", tag: "B2B SaaS", duration: "0:47", vimeoId: "" },
+  { name: "מאיה לוי", role: "מנכ\"ל · Loop Studio", tag: "Creative", duration: "1:12", vimeoId: "" },
+  { name: "יואב ברנע", role: "יועץ עסקי", tag: "Consulting", duration: "0:58", vimeoId: "" },
+  { name: "תמר כהן", role: "מאמנת מנהלים בכירים", tag: "Coaching", duration: "1:03", vimeoId: "" },
+  { name: "רון אלמוג", role: "מייסד · NorthBound", tag: "Fintech", duration: "0:52", vimeoId: "" },
+  { name: "שירה גולן", role: "מנכ\"לית · Glow Brands", tag: "DTC Brand", duration: "1:18", vimeoId: "" },
+  { name: "עמית בר-און", role: "שותף מייסד · Vector42", tag: "Agency", duration: "0:44", vimeoId: "" },
+  { name: "נועה שטרן", role: "סמנכ\"ל שיווק · Pulse", tag: "B2B SaaS", duration: "1:07", vimeoId: "" }];
+
+  // איזה כרטיס מנגן כרגע (לפי index בלולאה האינסופית)
+  const [playingIdx, setPlayingIdx] = React.useState(null);
 
 
 
@@ -630,10 +633,14 @@ function SocialProofSection({ onCTAClick }) {
             scrollbarWidth: "none"
           }}>
           
-          {loopVideos.map((v, i) =>
+          {loopVideos.map((v, i) => {
+          const hasVideo = Boolean(v.vimeoId);
+          const isPlaying = playingIdx === i;
+          return (
           <div
             key={i}
             data-vid-card="true"
+            onClick={() => { if (hasVideo) setPlayingIdx(i); }}
             style={{
               flex: "0 0 calc((100% - 60px) / 4)",
               aspectRatio: "9 / 16",
@@ -642,7 +649,7 @@ function SocialProofSection({ onCTAClick }) {
               borderRadius: 16,
               position: "relative",
               overflow: "hidden",
-              cursor: "pointer",
+              cursor: hasVideo ? "pointer" : "default",
               scrollSnapAlign: "start",
               scrollSnapStop: "always",
               transition: "border-color 0.3s ease, transform 0.3s ease"
@@ -655,7 +662,21 @@ function SocialProofSection({ onCTAClick }) {
               e.currentTarget.style.borderColor = "var(--line2)";
               e.currentTarget.style.transform = "translateY(0)";
             }}>
-            
+
+              {isPlaying &&
+              <iframe
+                src={`https://player.vimeo.com/video/${v.vimeoId}?autoplay=1&title=0&byline=0&portrait=0&dnt=1`}
+                title={v.name}
+                allow="autoplay; fullscreen; picture-in-picture"
+                allowFullScreen
+                style={{
+                  position: "absolute", inset: 0,
+                  width: "100%", height: "100%",
+                  border: "none", zIndex: 5,
+                  background: "#000"
+                }} />
+              }
+
               {/* yellow corner brackets */}
               <span aria-hidden="true" style={{
               position: "absolute", top: 12, right: 12, width: 18, height: 18,
@@ -730,8 +751,8 @@ function SocialProofSection({ onCTAClick }) {
                 <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 3, lineHeight: 1.2 }}>{v.name}</div>
                 <div style={{ fontSize: 11.5, opacity: 0.65, lineHeight: 1.3 }}>{v.role}</div>
               </div>
-            </div>
-          )}
+            </div>);
+        })}
         </div>
       </div>
 
