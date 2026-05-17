@@ -3563,17 +3563,25 @@ function GuestStrip() {
 
 // ---------- RESULTS (from previous version — option B) ----------
 
+// === פרקי פודקאסט (YouTube) ===
+// title    = כותרת הפרק שמופיעה על הכרטיס.
+// sub      = שורת משנה (שם האורח / הנושא). ריק = לא מוצג.
+// youtubeId = ה-ID מתוך לינק יוטיוב.
+//   https://youtu.be/ABC123  או  https://www.youtube.com/watch?v=ABC123  → "ABC123"
+const PODCAST_VIDEOS = [
+{ title: "פרק לדוגמה 01", sub: "", youtubeId: "" },
+{ title: "פרק לדוגמה 02", sub: "", youtubeId: "" },
+{ title: "פרק לדוגמה 03", sub: "", youtubeId: "" },
+{ title: "פרק לדוגמה 04", sub: "", youtubeId: "" },
+{ title: "פרק לדוגמה 05", sub: "", youtubeId: "" },
+{ title: "פרק לדוגמה 06", sub: "", youtubeId: "" }];
+
 function Results() {
   const scrollerRef = React.useRef(null);
   const [scrollState, setScrollState] = React.useState({ atStart: true, atEnd: false });
+  const [playingIdx, setPlayingIdx] = React.useState(null);
 
-  const cases = [
-  { num: "01", client: "שם הלקוח / B2B SaaS", kpi: "+340% לידים אורגניים" },
-  { num: "02", client: "שם הלקוח / Consulting", kpi: "+12 מיליון צפיות" },
-  { num: "03", client: "שם הלקוח / Coaching", kpi: "+87 לקוחות חדשים" },
-  { num: "04", client: "שם הלקוח / Fintech", kpi: "ROI x4.2" },
-  { num: "05", client: "שם הלקוח / DTC Brand", kpi: "+220% engagement" },
-  { num: "06", client: "שם הלקוח / Agency", kpi: "₪1.8M pipeline" }];
+  const cases = PODCAST_VIDEOS;
 
 
   const checkScrollState = React.useCallback(() => {
@@ -3690,19 +3698,22 @@ function Results() {
           }}>
           <style>{`#results [style*="overflow"]::-webkit-scrollbar{display:none}`}</style>
 
-          {cases.map((c, i) =>
-          <a
+          {cases.map((c, i) => {
+          const hasVideo = Boolean(c.youtubeId);
+          const isPlaying = playingIdx === i;
+          return (
+          <div
             key={i}
             data-case-card
-            href="#"
-            onClick={(e) => e.preventDefault()}
+            onClick={() => { if (hasVideo) setPlayingIdx(i); }}
             style={{
               flex: "0 0 calc((100% - 40px) / 3)",
               scrollSnapAlign: "start",
               background: "var(--bg)", borderRadius: 20,
               border: "1px solid var(--line2)",
               overflow: "hidden",
-              textDecoration: "none", color: "inherit",
+              color: "inherit",
+              cursor: hasVideo ? "pointer" : "default",
               display: "flex", flexDirection: "column",
               transition: "transform 0.25s ease, border-color 0.25s ease"
             }}
@@ -3718,72 +3729,84 @@ function Results() {
               const overlay = e.currentTarget.querySelector("[data-play]");
               if (overlay) overlay.style.opacity = "0.85";
             }}>
-              {/* 16:9 YouTube thumbnail placeholder */}
+              {/* 16:9 video frame */}
               <div style={{
               position: "relative",
               aspectRatio: "16 / 9",
               background: "linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%)",
               borderBottom: "1px solid var(--line2)"
             }}>
-                {/* Subtle pattern */}
-                <div aria-hidden="true" style={{
-                position: "absolute", inset: 0,
-                backgroundImage: "radial-gradient(circle at 30% 50%, rgba(255,213,0,0.08), transparent 60%)"
-              }} />
+                {isPlaying ?
+                <iframe
+                  src={`https://www.youtube-nocookie.com/embed/${c.youtubeId}?autoplay=1&rel=0`}
+                  title={c.title}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  style={{
+                    position: "absolute", inset: 0,
+                    width: "100%", height: "100%",
+                    border: "none", zIndex: 3, background: "#000"
+                  }} />
+                :
+                <React.Fragment>
+                  {hasVideo ?
+                  <img
+                    src={`https://img.youtube.com/vi/${c.youtubeId}/maxresdefault.jpg`}
+                    alt={c.title}
+                    loading="lazy"
+                    onError={(e) => {
+                      if (!e.currentTarget.dataset.fb) {
+                        e.currentTarget.dataset.fb = "1";
+                        e.currentTarget.src = `https://img.youtube.com/vi/${c.youtubeId}/hqdefault.jpg`;
+                      }
+                    }}
+                    style={{
+                      position: "absolute", inset: 0,
+                      width: "100%", height: "100%",
+                      objectFit: "cover"
+                    }} />
+                  :
+                  <div aria-hidden="true" style={{
+                    position: "absolute", inset: 0,
+                    backgroundImage: "radial-gradient(circle at 30% 50%, rgba(255,213,0,0.08), transparent 60%)"
+                  }} />
+                  }
 
-                {/* Case # badge */}
-                <div className="mono" style={{
-                position: "absolute", top: 14, right: 14,
-                fontSize: 11, letterSpacing: "0.16em",
-                color: "var(--accent)", opacity: 0.8,
-                background: "rgba(0,0,0,0.5)", backdropFilter: "blur(6px)",
-                padding: "4px 10px", borderRadius: 6
-              }}>CASE #{c.num}</div>
-
-                {/* YouTube play button */}
-                <div data-play style={{
-                position: "absolute", inset: 0,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                opacity: 0.85, transition: "opacity 0.25s ease"
-              }}>
-                  <div style={{
-                  width: 68, height: 48,
-                  background: "var(--accent)",
-                  borderRadius: 12,
+                  {/* play button */}
+                  <div data-play style={{
+                  position: "absolute", inset: 0,
                   display: "flex", alignItems: "center", justifyContent: "center",
-                  boxShadow: "0 8px 24px rgba(0,0,0,0.5)"
+                  opacity: 0.85, transition: "opacity 0.25s ease", zIndex: 2
                 }}>
                     <div style={{
-                    width: 0, height: 0,
-                    borderTop: "10px solid transparent",
-                    borderBottom: "10px solid transparent",
-                    borderRight: "16px solid #0A0A0A",
-                    marginLeft: 4
-                  }} />
+                    width: 68, height: 48,
+                    background: "var(--accent)",
+                    borderRadius: 12,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    boxShadow: "0 8px 24px rgba(0,0,0,0.5)"
+                  }}>
+                      <div style={{
+                      width: 0, height: 0,
+                      borderTop: "10px solid transparent",
+                      borderBottom: "10px solid transparent",
+                      borderRight: "16px solid #0A0A0A",
+                      marginLeft: 4
+                    }} />
+                    </div>
                   </div>
-                </div>
-
-                {/* "לוגו" stub bottom-left */}
-                <div style={{
-                position: "absolute", bottom: 14, left: 14,
-                width: 44, height: 44, borderRadius: 8,
-                border: "1px dashed rgba(255,255,255,0.18)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 10, color: "var(--muted)", opacity: 0.5,
-                background: "rgba(0,0,0,0.4)", backdropFilter: "blur(4px)"
-              }}>לוגו</div>
+                </React.Fragment>
+                }
               </div>
 
               {/* Card body */}
-              <div style={{ padding: "20px 22px 22px", display: "flex", flexDirection: "column", gap: 10 }}>
-                <div style={{ fontSize: 15, fontWeight: 700, opacity: 0.95 }}>{c.client}</div>
-                <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-                  <span className="display" style={{ fontSize: 22, fontWeight: 900, color: "var(--accent)", lineHeight: 1 }}>{c.kpi}</span>
-                </div>
-                <div className="mono" style={{ fontSize: 11, opacity: 0.5, letterSpacing: "0.1em" }}>KPI · לידים · צפיות</div>
+              <div style={{ padding: "18px 22px 20px", display: "flex", flexDirection: "column", gap: 6 }}>
+                <div style={{ fontSize: 16, fontWeight: 800, lineHeight: 1.3, color: "#fff" }}>{c.title}</div>
+                {c.sub &&
+                <div style={{ fontSize: 13, opacity: 0.6, lineHeight: 1.35 }}>{c.sub}</div>
+                }
               </div>
-            </a>
-          )}
+            </div>);
+        })}
         </div>
       </div>
     </section>);
