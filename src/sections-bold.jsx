@@ -3632,6 +3632,7 @@ function Results({ admin }) {
     };
   }, [checkScrollState]);
 
+  const tweenRef = React.useRef(null);
   const scrollByCard = (dir) => {
     const el = scrollerRef.current;
     if (!el) return;
@@ -3640,8 +3641,26 @@ function Results({ admin }) {
     const cardW = firstCard.getBoundingClientRect().width;
     const gap = 20;
     const step = cardW + gap;
-    // RTL: "next" (left arrow, dir=1) goes to more-negative scrollLeft
-    el.scrollBy({ left: dir * -step, behavior: "smooth" });
+    const maxScroll = el.scrollWidth - el.clientWidth;
+    // RTL here: scrollLeft ranges 0 (start) → -maxScroll (end).
+    // Native smooth scroll snaps back to 0 with negative scrollLeft in
+    // this engine. Animate scrollLeft directly with a timer (rAF gets
+    // throttled when the tab is backgrounded — setInterval is reliable).
+    const from = el.scrollLeft;
+    const to = Math.min(0, Math.max(-maxScroll, from - dir * step));
+    if (to === from) return;
+    if (tweenRef.current) clearInterval(tweenRef.current);
+    const dur = 360;
+    const t0 = Date.now();
+    const ease = (p) => 1 - Math.pow(1 - p, 3);
+    tweenRef.current = setInterval(() => {
+      const p = Math.min(1, (Date.now() - t0) / dur);
+      el.scrollLeft = from + (to - from) * ease(p);
+      if (p >= 1) {
+        clearInterval(tweenRef.current);
+        tweenRef.current = null;
+      }
+    }, 16);
   };
 
   return (
@@ -3718,10 +3737,9 @@ function Results({ admin }) {
           ref={scrollerRef}
           style={{
             display: "flex", gap: 20,
-            overflowX: "auto", scrollSnapType: "x mandatory",
+            overflowX: "auto",
             scrollbarWidth: "none", msOverflowStyle: "none",
-            paddingBlock: 10, paddingInline: 4,
-            scrollPaddingInline: 4
+            paddingBlock: 10, paddingInline: 4
           }}>
           <style>{`#results [style*="overflow"]::-webkit-scrollbar{display:none}`}</style>
 
@@ -3735,7 +3753,6 @@ function Results({ admin }) {
             onClick={() => { if (hasVideo) setPlayingIdx(i); }}
             style={{
               flex: "0 0 calc((100% - 40px) / 3)",
-              scrollSnapAlign: "start",
               background: "var(--bg)", borderRadius: 20,
               border: "1px solid var(--line2)",
               overflow: "hidden",
