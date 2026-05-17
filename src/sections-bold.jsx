@@ -741,22 +741,17 @@ function SocialProofSection({ onCTAClick }) {
               background: "linear-gradient(to right, transparent, rgba(255,213,0,0.18), transparent)"
             }} />
 
+              {v.duration &&
               <div style={{
-              position: "absolute", top: 22, left: 22, right: 22,
-              display: "flex", justifyContent: "space-between", alignItems: "center",
+              position: "absolute", top: 22, left: 22,
               zIndex: 2
             }}>
-                <span className="mono" style={{
-                fontSize: 11, letterSpacing: "0.2em",
-                color: "var(--accent)", fontWeight: 700
-              }}>CLIENT · {String(i + 1).padStart(2, "0")}</span>
-                {v.duration &&
                 <span className="mono" style={{
                 fontSize: 10, letterSpacing: "0.15em",
                 color: "rgba(255,255,255,0.55)", fontWeight: 600
               }}>{v.duration}</span>
-                }
               </div>
+              }
 
               <div style={{
               position: "absolute", inset: 0,
