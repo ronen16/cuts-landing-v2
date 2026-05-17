@@ -842,7 +842,7 @@ function SocialProofSection({ onCTAClick, admin }) {
                   }}>{v.name}</div>
                     {v.role &&
                     <div style={{
-                    marginTop: 8, fontSize: 16, lineHeight: 1.35,
+                    marginTop: 3, fontSize: 16, lineHeight: 1.3,
                     color: "var(--accent)", fontWeight: 700,
                     letterSpacing: "0.01em",
                     textShadow: "0 1px 8px rgba(0,0,0,0.7)"
