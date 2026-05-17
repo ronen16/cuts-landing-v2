@@ -3734,7 +3734,7 @@ function Results({ admin }) {
             data-case-card
             onClick={() => { if (hasVideo) setPlayingIdx(i); }}
             style={{
-              flex: "0 0 calc((100% - 40px) / 3)",
+              flex: "0 0 calc((100% - 32px) / 2.5)",
               scrollSnapAlign: "start",
               background: "var(--bg)", borderRadius: 20,
               border: "1px solid var(--line2)",
@@ -3823,9 +3823,6 @@ function Results({ admin }) {
                 </React.Fragment>
                 }
               </div>
-
-              {/* spacer — keeps the previous card height without showing titles */}
-              <div aria-hidden="true" style={{ height: 78 }} />
             </div>);
         })}
         </div>
