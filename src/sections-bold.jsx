@@ -813,8 +813,8 @@ function SocialProofSection({ onCTAClick, admin }) {
 
               <div style={{
               position: "absolute", bottom: 0, left: 0, right: 0,
-              padding: "92px 22px 40px",
-              background: "linear-gradient(to top, rgba(0,0,0,0.94) 0%, rgba(0,0,0,0.82) 42%, rgba(0,0,0,0.28) 78%, transparent 100%)",
+              padding: "100px 22px 58px",
+              background: "linear-gradient(to top, rgba(0,0,0,0.94) 0%, rgba(0,0,0,0.82) 46%, rgba(0,0,0,0.28) 80%, transparent 100%)",
               zIndex: 2
             }}>
                 {v.tag &&
@@ -836,13 +836,13 @@ function SocialProofSection({ onCTAClick, admin }) {
                 }} />
                   <div style={{ minWidth: 0 }}>
                     <div className="display" style={{
-                    fontSize: 22, fontWeight: 900, lineHeight: 1.1,
+                    fontSize: 26, fontWeight: 900, lineHeight: 1.1,
                     color: "#fff", letterSpacing: "-0.015em",
                     textShadow: "0 2px 14px rgba(0,0,0,0.8)"
                   }}>{v.name}</div>
                     {v.role &&
                     <div style={{
-                    marginTop: 7, fontSize: 13.5, lineHeight: 1.35,
+                    marginTop: 8, fontSize: 16, lineHeight: 1.35,
                     color: "var(--accent)", fontWeight: 700,
                     letterSpacing: "0.01em",
                     textShadow: "0 1px 8px rgba(0,0,0,0.7)"
