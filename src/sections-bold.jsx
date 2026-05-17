@@ -3578,12 +3578,36 @@ const PODCAST_VIDEOS = [
 { title: "", sub: "", youtubeId: "yS0Zlpwmr3M" },
 { title: "", sub: "", youtubeId: "csBIrDweyuU" }];
 
-function Results() {
+// נחשוף לפאנל האדמין כדי לאפשר סידור/הסתרה
+if (typeof window !== "undefined") window.__cutsPodcastVideos = PODCAST_VIDEOS;
+
+function orderAndFilterPodcasts(admin) {
+  const order = admin && Array.isArray(admin.podcastOrder) ? admin.podcastOrder : null;
+  const hidden = new Set((admin && admin.hiddenPodcasts) || []);
+  let list = PODCAST_VIDEOS;
+  if (order && order.length) {
+    const byId = new Map(PODCAST_VIDEOS.map((v) => [v.youtubeId, v]));
+    const seen = new Set();
+    const ordered = [];
+    for (const id of order) {
+      const v = byId.get(id);
+      if (v && !seen.has(id)) { ordered.push(v); seen.add(id); }
+    }
+    for (const v of PODCAST_VIDEOS) if (!seen.has(v.youtubeId)) ordered.push(v);
+    list = ordered;
+  }
+  return list.filter((v) => !hidden.has(v.youtubeId));
+}
+
+function Results({ admin }) {
   const scrollerRef = React.useRef(null);
   const [scrollState, setScrollState] = React.useState({ atStart: true, atEnd: false });
   const [playingIdx, setPlayingIdx] = React.useState(null);
 
-  const cases = PODCAST_VIDEOS;
+  const cases = React.useMemo(
+    () => orderAndFilterPodcasts(admin),
+    [admin && admin.podcastOrder, admin && admin.hiddenPodcasts]
+  );
 
   // משיכת כותרות הפרקים מ-YouTube oEmbed (JSON קטן, בלי iframe)
   const [ytTitles, setYtTitles] = React.useState({});
@@ -6523,7 +6547,7 @@ function BoldVariation({ onCTAClick, form, admin }) {
     { id: "how-it-works",     Comp: (p) => <HowItWorksInteractive /> },
     { id: "services",         Comp: (p) => <ServicesOld onCTAClick={onCTAClick} /> },
     { id: "studio-booking",   Comp: (p) => <StudioBookingLead form={form} /> },
-    { id: "results",          Comp: (p) => <Results /> },
+    { id: "results",          Comp: (p) => <Results admin={admin} /> },
     { id: "guest-strip",      Comp: (p) => <GuestStrip /> },
     { id: "guarantee",        Comp: (p) => <Guarantee onCTAClick={onCTAClick} /> },
     { id: "mini-lead-2",      Comp: (p) => <MiniLeadStripe form={form} /> },

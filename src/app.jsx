@@ -106,6 +106,7 @@ function App() {
   const AdminPasswordModal = window.AdminPasswordModal;
   const AdminVersionsModal = window.AdminVersionsModal;
   const AdminVideosModal = window.AdminVideosModal;
+  const AdminPodcastsModal = window.AdminPodcastsModal;
   const AdminPublishSettingsModal = window.AdminPublishSettingsModal;
 
   // Dark/light class — BOLD is dark by default; light is the inverted mode
@@ -124,12 +125,18 @@ function App() {
     const liveHiddenVideos = Array.isArray(liveOverrides.hiddenVideos) ? liveOverrides.hiddenVideos : [];
     const localVideoOrder = Array.isArray(admin.videoOrder) ? admin.videoOrder : null;
     const localHiddenVideos = Array.isArray(admin.hiddenVideos) ? admin.hiddenVideos : [];
+    const livePodcastOrder = Array.isArray(liveOverrides.podcastOrder) ? liveOverrides.podcastOrder : null;
+    const liveHiddenPodcasts = Array.isArray(liveOverrides.hiddenPodcasts) ? liveOverrides.hiddenPodcasts : [];
+    const localPodcastOrder = Array.isArray(admin.podcastOrder) ? admin.podcastOrder : null;
+    const localHiddenPodcasts = Array.isArray(admin.hiddenPodcasts) ? admin.hiddenPodcasts : [];
     return {
       ...admin,
       sectionOrder: localOrder || liveOrder,
       hiddenSections: Array.from(new Set([...(liveHidden || []), ...(localHidden || [])])),
       videoOrder: localVideoOrder || liveVideoOrder,
       hiddenVideos: Array.from(new Set([...(liveHiddenVideos || []), ...(localHiddenVideos || [])])),
+      podcastOrder: localPodcastOrder || livePodcastOrder,
+      hiddenPodcasts: Array.from(new Set([...(liveHiddenPodcasts || []), ...(localHiddenPodcasts || [])])),
     };
   }, [admin, liveOverrides]);
 
@@ -141,6 +148,7 @@ function App() {
       {AdminPasswordModal && <AdminPasswordModal />}
       {AdminVersionsModal && <AdminVersionsModal admin={admin} />}
       {AdminVideosModal && <AdminVideosModal admin={admin} />}
+      {AdminPodcastsModal && <AdminPodcastsModal admin={admin} />}
       {AdminPublishSettingsModal && <AdminPublishSettingsModal />}
     </div>
   );
