@@ -432,6 +432,33 @@ function SocialProofSection({ onCTAClick }) {
   // איזה כרטיס מנגן כרגע (לפי index בלולאה האינסופית)
   const [playingIdx, setPlayingIdx] = React.useState(null);
 
+  // טאמבנייל לכל סרטון — נטען דרך Vimeo oEmbed (JSON קטן, בלי iframe)
+  const [thumbs, setThumbs] = React.useState({});
+  React.useEffect(() => {
+    const ids = Array.from(new Set(videos.map((v) => v.vimeoId).filter(Boolean)));
+    let cancelled = false;
+    Promise.all(
+      ids.map(async (id) => {
+        try {
+          const res = await fetch(
+            `https://vimeo.com/api/oembed.json?url=https://vimeo.com/${id}&width=640`
+          );
+          if (!res.ok) return null;
+          const data = await res.json();
+          return data && data.thumbnail_url ? [id, data.thumbnail_url] : null;
+        } catch {
+          return null;
+        }
+      })
+    ).then((pairs) => {
+      if (cancelled) return;
+      const next = {};
+      pairs.forEach((p) => { if (p) next[p[0]] = p[1]; });
+      setThumbs(next);
+    });
+    return () => { cancelled = true; };
+  }, []);
+
 
 
   const scrollerRef = React.useRef(null);
@@ -677,6 +704,26 @@ function SocialProofSection({ onCTAClick }) {
                 }} />
               }
 
+              {!isPlaying && thumbs[v.vimeoId] &&
+              <React.Fragment>
+                <img
+                  src={thumbs[v.vimeoId]}
+                  alt={v.name}
+                  loading="lazy"
+                  style={{
+                    position: "absolute", inset: 0,
+                    width: "100%", height: "100%",
+                    objectFit: "cover",
+                    zIndex: 1
+                  }} />
+                <span aria-hidden="true" style={{
+                  position: "absolute", inset: 0,
+                  background: "linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.15) 45%, rgba(0,0,0,0.35) 100%)",
+                  zIndex: 1
+                }} />
+              </React.Fragment>
+              }
+
               {/* yellow corner brackets */}
               <span aria-hidden="true" style={{
               position: "absolute", top: 12, right: 12, width: 18, height: 18,
@@ -717,11 +764,13 @@ function SocialProofSection({ onCTAClick }) {
               zIndex: 2,
               flexDirection: "column", gap: 18
             }}>
+                {!thumbs[v.vimeoId] &&
                 <svg width="90" height="90" viewBox="0 0 90 90" fill="none" aria-hidden="true">
                   <circle cx="45" cy="32" r="18" stroke="rgba(255,213,0,0.35)" strokeWidth="1.5" strokeDasharray="3 3" />
                   <path d="M14 84 C 14 64, 30 56, 45 56 C 60 56, 76 64, 76 84"
                 stroke="rgba(255,213,0,0.35)" strokeWidth="1.5" strokeDasharray="3 3" fill="none" />
                 </svg>
+                }
 
                 <div style={{
                 width: 56, height: 56, borderRadius: "50%",
