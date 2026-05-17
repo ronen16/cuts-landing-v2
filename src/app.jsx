@@ -105,6 +105,7 @@ function App() {
   const AdminPanel = window.AdminPanel;
   const AdminPasswordModal = window.AdminPasswordModal;
   const AdminVersionsModal = window.AdminVersionsModal;
+  const AdminVideosModal = window.AdminVideosModal;
   const AdminPublishSettingsModal = window.AdminPublishSettingsModal;
 
   // Dark/light class — BOLD is dark by default; light is the inverted mode
@@ -119,10 +120,16 @@ function App() {
     const liveHidden = Array.isArray(liveOverrides.hiddenSections) ? liveOverrides.hiddenSections : [];
     const localOrder = Array.isArray(admin.sectionOrder) ? admin.sectionOrder : null;
     const localHidden = Array.isArray(admin.hiddenSections) ? admin.hiddenSections : [];
+    const liveVideoOrder = Array.isArray(liveOverrides.videoOrder) ? liveOverrides.videoOrder : null;
+    const liveHiddenVideos = Array.isArray(liveOverrides.hiddenVideos) ? liveOverrides.hiddenVideos : [];
+    const localVideoOrder = Array.isArray(admin.videoOrder) ? admin.videoOrder : null;
+    const localHiddenVideos = Array.isArray(admin.hiddenVideos) ? admin.hiddenVideos : [];
     return {
       ...admin,
       sectionOrder: localOrder || liveOrder,
       hiddenSections: Array.from(new Set([...(liveHidden || []), ...(localHidden || [])])),
+      videoOrder: localVideoOrder || liveVideoOrder,
+      hiddenVideos: Array.from(new Set([...(liveHiddenVideos || []), ...(localHiddenVideos || [])])),
     };
   }, [admin, liveOverrides]);
 
@@ -133,6 +140,7 @@ function App() {
       {AdminPanel && <AdminPanel admin={admin} />}
       {AdminPasswordModal && <AdminPasswordModal />}
       {AdminVersionsModal && <AdminVersionsModal admin={admin} />}
+      {AdminVideosModal && <AdminVideosModal admin={admin} />}
       {AdminPublishSettingsModal && <AdminPublishSettingsModal />}
     </div>
   );

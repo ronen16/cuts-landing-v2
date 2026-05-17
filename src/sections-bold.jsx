@@ -414,21 +414,48 @@ function SocialProofBar1() {
 
 // ---------- 04 · SOCIAL PROOF SECTION (3 proof cards + CTA) ----------
 
-function SocialProofSection({ onCTAClick }) {
-  // === עדויות וידאו ===
-  // name = השם שמופיע על הכרטיס.
-  // role = התיאור מתחת לשם (תפקיד / עסק). תמלא בעצמך — ריק = לא מוצג.
-  //        לדוגמה: role: "מייסד · DavidovTech"
-  // vimeoId = ה-ID מתוך לינק Vimeo. https://vimeo.com/123456789 → "123456789"
-  const videos = [
-  { name: "תמיר מנדבוסקי", role: "מייסד · סטודיו תמיר", tag: "", duration: "", vimeoId: "1108140265" },
-  { name: "עומר מיראן", role: "יזם · נדל\"ן ופיננסים", tag: "", duration: "", vimeoId: "1108139977" },
-  { name: "מור פאר", role: "מאמנת עסקית", tag: "", duration: "", vimeoId: "1108139897" },
-  { name: "שגיא גורניק", role: "מנכ\"ל · קבוצת גורניק", tag: "", duration: "", vimeoId: "1190079907" },
-  { name: "רם יצחק שדה", role: "יועץ אסטרטגי לעסקים", tag: "", duration: "", vimeoId: "1190079851" },
-  { name: "עופר ברקן", role: "מייסד · ברקן דיגיטל", tag: "", duration: "", vimeoId: "1190079801" },
-  { name: "רון לנדסמן", role: "סמנכ\"ל שיווק", tag: "", duration: "", vimeoId: "1190079774" },
-  { name: "בן לביא", role: "יזם · לביא טכנולוגיות", tag: "", duration: "", vimeoId: "1108139530" }];
+// === עדויות וידאו ===
+// name = השם שמופיע על הכרטיס.
+// role = התיאור מתחת לשם (תפקיד / עסק). תמלא בעצמך — ריק = לא מוצג.
+//        לדוגמה: role: "מייסד · DavidovTech"
+// vimeoId = ה-ID מתוך לינק Vimeo. https://vimeo.com/123456789 → "123456789"
+const TESTIMONIAL_VIDEOS = [
+{ name: "תמיר מנדבוסקי", role: "מייסד · סטודיו תמיר", tag: "", duration: "", vimeoId: "1108140265" },
+{ name: "עומר מיראן", role: "יזם · נדל\"ן ופיננסים", tag: "", duration: "", vimeoId: "1108139977" },
+{ name: "מור פאר", role: "מאמנת עסקית", tag: "", duration: "", vimeoId: "1108139897" },
+{ name: "שגיא גורניק", role: "מנכ\"ל · קבוצת גורניק", tag: "", duration: "", vimeoId: "1190079907" },
+{ name: "רם יצחק שדה", role: "יועץ אסטרטגי לעסקים", tag: "", duration: "", vimeoId: "1190079851" },
+{ name: "עופר ברקן", role: "מייסד · ברקן דיגיטל", tag: "", duration: "", vimeoId: "1190079801" },
+{ name: "רון לנדסמן", role: "סמנכ\"ל שיווק", tag: "", duration: "", vimeoId: "1190079774" },
+{ name: "בן לביא", role: "יזם · לביא טכנולוגיות", tag: "", duration: "", vimeoId: "1108139530" }];
+
+// נחשוף לפאנל האדמין כדי לאפשר סידור/הסתרה
+if (typeof window !== "undefined") window.__cutsTestimonialVideos = TESTIMONIAL_VIDEOS;
+
+function orderAndFilterVideos(admin) {
+  const order = admin && Array.isArray(admin.videoOrder) ? admin.videoOrder : null;
+  const hidden = new Set((admin && admin.hiddenVideos) || []);
+  let list = TESTIMONIAL_VIDEOS;
+  if (order && order.length) {
+    const byId = new Map(TESTIMONIAL_VIDEOS.map((v) => [v.vimeoId, v]));
+    const seen = new Set();
+    const ordered = [];
+    for (const id of order) {
+      const v = byId.get(id);
+      if (v && !seen.has(id)) { ordered.push(v); seen.add(id); }
+    }
+    // append any new videos not present in the saved order
+    for (const v of TESTIMONIAL_VIDEOS) if (!seen.has(v.vimeoId)) ordered.push(v);
+    list = ordered;
+  }
+  return list.filter((v) => !hidden.has(v.vimeoId));
+}
+
+function SocialProofSection({ onCTAClick, admin }) {
+  const videos = React.useMemo(
+    () => orderAndFilterVideos(admin),
+    [admin && admin.videoOrder, admin && admin.hiddenVideos]
+  );
 
   // איזה כרטיס מנגן כרגע (לפי index בלולאה האינסופית)
   const [playingIdx, setPlayingIdx] = React.useState(null);
@@ -6453,7 +6480,7 @@ function BoldVariation({ onCTAClick, form, admin }) {
     { id: "solution",         Comp: (p) => <SolutionOld /> },
     { id: "inline-lead-1",    Comp: (p) => <InlineLeadForm form={form} /> },
     { id: "problem",          Comp: (p) => <ProblemOld /> },
-    { id: "social-proof",     Comp: (p) => <SocialProofSection onCTAClick={onCTAClick} /> },
+    { id: "social-proof",     Comp: (p) => <SocialProofSection onCTAClick={onCTAClick} admin={admin} /> },
     { id: "mini-lead-1",      Comp: (p) => <MiniLeadStripe form={form} /> },
     { id: "who-its-for",      Comp: (p) => <WhoItsForOld /> },
     { id: "how-it-works",     Comp: (p) => <HowItWorksInteractive /> },

@@ -647,6 +647,93 @@ body.admin-dragging-sections .section-hide-toggle { display: inline-flex; }
   border-color: #ff5a5a;
 }
 
+/* Videos manager modal */
+.admin-videos {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 18px;
+  max-height: 55vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.admin-videos__row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  padding: 10px 14px;
+  transition: border-color 0.2s ease, background 0.2s ease, opacity 0.2s ease;
+}
+.admin-videos__row:hover {
+  border-color: rgba(255, 213, 0, 0.4);
+  background: rgba(255, 213, 0, 0.05);
+}
+.admin-videos__row.is-hidden { opacity: 0.45; }
+.admin-videos__idx {
+  flex-shrink: 0;
+  width: 26px; height: 26px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 7px;
+  background: rgba(255,213,0,0.12);
+  color: var(--accent, #FFD500);
+  font: 800 12px 'Heebo', system-ui, sans-serif;
+}
+.admin-videos__info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  flex: 1;
+}
+.admin-videos__name {
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+}
+.admin-videos__meta {
+  color: rgba(255,255,255,0.55);
+  font-size: 11px;
+  letter-spacing: 0.03em;
+}
+.admin-videos__actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.admin-videos__btn {
+  appearance: none;
+  border: 1px solid rgba(255,213,0,0.45);
+  background: transparent;
+  color: var(--accent, #FFD500);
+  font: 800 12px 'Heebo', system-ui, sans-serif;
+  min-width: 34px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+}
+.admin-videos__btn:hover:not(:disabled) {
+  background: var(--accent, #FFD500);
+  color: #0A0A0A;
+}
+.admin-videos__btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+.admin-videos__btn.is-on {
+  border-color: rgba(255,80,80,0.5);
+  color: #ff8a8a;
+}
+.admin-videos__btn.is-on:hover {
+  background: #ff5a5a;
+  color: #fff;
+  border-color: #ff5a5a;
+}
+
 /* Publish-settings modal fields */
 .admin-field { margin-bottom: 14px; }
 .admin-field__label {

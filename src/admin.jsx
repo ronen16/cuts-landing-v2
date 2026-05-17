@@ -32,7 +32,7 @@ const MAX_VERSIONS = 10;
 function loadAdminState() {
   try {
     const raw = localStorage.getItem(ADMIN_STORAGE_KEY);
-    if (!raw) return { unlocked: false, overrides: {}, sectionOrder: null, elementOffsets: {}, hiddenSections: [], publishedVersions: [] };
+    if (!raw) return { unlocked: false, overrides: {}, sectionOrder: null, elementOffsets: {}, hiddenSections: [], videoOrder: null, hiddenVideos: [], publishedVersions: [] };
     const parsed = JSON.parse(raw);
     return {
       unlocked: !!parsed.unlocked,
@@ -40,10 +40,12 @@ function loadAdminState() {
       sectionOrder: Array.isArray(parsed.sectionOrder) ? parsed.sectionOrder : null,
       elementOffsets: parsed.elementOffsets || {},
       hiddenSections: Array.isArray(parsed.hiddenSections) ? parsed.hiddenSections : [],
+      videoOrder: Array.isArray(parsed.videoOrder) ? parsed.videoOrder : null,
+      hiddenVideos: Array.isArray(parsed.hiddenVideos) ? parsed.hiddenVideos : [],
       publishedVersions: Array.isArray(parsed.publishedVersions) ? parsed.publishedVersions : [],
     };
   } catch (e) {
-    return { unlocked: false, overrides: {}, sectionOrder: null, elementOffsets: {}, hiddenSections: [], publishedVersions: [] };
+    return { unlocked: false, overrides: {}, sectionOrder: null, elementOffsets: {}, hiddenSections: [], videoOrder: null, hiddenVideos: [], publishedVersions: [] };
   }
 }
 
@@ -154,6 +156,8 @@ function saveAdminState(state) {
         sectionOrder: state.sectionOrder,
         elementOffsets: state.elementOffsets || {},
         hiddenSections: state.hiddenSections || [],
+        videoOrder: state.videoOrder || null,
+        hiddenVideos: state.hiddenVideos || [],
         publishedVersions: state.publishedVersions || [],
       })
     );
@@ -248,6 +252,8 @@ function useAdminMode() {
   const [sectionOrder, setSectionOrder] = React.useState(initial.sectionOrder);
   const [elementOffsets, setElementOffsets] = React.useState(initial.elementOffsets);
   const [hiddenSections, setHiddenSections] = React.useState(initial.hiddenSections);
+  const [videoOrder, setVideoOrder] = React.useState(initial.videoOrder);
+  const [hiddenVideos, setHiddenVideos] = React.useState(initial.hiddenVideos);
   const [publishedVersions, setPublishedVersions] = React.useState(initial.publishedVersions);
 
   React.useEffect(() => {
@@ -257,8 +263,8 @@ function useAdminMode() {
   }, []);
 
   React.useEffect(() => {
-    saveAdminState({ unlocked, overrides, sectionOrder, elementOffsets, hiddenSections, publishedVersions });
-  }, [unlocked, overrides, sectionOrder, elementOffsets, hiddenSections, publishedVersions]);
+    saveAdminState({ unlocked, overrides, sectionOrder, elementOffsets, hiddenSections, videoOrder, hiddenVideos, publishedVersions });
+  }, [unlocked, overrides, sectionOrder, elementOffsets, hiddenSections, videoOrder, hiddenVideos, publishedVersions]);
 
   // mutual exclusion
   const setEditingTextSafe = React.useCallback((v) => {
@@ -295,6 +301,19 @@ function useAdminMode() {
     });
   }, []);
 
+  const updateVideoOrder = React.useCallback((order) => {
+    setVideoOrder(order);
+  }, []);
+
+  const toggleVideoHidden = React.useCallback((id) => {
+    setHiddenVideos((prev) => {
+      const set = new Set(prev);
+      if (set.has(id)) set.delete(id);
+      else set.add(id);
+      return Array.from(set);
+    });
+  }, []);
+
   // Snapshot current state into the versions list (cap at MAX_VERSIONS).
   // Reads fresh from localStorage to avoid stale React closure bugs (edits
   // made just before clicking Publish need to be included).
@@ -304,6 +323,8 @@ function useAdminMode() {
     const liveSectionOrder = current.sectionOrder;
     const liveElementOffsets = current.elementOffsets || {};
     const liveHiddenSections = current.hiddenSections || [];
+    const liveVideoOrder = current.videoOrder || null;
+    const liveHiddenVideos = current.hiddenVideos || [];
 
     const snapshot = {
       id: "v-" + Date.now() + "-" + Math.random().toString(36).slice(2, 8),
@@ -313,6 +334,8 @@ function useAdminMode() {
       sectionOrder: liveSectionOrder,
       elementOffsets: liveElementOffsets,
       hiddenSections: liveHiddenSections,
+      videoOrder: liveVideoOrder,
+      hiddenVideos: liveHiddenVideos,
     };
     setPublishedVersions((prev) => [snapshot, ...prev].slice(0, MAX_VERSIONS));
 
@@ -330,6 +353,8 @@ function useAdminMode() {
         sectionOrder: liveSectionOrder,
         elementOffsets: liveElementOffsets,
         hiddenSections: liveHiddenSections,
+        videoOrder: liveVideoOrder,
+        hiddenVideos: liveHiddenVideos,
       };
       const commit = await pushToGitHub(settings, payload);
       return { snapshot, published: true, commitUrl: commit.commit && commit.commit.html_url };
@@ -351,6 +376,8 @@ function useAdminMode() {
     setSectionOrder(v.sectionOrder || null);
     setElementOffsets(v.elementOffsets || {});
     setHiddenSections(v.hiddenSections || []);
+    setVideoOrder(v.videoOrder || null);
+    setHiddenVideos(v.hiddenVideos || []);
   }, [publishedVersions]);
 
   const deleteVersion = React.useCallback((id) => {
@@ -362,6 +389,8 @@ function useAdminMode() {
     setSectionOrder(null);
     setElementOffsets({});
     setHiddenSections([]);
+    setVideoOrder(null);
+    setHiddenVideos([]);
     if (window.__cutsRestoreOriginals) window.__cutsRestoreOriginals();
     if (window.__cutsClearAllTransforms) window.__cutsClearAllTransforms();
   }, []);
@@ -382,6 +411,8 @@ function useAdminMode() {
     sectionOrder,
     elementOffsets,
     hiddenSections,
+    videoOrder,
+    hiddenVideos,
     publishedVersions,
     setEditingText: setEditingTextSafe,
     setDraggingSections: setDraggingSectionsSafe,
@@ -390,6 +421,8 @@ function useAdminMode() {
     updateSectionOrder,
     updateElementOffset,
     toggleSectionHidden,
+    updateVideoOrder,
+    toggleVideoHidden,
     publishToLive,
     restoreVersion,
     deleteVersion,
@@ -667,6 +700,127 @@ function AdminVersionsModal({ admin }) {
 
 window.AdminVersionsModal = AdminVersionsModal;
 
+// ---------- Videos Manager Modal ----------
+
+function AdminVideosModal({ admin }) {
+  const [open, setOpen] = React.useState(false);
+  const [, force] = React.useReducer((x) => x + 1, 0);
+
+  React.useEffect(() => {
+    const onOpen = () => setOpen(true);
+    window.addEventListener("cuts-admin-videos", onOpen);
+    return () => window.removeEventListener("cuts-admin-videos", onOpen);
+  }, []);
+
+  if (!open) return null;
+
+  const all = (window.__cutsTestimonialVideos || []).slice();
+  const byId = new Map(all.map((v) => [v.vimeoId, v]));
+
+  // Current order: saved order first (existing ids), then any new videos.
+  const savedOrder = Array.isArray(admin.videoOrder) ? admin.videoOrder : null;
+  let ordered;
+  if (savedOrder && savedOrder.length) {
+    const seen = new Set();
+    ordered = [];
+    for (const id of savedOrder) {
+      if (byId.has(id) && !seen.has(id)) { ordered.push(byId.get(id)); seen.add(id); }
+    }
+    for (const v of all) if (!seen.has(v.vimeoId)) ordered.push(v);
+  } else {
+    ordered = all;
+  }
+
+  const hidden = new Set(admin.hiddenVideos || []);
+
+  const commit = (list) => {
+    admin.updateVideoOrder(list.map((v) => v.vimeoId));
+    force();
+  };
+  const move = (idx, dir) => {
+    const next = ordered.slice();
+    const target = idx + dir;
+    if (target < 0 || target >= next.length) return;
+    const tmp = next[idx];
+    next[idx] = next[target];
+    next[target] = tmp;
+    commit(next);
+  };
+
+  const Btn = (props, children) =>
+    React.createElement("button", Object.assign({ type: "button" }, props), children);
+
+  return React.createElement("div", {
+    className: "admin-modal-backdrop",
+    onClick: () => setOpen(false)
+  },
+    React.createElement("div", {
+      className: "admin-modal admin-modal--wide",
+      onClick: (e) => e.stopPropagation(),
+      dir: "rtl"
+    },
+      React.createElement("h3", { className: "admin-modal__title" }, "ניהול סרטוני עדויות"),
+      React.createElement("p", { className: "admin-modal__hint" },
+        "סדר מחדש עם החצים, או הסתר/הצג סרטון. שינויים נשמרים אוטומטית — לחץ \"העלאה ללייב\" כדי לפרסם."
+      ),
+      React.createElement("ul", { className: "admin-videos" },
+        ordered.map((v, idx) => {
+          const isHidden = hidden.has(v.vimeoId);
+          return React.createElement("li", {
+            key: v.vimeoId,
+            className: "admin-videos__row" + (isHidden ? " is-hidden" : "")
+          },
+            React.createElement("span", { className: "admin-videos__idx" }, idx + 1),
+            React.createElement("div", { className: "admin-videos__info" },
+              React.createElement("div", { className: "admin-videos__name" }, v.name),
+              React.createElement("div", { className: "admin-videos__meta" }, v.role || ("Vimeo · " + v.vimeoId))
+            ),
+            React.createElement("div", { className: "admin-videos__actions" },
+              Btn({
+                className: "admin-videos__btn",
+                disabled: idx === 0,
+                title: "הזז למעלה",
+                onClick: () => move(idx, -1)
+              }, "↑"),
+              Btn({
+                className: "admin-videos__btn",
+                disabled: idx === ordered.length - 1,
+                title: "הזז למטה",
+                onClick: () => move(idx, 1)
+              }, "↓"),
+              Btn({
+                className: "admin-videos__btn" + (isHidden ? " is-on" : ""),
+                title: isHidden ? "הצג" : "הסתר",
+                onClick: () => { admin.toggleVideoHidden(v.vimeoId); force(); }
+              }, isHidden ? "מוסתר" : "מוצג")
+            )
+          );
+        })
+      ),
+      React.createElement("div", { className: "admin-modal__actions" },
+        React.createElement("button", {
+          type: "button",
+          className: "admin-modal__btn admin-modal__btn--ghost",
+          onClick: () => {
+            if (window.confirm("לאפס את סדר הסרטונים וההסתרות לברירת מחדל?")) {
+              admin.updateVideoOrder(null);
+              (admin.hiddenVideos || []).slice().forEach((id) => admin.toggleVideoHidden(id));
+              force();
+            }
+          }
+        }, "איפוס"),
+        React.createElement("button", {
+          type: "button",
+          className: "admin-modal__btn admin-modal__btn--primary",
+          onClick: () => setOpen(false)
+        }, "סגור")
+      )
+    )
+  );
+}
+
+window.AdminVideosModal = AdminVideosModal;
+
 // ---------- Publish Settings Modal ----------
 
 function AdminPublishSettingsModal() {
@@ -818,6 +972,11 @@ function AdminPanel({ admin }) {
       active: admin.movingElements,
       onClick: () => admin.setMovingElements(!admin.movingElements)
     }),
+    React.createElement(ToolbarRow, {
+      icon: "🎬",
+      label: "ניהול סרטונים",
+      onClick: () => window.dispatchEvent(new CustomEvent("cuts-admin-videos"))
+    }),
     React.createElement("div", { className: "admin-toolbar__sep" }),
     React.createElement(ToolbarRow, {
       icon: "🚀",
@@ -907,6 +1066,8 @@ function exportJSON(admin) {
     sectionOrder: admin.sectionOrder,
     elementOffsets: admin.elementOffsets,
     hiddenSections: admin.hiddenSections,
+    videoOrder: admin.videoOrder,
+    hiddenVideos: admin.hiddenVideos,
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
@@ -945,6 +1106,13 @@ function importJSON(admin) {
         // Reset current and apply each from import
         const cur = new Set(admin.hiddenSections);
         parsed.hiddenSections.forEach((id) => { if (!cur.has(id)) admin.toggleSectionHidden(id); });
+      }
+      if (Array.isArray(parsed.videoOrder)) {
+        admin.updateVideoOrder(parsed.videoOrder);
+      }
+      if (Array.isArray(parsed.hiddenVideos)) {
+        const cur = new Set(admin.hiddenVideos);
+        parsed.hiddenVideos.forEach((id) => { if (!cur.has(id)) admin.toggleVideoHidden(id); });
       }
       window.alert("Imported successfully.");
     } catch (err) {
