@@ -3824,6 +3824,8 @@ function Results({ admin }) {
                 }
               </div>
 
+              {/* spacer — keeps the previous card height without showing titles */}
+              <div aria-hidden="true" style={{ height: 78 }} />
             </div>);
         })}
         </div>
