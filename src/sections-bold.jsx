@@ -751,6 +751,8 @@ function SocialProofSection({ onCTAClick, admin }) {
                     position: "absolute", inset: 0,
                     width: "100%", height: "100%",
                     objectFit: "cover",
+                    transform: "scale(1.15) translateY(-11%)",
+                    transformOrigin: "center top",
                     zIndex: 1
                   }} />
                 <span aria-hidden="true" style={{
