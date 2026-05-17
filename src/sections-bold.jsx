@@ -766,10 +766,6 @@ function SocialProofSection({ onCTAClick, admin }) {
               position: "absolute", inset: 0, borderRadius: 18,
               zIndex: 4, pointerEvents: "none"
             }} />
-              <span aria-hidden="true" className="vid-card__corner vid-card__corner--tr" />
-              <span aria-hidden="true" className="vid-card__corner vid-card__corner--tl" />
-              <span aria-hidden="true" className="vid-card__corner vid-card__corner--br" />
-              <span aria-hidden="true" className="vid-card__corner vid-card__corner--bl" />
 
               {v.duration &&
               <div style={{
@@ -890,24 +886,6 @@ function SocialProofSection({ onCTAClick, admin }) {
           opacity: 0.7;
         }
         .vid-card:hover .vid-card__ring { opacity: 1; }
-        /* corner brackets */
-        .vid-card__corner {
-          position: absolute;
-          width: 20px; height: 20px;
-          border-color: var(--accent);
-          border-style: solid;
-          border-width: 0;
-          z-index: 5;
-          opacity: 0.85;
-          transition: width 0.3s ease, height 0.3s ease, opacity 0.3s ease;
-          pointer-events: none;
-          filter: drop-shadow(0 0 5px rgba(255,213,0,0.5));
-        }
-        .vid-card__corner--tr { top: 13px; right: 13px; border-top-width: 2px; border-right-width: 2px; border-top-right-radius: 5px; }
-        .vid-card__corner--tl { top: 13px; left: 13px; border-top-width: 2px; border-left-width: 2px; border-top-left-radius: 5px; }
-        .vid-card__corner--br { bottom: 13px; right: 13px; border-bottom-width: 2px; border-right-width: 2px; border-bottom-right-radius: 5px; }
-        .vid-card__corner--bl { bottom: 13px; left: 13px; border-bottom-width: 2px; border-left-width: 2px; border-bottom-left-radius: 5px; }
-        .vid-card:hover .vid-card__corner { width: 26px; height: 26px; opacity: 1; }
         .vid-play-btn { transition: transform 0.3s cubic-bezier(0.2,0.8,0.2,1); }
         [data-vid-card]:hover .vid-play-btn { transform: scale(1.08); }
         .vid-play-ring { animation: vidPlayPulse 2.4s ease-in-out infinite; }
