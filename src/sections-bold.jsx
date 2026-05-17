@@ -772,17 +772,17 @@ function SocialProofSection({ onCTAClick }) {
 
                 <div className="vid-play-btn" style={{
                 position: "relative",
-                width: 62, height: 62, borderRadius: "50%",
+                width: 50, height: 50, borderRadius: "50%",
                 background: "var(--accent)",
                 display: "flex", alignItems: "center", justifyContent: "center",
                 boxShadow: "0 10px 30px rgba(255,213,0,0.45)"
               }}>
                   <span aria-hidden="true" className="vid-play-ring" style={{
-                  position: "absolute", inset: -10,
+                  position: "absolute", inset: -8,
                   borderRadius: "50%",
                   border: "1.5px solid rgba(255,213,0,0.5)"
                 }} />
-                  <svg width="22" height="22" viewBox="0 0 20 20" fill="none">
+                  <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
                     <path d="M6 4 L16 10 L6 16 Z" fill="#0A0A0A" />
                   </svg>
                 </div>
