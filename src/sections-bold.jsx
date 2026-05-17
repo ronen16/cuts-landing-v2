@@ -431,6 +431,7 @@ function SocialProofSection({ onCTAClick }) {
 
   // איזה כרטיס מנגן כרגע (לפי index בלולאה האינסופית)
   const [playingIdx, setPlayingIdx] = React.useState(null);
+  const [loadedIdx, setLoadedIdx] = React.useState(null);
 
   // טאמבנייל לכל סרטון — נטען דרך Vimeo oEmbed (JSON קטן, בלי iframe)
   const [thumbs, setThumbs] = React.useState({});
@@ -667,7 +668,7 @@ function SocialProofSection({ onCTAClick }) {
           <div
             key={i}
             data-vid-card="true"
-            onClick={() => { if (hasVideo) setPlayingIdx(i); }}
+            onClick={() => { if (hasVideo) { setPlayingIdx(i); setLoadedIdx(null); } }}
             style={{
               flex: "0 0 calc((100% - 60px) / 4)",
               aspectRatio: "9 / 16",
@@ -691,17 +692,34 @@ function SocialProofSection({ onCTAClick }) {
             }}>
 
               {isPlaying &&
-              <iframe
-                src={`https://player.vimeo.com/video/${v.vimeoId}?autoplay=1&title=0&byline=0&portrait=0&dnt=1`}
-                title={v.name}
-                allow="autoplay; fullscreen; picture-in-picture"
-                allowFullScreen
-                style={{
-                  position: "absolute", inset: 0,
-                  width: "100%", height: "100%",
-                  border: "none", zIndex: 5,
-                  background: "#000"
-                }} />
+              <React.Fragment>
+                <iframe
+                  src={`https://player.vimeo.com/video/${v.vimeoId}?autoplay=1&title=0&byline=0&portrait=0&dnt=1`}
+                  title={v.name}
+                  allow="autoplay; fullscreen; picture-in-picture"
+                  allowFullScreen
+                  onLoad={() => setLoadedIdx(i)}
+                  style={{
+                    position: "absolute", inset: 0,
+                    width: "100%", height: "100%",
+                    border: "none", zIndex: 5,
+                    background: "#000"
+                  }} />
+                {loadedIdx !== i &&
+                <div aria-hidden="true" style={{
+                  position: "absolute", inset: 0, zIndex: 6,
+                  background: "#000",
+                  display: "flex", alignItems: "center", justifyContent: "center"
+                }}>
+                  <span style={{
+                    width: 44, height: 44, borderRadius: "50%",
+                    border: "3px solid rgba(255,213,0,0.25)",
+                    borderTopColor: "var(--accent)",
+                    animation: "vidSpin 0.8s linear infinite"
+                  }} />
+                </div>
+                }
+              </React.Fragment>
               }
 
               {!isPlaying && thumbs[v.vimeoId] &&
@@ -808,6 +826,7 @@ function SocialProofSection({ onCTAClick }) {
 
       <style>{`
         .testimonial-video-scroller::-webkit-scrollbar { display: none; }
+        @keyframes vidSpin { to { transform: rotate(360deg); } }
         @media (max-width: 900px) {
           .testimonial-video-scroller > [data-vid-card] {
             flex: 0 0 calc((100% - 20px) / 2) !important;
