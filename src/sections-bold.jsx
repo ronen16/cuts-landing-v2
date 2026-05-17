@@ -3600,8 +3600,6 @@ function orderAndFilterPodcasts(admin) {
 }
 
 function Results({ admin }) {
-  const scrollerRef = React.useRef(null);
-  const [scrollState, setScrollState] = React.useState({ atStart: true, atEnd: false });
   const [playingIdx, setPlayingIdx] = React.useState(null);
 
   const cases = React.useMemo(
@@ -3611,57 +3609,39 @@ function Results({ admin }) {
 
 
 
-  const checkScrollState = React.useCallback(() => {
-    const el = scrollerRef.current;
-    if (!el) return;
-    const atStart = Math.abs(el.scrollLeft) < 4;
-    // RTL: scrollLeft is negative; at end means abs(scrollLeft) >= scrollWidth - clientWidth
-    const atEnd = Math.abs(el.scrollLeft) >= el.scrollWidth - el.clientWidth - 4;
-    setScrollState({ atStart, atEnd });
+  // Transform-based track (no native scroll — RTL scrollLeft is
+  // unreliable in this engine: smooth resets, snap jump-backs).
+  const viewportRef = React.useRef(null);
+  const [idx, setIdx] = React.useState(0);
+  const [cardW, setCardW] = React.useState(0);
+  const PER_VIEW = 3;
+  const GAP = 20;
+  const maxIdx = Math.max(0, cases.length - PER_VIEW);
+  const step = cardW + GAP;
+
+  const measure = React.useCallback(() => {
+    const vp = viewportRef.current;
+    if (!vp) return;
+    const w = vp.clientWidth;
+    setCardW(Math.max(0, (w - (PER_VIEW - 1) * GAP) / PER_VIEW));
   }, []);
 
   React.useEffect(() => {
-    checkScrollState();
-    const el = scrollerRef.current;
-    if (!el) return;
-    el.addEventListener("scroll", checkScrollState, { passive: true });
-    window.addEventListener("resize", checkScrollState);
-    return () => {
-      el.removeEventListener("scroll", checkScrollState);
-      window.removeEventListener("resize", checkScrollState);
-    };
-  }, [checkScrollState]);
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [measure]);
 
-  const tweenRef = React.useRef(null);
-  const scrollByCard = (dir) => {
-    const el = scrollerRef.current;
-    if (!el) return;
-    const firstCard = el.querySelector("[data-case-card]");
-    if (!firstCard) return;
-    const cardW = firstCard.getBoundingClientRect().width;
-    const gap = 20;
-    const step = cardW + gap;
-    const maxScroll = el.scrollWidth - el.clientWidth;
-    // RTL here: scrollLeft ranges 0 (start) → -maxScroll (end).
-    // Native smooth scroll snaps back to 0 with negative scrollLeft in
-    // this engine. Animate scrollLeft directly with a timer (rAF gets
-    // throttled when the tab is backgrounded — setInterval is reliable).
-    const from = el.scrollLeft;
-    const to = Math.min(0, Math.max(-maxScroll, from - dir * step));
-    if (to === from) return;
-    if (tweenRef.current) clearInterval(tweenRef.current);
-    const dur = 360;
-    const t0 = Date.now();
-    const ease = (p) => 1 - Math.pow(1 - p, 3);
-    tweenRef.current = setInterval(() => {
-      const p = Math.min(1, (Date.now() - t0) / dur);
-      el.scrollLeft = from + (to - from) * ease(p);
-      if (p >= 1) {
-        clearInterval(tweenRef.current);
-        tweenRef.current = null;
-      }
-    }, 16);
-  };
+  // Clamp idx if the list shrinks (admin hide/reorder).
+  React.useEffect(() => {
+    setIdx((i) => Math.min(i, maxIdx));
+  }, [maxIdx]);
+
+  const go = (dir) => setIdx((i) => Math.max(0, Math.min(maxIdx, i + dir)));
+  const atStart = idx <= 0;
+  const atEnd = idx >= maxIdx;
+  const scrollByCard = go;
+  const scrollState = { atStart, atEnd };
 
   return (
     <section id="results" style={{ padding: "76px 0 52px", background: "var(--card)", borderTop: "1px solid var(--line2)", borderBottom: "1px solid var(--line2)" }}>
@@ -3734,14 +3714,16 @@ function Results({ admin }) {
           }}>←</button>
 
         <div
-          ref={scrollerRef}
-          style={{
-            display: "flex", gap: 20,
-            overflowX: "auto",
-            scrollbarWidth: "none", msOverflowStyle: "none",
-            paddingBlock: 10, paddingInline: 4
-          }}>
-          <style>{`#results [style*="overflow"]::-webkit-scrollbar{display:none}`}</style>
+          ref={viewportRef}
+          style={{ overflow: "hidden", paddingBlock: 10 }}>
+          <div
+            style={{
+              display: "flex", gap: GAP,
+              direction: "ltr",
+              transform: `translateX(${-idx * step}px)`,
+              transition: "transform 0.45s cubic-bezier(0.22,0.61,0.36,1)",
+              willChange: "transform"
+            }}>
 
           {cases.map((c, i) => {
           const hasVideo = Boolean(c.youtubeId);
@@ -3752,7 +3734,7 @@ function Results({ admin }) {
             data-case-card
             onClick={() => { if (hasVideo) setPlayingIdx(i); }}
             style={{
-              flex: "0 0 calc((100% - 40px) / 3)",
+              flex: `0 0 ${cardW}px`,
               background: "var(--bg)", borderRadius: 20,
               border: "1px solid var(--line2)",
               overflow: "hidden",
@@ -3842,6 +3824,7 @@ function Results({ admin }) {
               </div>
             </div>);
         })}
+          </div>
         </div>
       </div>
     </section>);
@@ -6511,24 +6494,28 @@ function SectionDivider() {
 // ---------- BOLD VARIATION (root) ----------
 
 function BoldVariation({ onCTAClick, form, admin }) {
+  // Comp identities MUST stay stable across renders — otherwise React
+  // unmounts/remounts every section on each re-render, wiping in-section
+  // state (e.g. the podcast carousel index). So deps are [] and live
+  // values arrive via props (p) at the <s.Comp .../> call site.
   const DEFAULT_SECTIONS = React.useMemo(() => [
-    { id: "hero",             Comp: (p) => <Hero onCTAClick={onCTAClick} /> },
+    { id: "hero",             Comp: (p) => <Hero onCTAClick={p.onCTAClick} /> },
     { id: "solution",         Comp: (p) => <SolutionOld /> },
-    { id: "inline-lead-1",    Comp: (p) => <InlineLeadForm form={form} /> },
+    { id: "inline-lead-1",    Comp: (p) => <InlineLeadForm form={p.form} /> },
     { id: "problem",          Comp: (p) => <ProblemOld /> },
-    { id: "social-proof",     Comp: (p) => <SocialProofSection onCTAClick={onCTAClick} admin={admin} /> },
-    { id: "mini-lead-1",      Comp: (p) => <MiniLeadStripe form={form} /> },
+    { id: "social-proof",     Comp: (p) => <SocialProofSection onCTAClick={p.onCTAClick} admin={p.admin} /> },
+    { id: "mini-lead-1",      Comp: (p) => <MiniLeadStripe form={p.form} /> },
     { id: "who-its-for",      Comp: (p) => <WhoItsForOld /> },
     { id: "how-it-works",     Comp: (p) => <HowItWorksInteractive /> },
-    { id: "services",         Comp: (p) => <ServicesOld onCTAClick={onCTAClick} /> },
-    { id: "studio-booking",   Comp: (p) => <StudioBookingLead form={form} /> },
-    { id: "results",          Comp: (p) => <Results admin={admin} /> },
+    { id: "services",         Comp: (p) => <ServicesOld onCTAClick={p.onCTAClick} /> },
+    { id: "studio-booking",   Comp: (p) => <StudioBookingLead form={p.form} /> },
+    { id: "results",          Comp: (p) => <Results admin={p.admin} /> },
     { id: "guest-strip",      Comp: (p) => <GuestStrip /> },
-    { id: "guarantee",        Comp: (p) => <Guarantee onCTAClick={onCTAClick} /> },
-    { id: "mini-lead-2",      Comp: (p) => <MiniLeadStripe form={form} /> },
+    { id: "guarantee",        Comp: (p) => <Guarantee onCTAClick={p.onCTAClick} /> },
+    { id: "mini-lead-2",      Comp: (p) => <MiniLeadStripe form={p.form} /> },
     { id: "faq",              Comp: (p) => <FAQSection /> },
-    { id: "final-cta",        Comp: (p) => <FinalCTA form={form} onCTAClick={onCTAClick} /> },
-  ], [onCTAClick, form]);
+    { id: "final-cta",        Comp: (p) => <FinalCTA form={p.form} onCTAClick={p.onCTAClick} /> },
+  ], []);
 
   // Compose ordered list based on admin.sectionOrder (if any)
   const orderedSections = React.useMemo(() => {
@@ -6630,7 +6617,7 @@ function BoldVariation({ onCTAClick, form, admin }) {
               {isHidden && isUnlocked && (
                 <div className="section-hidden-badge">מוסתר באתר הלייב</div>
               )}
-              <s.Comp />
+              <s.Comp onCTAClick={onCTAClick} form={form} admin={admin} />
             </div>
             {i < visibleSections.length - 1 && <SectionDivider />}
           </React.Fragment>

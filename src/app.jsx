@@ -99,7 +99,10 @@ function App() {
     cls.toggle("admin-moving-elements", admin.movingElements);
   }, [admin.editingText, admin.draggingSections, admin.movingElements]);
 
-  const onCTAClick = () => scrollToId("#cta");
+  // Stable identity — otherwise BoldVariation's DEFAULT_SECTIONS useMemo
+  // re-creates every Comp each render, remounting all sections (which
+  // resets in-section state like the podcast carousel index).
+  const onCTAClick = React.useCallback(() => scrollToId("#cta"), []);
 
   const Variant = window.BoldVariation;
   const AdminPanel = window.AdminPanel;
