@@ -3569,12 +3569,14 @@ function GuestStrip() {
 // youtubeId = ה-ID מתוך לינק יוטיוב.
 //   https://youtu.be/ABC123  או  https://www.youtube.com/watch?v=ABC123  → "ABC123"
 const PODCAST_VIDEOS = [
-{ title: "פרק לדוגמה 01", sub: "", youtubeId: "" },
-{ title: "פרק לדוגמה 02", sub: "", youtubeId: "" },
-{ title: "פרק לדוגמה 03", sub: "", youtubeId: "" },
-{ title: "פרק לדוגמה 04", sub: "", youtubeId: "" },
-{ title: "פרק לדוגמה 05", sub: "", youtubeId: "" },
-{ title: "פרק לדוגמה 06", sub: "", youtubeId: "" }];
+{ title: "", sub: "", youtubeId: "L-RHzPEthCM" },
+{ title: "", sub: "", youtubeId: "MpOyFwCPAII" },
+{ title: "", sub: "", youtubeId: "bXAmsbiZwIg" },
+{ title: "", sub: "", youtubeId: "7MeWJkQZcqU" },
+{ title: "", sub: "", youtubeId: "V-kwXkPtP0k" },
+{ title: "", sub: "", youtubeId: "ZdbeRPiUJFo" },
+{ title: "", sub: "", youtubeId: "yS0Zlpwmr3M" },
+{ title: "", sub: "", youtubeId: "csBIrDweyuU" }];
 
 function Results() {
   const scrollerRef = React.useRef(null);
@@ -3582,6 +3584,33 @@ function Results() {
   const [playingIdx, setPlayingIdx] = React.useState(null);
 
   const cases = PODCAST_VIDEOS;
+
+  // משיכת כותרות הפרקים מ-YouTube oEmbed (JSON קטן, בלי iframe)
+  const [ytTitles, setYtTitles] = React.useState({});
+  React.useEffect(() => {
+    const ids = Array.from(new Set(PODCAST_VIDEOS.map((v) => v.youtubeId).filter(Boolean)));
+    let cancelled = false;
+    Promise.all(
+      ids.map(async (id) => {
+        try {
+          const res = await fetch(
+            `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${id}&format=json`
+          );
+          if (!res.ok) return null;
+          const data = await res.json();
+          return data && data.title ? [id, data.title] : null;
+        } catch {
+          return null;
+        }
+      })
+    ).then((pairs) => {
+      if (cancelled) return;
+      const next = {};
+      pairs.forEach((p) => { if (p) next[p[0]] = p[1]; });
+      setYtTitles(next);
+    });
+    return () => { cancelled = true; };
+  }, []);
 
 
   const checkScrollState = React.useCallback(() => {
@@ -3799,12 +3828,19 @@ function Results() {
               </div>
 
               {/* Card body */}
+              {(c.title || ytTitles[c.youtubeId] || c.sub) &&
               <div style={{ padding: "18px 22px 20px", display: "flex", flexDirection: "column", gap: 6 }}>
-                <div style={{ fontSize: 16, fontWeight: 800, lineHeight: 1.3, color: "#fff" }}>{c.title}</div>
+                {(c.title || ytTitles[c.youtubeId]) &&
+                <div style={{
+                  fontSize: 16, fontWeight: 800, lineHeight: 1.3, color: "#fff",
+                  display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden"
+                }}>{c.title || ytTitles[c.youtubeId]}</div>
+                }
                 {c.sub &&
                 <div style={{ fontSize: 13, opacity: 0.6, lineHeight: 1.35 }}>{c.sub}</div>
                 }
               </div>
+              }
             </div>);
         })}
         </div>
