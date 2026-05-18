@@ -3711,7 +3711,7 @@ function Results({ admin }) {
         {/* Right arrow (previous in RTL) */}
         <button
           aria-label="הקודם"
-          onClick={() => scrollByCard(-1)}
+          onClick={() => scrollByCard(1)}
           disabled={scrollState.atStart}
           style={{
             position: "absolute", right: -8, top: "calc(50% - 28px)",
@@ -3730,7 +3730,7 @@ function Results({ admin }) {
         {/* Left arrow (next in RTL) */}
         <button
           aria-label="הבא"
-          onClick={() => scrollByCard(1)}
+          onClick={() => scrollByCard(-1)}
           disabled={scrollState.atEnd}
           style={{
             position: "absolute", left: -8, top: "calc(50% - 28px)",
