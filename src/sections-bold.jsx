@@ -2617,6 +2617,43 @@ function FAQSection() {
 
 }
 
+// ---------- Consent checkbox (required before any CTA submit) ----------
+
+function ConsentCheckbox({ form }) {
+  const checked = !!form.consent;
+  const err = form.errors && form.errors.consent;
+  return (
+    <label
+      style={{
+        display: "flex", alignItems: "flex-start", gap: 10,
+        cursor: "pointer", textAlign: "right",
+        fontSize: 13.5, lineHeight: 1.5,
+        color: err ? "#ff8a8a" : "rgba(255,255,255,0.75)",
+        userSelect: "none"
+      }}>
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={(e) => form.setConsent(e.target.checked)}
+        style={{
+          flex: "0 0 18px", width: 18, height: 18, marginTop: 1,
+          accentColor: "var(--accent)", cursor: "pointer"
+        }} />
+      <span>
+        אני מאשר/ת שקראתי ואני מסכים/ה{" "}
+        <a
+          href="terms.html"
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={(e) => e.stopPropagation()}
+          style={{ color: "var(--accent)", textDecoration: "underline", fontWeight: 700 }}>
+          לתקנון האתר
+        </a>
+      </span>
+    </label>
+  );
+}
+
 // ---------- STUDIO BOOKING — centered lead capture (between Results + GuestStrip) ----------
 
 function StudioBookingLead({ form }) {
@@ -2851,6 +2888,14 @@ function StudioBookingLead({ form }) {
                 }
                 </div>
 
+                {/* Consent (required) */}
+                <div style={{ margin: "4px 0 14px" }}>
+                  <ConsentCheckbox form={form} />
+                  {touched.consent && errors.consent &&
+                  <span style={{ color: "#ff8a8a", fontSize: 12, marginTop: 6, display: "block" }}>{errors.consent}</span>
+                  }
+                </div>
+
                 {/* Submit */}
                 <button
                 type="submit"
@@ -3042,6 +3087,13 @@ function MiniLeadStripe({ form }) {
               
                 שליחה ←
               </button>
+
+              <div style={{ flex: "1 1 100%", marginTop: 2 }}>
+                <ConsentCheckbox form={form} />
+                {touched.consent && errors.consent &&
+                <span style={{ color: "#ff8a8a", fontSize: 12, marginTop: 6, display: "block" }}>{errors.consent}</span>
+                }
+              </div>
             </form>
           </div>
         }
@@ -3157,6 +3209,12 @@ function InlineLeadForm({ form }) {
                 <label>טלפון</label>
                 <input dir="ltr" value={values.phone} onChange={(e) => setField("phone", e.target.value)} onBlur={() => blur("phone")} placeholder="054-000-0000" />
                 {errors.phone && touched.phone && <span className="err">{errors.phone}</span>}
+              </div>
+              <div style={{ marginTop: 4 }}>
+                <ConsentCheckbox form={form} />
+                {touched.consent && errors.consent &&
+                <span className="err" style={{ display: "block", marginTop: 6 }}>{errors.consent}</span>
+                }
               </div>
               <button type="submit" className="btn btn-primary" style={{
               marginTop: 6, justifyContent: "center", padding: "18px",
@@ -3350,6 +3408,12 @@ function FinalCTA({ form, onCTAClick }) {
                   <label>טלפון</label>
                   <input dir="ltr" value={values.phone} onChange={(e) => setField("phone", e.target.value)} onBlur={() => blur("phone")} placeholder="054-000-0000" />
                   {errors.phone && touched.phone && <span className="err">{errors.phone}</span>}
+                </div>
+                <div style={{ marginTop: 2 }}>
+                  <ConsentCheckbox form={form} />
+                  {touched.consent && errors.consent &&
+                  <span className="err" style={{ display: "block", marginTop: 6 }}>{errors.consent}</span>
+                  }
                 </div>
                 <button type="submit" className="btn btn-primary" style={{
                 marginTop: 4, justifyContent: "center", padding: "20px",

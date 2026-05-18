@@ -171,6 +171,7 @@ function useForm() {
   const [errors, setErrors] = React.useState({});
   const [submitted, setSubmitted] = React.useState(false);
   const [touched, setTouched] = React.useState({});
+  const [consent, setConsentState] = React.useState(false);
 
   const setField = (k, v) => {
     setValues((prev) => ({ ...prev, [k]: v }));
@@ -178,14 +179,20 @@ function useForm() {
   };
   const blur = (k) => setTouched((prev) => ({ ...prev, [k]: true }));
 
+  const setConsent = (v) => {
+    setConsentState(v);
+    if (v && errors.consent) setErrors((prev) => {const n = { ...prev };delete n.consent;return n;});
+  };
+
   const submit = (e) => {
     e.preventDefault();
     const errs = validateForm(values);
+    if (!consent) errs.consent = "יש לאשר את תקנון האתר כדי להמשיך";
     setErrors(errs);
-    setTouched({ name: true, phone: true, email: true });
+    setTouched({ name: true, phone: true, email: true, consent: true });
     if (Object.keys(errs).length === 0) setSubmitted(true);
   };
-  return { values, setField, errors, touched, blur, submit, submitted };
+  return { values, setField, errors, touched, blur, submit, submitted, consent, setConsent };
 }
 
 function scrollToId(id) {
