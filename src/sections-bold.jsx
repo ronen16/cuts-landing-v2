@@ -3707,7 +3707,7 @@ function Results({ admin }) {
       </div>
 
       {/* Carousel — full-bleed wrapper for arrows */}
-      <div style={{ position: "relative", maxWidth: 1280, marginInline: "auto", paddingInline: 24 }}>
+      <div style={{ position: "relative", maxWidth: 1280, marginInline: "auto", paddingInline: 80 }}>
         {/* Prev arrow (right in RTL) — identical to testimonials */}
         <button
           type="button"
