@@ -893,6 +893,9 @@ function SocialProofSection({ onCTAClick, admin }) {
           0%, 100% { transform: scale(1); opacity: 0.6; }
           50%      { transform: scale(1.14); opacity: 0; }
         }
+        .pod-play-btn { transition: transform 0.3s cubic-bezier(0.2,0.8,0.2,1); }
+        [data-case-card]:hover .pod-play-btn { transform: scale(1.08); }
+        .pod-play-ring { animation: vidPlayPulse 2.4s ease-in-out infinite; }
         @media (max-width: 900px) {
           .testimonial-video-scroller > [data-vid-card] {
             flex: 0 0 calc((100% - 20px) / 2) !important;
@@ -3836,13 +3839,19 @@ function Results({ admin }) {
                   display: "flex", alignItems: "center", justifyContent: "center",
                   opacity: 0.85, transition: "opacity 0.25s ease", zIndex: 2
                 }}>
-                    <div style={{
+                    <div className="pod-play-btn" style={{
+                    position: "relative",
                     width: 68, height: 48,
                     background: "var(--accent)",
                     borderRadius: 12,
                     display: "flex", alignItems: "center", justifyContent: "center",
-                    boxShadow: "0 8px 24px rgba(0,0,0,0.5)"
+                    boxShadow: "0 10px 30px rgba(255,213,0,0.45)"
                   }}>
+                      <span aria-hidden="true" className="pod-play-ring" style={{
+                      position: "absolute", inset: -8,
+                      borderRadius: 16,
+                      border: "1.5px solid rgba(255,213,0,0.5)"
+                    }} />
                       <div style={{
                       width: 0, height: 0,
                       borderTop: "10px solid transparent",
