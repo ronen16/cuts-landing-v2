@@ -433,8 +433,14 @@ const TESTIMONIAL_VIDEOS = [
 if (typeof window !== "undefined") window.__cutsTestimonialVideos = TESTIMONIAL_VIDEOS;
 
 function orderAndFilterVideos(admin) {
-  const order = admin && Array.isArray(admin.videoOrder) ? admin.videoOrder : null;
   const hidden = new Set((admin && admin.hiddenVideos) || []);
+  // Admin-edited list (add/edit links) is the source of truth when present.
+  const items = admin && Array.isArray(admin.videoItems) ? admin.videoItems : null;
+  if (items) {
+    return items
+      .filter((v) => v && v.vimeoId && !hidden.has(v.vimeoId));
+  }
+  const order = admin && Array.isArray(admin.videoOrder) ? admin.videoOrder : null;
   let list = TESTIMONIAL_VIDEOS;
   if (order && order.length) {
     const byId = new Map(TESTIMONIAL_VIDEOS.map((v) => [v.vimeoId, v]));
@@ -444,7 +450,6 @@ function orderAndFilterVideos(admin) {
       const v = byId.get(id);
       if (v && !seen.has(id)) { ordered.push(v); seen.add(id); }
     }
-    // append any new videos not present in the saved order
     for (const v of TESTIMONIAL_VIDEOS) if (!seen.has(v.vimeoId)) ordered.push(v);
     list = ordered;
   }
@@ -3747,8 +3752,12 @@ function LogoMarquee() {
 }
 
 function orderAndFilterPodcasts(admin) {
-  const order = admin && Array.isArray(admin.podcastOrder) ? admin.podcastOrder : null;
   const hidden = new Set((admin && admin.hiddenPodcasts) || []);
+  const items = admin && Array.isArray(admin.podcastItems) ? admin.podcastItems : null;
+  if (items) {
+    return items.filter((v) => v && v.youtubeId && !hidden.has(v.youtubeId));
+  }
+  const order = admin && Array.isArray(admin.podcastOrder) ? admin.podcastOrder : null;
   let list = PODCAST_VIDEOS;
   if (order && order.length) {
     const byId = new Map(PODCAST_VIDEOS.map((v) => [v.youtubeId, v]));

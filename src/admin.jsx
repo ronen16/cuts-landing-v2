@@ -32,7 +32,7 @@ const MAX_VERSIONS = 10;
 function loadAdminState() {
   try {
     const raw = localStorage.getItem(ADMIN_STORAGE_KEY);
-    if (!raw) return { unlocked: false, overrides: {}, sectionOrder: null, elementOffsets: {}, hiddenSections: [], videoOrder: null, hiddenVideos: [], podcastOrder: null, hiddenPodcasts: [], publishedVersions: [] };
+    if (!raw) return { unlocked: false, overrides: {}, sectionOrder: null, elementOffsets: {}, hiddenSections: [], videoOrder: null, hiddenVideos: [], videoItems: null, podcastOrder: null, hiddenPodcasts: [], podcastItems: null, publishedVersions: [] };
     const parsed = JSON.parse(raw);
     return {
       unlocked: !!parsed.unlocked,
@@ -42,12 +42,14 @@ function loadAdminState() {
       hiddenSections: Array.isArray(parsed.hiddenSections) ? parsed.hiddenSections : [],
       videoOrder: Array.isArray(parsed.videoOrder) ? parsed.videoOrder : null,
       hiddenVideos: Array.isArray(parsed.hiddenVideos) ? parsed.hiddenVideos : [],
+      videoItems: Array.isArray(parsed.videoItems) ? parsed.videoItems : null,
       podcastOrder: Array.isArray(parsed.podcastOrder) ? parsed.podcastOrder : null,
       hiddenPodcasts: Array.isArray(parsed.hiddenPodcasts) ? parsed.hiddenPodcasts : [],
+      podcastItems: Array.isArray(parsed.podcastItems) ? parsed.podcastItems : null,
       publishedVersions: Array.isArray(parsed.publishedVersions) ? parsed.publishedVersions : [],
     };
   } catch (e) {
-    return { unlocked: false, overrides: {}, sectionOrder: null, elementOffsets: {}, hiddenSections: [], videoOrder: null, hiddenVideos: [], podcastOrder: null, hiddenPodcasts: [], publishedVersions: [] };
+    return { unlocked: false, overrides: {}, sectionOrder: null, elementOffsets: {}, hiddenSections: [], videoOrder: null, hiddenVideos: [], videoItems: null, podcastOrder: null, hiddenPodcasts: [], podcastItems: null, publishedVersions: [] };
   }
 }
 
@@ -160,8 +162,10 @@ function saveAdminState(state) {
         hiddenSections: state.hiddenSections || [],
         videoOrder: state.videoOrder || null,
         hiddenVideos: state.hiddenVideos || [],
+        videoItems: state.videoItems || null,
         podcastOrder: state.podcastOrder || null,
         hiddenPodcasts: state.hiddenPodcasts || [],
+        podcastItems: state.podcastItems || null,
         publishedVersions: state.publishedVersions || [],
       })
     );
@@ -258,8 +262,10 @@ function useAdminMode() {
   const [hiddenSections, setHiddenSections] = React.useState(initial.hiddenSections);
   const [videoOrder, setVideoOrder] = React.useState(initial.videoOrder);
   const [hiddenVideos, setHiddenVideos] = React.useState(initial.hiddenVideos);
+  const [videoItems, setVideoItems] = React.useState(initial.videoItems);
   const [podcastOrder, setPodcastOrder] = React.useState(initial.podcastOrder);
   const [hiddenPodcasts, setHiddenPodcasts] = React.useState(initial.hiddenPodcasts);
+  const [podcastItems, setPodcastItems] = React.useState(initial.podcastItems);
   const [publishedVersions, setPublishedVersions] = React.useState(initial.publishedVersions);
 
   React.useEffect(() => {
@@ -269,8 +275,8 @@ function useAdminMode() {
   }, []);
 
   React.useEffect(() => {
-    saveAdminState({ unlocked, overrides, sectionOrder, elementOffsets, hiddenSections, videoOrder, hiddenVideos, podcastOrder, hiddenPodcasts, publishedVersions });
-  }, [unlocked, overrides, sectionOrder, elementOffsets, hiddenSections, videoOrder, hiddenVideos, podcastOrder, hiddenPodcasts, publishedVersions]);
+    saveAdminState({ unlocked, overrides, sectionOrder, elementOffsets, hiddenSections, videoOrder, hiddenVideos, videoItems, podcastOrder, hiddenPodcasts, podcastItems, publishedVersions });
+  }, [unlocked, overrides, sectionOrder, elementOffsets, hiddenSections, videoOrder, hiddenVideos, videoItems, podcastOrder, hiddenPodcasts, podcastItems, publishedVersions]);
 
   // mutual exclusion
   const setEditingTextSafe = React.useCallback((v) => {
@@ -333,6 +339,13 @@ function useAdminMode() {
     });
   }, []);
 
+  const updatePodcastItems = React.useCallback((items) => {
+    setPodcastItems(items);
+  }, []);
+  const updateVideoItems = React.useCallback((items) => {
+    setVideoItems(items);
+  }, []);
+
   // Snapshot current state into the versions list (cap at MAX_VERSIONS).
   // Reads fresh from localStorage to avoid stale React closure bugs (edits
   // made just before clicking Publish need to be included).
@@ -344,8 +357,10 @@ function useAdminMode() {
     const liveHiddenSections = current.hiddenSections || [];
     const liveVideoOrder = current.videoOrder || null;
     const liveHiddenVideos = current.hiddenVideos || [];
+    const liveVideoItems = current.videoItems || null;
     const livePodcastOrder = current.podcastOrder || null;
     const liveHiddenPodcasts = current.hiddenPodcasts || [];
+    const livePodcastItems = current.podcastItems || null;
 
     const snapshot = {
       id: "v-" + Date.now() + "-" + Math.random().toString(36).slice(2, 8),
@@ -357,8 +372,10 @@ function useAdminMode() {
       hiddenSections: liveHiddenSections,
       videoOrder: liveVideoOrder,
       hiddenVideos: liveHiddenVideos,
+      videoItems: liveVideoItems,
       podcastOrder: livePodcastOrder,
       hiddenPodcasts: liveHiddenPodcasts,
+      podcastItems: livePodcastItems,
     };
     setPublishedVersions((prev) => [snapshot, ...prev].slice(0, MAX_VERSIONS));
 
@@ -378,8 +395,10 @@ function useAdminMode() {
         hiddenSections: liveHiddenSections,
         videoOrder: liveVideoOrder,
         hiddenVideos: liveHiddenVideos,
+        videoItems: liveVideoItems,
         podcastOrder: livePodcastOrder,
         hiddenPodcasts: liveHiddenPodcasts,
+        podcastItems: livePodcastItems,
       };
       const commit = await pushToGitHub(settings, payload);
       return { snapshot, published: true, commitUrl: commit.commit && commit.commit.html_url };
@@ -403,8 +422,10 @@ function useAdminMode() {
     setHiddenSections(v.hiddenSections || []);
     setVideoOrder(v.videoOrder || null);
     setHiddenVideos(v.hiddenVideos || []);
+    setVideoItems(v.videoItems || null);
     setPodcastOrder(v.podcastOrder || null);
     setHiddenPodcasts(v.hiddenPodcasts || []);
+    setPodcastItems(v.podcastItems || null);
   }, [publishedVersions]);
 
   const deleteVersion = React.useCallback((id) => {
@@ -418,8 +439,10 @@ function useAdminMode() {
     setHiddenSections([]);
     setVideoOrder(null);
     setHiddenVideos([]);
+    setVideoItems(null);
     setPodcastOrder(null);
     setHiddenPodcasts([]);
+    setPodcastItems(null);
     if (window.__cutsRestoreOriginals) window.__cutsRestoreOriginals();
     if (window.__cutsClearAllTransforms) window.__cutsClearAllTransforms();
   }, []);
@@ -442,8 +465,10 @@ function useAdminMode() {
     hiddenSections,
     videoOrder,
     hiddenVideos,
+    videoItems,
     podcastOrder,
     hiddenPodcasts,
+    podcastItems,
     publishedVersions,
     setEditingText: setEditingTextSafe,
     setDraggingSections: setDraggingSectionsSafe,
@@ -454,8 +479,10 @@ function useAdminMode() {
     toggleSectionHidden,
     updateVideoOrder,
     toggleVideoHidden,
+    updateVideoItems,
     updatePodcastOrder,
     togglePodcastHidden,
+    updatePodcastItems,
     publishToLive,
     restoreVersion,
     deleteVersion,
@@ -733,242 +760,233 @@ function AdminVersionsModal({ admin }) {
 
 window.AdminVersionsModal = AdminVersionsModal;
 
-// ---------- Videos Manager Modal ----------
+// ---------- Media link parsers ----------
+
+function parseYouTubeId(input) {
+  const s = String(input || "").trim();
+  if (!s) return "";
+  let m;
+  if ((m = s.match(/[?&]v=([^&#]+)/))) return m[1];
+  if ((m = s.match(/youtu\.be\/([^?&#/]+)/))) return m[1];
+  if ((m = s.match(/\/embed\/([^?&#/]+)/))) return m[1];
+  if ((m = s.match(/\/shorts\/([^?&#/]+)/))) return m[1];
+  if ((m = s.match(/\/live\/([^?&#/]+)/))) return m[1];
+  return s; // assume raw id
+}
+
+function parseVimeoId(input) {
+  const s = String(input || "").trim();
+  if (!s) return "";
+  let m;
+  if ((m = s.match(/vimeo\.com\/(?:video\/)?(\d+)/))) return m[1];
+  if ((m = s.match(/player\.vimeo\.com\/video\/(\d+)/))) return m[1];
+  if ((m = s.match(/(\d{6,})/))) return m[1];
+  return s;
+}
+
+// ---------- Videos Manager Modal (testimonials · Vimeo) ----------
 
 function AdminVideosModal({ admin }) {
   const [open, setOpen] = React.useState(false);
-  const [, force] = React.useReducer((x) => x + 1, 0);
+  const [items, setItems] = React.useState([]);
+
+  const derive = React.useCallback(() => {
+    const all = (window.__cutsTestimonialVideos || []).slice();
+    const byId = new Map(all.map((v) => [v.vimeoId, v]));
+    const ord = Array.isArray(admin.videoOrder) ? admin.videoOrder : null;
+    let list = all;
+    if (ord && ord.length) {
+      const seen = new Set();
+      list = [];
+      for (const id of ord) { if (byId.has(id) && !seen.has(id)) { list.push(byId.get(id)); seen.add(id); } }
+      for (const v of all) if (!seen.has(v.vimeoId)) list.push(v);
+    }
+    return list.map((v) => ({ vimeoId: v.vimeoId || "", name: v.name || "", role: v.role || "" }));
+  }, [admin.videoOrder]);
 
   React.useEffect(() => {
-    const onOpen = () => setOpen(true);
+    const onOpen = () => {
+      const base = Array.isArray(admin.videoItems) && admin.videoItems.length
+        ? admin.videoItems.map((v) => ({ vimeoId: v.vimeoId || "", name: v.name || "", role: v.role || "" }))
+        : derive();
+      setItems(base);
+      setOpen(true);
+    };
     window.addEventListener("cuts-admin-videos", onOpen);
     return () => window.removeEventListener("cuts-admin-videos", onOpen);
-  }, []);
+  }, [admin.videoItems, derive]);
 
   if (!open) return null;
 
-  const all = (window.__cutsTestimonialVideos || []).slice();
-  const byId = new Map(all.map((v) => [v.vimeoId, v]));
-
-  // Current order: saved order first (existing ids), then any new videos.
-  const savedOrder = Array.isArray(admin.videoOrder) ? admin.videoOrder : null;
-  let ordered;
-  if (savedOrder && savedOrder.length) {
-    const seen = new Set();
-    ordered = [];
-    for (const id of savedOrder) {
-      if (byId.has(id) && !seen.has(id)) { ordered.push(byId.get(id)); seen.add(id); }
-    }
-    for (const v of all) if (!seen.has(v.vimeoId)) ordered.push(v);
-  } else {
-    ordered = all;
-  }
-
   const hidden = new Set(admin.hiddenVideos || []);
-
-  const commit = (list) => {
-    admin.updateVideoOrder(list.map((v) => v.vimeoId));
-    force();
+  const sync = (next) => { setItems(next); admin.updateVideoItems(next); };
+  const setId = (i, val) => { const n = items.slice(); n[i] = { ...n[i], vimeoId: parseVimeoId(val) }; sync(n); };
+  const setName = (i, val) => { const n = items.slice(); n[i] = { ...n[i], name: val }; sync(n); };
+  const move = (i, dir) => {
+    const t = i + dir; if (t < 0 || t >= items.length) return;
+    const n = items.slice(); const tmp = n[i]; n[i] = n[t]; n[t] = tmp; sync(n);
   };
-  const move = (idx, dir) => {
-    const next = ordered.slice();
-    const target = idx + dir;
-    if (target < 0 || target >= next.length) return;
-    const tmp = next[idx];
-    next[idx] = next[target];
-    next[target] = tmp;
-    commit(next);
+  const del = (i) => { if (window.confirm("למחוק את הסרטון הזה?")) sync(items.filter((_, x) => x !== i)); };
+  const add = () => { sync([...items, { vimeoId: "", name: "", role: "" }]); };
+
+  const inputStyle = {
+    width: "100%", padding: "7px 10px", borderRadius: 8,
+    border: "1px solid rgba(255,255,255,0.18)", background: "rgba(255,255,255,0.04)",
+    color: "#fff", font: "600 12px 'Heebo', system-ui, sans-serif", direction: "ltr", textAlign: "left",
   };
 
-  const Btn = (props, children) =>
-    React.createElement("button", Object.assign({ type: "button" }, props), children);
-
-  return React.createElement("div", {
-    className: "admin-modal-backdrop",
-    onClick: () => setOpen(false)
-  },
-    React.createElement("div", {
-      className: "admin-modal admin-modal--wide",
-      onClick: (e) => e.stopPropagation(),
-      dir: "rtl"
-    },
-      React.createElement("h3", { className: "admin-modal__title" }, "ניהול סרטוני עדויות"),
-      React.createElement("p", { className: "admin-modal__hint" },
-        "סדר מחדש עם החצים, או הסתר/הצג סרטון. שינויים נשמרים אוטומטית — לחץ \"העלאה ללייב\" כדי לפרסם."
-      ),
-      React.createElement("ul", { className: "admin-videos" },
-        ordered.map((v, idx) => {
-          const isHidden = hidden.has(v.vimeoId);
-          return React.createElement("li", {
-            key: v.vimeoId,
-            className: "admin-videos__row" + (isHidden ? " is-hidden" : "")
-          },
-            React.createElement("span", { className: "admin-videos__idx" }, idx + 1),
-            React.createElement("div", { className: "admin-videos__info" },
-              React.createElement("div", { className: "admin-videos__name" }, v.name),
-              React.createElement("div", { className: "admin-videos__meta" }, v.role || ("Vimeo · " + v.vimeoId))
-            ),
-            React.createElement("div", { className: "admin-videos__actions" },
-              Btn({
-                className: "admin-videos__btn",
-                disabled: idx === 0,
-                title: "הזז למעלה",
-                onClick: () => move(idx, -1)
-              }, "↑"),
-              Btn({
-                className: "admin-videos__btn",
-                disabled: idx === ordered.length - 1,
-                title: "הזז למטה",
-                onClick: () => move(idx, 1)
-              }, "↓"),
-              Btn({
-                className: "admin-videos__btn" + (isHidden ? " is-on" : ""),
-                title: isHidden ? "הצג" : "הסתר",
-                onClick: () => { admin.toggleVideoHidden(v.vimeoId); force(); }
-              }, isHidden ? "מוסתר" : "מוצג")
-            )
-          );
-        })
-      ),
-      React.createElement("div", { className: "admin-modal__actions" },
-        React.createElement("button", {
-          type: "button",
-          className: "admin-modal__btn admin-modal__btn--ghost",
-          onClick: () => {
-            if (window.confirm("לאפס את סדר הסרטונים וההסתרות לברירת מחדל?")) {
-              admin.updateVideoOrder(null);
-              (admin.hiddenVideos || []).slice().forEach((id) => admin.toggleVideoHidden(id));
-              force();
-            }
-          }
-        }, "איפוס"),
-        React.createElement("button", {
-          type: "button",
-          className: "admin-modal__btn admin-modal__btn--primary",
-          onClick: () => setOpen(false)
-        }, "סגור")
-      )
-    )
+  return (
+    <div className="admin-modal-backdrop" onClick={() => setOpen(false)}>
+      <div className="admin-modal admin-modal--wide" onClick={(e) => e.stopPropagation()} dir="rtl">
+        <h3 className="admin-modal__title">ניהול סרטוני עדויות</h3>
+        <p className="admin-modal__hint">
+          ערוך קישור Vimeo, סדר, הסתר או מחק. "➕ הוסף קישור" מוסיף סרטון חדש. שינויים נשמרים אוטומטית — לחץ "העלאה ללייב" כדי לפרסם.
+        </p>
+        <ul className="admin-videos">
+          {items.map((v, idx) => {
+            const isHidden = hidden.has(v.vimeoId);
+            return (
+              <li key={idx} className={"admin-videos__row" + (isHidden ? " is-hidden" : "")}>
+                <span className="admin-videos__idx">{idx + 1}</span>
+                <div className="admin-videos__info" style={{ gap: 6 }}>
+                  <input
+                    style={inputStyle}
+                    value={v.vimeoId}
+                    placeholder="https://vimeo.com/123456789 או ID"
+                    onChange={(e) => setId(idx, e.target.value)} />
+                  <input
+                    style={{ ...inputStyle, direction: "rtl", textAlign: "right", opacity: 0.85 }}
+                    value={v.name}
+                    placeholder="שם הלקוח (אופציונלי)"
+                    onChange={(e) => setName(idx, e.target.value)} />
+                </div>
+                <div className="admin-videos__actions">
+                  <button type="button" className="admin-videos__btn" disabled={idx === 0} title="הזז למעלה" onClick={() => move(idx, -1)}>↑</button>
+                  <button type="button" className="admin-videos__btn" disabled={idx === items.length - 1} title="הזז למטה" onClick={() => move(idx, 1)}>↓</button>
+                  <button type="button" className={"admin-videos__btn" + (isHidden ? " is-on" : "")} title={isHidden ? "הצג" : "הסתר"} onClick={() => { admin.toggleVideoHidden(v.vimeoId); }}>{isHidden ? "מוסתר" : "מוצג"}</button>
+                  <button type="button" className="admin-videos__btn is-on" title="מחק" onClick={() => del(idx)}>✕</button>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+        <button type="button" className="admin-modal__btn admin-modal__btn--ghost" style={{ marginBottom: 14 }} onClick={add}>➕ הוסף קישור</button>
+        <div className="admin-modal__actions">
+          <button
+            type="button"
+            className="admin-modal__btn admin-modal__btn--ghost"
+            onClick={() => {
+              if (window.confirm("לאפס את רשימת הסרטונים וההסתרות לברירת מחדל?")) {
+                admin.updateVideoItems(null);
+                (admin.hiddenVideos || []).slice().forEach((id) => admin.toggleVideoHidden(id));
+                setItems(derive());
+              }
+            }}>איפוס</button>
+          <button type="button" className="admin-modal__btn admin-modal__btn--primary" onClick={() => setOpen(false)}>סגור</button>
+        </div>
+      </div>
+    </div>
   );
 }
 
 window.AdminVideosModal = AdminVideosModal;
 
-// ---------- Podcasts Manager Modal ----------
+// ---------- Podcasts Manager Modal (Results · YouTube) ----------
 
 function AdminPodcastsModal({ admin }) {
   const [open, setOpen] = React.useState(false);
-  const [, force] = React.useReducer((x) => x + 1, 0);
+  const [items, setItems] = React.useState([]);
+
+  const derive = React.useCallback(() => {
+    const all = (window.__cutsPodcastVideos || []).slice();
+    const byId = new Map(all.map((v) => [v.youtubeId, v]));
+    const ord = Array.isArray(admin.podcastOrder) ? admin.podcastOrder : null;
+    let list = all;
+    if (ord && ord.length) {
+      const seen = new Set();
+      list = [];
+      for (const id of ord) { if (byId.has(id) && !seen.has(id)) { list.push(byId.get(id)); seen.add(id); } }
+      for (const v of all) if (!seen.has(v.youtubeId)) list.push(v);
+    }
+    return list.map((v) => ({ youtubeId: v.youtubeId || "", title: v.title || "" }));
+  }, [admin.podcastOrder]);
 
   React.useEffect(() => {
-    const onOpen = () => setOpen(true);
+    const onOpen = () => {
+      const base = Array.isArray(admin.podcastItems) && admin.podcastItems.length
+        ? admin.podcastItems.map((v) => ({ youtubeId: v.youtubeId || "", title: v.title || "" }))
+        : derive();
+      setItems(base);
+      setOpen(true);
+    };
     window.addEventListener("cuts-admin-podcasts", onOpen);
     return () => window.removeEventListener("cuts-admin-podcasts", onOpen);
-  }, []);
+  }, [admin.podcastItems, derive]);
 
   if (!open) return null;
 
-  const all = (window.__cutsPodcastVideos || []).slice();
-  const byId = new Map(all.map((v) => [v.youtubeId, v]));
-
-  const savedOrder = Array.isArray(admin.podcastOrder) ? admin.podcastOrder : null;
-  let ordered;
-  if (savedOrder && savedOrder.length) {
-    const seen = new Set();
-    ordered = [];
-    for (const id of savedOrder) {
-      if (byId.has(id) && !seen.has(id)) { ordered.push(byId.get(id)); seen.add(id); }
-    }
-    for (const v of all) if (!seen.has(v.youtubeId)) ordered.push(v);
-  } else {
-    ordered = all;
-  }
-
   const hidden = new Set(admin.hiddenPodcasts || []);
-
-  const commit = (list) => {
-    admin.updatePodcastOrder(list.map((v) => v.youtubeId));
-    force();
+  const sync = (next) => { setItems(next); admin.updatePodcastItems(next); };
+  const setId = (i, val) => { const n = items.slice(); n[i] = { ...n[i], youtubeId: parseYouTubeId(val) }; sync(n); };
+  const move = (i, dir) => {
+    const t = i + dir; if (t < 0 || t >= items.length) return;
+    const n = items.slice(); const tmp = n[i]; n[i] = n[t]; n[t] = tmp; sync(n);
   };
-  const move = (idx, dir) => {
-    const next = ordered.slice();
-    const target = idx + dir;
-    if (target < 0 || target >= next.length) return;
-    const tmp = next[idx];
-    next[idx] = next[target];
-    next[target] = tmp;
-    commit(next);
+  const del = (i) => { if (window.confirm("למחוק את הפרק הזה?")) sync(items.filter((_, x) => x !== i)); };
+  const add = () => { sync([...items, { youtubeId: "", title: "" }]); };
+
+  const inputStyle = {
+    width: "100%", padding: "7px 10px", borderRadius: 8,
+    border: "1px solid rgba(255,255,255,0.18)", background: "rgba(255,255,255,0.04)",
+    color: "#fff", font: "600 12px 'Heebo', system-ui, sans-serif", direction: "ltr", textAlign: "left",
   };
 
-  const Btn = (props, children) =>
-    React.createElement("button", Object.assign({ type: "button" }, props), children);
-
-  return React.createElement("div", {
-    className: "admin-modal-backdrop",
-    onClick: () => setOpen(false)
-  },
-    React.createElement("div", {
-      className: "admin-modal admin-modal--wide",
-      onClick: (e) => e.stopPropagation(),
-      dir: "rtl"
-    },
-      React.createElement("h3", { className: "admin-modal__title" }, "ניהול פרקי פודקאסט"),
-      React.createElement("p", { className: "admin-modal__hint" },
-        "סדר מחדש עם החצים, או הסתר/הצג פרק. שינויים נשמרים אוטומטית — לחץ \"העלאה ללייב\" כדי לפרסם."
-      ),
-      React.createElement("ul", { className: "admin-videos" },
-        ordered.map((v, idx) => {
-          const isHidden = hidden.has(v.youtubeId);
-          return React.createElement("li", {
-            key: v.youtubeId,
-            className: "admin-videos__row" + (isHidden ? " is-hidden" : "")
-          },
-            React.createElement("span", { className: "admin-videos__idx" }, idx + 1),
-            React.createElement("div", { className: "admin-videos__info" },
-              React.createElement("div", { className: "admin-videos__name" }, v.title || ("YouTube · " + v.youtubeId)),
-              React.createElement("div", { className: "admin-videos__meta" }, v.sub || v.youtubeId)
-            ),
-            React.createElement("div", { className: "admin-videos__actions" },
-              Btn({
-                className: "admin-videos__btn",
-                disabled: idx === 0,
-                title: "הזז למעלה",
-                onClick: () => move(idx, -1)
-              }, "↑"),
-              Btn({
-                className: "admin-videos__btn",
-                disabled: idx === ordered.length - 1,
-                title: "הזז למטה",
-                onClick: () => move(idx, 1)
-              }, "↓"),
-              Btn({
-                className: "admin-videos__btn" + (isHidden ? " is-on" : ""),
-                title: isHidden ? "הצג" : "הסתר",
-                onClick: () => { admin.togglePodcastHidden(v.youtubeId); force(); }
-              }, isHidden ? "מוסתר" : "מוצג")
-            )
-          );
-        })
-      ),
-      React.createElement("div", { className: "admin-modal__actions" },
-        React.createElement("button", {
-          type: "button",
-          className: "admin-modal__btn admin-modal__btn--ghost",
-          onClick: () => {
-            if (window.confirm("לאפס את סדר הפרקים וההסתרות לברירת מחדל?")) {
-              admin.updatePodcastOrder(null);
-              (admin.hiddenPodcasts || []).slice().forEach((id) => admin.togglePodcastHidden(id));
-              force();
-            }
-          }
-        }, "איפוס"),
-        React.createElement("button", {
-          type: "button",
-          className: "admin-modal__btn admin-modal__btn--primary",
-          onClick: () => setOpen(false)
-        }, "סגור")
-      )
-    )
+  return (
+    <div className="admin-modal-backdrop" onClick={() => setOpen(false)}>
+      <div className="admin-modal admin-modal--wide" onClick={(e) => e.stopPropagation()} dir="rtl">
+        <h3 className="admin-modal__title">ניהול פרקי פודקאסט</h3>
+        <p className="admin-modal__hint">
+          ערוך קישור YouTube, סדר, הסתר או מחק. "➕ הוסף קישור" מוסיף פרק חדש. שינויים נשמרים אוטומטית — לחץ "העלאה ללייב" כדי לפרסם.
+        </p>
+        <ul className="admin-videos">
+          {items.map((v, idx) => {
+            const isHidden = hidden.has(v.youtubeId);
+            return (
+              <li key={idx} className={"admin-videos__row" + (isHidden ? " is-hidden" : "")}>
+                <span className="admin-videos__idx">{idx + 1}</span>
+                <div className="admin-videos__info">
+                  <input
+                    style={inputStyle}
+                    value={v.youtubeId}
+                    placeholder="https://www.youtube.com/watch?v=... או ID"
+                    onChange={(e) => setId(idx, e.target.value)} />
+                </div>
+                <div className="admin-videos__actions">
+                  <button type="button" className="admin-videos__btn" disabled={idx === 0} title="הזז למעלה" onClick={() => move(idx, -1)}>↑</button>
+                  <button type="button" className="admin-videos__btn" disabled={idx === items.length - 1} title="הזז למטה" onClick={() => move(idx, 1)}>↓</button>
+                  <button type="button" className={"admin-videos__btn" + (isHidden ? " is-on" : "")} title={isHidden ? "הצג" : "הסתר"} onClick={() => { admin.togglePodcastHidden(v.youtubeId); }}>{isHidden ? "מוסתר" : "מוצג"}</button>
+                  <button type="button" className="admin-videos__btn is-on" title="מחק" onClick={() => del(idx)}>✕</button>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+        <button type="button" className="admin-modal__btn admin-modal__btn--ghost" style={{ marginBottom: 14 }} onClick={add}>➕ הוסף קישור</button>
+        <div className="admin-modal__actions">
+          <button
+            type="button"
+            className="admin-modal__btn admin-modal__btn--ghost"
+            onClick={() => {
+              if (window.confirm("לאפס את רשימת הפרקים וההסתרות לברירת מחדל?")) {
+                admin.updatePodcastItems(null);
+                (admin.hiddenPodcasts || []).slice().forEach((id) => admin.togglePodcastHidden(id));
+                setItems(derive());
+              }
+            }}>איפוס</button>
+          <button type="button" className="admin-modal__btn admin-modal__btn--primary" onClick={() => setOpen(false)}>סגור</button>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -1226,8 +1244,10 @@ function exportJSON(admin) {
     hiddenSections: admin.hiddenSections,
     videoOrder: admin.videoOrder,
     hiddenVideos: admin.hiddenVideos,
+    videoItems: admin.videoItems,
     podcastOrder: admin.podcastOrder,
     hiddenPodcasts: admin.hiddenPodcasts,
+    podcastItems: admin.podcastItems,
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
@@ -1281,6 +1301,8 @@ function importJSON(admin) {
         const cur = new Set(admin.hiddenPodcasts);
         parsed.hiddenPodcasts.forEach((id) => { if (!cur.has(id)) admin.togglePodcastHidden(id); });
       }
+      if (Array.isArray(parsed.videoItems)) admin.updateVideoItems(parsed.videoItems);
+      if (Array.isArray(parsed.podcastItems)) admin.updatePodcastItems(parsed.podcastItems);
       window.alert("Imported successfully.");
     } catch (err) {
       window.alert("Failed to import: " + err.message);

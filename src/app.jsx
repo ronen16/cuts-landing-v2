@@ -132,14 +132,20 @@ function App() {
     const liveHiddenPodcasts = Array.isArray(liveOverrides.hiddenPodcasts) ? liveOverrides.hiddenPodcasts : [];
     const localPodcastOrder = Array.isArray(admin.podcastOrder) ? admin.podcastOrder : null;
     const localHiddenPodcasts = Array.isArray(admin.hiddenPodcasts) ? admin.hiddenPodcasts : [];
+    const liveVideoItems = Array.isArray(liveOverrides.videoItems) ? liveOverrides.videoItems : null;
+    const localVideoItems = Array.isArray(admin.videoItems) ? admin.videoItems : null;
+    const livePodcastItems = Array.isArray(liveOverrides.podcastItems) ? liveOverrides.podcastItems : null;
+    const localPodcastItems = Array.isArray(admin.podcastItems) ? admin.podcastItems : null;
     return {
       ...admin,
       sectionOrder: localOrder || liveOrder,
       hiddenSections: Array.from(new Set([...(liveHidden || []), ...(localHidden || [])])),
       videoOrder: localVideoOrder || liveVideoOrder,
       hiddenVideos: Array.from(new Set([...(liveHiddenVideos || []), ...(localHiddenVideos || [])])),
+      videoItems: localVideoItems || liveVideoItems,
       podcastOrder: localPodcastOrder || livePodcastOrder,
       hiddenPodcasts: Array.from(new Set([...(liveHiddenPodcasts || []), ...(localHiddenPodcasts || [])])),
+      podcastItems: localPodcastItems || livePodcastItems,
     };
   }, [admin, liveOverrides]);
 
