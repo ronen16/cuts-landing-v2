@@ -3584,6 +3584,71 @@ const PODCAST_VIDEOS = [
 // נחשוף לפאנל האדמין כדי לאפשר סידור/הסתרה
 if (typeof window !== "undefined") window.__cutsPodcastVideos = PODCAST_VIDEOS;
 
+// === לוגואים של לקוחות (רצועת לופ) ===
+// כל קובץ ב-assets/logos/. מומלץ PNG/SVG שקוף בהיר (הרקע כהה).
+// להוסיף לוגו חדש = להוסיף שורה כאן + הקובץ ל-assets/logos/.
+const CLIENT_LOGOS = [
+  { file: "northbound.svg", name: "Northbound" },
+  { file: "lumen.svg", name: "Lumen" },
+  { file: "vector42.svg", name: "Vector42" },
+  { file: "glowbrands.svg", name: "Glow Brands" },
+  { file: "helix.svg", name: "Helix" },
+  { file: "pulse.svg", name: "Pulse" },
+  { file: "loopstudio.svg", name: "Loop Studio" },
+  { file: "lavi.svg", name: "Lavi" },
+];
+
+function LogoMarquee() {
+  if (!CLIENT_LOGOS.length) return null;
+  // 3 copies → seamless infinite CSS loop, no JS.
+  const reel = [...CLIENT_LOGOS, ...CLIENT_LOGOS, ...CLIENT_LOGOS];
+  return (
+    <div style={{ position: "relative", marginTop: 48, overflow: "hidden" }}>
+      <style>{`
+        @keyframes cutsLogoScroll {
+          from { transform: translateX(0); }
+          to   { transform: translateX(-33.333%); }
+        }
+        .cuts-logo-reel {
+          display: flex;
+          width: max-content;
+          align-items: center;
+          animation: cutsLogoScroll 38s linear infinite;
+        }
+        .cuts-logo-reel:hover { animation-play-state: paused; }
+        .cuts-logo-reel img {
+          height: 38px;
+          width: auto;
+          margin-inline: clamp(28px, 4vw, 60px);
+          opacity: 0.55;
+          filter: grayscale(1) brightness(1.7);
+          transition: opacity 0.25s ease, filter 0.25s ease;
+          flex: 0 0 auto;
+        }
+        .cuts-logo-reel img:hover {
+          opacity: 1;
+          filter: grayscale(0) brightness(1);
+        }
+      `}</style>
+      <div aria-hidden="true" style={{
+        position: "absolute", top: 0, bottom: 0, right: 0, width: 90, zIndex: 2,
+        pointerEvents: "none",
+        background: "linear-gradient(to left, var(--card), transparent)"
+      }} />
+      <div aria-hidden="true" style={{
+        position: "absolute", top: 0, bottom: 0, left: 0, width: 90, zIndex: 2,
+        pointerEvents: "none",
+        background: "linear-gradient(to right, var(--card), transparent)"
+      }} />
+      <div className="cuts-logo-reel" style={{ direction: "ltr" }}>
+        {reel.map((l, i) => (
+          <img key={i} src={`assets/logos/${l.file}`} alt={l.name} loading="lazy" />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function orderAndFilterPodcasts(admin) {
   const order = admin && Array.isArray(admin.podcastOrder) ? admin.podcastOrder : null;
   const hidden = new Set((admin && admin.hiddenPodcasts) || []);
@@ -3872,6 +3937,10 @@ function Results({ admin }) {
         })}
           </div>
         </div>
+      </div>
+
+      <div className="wrap" style={{ marginTop: 8 }}>
+        <LogoMarquee />
       </div>
     </section>);
 
