@@ -3782,14 +3782,10 @@ function Results({ admin }) {
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = "translateY(-4px)";
               e.currentTarget.style.borderColor = "rgba(255,213,0,0.4)";
-              const overlay = e.currentTarget.querySelector("[data-play]");
-              if (overlay) overlay.style.opacity = "1";
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = "translateY(0)";
               e.currentTarget.style.borderColor = "var(--line2)";
-              const overlay = e.currentTarget.querySelector("[data-play]");
-              if (overlay) overlay.style.opacity = "0.85";
             }}>
               {/* 16:9 video frame */}
               <div style={{
@@ -3837,7 +3833,7 @@ function Results({ admin }) {
                   <div data-play style={{
                   position: "absolute", inset: 0,
                   display: "flex", alignItems: "center", justifyContent: "center",
-                  opacity: 0.85, transition: "opacity 0.25s ease", zIndex: 2
+                  opacity: 1, zIndex: 2
                 }}>
                     <div className="pod-play-btn" style={{
                     position: "relative",
