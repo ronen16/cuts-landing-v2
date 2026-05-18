@@ -3708,43 +3708,51 @@ function Results({ admin }) {
 
       {/* Carousel — full-bleed wrapper for arrows */}
       <div style={{ position: "relative", maxWidth: 1280, marginInline: "auto", paddingInline: 24 }}>
-        {/* Right arrow (previous in RTL) */}
+        {/* Prev arrow (right in RTL) — identical to testimonials */}
         <button
-          aria-label="הקודם"
+          type="button"
           onClick={() => scrollByCard(1)}
-          disabled={scrollState.atStart}
+          aria-label="הקודם"
           style={{
-            position: "absolute", right: -8, top: "calc(50% - 28px)",
-            transform: "translateY(-50%)", zIndex: 2,
-            width: 56, height: 56, borderRadius: "50%",
-            background: scrollState.atStart ? "rgba(255,213,0,0.2)" : "var(--accent)",
-            color: "#0A0A0A", border: "none",
+            position: "absolute", top: "50%", right: 12,
+            transform: "translateY(-50%)",
+            zIndex: 4,
+            width: 52, height: 52, borderRadius: "50%",
+            background: "var(--accent)",
+            border: "1px solid var(--accent)",
+            color: "#0A0A0A",
+            cursor: "pointer",
             display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: 24, fontWeight: 900,
-            cursor: scrollState.atStart ? "not-allowed" : "pointer",
-            opacity: scrollState.atStart ? 0.4 : 1,
-            boxShadow: scrollState.atStart ? "none" : "0 12px 32px rgba(255,213,0,0.4)",
+            boxShadow: "0 8px 24px rgba(255,213,0,0.3)",
             transition: "all 0.2s ease"
-          }}>→</button>
+          }}>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </button>
 
-        {/* Left arrow (next in RTL) */}
+        {/* Next arrow (left in RTL) — identical to testimonials */}
         <button
-          aria-label="הבא"
+          type="button"
           onClick={() => scrollByCard(-1)}
-          disabled={scrollState.atEnd}
+          aria-label="הבא"
           style={{
-            position: "absolute", left: -8, top: "calc(50% - 28px)",
-            transform: "translateY(-50%)", zIndex: 2,
-            width: 56, height: 56, borderRadius: "50%",
-            background: scrollState.atEnd ? "rgba(255,213,0,0.2)" : "var(--accent)",
-            color: "#0A0A0A", border: "none",
+            position: "absolute", top: "50%", left: 12,
+            transform: "translateY(-50%)",
+            zIndex: 4,
+            width: 52, height: 52, borderRadius: "50%",
+            background: "var(--accent)",
+            border: "1px solid var(--accent)",
+            color: "#0A0A0A",
+            cursor: "pointer",
             display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: 24, fontWeight: 900,
-            cursor: scrollState.atEnd ? "not-allowed" : "pointer",
-            opacity: scrollState.atEnd ? 0.4 : 1,
-            boxShadow: scrollState.atEnd ? "none" : "0 12px 32px rgba(255,213,0,0.4)",
+            boxShadow: "0 8px 24px rgba(255,213,0,0.3)",
             transition: "all 0.2s ease"
-          }}>←</button>
+          }}>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+        </button>
 
         <div
           ref={viewportRef}
