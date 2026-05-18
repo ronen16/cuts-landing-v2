@@ -287,8 +287,10 @@ function Footer() {
         display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
         gap: 8, textAlign: "center"
       }}>
-        <span style={{ fontFamily: "var(--font-mono)", fontSize: 12, opacity: 0.6 }}>
-          מדיניות פרטיות
+        <span style={{ fontFamily: "var(--font-mono)", fontSize: 12, opacity: 0.65, display: "flex", gap: 14, flexWrap: "wrap", justifyContent: "center" }}>
+          <a href="privacy.html" target="_blank" rel="noopener noreferrer" style={{ color: "inherit", textDecoration: "none" }}>מדיניות פרטיות</a>
+          <span style={{ opacity: 0.4 }}>·</span>
+          <a href="terms.html" target="_blank" rel="noopener noreferrer" style={{ color: "inherit", textDecoration: "none" }}>תקנון האתר</a>
         </span>
         <span style={{ fontFamily: "var(--font-mono)", fontSize: 12, opacity: 0.5 }}>
           © 2026 CUTS. כל הזכויות שמורות.
