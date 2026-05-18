@@ -3596,30 +3596,38 @@ const CLIENT_LOGOS = [
   { file: "pulse.svg", name: "Pulse" },
   { file: "loopstudio.svg", name: "Loop Studio" },
   { file: "lavi.svg", name: "Lavi" },
+  { file: "davidovtech.svg", name: "DavidovTech" },
+  { file: "sora.svg", name: "Sora" },
+  { file: "apex.svg", name: "Apex" },
+  { file: "meridian.svg", name: "Meridian" },
+  { file: "kinetic.svg", name: "Kinetic" },
+  { file: "nova.svg", name: "Nova" },
+  { file: "stratos.svg", name: "Stratos" },
+  { file: "orbit.svg", name: "Orbit" },
 ];
 
 function LogoMarquee() {
   if (!CLIENT_LOGOS.length) return null;
-  // 3 copies → seamless infinite CSS loop, no JS.
-  const reel = [...CLIENT_LOGOS, ...CLIENT_LOGOS, ...CLIENT_LOGOS];
+  // 2 identical halves + translateX(-50%) → perfectly seamless loop.
+  const reel = [...CLIENT_LOGOS, ...CLIENT_LOGOS];
   return (
     <div style={{ position: "relative", marginTop: 48, overflow: "hidden" }}>
       <style>{`
         @keyframes cutsLogoScroll {
           from { transform: translateX(0); }
-          to   { transform: translateX(-33.333%); }
+          to   { transform: translateX(-50%); }
         }
         .cuts-logo-reel {
           display: flex;
           width: max-content;
           align-items: center;
-          animation: cutsLogoScroll 38s linear infinite;
+          animation: cutsLogoScroll 34s linear infinite;
         }
         .cuts-logo-reel:hover { animation-play-state: paused; }
         .cuts-logo-reel img {
-          height: 38px;
+          height: 36px;
           width: auto;
-          margin-inline: clamp(28px, 4vw, 60px);
+          margin-inline: clamp(14px, 1.8vw, 28px);
           opacity: 0.55;
           filter: grayscale(1) brightness(1.7);
           transition: opacity 0.25s ease, filter 0.25s ease;
