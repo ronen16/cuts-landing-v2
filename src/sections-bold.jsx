@@ -3611,7 +3611,7 @@ function LogoMarquee() {
   // 2 identical halves + translateX(-50%) → perfectly seamless loop.
   const reel = [...CLIENT_LOGOS, ...CLIENT_LOGOS];
   return (
-    <div style={{ position: "relative", marginTop: 48, overflow: "hidden" }}>
+    <div style={{ position: "relative", marginTop: 48, overflow: "hidden", direction: "ltr" }}>
       <style>{`
         @keyframes cutsLogoScroll {
           from { transform: translateX(0); }
@@ -3621,7 +3621,7 @@ function LogoMarquee() {
           display: flex;
           width: max-content;
           align-items: center;
-          animation: cutsLogoScroll 34s linear infinite;
+          animation: cutsLogoScroll 22s linear infinite;
         }
         .cuts-logo-reel:hover { animation-play-state: paused; }
         .cuts-logo-reel img {
@@ -3650,7 +3650,7 @@ function LogoMarquee() {
       }} />
       <div className="cuts-logo-reel" style={{ direction: "ltr" }}>
         {reel.map((l, i) => (
-          <img key={i} src={`assets/logos/${l.file}`} alt={l.name} loading="lazy" />
+          <img key={i} src={`assets/logos/${l.file}`} alt={l.name} draggable="false" />
         ))}
       </div>
     </div>
