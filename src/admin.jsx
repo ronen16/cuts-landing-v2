@@ -832,7 +832,7 @@ function AdminVideosModal({ admin }) {
   const inputStyle = {
     width: "100%", padding: "7px 10px", borderRadius: 8,
     border: "1px solid rgba(255,255,255,0.18)", background: "rgba(255,255,255,0.04)",
-    color: "#fff", font: "600 12px 'Heebo', system-ui, sans-serif", direction: "ltr", textAlign: "left",
+    color: "#fff", font: "600 12px 'FbTypograph2', system-ui, sans-serif", direction: "ltr", textAlign: "left",
   };
 
   return (
@@ -938,7 +938,7 @@ function AdminPodcastsModal({ admin }) {
   const inputStyle = {
     width: "100%", padding: "7px 10px", borderRadius: 8,
     border: "1px solid rgba(255,255,255,0.18)", background: "rgba(255,255,255,0.04)",
-    color: "#fff", font: "600 12px 'Heebo', system-ui, sans-serif", direction: "ltr", textAlign: "left",
+    color: "#fff", font: "600 12px 'FbTypograph2', system-ui, sans-serif", direction: "ltr", textAlign: "left",
   };
 
   return (
