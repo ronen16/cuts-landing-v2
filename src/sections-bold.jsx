@@ -3611,7 +3611,7 @@ function LogoMarquee() {
   // 2 identical halves + translateX(-50%) → perfectly seamless loop.
   const reel = [...CLIENT_LOGOS, ...CLIENT_LOGOS];
   return (
-    <div style={{ position: "relative", marginTop: 48, overflow: "hidden", direction: "ltr" }}>
+    <div style={{ position: "relative", marginTop: 64, overflow: "hidden", direction: "ltr" }}>
       <style>{`
         @keyframes cutsLogoScroll {
           from { transform: translateX(0); }
@@ -3947,7 +3947,7 @@ function Results({ admin }) {
         </div>
       </div>
 
-      <div className="wrap" style={{ marginTop: 8 }}>
+      <div className="wrap" style={{ marginTop: 36, marginBottom: 24 }}>
         <LogoMarquee />
       </div>
     </section>);
