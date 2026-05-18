@@ -3857,7 +3857,7 @@ function Results({ admin }) {
                       borderTop: "10px solid transparent",
                       borderBottom: "10px solid transparent",
                       borderLeft: "16px solid #0A0A0A",
-                      marginRight: 4
+                      transform: "translateX(3px)"
                     }} />
                     </div>
                   </div>
