@@ -3856,8 +3856,8 @@ function Results({ admin }) {
                       width: 0, height: 0,
                       borderTop: "10px solid transparent",
                       borderBottom: "10px solid transparent",
-                      borderRight: "16px solid #0A0A0A",
-                      marginLeft: 4
+                      borderLeft: "16px solid #0A0A0A",
+                      marginRight: 4
                     }} />
                     </div>
                   </div>
