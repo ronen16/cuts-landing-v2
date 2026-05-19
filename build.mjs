@@ -74,6 +74,9 @@ async function run() {
   } catch (_) {}
 
   // 4. Production index.html — React prod CDN, no Babel, compiled .js.
+  // Cache-bust every local asset with a per-build version so browsers can
+  // never serve a stale compiled bundle (the static host caches src/*.js).
+  const V = Date.now();
   let html = await fs.readFile("index.html", "utf8");
   html = html
     .replace(
@@ -86,7 +89,10 @@ async function run() {
     )
     .replace(/<script src="https:\/\/unpkg\.com\/@babel\/standalone[^"]+"[^>]*><\/script>\s*/, "")
     .replace(/<script type="text\/babel" src="src\/([a-z-]+)\.jsx"><\/script>/g,
-      '<script src="src/$1.js"></script>');
+      `<script src="src/$1.js?v=${V}"></script>`)
+    .replace(/(<link[^>]+href=")styles\.css(?:\?v=[0-9]+)?(")/g, `$1styles.css?v=${V}$2`)
+    .replace(/(<script[^>]+src=")src\/interactions\.js("[^>]*><\/script>)/g,
+      `$1src/interactions.js?v=${V}$2`);
   await fs.writeFile(path.join(DIST, "index.html"), html);
 
   console.log("✓ build complete → dist/");
