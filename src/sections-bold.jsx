@@ -633,7 +633,13 @@ function SocialProofSection({ onCTAClick, admin }) {
         {/* Prev arrow (right in RTL) */}
         <button
           type="button"
-          onClick={() => scrollBy(-1)}
+          onClick={(e) => {
+            const b = e.currentTarget;
+            b.classList.remove("nudge-prev");
+            void b.offsetWidth;
+            b.classList.add("nudge-prev");
+            scrollBy(-1);
+          }}
           disabled={!canPrev}
           aria-label="הקודם"
           className="vid-nav-btn"
@@ -658,7 +664,13 @@ function SocialProofSection({ onCTAClick, admin }) {
         {/* Next arrow (left in RTL) */}
         <button
           type="button"
-          onClick={() => scrollBy(1)}
+          onClick={(e) => {
+            const b = e.currentTarget;
+            b.classList.remove("nudge-next");
+            void b.offsetWidth;
+            b.classList.add("nudge-next");
+            scrollBy(1);
+          }}
           disabled={!canNext}
           aria-label="הבא"
           className="vid-nav-btn"
@@ -880,18 +892,18 @@ function SocialProofSection({ onCTAClick, admin }) {
           transform: translateY(-50%) scale(0.84);
           box-shadow: 0 4px 12px rgba(255,213,0,0.4);
         }
-        .vid-nav-btn::after {
-          content: "";
-          position: absolute; inset: 0;
-          border-radius: 50%;
-          border: 2px solid var(--accent);
-          opacity: 0;
-          pointer-events: none;
+        .vid-nav-btn svg { transition: transform 0.18s ease; }
+        .vid-nav-btn.nudge-prev svg { animation: navNudgePrev 0.34s ease; }
+        .vid-nav-btn.nudge-next svg { animation: navNudgeNext 0.34s ease; }
+        @keyframes navNudgePrev {
+          0%   { transform: translateX(0); }
+          45%  { transform: translateX(7px); }
+          100% { transform: translateX(0); }
         }
-        .vid-nav-btn:active::after { animation: vidNavPulse 0.45s ease-out; }
-        @keyframes vidNavPulse {
-          0%   { opacity: 0.7; transform: scale(1); }
-          100% { opacity: 0;   transform: scale(1.7); }
+        @keyframes navNudgeNext {
+          0%   { transform: translateX(0); }
+          45%  { transform: translateX(-7px); }
+          100% { transform: translateX(0); }
         }
 
         .vid-card {
