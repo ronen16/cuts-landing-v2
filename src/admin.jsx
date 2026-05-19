@@ -385,6 +385,34 @@ function useAdminMode() {
       window.dispatchEvent(new CustomEvent("cuts-publish-need-settings"));
       return { snapshot, published: false, reason: "missing-token" };
     }
+
+    // Stale-publish guard: never silently overwrite live edits with an older
+    // snapshot. If what's already live has more content than what we're about
+    // to push (typical when publishing from a different browser/URL whose
+    // localStorage is out of date), stop and require explicit confirmation.
+    try {
+      const live = await fetchLiveOverrides(settings);
+      if (live && typeof live === "object") {
+        const liveCount = Object.keys(live.overrides || {}).length;
+        const newCount = Object.keys(liveOverrides || {}).length;
+        if (liveCount > newCount) {
+          const ok = window.confirm(
+            `⚠️ עצור — סכנת מחיקת עריכות\n\n` +
+            `בלייב כרגע יש ${liveCount} עריכות.\n` +
+            `אתה עומד לפרסם ${newCount} בלבד.\n\n` +
+            `פרסום עכשיו ימחק ${liveCount - newCount} עריכות שכבר חיות באתר.\n\n` +
+            `זה קורה כשמפרסמים מדפדפן/כתובת אחרת מזו שבה ערכת ` +
+            `(למשל localhost מול האתר האמיתי).\n\n` +
+            `להמשיך ולדרוס בכל זאת?`
+          );
+          if (!ok) return { snapshot, published: false, reason: "stale-aborted" };
+        }
+      }
+    } catch (_) {
+      // Couldn't read live state (offline / rate-limit) — fall through and
+      // publish; the GitHub sha check still prevents a blind clobber.
+    }
+
     try {
       const payload = {
         version: 1,
@@ -1168,6 +1196,8 @@ function AdminPanel({ admin }) {
           window.alert("פורסם ללייב בהצלחה ✓" + (url ? "\n\nקישור ל־commit:\n" + url : ""));
         } else if (result.reason === "missing-token" || result.reason === "auth") {
           // Settings modal will open via cuts-publish-need-settings event
+        } else if (result.reason === "stale-aborted") {
+          window.alert("הפרסום בוטל — לא נדרס כלום ✓\nהעריכות החיות נשארו כפי שהן.");
         } else {
           window.alert("הפרסום נכשל: " + result.reason);
         }
