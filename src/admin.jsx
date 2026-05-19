@@ -578,21 +578,35 @@ window.__cutsGetEditableElements = getAllEditableElements;
 
 function applyOverridesToDOM(overrides) {
   if (!overrides) overrides = {};
+  const root = document.getElementById("root");
+  if (!root) return;
+  // Single O(n) pass. getAllEditableElements() is in document order, so we
+  // can derive the same id computeEditId() produces (section + original-text
+  // hash + occurrence) without an O(n^2) per-element subtree scan — that
+  // scan was costing ~100ms per call and janking animations.
   const elements = getAllEditableElements();
+  const occ = Object.create(null);
   for (const el of elements) {
-    // Skip the element currently being edited — never overwrite the user's cursor
     if (document.activeElement === el) continue;
-    // Capture original text + html the first time we see this element.
-    // textContent is used to make computeEditId stable; innerHTML is what we
-    // restore from on reset (so nested styled spans survive).
     if (!el.hasAttribute("data-edit-original")) {
       el.setAttribute("data-edit-original", el.textContent || "");
     }
     if (el.dataset.editOriginalHtml == null) {
       el.dataset.editOriginalHtml = el.innerHTML;
     }
-    const id = computeEditId(el);
-    if (!id) continue;
+    const sectionAncestor = el.closest("[data-section-id]");
+    const anchorTag = sectionAncestor
+      ? `sec:${sectionAncestor.getAttribute("data-section-id")}`
+      : "root";
+    const t = (el.getAttribute("data-edit-original") || el.textContent || "")
+      .trim().slice(0, 60);
+    let x = 0;
+    for (let i = 0; i < t.length; i++) x = (x * 31 + t.charCodeAt(i)) | 0;
+    const hashHex = (x >>> 0).toString(16).padStart(8, "0");
+    const baseKey = `${anchorTag}#h:${hashHex}`;
+    const n = occ[baseKey] | 0;
+    occ[baseKey] = n + 1;
+    const id = `${baseKey}~${n}`;
     el.setAttribute("data-edit-id", id);
     if (Object.prototype.hasOwnProperty.call(overrides, id)) {
       const desired = overrides[id];
