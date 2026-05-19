@@ -713,8 +713,8 @@ function SocialProofSection({ onCTAClick, admin }) {
               cursor: hasVideo ? "pointer" : "default",
               scrollSnapAlign: "start",
               scrollSnapStop: "always",
-              border: "1px solid rgba(255,213,0,0.5)",
-              boxShadow: "0 0 0 1px rgba(255,213,0,0.12), 0 6px 28px rgba(255,213,0,0.18)"
+              border: "1px solid rgba(255,213,0,0.28)",
+              boxShadow: "0 0 8px rgba(255,213,0,0.22), 0 0 22px rgba(255,213,0,0.18), 0 0 44px rgba(255,213,0,0.12), 0 8px 60px rgba(255,213,0,0.10)"
             }}>
 
               {isPlaying &&
