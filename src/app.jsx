@@ -159,6 +159,7 @@ function App() {
       {AdminVideosModal && <AdminVideosModal admin={admin} />}
       {AdminPodcastsModal && <AdminPodcastsModal admin={admin} />}
       {AdminPublishSettingsModal && <AdminPublishSettingsModal />}
+      {window.AccessibilityWidget && <window.AccessibilityWidget />}
     </div>
   );
 }
