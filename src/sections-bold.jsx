@@ -690,7 +690,7 @@ function SocialProofSection({ onCTAClick, admin }) {
             overflowX: "auto",
             scrollSnapType: "x mandatory",
             scrollPaddingInline: 0,
-            padding: "10px 0",
+            padding: "18px 4px 44px",
             scrollbarWidth: "none"
           }}>
           
@@ -712,7 +712,9 @@ function SocialProofSection({ onCTAClick, admin }) {
               overflow: "hidden",
               cursor: hasVideo ? "pointer" : "default",
               scrollSnapAlign: "start",
-              scrollSnapStop: "always"
+              scrollSnapStop: "always",
+              border: "1px solid var(--line2)",
+              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.04), 0 10px 30px rgba(0,0,0,0.5)"
             }}>
 
               {isPlaying &&
