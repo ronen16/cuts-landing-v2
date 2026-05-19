@@ -873,26 +873,10 @@ function SocialProofSection({ onCTAClick, admin }) {
         }
         .vid-card:hover {
           transform: translateY(-5px);
-          box-shadow: 0 22px 48px -16px rgba(0,0,0,0.75),
-                      0 0 30px -8px rgba(255,213,0,0.28);
+          box-shadow: inset 0 1px 0 rgba(255,255,255,0.05),
+                      0 22px 48px -12px rgba(0,0,0,0.7);
         }
-        /* gradient ring border */
-        .vid-card__ring {
-          border: 1px solid transparent;
-          background:
-            linear-gradient(var(--bg), var(--bg)) padding-box,
-            linear-gradient(155deg,
-              rgba(255,213,0,0.55) 0%,
-              rgba(255,213,0,0.12) 35%,
-              rgba(255,255,255,0.06) 60%,
-              rgba(255,213,0,0.4) 100%) border-box;
-          -webkit-mask: linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0);
-          -webkit-mask-composite: xor;
-          mask-composite: exclude;
-          transition: opacity 0.35s ease;
-          opacity: 0.7;
-        }
-        .vid-card:hover .vid-card__ring { opacity: 1; }
+        .vid-card__ring { display: none; }
         .vid-play-btn { transition: transform 0.3s cubic-bezier(0.2,0.8,0.2,1); }
         [data-vid-card]:hover .vid-play-btn { transform: scale(1.08); }
         .vid-play-ring { animation: vidPlayPulse 2.4s ease-in-out infinite; }
