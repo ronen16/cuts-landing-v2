@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>תודה! — Cuts</title>
+<style>
+  @font-face { font-family: 'FbTypograph2'; src: url('assets/fonts/FbTypograph2-Light.otf') format('opentype'); font-weight: 300; font-display: swap; }
+  @font-face { font-family: 'FbTypograph2'; src: url('assets/fonts/FbTypograph2-Regular.otf') format('opentype'); font-weight: 400; font-display: swap; }
+  @font-face { font-family: 'FbTypograph2'; src: url('assets/fonts/FbTypograph2-Bold.otf') format('opentype'); font-weight: 700; font-display: swap; }
+  @font-face { font-family: 'FbTypograph2'; src: url('assets/fonts/FbTypograph2-Black.otf') format('opentype'); font-weight: 900; font-display: swap; }
+  :root { --accent: #FFD500; --bg: #0A0A0A; --card: #121212; --line: rgba(255,255,255,0.1); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    background:
+      radial-gradient(60% 50% at 50% 0%, rgba(255,213,0,0.10), transparent 70%),
+      var(--bg);
+    color: rgba(255,255,255,0.85);
+    font-family: 'FbTypograph2', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    display: flex; align-items: center; justify-content: center;
+    min-height: 100vh; padding: 28px; text-align: center;
+  }
+  .card { max-width: 600px; }
+  .badge {
+    width: 92px; height: 92px; border-radius: 50%;
+    background: var(--accent); color: #0A0A0A;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 30px;
+    box-shadow: 0 0 0 10px rgba(255,213,0,0.12), 0 14px 40px rgba(255,213,0,0.35);
+    animation: pop 0.5s cubic-bezier(0.2,0.8,0.2,1) both;
+  }
+  @keyframes pop { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .badge svg { width: 46px; height: 46px; }
+  h1 {
+    font-size: clamp(34px, 6vw, 60px); font-weight: 900; color: #fff;
+    line-height: 1.05; margin-bottom: 16px;
+  }
+  h1 .y { color: var(--accent); }
+  p { font-size: clamp(15px, 2vw, 18px); line-height: 1.65; color: rgba(255,255,255,0.7); margin-bottom: 12px; }
+  .next {
+    margin: 28px auto 30px; max-width: 460px;
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 14px; padding: 18px 22px;
+    color: rgba(255,255,255,0.8); font-size: 15px; line-height: 1.6;
+  }
+  .next b { color: var(--accent); }
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--accent); color: #0A0A0A;
+    font-weight: 800; font-size: 16px; text-decoration: none;
+    padding: 16px 30px; border-radius: 999px;
+    box-shadow: 0 12px 32px rgba(255,213,0,0.35);
+    transition: transform 0.2s ease;
+  }
+  .btn:hover { transform: translateY(-2px); }
+</style>
+</head>
+<body>
+  <main class="card">
+    <div class="badge" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 12.5 L9.5 18 L20 6.5" />
+      </svg>
+    </div>
+    <h1><span id="hello">קיבלנו את הפרטים</span> — <span class="y">תודה!</span></h1>
+    <p>הפרטים שלך נקלטו בהצלחה. אנחנו כבר על זה.</p>
+
+    <div class="next">
+      <b>מה עכשיו?</b><br/>
+      ניצור איתך קשר תוך <b>24 שעות</b> לתיאום שיחת אבחון קצרה (כ-30 דקות, ללא עלות).
+      נכיר את העסק, נבדוק התאמה לפודקאסט, ואם מתאים — נצא לדרך.
+    </div>
+
+    <a class="btn" href="index.html">← חזרה לאתר</a>
+  </main>
+
+  <script>
+    (function () {
+      try {
+        var n = new URLSearchParams(location.search).get("name");
+        if (n && n.trim()) {
+          document.getElementById("hello").textContent = "תודה, " + n.trim();
+        }
+      } catch (e) {}
+    })();
+  </script>
+</body>
+</html>

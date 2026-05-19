@@ -190,7 +190,17 @@ function useForm() {
     if (!consent) errs.consent = "יש לאשר את תקנון האתר כדי להמשיך";
     setErrors(errs);
     setTouched({ name: true, phone: true, email: true, consent: true });
-    if (Object.keys(errs).length === 0) setSubmitted(true);
+    if (Object.keys(errs).length === 0) {
+      setSubmitted(true);
+      // Redirect every successful lead to the thank-you page.
+      try {
+        window.location.assign(
+          "thank-you.html?name=" + encodeURIComponent((values.name || "").trim())
+        );
+      } catch (_) {
+        window.location.href = "thank-you.html";
+      }
+    }
   };
   return { values, setField, errors, touched, blur, submit, submitted, consent, setConsent };
 }
