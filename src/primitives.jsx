@@ -152,7 +152,7 @@ const FAQ = [
 }];
 
 
-const CLIENT_LOGOS = [
+const PRIMITIVES_CLIENT_LOGOS = [
 "יועץ עסקי", "יועץ עסקי", "משרד עו״ד", "חברת ייעוץ",
 "Startup Nation", "פיננסים", "אדריכלות", "מנכ״ל Tech", "רואי חשבון"];
 
@@ -224,7 +224,7 @@ function Waveform({ count = 28, color }) {
 
 }
 
-function LogoMarquee({ color = "currentColor", logos = CLIENT_LOGOS }) {
+function LogoMarquee({ color = "currentColor", logos = PRIMITIVES_CLIENT_LOGOS }) {
   const set = [...logos, ...logos];
   return (
     <div className="marquee">
@@ -311,7 +311,7 @@ function Footer() {
 }
 
 Object.assign(window, {
-  LOGO_SRC, NAV, CLIENT_LOGOS, PILLARS, SERVICES, STEPS, AUDIENCE, WHY_US, FAQ,
+  LOGO_SRC, NAV, CLIENT_LOGOS: PRIMITIVES_CLIENT_LOGOS, PILLARS, SERVICES, STEPS, AUDIENCE, WHY_US, FAQ,
   validateForm, useForm, scrollToId,
   Waveform, LogoMarquee, TopNav, Footer
 });
