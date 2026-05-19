@@ -771,7 +771,7 @@ function SocialProofSection({ onCTAClick, admin }) {
               position: "absolute", inset: 0, borderRadius: 18,
               zIndex: 4, pointerEvents: "none",
               padding: 1,
-              background: "linear-gradient(180deg, rgba(255,213,0,0.9) 0%, rgba(255,213,0,0.4) 42%, rgba(255,213,0,0.08) 100%)",
+              background: "linear-gradient(180deg, rgba(255,213,0,0.7) 0%, rgba(255,213,0,0.5) 50%, rgba(255,213,0,0.34) 100%)",
               WebkitMask: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
               WebkitMaskComposite: "xor",
               maskComposite: "exclude"
