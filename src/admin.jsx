@@ -507,29 +507,25 @@ function computeEditId(el) {
   const anchorTag = sectionAncestor
     ? `sec:${sectionAncestor.getAttribute("data-section-id")}`
     : "root";
-  // Stable id = section + hash(original text) + occurrence among
-  // same-original-text elements in that section. We deliberately do NOT
-  // include the DOM position path — it shifts on every animation /
-  // conditional render / structural change and detaches saved overrides.
-  const hashOf = (node) => {
-    const t = ((node.getAttribute && node.getAttribute("data-edit-original")) || node.textContent || "")
-      .trim().slice(0, 60);
-    let x = 0;
-    for (let i = 0; i < t.length; i++) x = (x * 31 + t.charCodeAt(i)) | 0;
-    return (x >>> 0).toString(16).padStart(8, "0");
-  };
-  const hashHex = hashOf(el);
-  // Occurrence index among editable elements in the same anchor whose
-  // original-text hash matches (document order). Stable unless the count
-  // of identically-worded elements in the section changes — rare.
-  let occ = 0;
-  try {
-    const sameHash = Array.from(anchor.querySelectorAll("*")).filter(
-      (n) => isLeafTextElement(n) && hashOf(n) === hashHex
+  const parts = [];
+  let cur = el;
+  while (cur && cur !== anchor && cur.parentElement) {
+    const parent = cur.parentElement;
+    const siblings = Array.from(parent.children).filter(
+      (c) => c.tagName === cur.tagName
     );
-    occ = Math.max(0, sameHash.indexOf(el));
-  } catch (e) { occ = 0; }
-  return `${anchorTag}#h:${hashHex}~${occ}`;
+    const idx = siblings.indexOf(cur);
+    parts.unshift(`${cur.tagName.toLowerCase()}[${idx}]`);
+    cur = parent;
+  }
+  const path = parts.join(">");
+  const text = (el.getAttribute("data-edit-original") || el.textContent || "").trim().slice(0, 60);
+  let h = 0;
+  for (let i = 0; i < text.length; i++) {
+    h = (h * 31 + text.charCodeAt(i)) | 0;
+  }
+  const hashHex = (h >>> 0).toString(16).padStart(8, "0");
+  return `${anchorTag}>${path}#h:${hashHex}`;
 }
 
 window.__cutsComputeEditId = computeEditId;
@@ -578,35 +574,19 @@ window.__cutsGetEditableElements = getAllEditableElements;
 
 function applyOverridesToDOM(overrides) {
   if (!overrides) overrides = {};
-  const root = document.getElementById("root");
-  if (!root) return;
-  // Single O(n) pass. getAllEditableElements() is in document order, so we
-  // can derive the same id computeEditId() produces (section + original-text
-  // hash + occurrence) without an O(n^2) per-element subtree scan — that
-  // scan was costing ~100ms per call and janking animations.
   const elements = getAllEditableElements();
-  const occ = Object.create(null);
   for (const el of elements) {
+    // Skip the element currently being edited — never overwrite the user's cursor
     if (document.activeElement === el) continue;
+    // Capture original text + html the first time we see this element.
     if (!el.hasAttribute("data-edit-original")) {
       el.setAttribute("data-edit-original", el.textContent || "");
     }
     if (el.dataset.editOriginalHtml == null) {
       el.dataset.editOriginalHtml = el.innerHTML;
     }
-    const sectionAncestor = el.closest("[data-section-id]");
-    const anchorTag = sectionAncestor
-      ? `sec:${sectionAncestor.getAttribute("data-section-id")}`
-      : "root";
-    const t = (el.getAttribute("data-edit-original") || el.textContent || "")
-      .trim().slice(0, 60);
-    let x = 0;
-    for (let i = 0; i < t.length; i++) x = (x * 31 + t.charCodeAt(i)) | 0;
-    const hashHex = (x >>> 0).toString(16).padStart(8, "0");
-    const baseKey = `${anchorTag}#h:${hashHex}`;
-    const n = occ[baseKey] | 0;
-    occ[baseKey] = n + 1;
-    const id = `${baseKey}~${n}`;
+    const id = computeEditId(el);
+    if (!id) continue;
     el.setAttribute("data-edit-id", id);
     if (Object.prototype.hasOwnProperty.call(overrides, id)) {
       const desired = overrides[id];
