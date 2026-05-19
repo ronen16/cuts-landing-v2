@@ -690,7 +690,7 @@ function SocialProofSection({ onCTAClick, admin }) {
             overflowX: "auto",
             scrollSnapType: "x mandatory",
             scrollPaddingInline: 0,
-            padding: "10px 0",
+            padding: "26px 6px",
             scrollbarWidth: "none"
           }}>
           
@@ -712,7 +712,8 @@ function SocialProofSection({ onCTAClick, admin }) {
               overflow: "hidden",
               cursor: hasVideo ? "pointer" : "default",
               scrollSnapAlign: "start",
-              scrollSnapStop: "always"
+              scrollSnapStop: "always",
+              boxShadow: "0 16px 38px rgba(0,0,0,0.5)"
             }}>
 
               {isPlaying &&
@@ -769,12 +770,7 @@ function SocialProofSection({ onCTAClick, admin }) {
               {/* refined frame: gradient ring + 4 corner brackets */}
               <span aria-hidden="true" className="vid-card__ring" style={{
               position: "absolute", inset: 0, borderRadius: 18,
-              zIndex: 4, pointerEvents: "none",
-              padding: 1,
-              background: "linear-gradient(180deg, rgba(255,213,0,0.7) 0%, rgba(255,213,0,0.5) 50%, rgba(255,213,0,0.34) 100%)",
-              WebkitMask: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
-              WebkitMaskComposite: "xor",
-              maskComposite: "exclude"
+              zIndex: 4, pointerEvents: "none"
             }} />
 
               {v.duration &&
