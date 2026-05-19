@@ -507,27 +507,29 @@ function computeEditId(el) {
   const anchorTag = sectionAncestor
     ? `sec:${sectionAncestor.getAttribute("data-section-id")}`
     : "root";
-  const parts = [];
-  let cur = el;
-  while (cur && cur !== anchor && cur.parentElement) {
-    const parent = cur.parentElement;
-    const siblings = Array.from(parent.children).filter(
-      (c) => c.tagName === cur.tagName
+  // Stable id = section + hash(original text) + occurrence among
+  // same-original-text elements in that section. We deliberately do NOT
+  // include the DOM position path — it shifts on every animation /
+  // conditional render / structural change and detaches saved overrides.
+  const hashOf = (node) => {
+    const t = ((node.getAttribute && node.getAttribute("data-edit-original")) || node.textContent || "")
+      .trim().slice(0, 60);
+    let x = 0;
+    for (let i = 0; i < t.length; i++) x = (x * 31 + t.charCodeAt(i)) | 0;
+    return (x >>> 0).toString(16).padStart(8, "0");
+  };
+  const hashHex = hashOf(el);
+  // Occurrence index among editable elements in the same anchor whose
+  // original-text hash matches (document order). Stable unless the count
+  // of identically-worded elements in the section changes — rare.
+  let occ = 0;
+  try {
+    const sameHash = Array.from(anchor.querySelectorAll("*")).filter(
+      (n) => isLeafTextElement(n) && hashOf(n) === hashHex
     );
-    const idx = siblings.indexOf(cur);
-    parts.unshift(`${cur.tagName.toLowerCase()}[${idx}]`);
-    cur = parent;
-  }
-  const path = parts.join(">");
-  // Hash from the ORIGINAL text (captured before any edits) so the id stays
-  // stable while the user types. Fallback to current text on first encounter.
-  const text = (el.getAttribute("data-edit-original") || el.textContent || "").trim().slice(0, 60);
-  let h = 0;
-  for (let i = 0; i < text.length; i++) {
-    h = (h * 31 + text.charCodeAt(i)) | 0;
-  }
-  const hashHex = (h >>> 0).toString(16).padStart(8, "0");
-  return `${anchorTag}>${path}#h:${hashHex}`;
+    occ = Math.max(0, sameHash.indexOf(el));
+  } catch (e) { occ = 0; }
+  return `${anchorTag}#h:${hashHex}~${occ}`;
 }
 
 window.__cutsComputeEditId = computeEditId;
