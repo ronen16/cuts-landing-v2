@@ -636,9 +636,9 @@ function SocialProofSection({ onCTAClick, admin }) {
           onClick={() => scrollBy(-1)}
           disabled={!canPrev}
           aria-label="הקודם"
+          className="vid-nav-btn"
           style={{
             position: "absolute", top: "50%", right: 12,
-            transform: "translateY(-50%)",
             zIndex: 4,
             width: 52, height: 52, borderRadius: "50%",
             background: canPrev ? "var(--accent)" : "rgba(255,255,255,0.06)",
@@ -661,9 +661,9 @@ function SocialProofSection({ onCTAClick, admin }) {
           onClick={() => scrollBy(1)}
           disabled={!canNext}
           aria-label="הבא"
+          className="vid-nav-btn"
           style={{
             position: "absolute", top: "50%", left: 12,
-            transform: "translateY(-50%)",
             zIndex: 4,
             width: 52, height: 52, borderRadius: "50%",
             background: canNext ? "var(--accent)" : "rgba(255,255,255,0.06)",
@@ -866,6 +866,33 @@ function SocialProofSection({ onCTAClick, admin }) {
       <style>{`
         .testimonial-video-scroller::-webkit-scrollbar { display: none; }
         @keyframes vidSpin { to { transform: rotate(360deg); } }
+
+        .vid-nav-btn {
+          transform: translateY(-50%);
+          transition: transform 0.2s cubic-bezier(0.2,0.8,0.2,1),
+                      box-shadow 0.2s ease, background 0.2s ease;
+        }
+        .vid-nav-btn:hover {
+          transform: translateY(-50%) scale(1.12);
+          box-shadow: 0 12px 30px rgba(255,213,0,0.5);
+        }
+        .vid-nav-btn:active {
+          transform: translateY(-50%) scale(0.84);
+          box-shadow: 0 4px 12px rgba(255,213,0,0.4);
+        }
+        .vid-nav-btn::after {
+          content: "";
+          position: absolute; inset: 0;
+          border-radius: 50%;
+          border: 2px solid var(--accent);
+          opacity: 0;
+          pointer-events: none;
+        }
+        .vid-nav-btn:active::after { animation: vidNavPulse 0.45s ease-out; }
+        @keyframes vidNavPulse {
+          0%   { opacity: 0.7; transform: scale(1); }
+          100% { opacity: 0;   transform: scale(1.7); }
+        }
 
         .vid-card {
           box-shadow: 0 12px 30px -14px rgba(0,0,0,0.7);
