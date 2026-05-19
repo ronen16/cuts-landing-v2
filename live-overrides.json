@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "publishedAt": "2026-05-17T15:46:53.173Z",
+  "publishedAt": "2026-05-19T10:23:16.634Z",
   "overrides": {
     "sec:how-it-works>button[0]#h:d901835d": "👁 הצג",
     "sec:services>section[0]>div[0]>div[1]>div[0]>h3[0]#h:a5c90c46": "צילום מקצועי",
@@ -44,7 +44,11 @@
     "sec:final-cta>section[0]>div[0]>div[0]>div[0]>ul[0]>li[2]>span[1]#h:3ee96e42": "מראים לכם תוצאות של לקוחות אמיתיים.",
     "sec:final-cta>section[0]>div[0]>div[0]>div[0]>div[0]>div[1]>span[2]#h:dab20478": "<span style=\"color: var(--accent);\" data-edit-original=\"✓\" data-edit-original-html=\"✓\" data-edit-id=\"sec:final-cta&gt;section[0]&gt;div[0]&gt;div[0]&gt;div[0]&gt;div[0]&gt;div[1]&gt;span[2]&gt;span[0]#h:00002713\" contenteditable=\"true\" spellcheck=\"false\">✓</span> מענה תוך 24 שעות",
     "sec:final-cta>section[0]>div[0]>div[0]>div[0]>div[0]>p[0]#h:280ba64b": "האולפן עובד בתפוסה כמעט מלאה, כדי להמשיך לתת את השירות הטוב ביותר<br>לכל לקוח אנחנו פותחים מקום ללקוחות חדשים פעם בחודש.",
-    "sec:final-cta>section[0]>div[0]>div[0]>form[0]>div[1]>h3[0]#h:35d112ed": "קביעת שיחה"
+    "sec:final-cta>section[0]>div[0]>div[0]>form[0]>div[1]>h3[0]#h:35d112ed": "קביעת שיחה",
+    "sec:results>section[0]>div[1]>button[0]#h:00002192": "→",
+    "root>div[0]>div[0]>footer[0]>div[0]>span[0]>a[1]#h:b124e6cd": "תקנון האתר",
+    "root>div[0]>div[0]>footer[0]>div[0]>span[0]>a[0]#h:a42044a8": "מדיניות פרטיות",
+    "sec:final-cta>section[0]>div[0]>div[0]>form[0]>div[2]>div[2]>label[0]>span[1]>a[0]#h:1d2c49a9": "לתקנון האתר"
   },
   "sectionOrder": null,
   "elementOffsets": {
@@ -66,5 +70,53 @@
     "1190079907",
     "1190079801"
   ],
-  "hiddenVideos": []
+  "hiddenVideos": [],
+  "videoItems": null,
+  "podcastOrder": [
+    "MpOyFwCPAII",
+    "L-RHzPEthCM",
+    "bXAmsbiZwIg",
+    "7MeWJkQZcqU",
+    "V-kwXkPtP0k",
+    "ZdbeRPiUJFo",
+    "yS0Zlpwmr3M",
+    "csBIrDweyuU"
+  ],
+  "hiddenPodcasts": [
+    "bXAmsbiZwIg"
+  ],
+  "podcastItems": [
+    {
+      "youtubeId": "MpOyFwCPAII",
+      "title": ""
+    },
+    {
+      "youtubeId": "0GpVEOmDd2o",
+      "title": ""
+    },
+    {
+      "youtubeId": "L-RHzPEthCM",
+      "title": ""
+    },
+    {
+      "youtubeId": "V-kwXkPtP0k",
+      "title": ""
+    },
+    {
+      "youtubeId": "ZdbeRPiUJFo",
+      "title": ""
+    },
+    {
+      "youtubeId": "yS0Zlpwmr3M",
+      "title": ""
+    },
+    {
+      "youtubeId": "csBIrDweyuU",
+      "title": ""
+    },
+    {
+      "youtubeId": "NEWVIDEO123",
+      "title": ""
+    }
+  ]
 }
