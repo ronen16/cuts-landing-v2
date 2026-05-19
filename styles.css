@@ -839,3 +839,54 @@ body.admin-dragging-sections .section-hide-toggle { display: inline-flex; }
 @media (max-width: 560px) {
   .a11y-panel { width: calc(100vw - 40px); }
 }
+
+/* ===== Legal modal (terms / privacy / accessibility) ===== */
+.legal-backdrop {
+  position: fixed; inset: 0; z-index: 100000;
+  background: rgba(0,0,0,0.78); backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+}
+.legal-modal {
+  background: #121212; border: 1px solid rgba(255,213,0,0.35);
+  border-radius: 18px; width: 100%; max-width: 760px;
+  max-height: 86vh; display: flex; flex-direction: column;
+  box-shadow: 0 24px 70px rgba(0,0,0,0.7);
+  color: rgba(255,255,255,0.85);
+}
+.legal-modal__head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 22px 26px 16px; border-bottom: 1px solid rgba(255,255,255,0.08);
+  flex: 0 0 auto;
+}
+.legal-modal__title {
+  color: #fff; font-weight: 900; font-size: clamp(20px, 3vw, 28px); margin: 0;
+}
+.legal-modal__close {
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.7); width: 36px; height: 36px; border-radius: 10px;
+  font-size: 16px; cursor: pointer; flex: 0 0 auto;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+.legal-modal__close:hover { background: #FFD500; color: #0A0A0A; }
+.legal-modal__body {
+  padding: 22px 26px 28px; overflow-y: auto; line-height: 1.7;
+}
+.legal-modal__updated { color: rgba(255,255,255,0.45); font-size: 13px; margin-bottom: 16px; }
+.legal-modal__note {
+  background: rgba(255,255,255,0.03); border: 1px dashed rgba(255,255,255,0.14);
+  border-radius: 10px; padding: 14px 16px; color: rgba(255,255,255,0.6);
+  font-size: 13.5px; margin-bottom: 26px;
+}
+.legal-modal__h { color: #fff; font-weight: 800; font-size: clamp(17px, 2.2vw, 21px); margin: 28px 0 10px; }
+.legal-modal__p { font-size: 15.5px; margin-bottom: 12px; }
+.legal-modal__ul { margin: 0 22px 14px; font-size: 15.5px; }
+.legal-modal__ul li { margin-bottom: 7px; }
+.legal-modal__foot {
+  border-top: 1px solid rgba(255,255,255,0.08); margin-top: 30px;
+  padding-top: 18px; color: rgba(255,255,255,0.4); font-size: 13px;
+}
+@media (max-width: 560px) {
+  .legal-backdrop { padding: 0; }
+  .legal-modal { max-width: 100%; max-height: 100vh; border-radius: 0; }
+}

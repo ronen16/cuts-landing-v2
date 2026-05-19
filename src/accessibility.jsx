@@ -172,7 +172,10 @@ function AccessibilityWidget() {
           <Row label="עצירת אנימציות" active={state.stopAnim} onClick={() => toggle("stopAnim")} />
 
           <button type="button" className="a11y-reset" onClick={reset}>איפוס הגדרות נגישות</button>
-          <a className="a11y-statement" href="accessibility.html" target="_blank" rel="noopener noreferrer">
+          <a
+            className="a11y-statement"
+            href="accessibility.html"
+            onClick={(e) => { e.preventDefault(); setOpen(false); if (window.openLegal) window.openLegal("accessibility"); }}>
             הצהרת נגישות
           </a>
         </div>

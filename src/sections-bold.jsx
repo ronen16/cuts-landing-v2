@@ -2673,9 +2673,7 @@ function ConsentCheckbox({ form }) {
         אני מאשר/ת שקראתי ואני מסכים/ה{" "}
         <a
           href="terms.html"
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); if (window.openLegal) window.openLegal("terms"); }}
           style={{ color: "var(--accent)", textDecoration: "underline", fontWeight: 700 }}>
           לתקנון האתר
         </a>

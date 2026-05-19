@@ -160,6 +160,7 @@ function App() {
       {AdminPodcastsModal && <AdminPodcastsModal admin={admin} />}
       {AdminPublishSettingsModal && <AdminPublishSettingsModal />}
       {window.AccessibilityWidget && <window.AccessibilityWidget />}
+      {window.LegalModal && <window.LegalModal />}
     </div>
   );
 }
