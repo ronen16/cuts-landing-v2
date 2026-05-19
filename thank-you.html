@@ -21,68 +21,114 @@
     -webkit-font-smoothing: antialiased;
     display: flex; align-items: center; justify-content: center;
     min-height: 100vh; padding: 28px; text-align: center;
+    overflow: hidden;
   }
-  .card { max-width: 600px; }
+
+  /* floating ambient glow blobs */
+  .blob { position: fixed; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0; }
+  .blob--1 { width: 460px; height: 460px; background: rgba(255,213,0,0.10); top: -140px; right: -120px; animation: drift1 14s ease-in-out infinite; }
+  .blob--2 { width: 380px; height: 380px; background: rgba(255,213,0,0.07); bottom: -120px; left: -100px; animation: drift2 17s ease-in-out infinite; }
+  @keyframes drift1 { 0%,100%{ transform: translate(0,0); } 50%{ transform: translate(-30px,40px); } }
+  @keyframes drift2 { 0%,100%{ transform: translate(0,0); } 50%{ transform: translate(40px,-30px); } }
+
+  .card { max-width: 600px; position: relative; z-index: 1; }
+
+  /* staggered entrance */
+  .anim { opacity: 0; transform: translateY(18px); animation: rise 0.7s cubic-bezier(0.2,0.8,0.2,1) forwards; }
+  .d1 { animation-delay: 0.05s; }
+  .d2 { animation-delay: 0.20s; }
+  .d3 { animation-delay: 0.34s; }
+  .d4 { animation-delay: 0.48s; }
+  .d5 { animation-delay: 0.62s; }
+  @keyframes rise { to { opacity: 1; transform: translateY(0); } }
+
   .badge {
-    width: 92px; height: 92px; border-radius: 50%;
+    width: 96px; height: 96px; border-radius: 50%;
     background: var(--accent); color: #0A0A0A;
     display: flex; align-items: center; justify-content: center;
-    margin: 0 auto 30px;
+    margin: 0 auto 28px; position: relative;
     box-shadow: 0 0 0 10px rgba(255,213,0,0.12), 0 14px 40px rgba(255,213,0,0.35);
-    animation: pop 0.5s cubic-bezier(0.2,0.8,0.2,1) both;
+    animation: pop 0.6s cubic-bezier(0.2,0.9,0.25,1.4) both, glow 2.6s ease-in-out 0.8s infinite;
   }
-  @keyframes pop { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-  .badge svg { width: 46px; height: 46px; }
-  h1 {
-    font-size: clamp(34px, 6vw, 60px); font-weight: 900; color: #fff;
-    line-height: 1.05; margin-bottom: 16px;
+  @keyframes pop { from { transform: scale(0.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  @keyframes glow {
+    0%,100% { box-shadow: 0 0 0 10px rgba(255,213,0,0.12), 0 14px 40px rgba(255,213,0,0.35); }
+    50%     { box-shadow: 0 0 0 16px rgba(255,213,0,0.05), 0 18px 54px rgba(255,213,0,0.55); }
   }
+  .badge::after {
+    content: ""; position: absolute; inset: -6px; border-radius: 50%;
+    border: 2px solid rgba(255,213,0,0.5);
+    animation: ring 2.4s ease-out infinite;
+  }
+  @keyframes ring { 0% { transform: scale(1); opacity: 0.7; } 100% { transform: scale(1.5); opacity: 0; } }
+  .badge svg { width: 48px; height: 48px;
+    stroke-dasharray: 30; stroke-dashoffset: 30;
+    animation: draw 0.5s ease 0.45s forwards;
+  }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+
+  h1 { font-size: clamp(34px, 6vw, 60px); font-weight: 900; color: #fff; line-height: 1.05; margin-bottom: 16px; }
   h1 .y { color: var(--accent); }
   p { font-size: clamp(15px, 2vw, 18px); line-height: 1.65; color: rgba(255,255,255,0.7); margin-bottom: 12px; }
+
   .next {
-    margin: 28px auto 30px; max-width: 460px;
+    margin: 26px auto 28px; max-width: 480px;
     background: var(--card); border: 1px solid var(--line);
     border-radius: 14px; padding: 18px 22px;
     color: rgba(255,255,255,0.8); font-size: 15px; line-height: 1.6;
   }
   .next b { color: var(--accent); }
-  .btn {
-    display: inline-flex; align-items: center; gap: 10px;
-    background: var(--accent); color: #0A0A0A;
-    font-weight: 800; font-size: 16px; text-decoration: none;
-    padding: 16px 30px; border-radius: 999px;
-    box-shadow: 0 12px 32px rgba(255,213,0,0.35);
-    transition: transform 0.2s ease;
+
+  .ig-btn {
+    display: inline-flex; align-items: center; gap: 11px;
+    background: linear-gradient(95deg, #FFD500, #ffc400);
+    color: #0A0A0A; font-weight: 900; font-size: 17px; text-decoration: none;
+    padding: 17px 34px; border-radius: 999px;
+    box-shadow: 0 14px 36px rgba(255,213,0,0.4);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
-  .btn:hover { transform: translateY(-2px); }
+  .ig-btn:hover { transform: translateY(-3px); box-shadow: 0 20px 46px rgba(255,213,0,0.55); }
+  .ig-btn svg { width: 22px; height: 22px; }
+  .ig-sub { display: block; margin-top: 16px; }
+  .back { display: inline-block; margin-top: 22px; color: rgba(255,255,255,0.5); font-size: 14px; text-decoration: none; }
+  .back:hover { color: var(--accent); text-decoration: underline; }
 </style>
 </head>
 <body>
+  <span class="blob blob--1" aria-hidden="true"></span>
+  <span class="blob blob--2" aria-hidden="true"></span>
+
   <main class="card">
-    <div class="badge" aria-hidden="true">
+    <div class="badge anim d1" aria-hidden="true">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
         <path d="M4 12.5 L9.5 18 L20 6.5" />
       </svg>
     </div>
-    <h1><span id="hello">קיבלנו את הפרטים</span> — <span class="y">תודה!</span></h1>
-    <p>הפרטים שלך נקלטו בהצלחה. אנחנו כבר על זה.</p>
 
-    <div class="next">
-      <b>מה עכשיו?</b><br/>
-      ניצור איתך קשר תוך <b>24 שעות</b> לתיאום שיחת אבחון קצרה (כ-30 דקות, ללא עלות).
-      נכיר את העסק, נבדוק התאמה לפודקאסט, ואם מתאים — נצא לדרך.
+    <h1 class="anim d2"><span id="hello">קיבלנו את הפרטים</span> — <span class="y">תודה!</span></h1>
+    <p class="anim d3">הפרטים שלך נקלטו. ניצור איתך קשר תוך <b style="color:var(--accent)">24 שעות</b> לתיאום שיחת אבחון קצרה (ללא עלות).</p>
+
+    <div class="next anim d4">
+      <b>בינתיים — בואו להכיר אותנו 🎙️</b><br/>
+      קפצו לעמוד האינסטגרם שלנו: מאחורי הקלעים מהאולפן, פרקים, ותכל'ס איך מותג אישי נבנה. ככה תגיעו לשיחה כבר עם תמונה מלאה.
     </div>
 
-    <a class="btn" href="index.html">← חזרה לאתר</a>
+    <div class="anim d5">
+      <a class="ig-btn" id="igLink" href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 2.2c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41a3.7 3.7 0 0 1-1.38-.9 3.7 3.7 0 0 1-.9-1.38c-.16-.42-.36-1.06-.41-2.23C2.21 15.58 2.2 15.2 2.2 12s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.21 8.8 2.2 12 2.2zm0 1.8c-3.14 0-3.5.01-4.74.07-.92.04-1.42.2-1.75.33-.44.17-.75.37-1.08.7-.33.33-.53.64-.7 1.08-.13.33-.29.83-.33 1.75C3.34 9.17 3.33 9.53 3.33 12s.01 2.83.07 4.07c.04.92.2 1.42.33 1.75.17.44.37.75.7 1.08.33.33.64.53 1.08.7.33.13.83.29 1.75.33 1.24.06 1.6.07 4.74.07s3.5-.01 4.74-.07c.92-.04 1.42-.2 1.75-.33.44-.17.75-.37 1.08-.7.33-.33.53-.64.7-1.08.13-.33.29-.83.33-1.75.06-1.24.07-1.6.07-4.07s-.01-2.83-.07-4.07c-.04-.92-.2-1.42-.33-1.75a2.9 2.9 0 0 0-.7-1.08 2.9 2.9 0 0 0-1.08-.7c-.33-.13-.83-.29-1.75-.33C15.5 4.01 15.14 4 12 4zm0 3.07A4.93 4.93 0 1 1 12 16.93 4.93 4.93 0 0 1 12 7.07zm0 1.8a3.13 3.13 0 1 0 0 6.26 3.13 3.13 0 0 0 0-6.26zm5.03-2.99a1.15 1.15 0 1 1 0 2.3 1.15 1.15 0 0 1 0-2.3z"/>
+        </svg>
+        עקבו אחרינו באינסטגרם
+      </a>
+      <a class="back ig-sub" href="index.html">← חזרה לאתר</a>
+    </div>
   </main>
 
   <script>
     (function () {
       try {
         var n = new URLSearchParams(location.search).get("name");
-        if (n && n.trim()) {
-          document.getElementById("hello").textContent = "תודה, " + n.trim();
-        }
+        if (n && n.trim()) document.getElementById("hello").textContent = "תודה, " + n.trim();
       } catch (e) {}
     })();
   </script>
