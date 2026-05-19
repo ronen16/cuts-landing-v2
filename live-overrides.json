@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "publishedAt": "2026-05-19T13:20:49.660Z",
+  "publishedAt": "2026-05-19T13:22:56.579Z",
   "overrides": {
     "sec:how-it-works>button[0]#h:d901835d": "👁 הצג",
     "sec:services>section[0]>div[0]>div[1]>div[0]>h3[0]#h:a5c90c46": "צילום מקצועי",
@@ -86,7 +86,8 @@
     "root#h:b2189fe6~0": "ברוכים הבאים לאתר של Cuts — תקנון זה מסדיר את השימוש באתר ובשירותים המוצעים בו. עצם הגלישה והשימוש באתר מהווים הסכמה מלאה לתנאים המפורטים להלן. אם אינך מסכים/ה לתנאים — אנא הימנע/י משימוש באתר.",
     "root#h:cf79acba~0": "עודכן לאחרונה: מאי 2026",
     "root#h:a42044a8~0": "מדיניות פרטיות",
-    "root#h:ea2c568e~0": "Cuts — מכבדת את פרטיות המשתמשים באתר. מדיניות זו מסבירה איזה מידע נאסף, כיצד נעשה בו שימוש וכיצד הוא נשמר. השימוש באתר מהווה הסכמה למדיניות זו."
+    "root#h:ea2c568e~0": "Cuts — מכבדת את פרטיות המשתמשים באתר. מדיניות זו מסבירה איזה מידע נאסף, כיצד נעשה בו שימוש וכיצד הוא נשמר. השימוש באתר מהווה הסכמה למדיניות זו.",
+    "sec:final-cta#h:dab20478~1": "<span style=\"color: var(--accent);\" data-edit-original=\"✓\" data-edit-original-html=\"✓\" data-edit-id=\"sec:final-cta#h:00002713~8\" contenteditable=\"true\" spellcheck=\"false\">✓</span> מענה תוך 24ש׳"
   },
   "sectionOrder": [
     "hero",
@@ -138,7 +139,7 @@
     "csBIrDweyuU"
   ],
   "hiddenPodcasts": [
-    "bXAmsbiZwIg"
+    "csBIrDweyuU"
   ],
   "podcastItems": [
     {
@@ -158,7 +159,7 @@
       "title": ""
     },
     {
-      "youtubeId": "csBIrDweyuU",
+      "youtubeId": "bXAmsbiZwIg",
       "title": ""
     }
   ]
