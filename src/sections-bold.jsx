@@ -770,8 +770,11 @@ function SocialProofSection({ onCTAClick, admin }) {
               <span aria-hidden="true" className="vid-card__ring" style={{
               position: "absolute", inset: 0, borderRadius: 18,
               zIndex: 4, pointerEvents: "none",
-              border: "1px solid rgba(255,213,0,0.45)",
-              boxShadow: "inset 0 0 10px rgba(255,213,0,0.28), inset 0 0 26px rgba(255,213,0,0.18), inset 0 0 50px rgba(255,213,0,0.10)"
+              padding: 1,
+              background: "linear-gradient(180deg, rgba(255,213,0,0.9) 0%, rgba(255,213,0,0.4) 42%, rgba(255,213,0,0.08) 100%)",
+              WebkitMask: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+              WebkitMaskComposite: "xor",
+              maskComposite: "exclude"
             }} />
 
               {v.duration &&
