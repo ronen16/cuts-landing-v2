@@ -19,18 +19,31 @@ const A11Y_CSS = `
 html.a11y-grayscale { filter: grayscale(1) !important; }
 html.a11y-invert { filter: invert(1) hue-rotate(180deg) !important; }
 html.a11y-invert img, html.a11y-invert video, html.a11y-invert iframe { filter: invert(1) hue-rotate(180deg) !important; }
-html.a11y-contrast body, html.a11y-contrast body * {
-  background-color: #000 !important;
+html.a11y-contrast body { background: #000 !important; color: #fff !important; }
+html.a11y-contrast body *:not(img):not(picture):not(video):not(iframe):not(svg):not(svg *):not(path) {
+  background-color: transparent !important;
+  background-image: none !important;
   color: #fff !important;
   border-color: #fff !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
 }
 html.a11y-contrast a, html.a11y-contrast a * { color: #ffe600 !important; }
-html.a11y-light body, html.a11y-light body * {
-  background-color: #fff !important;
+html.a11y-light body { background: #fff !important; color: #111 !important; }
+html.a11y-light body *:not(img):not(picture):not(video):not(iframe):not(svg):not(svg *):not(path) {
+  background-color: transparent !important;
+  background-image: none !important;
   color: #111 !important;
-  border-color: #999 !important;
+  border-color: #888 !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
 }
 html.a11y-light a, html.a11y-light a * { color: #0044cc !important; }
+html.a11y-light .a11y-panel, html.a11y-light .a11y-panel *,
+html.a11y-contrast .a11y-panel, html.a11y-contrast .a11y-panel * {
+  background-color: #121212 !important; color: #fff !important;
+}
+html.a11y-light .a11y-fab, html.a11y-contrast .a11y-fab { background: #FFD500 !important; color: #0A0A0A !important; }
 html.a11y-links a { text-decoration: underline !important; outline: 2px solid #ffd500 !important; outline-offset: 2px; }
 html.a11y-headings h1, html.a11y-headings h2, html.a11y-headings h3, html.a11y-headings h4 {
   outline: 2px dashed #ffd500 !important; outline-offset: 3px;
