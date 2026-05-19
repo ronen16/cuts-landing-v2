@@ -137,7 +137,6 @@ function LegalModal() {
         </div>
         <div className="legal-modal__body">
           <p className="legal-modal__updated">{d.updated}</p>
-          {d.note && <p className="legal-modal__note">{d.note}</p>}
           {d.sections.map((s, i) => (
             <div key={i}>
               <h3 className="legal-modal__h">{s.h}</h3>
