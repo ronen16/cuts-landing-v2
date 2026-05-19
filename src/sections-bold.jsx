@@ -3988,6 +3988,16 @@ function Results({ admin }) {
                     src={`https://img.youtube.com/vi/${c.youtubeId}/maxresdefault.jpg`}
                     alt={c.title}
                     loading="lazy"
+                    onLoad={(e) => {
+                      // YouTube serves a tiny 120x90 grey placeholder (not a
+                      // 404) when a video has no HD thumbnail — fall back to
+                      // hqdefault which always has the real frame.
+                      const im = e.currentTarget;
+                      if (!im.dataset.fb && im.naturalWidth > 0 && im.naturalWidth <= 121) {
+                        im.dataset.fb = "1";
+                        im.src = `https://img.youtube.com/vi/${c.youtubeId}/hqdefault.jpg`;
+                      }
+                    }}
                     onError={(e) => {
                       if (!e.currentTarget.dataset.fb) {
                         e.currentTarget.dataset.fb = "1";
