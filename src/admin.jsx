@@ -274,6 +274,38 @@ function useAdminMode() {
     return () => window.removeEventListener("cuts-admin-unlock", onUnlock);
   }, []);
 
+  // Auto-sync from live on entering admin. Whatever browser/URL you unlock
+  // from, you always start editing from the current live state — so a stale
+  // localStorage can never become the base of a publish. Zero buttons.
+  // Safety: if this browser happens to hold MORE edits than live (genuine
+  // unpublished work), keep the local copy instead of clobbering it.
+  const liveSyncedRef = React.useRef(false);
+  React.useEffect(() => {
+    if (!unlocked || liveSyncedRef.current) return;
+    liveSyncedRef.current = true;
+    (async () => {
+      try {
+        const live = await fetchLiveOverrides(loadPublishSettings());
+        if (!live || typeof live !== "object") return;
+        const liveCount = Object.keys(live.overrides || {}).length;
+        const localCount = Object.keys(overrides || {}).length;
+        if (liveCount < localCount) return; // keep local unpublished work
+        setOverrides(live.overrides || {});
+        setSectionOrder(live.sectionOrder || null);
+        setElementOffsets(live.elementOffsets || {});
+        setHiddenSections(Array.isArray(live.hiddenSections) ? live.hiddenSections : []);
+        setVideoOrder(Array.isArray(live.videoOrder) ? live.videoOrder : null);
+        setHiddenVideos(Array.isArray(live.hiddenVideos) ? live.hiddenVideos : []);
+        setVideoItems(Array.isArray(live.videoItems) ? live.videoItems : null);
+        setPodcastOrder(Array.isArray(live.podcastOrder) ? live.podcastOrder : null);
+        setHiddenPodcasts(Array.isArray(live.hiddenPodcasts) ? live.hiddenPodcasts : []);
+        setPodcastItems(Array.isArray(live.podcastItems) ? live.podcastItems : null);
+      } catch (_) {
+        // offline / rate-limited — keep local; publish guard still protects
+      }
+    })();
+  }, [unlocked, overrides]);
+
   React.useEffect(() => {
     saveAdminState({ unlocked, overrides, sectionOrder, elementOffsets, hiddenSections, videoOrder, hiddenVideos, videoItems, podcastOrder, hiddenPodcasts, podcastItems, publishedVersions });
   }, [unlocked, overrides, sectionOrder, elementOffsets, hiddenSections, videoOrder, hiddenVideos, videoItems, podcastOrder, hiddenPodcasts, podcastItems, publishedVersions]);
