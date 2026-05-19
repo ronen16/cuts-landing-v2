@@ -714,7 +714,7 @@ function SocialProofSection({ onCTAClick, admin }) {
               scrollSnapAlign: "start",
               scrollSnapStop: "always",
               border: "1px solid var(--line2)",
-              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.04), 0 10px 30px rgba(0,0,0,0.5)"
+              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.04), 0 10px 30px rgba(0,0,0,0.5), 0 6px 26px rgba(255,213,0,0.16)"
             }}>
 
               {isPlaying &&
@@ -874,7 +874,8 @@ function SocialProofSection({ onCTAClick, admin }) {
         .vid-card:hover {
           transform: translateY(-5px);
           box-shadow: inset 0 1px 0 rgba(255,255,255,0.05),
-                      0 22px 48px -12px rgba(0,0,0,0.7);
+                      0 22px 48px -12px rgba(0,0,0,0.7),
+                      0 10px 34px -6px rgba(255,213,0,0.24);
         }
         .vid-card__ring { display: none; }
         .vid-play-btn { transition: transform 0.3s cubic-bezier(0.2,0.8,0.2,1); }
