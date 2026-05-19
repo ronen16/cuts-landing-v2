@@ -5808,11 +5808,13 @@ function WhoItsForOld() {
                   display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap"
                 }}>
                   <span aria-hidden="true" className="who-card__dot" />
-                  <span style={{
-                    color: "var(--accent)",
-                    textShadow: "0 0 22px rgba(255,213,0,0.25)"
-                  }}>{c.boldYellow}</span>
-                  <span>{c.boldRest}</span>
+                  <span>
+                    <span style={{
+                      color: "var(--accent)",
+                      textShadow: "0 0 22px rgba(255,213,0,0.25)"
+                    }}>{c.boldYellow}</span>{" "}
+                    <span>{c.boldRest}</span>
+                  </span>
                 </h3>
                 <p style={{
                   fontSize: 15, lineHeight: 1.65, color: "rgba(255,255,255,0.62)",
