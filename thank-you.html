@@ -93,6 +93,25 @@
   .back { display: inline-block; margin-top: 22px; color: rgba(255,255,255,0.5); font-size: 14px; text-decoration: none; }
   .back:hover { color: var(--accent); text-decoration: underline; }
 </style>
+
+<!-- Meta Pixel + Lead conversion (this is the post-submit page, so every load = converted lead). -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '646207438565937');
+fbq('track', 'PageView');
+fbq('track', 'Lead');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=646207438565937&ev=Lead&noscript=1"
+/></noscript>
+<!-- End Meta Pixel -->
 </head>
 <body>
   <span class="blob blob--1" aria-hidden="true"></span>
