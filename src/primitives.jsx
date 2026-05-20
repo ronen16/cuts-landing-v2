@@ -211,7 +211,11 @@ const PRIMITIVES_CLIENT_LOGOS = [
 function validateForm(values) {
   const errors = {};
   if (!values.name || values.name.trim().length < 2) errors.name = "צריך שם מלא";
-  if (!values.phone || values.phone.replace(/\D/g, "").length < 9) errors.phone = "מספר טלפון לא תקין";
+  // Israeli mobile: exactly 10 digits starting with 05 (e.g. 050-123-4567).
+  const phoneDigits = (values.phone || "").replace(/\D/g, "");
+  if (!phoneDigits) errors.phone = "צריך מספר טלפון";
+  else if (!phoneDigits.startsWith("05")) errors.phone = "המספר חייב להתחיל ב-05";
+  else if (phoneDigits.length !== 10) errors.phone = "מספר טלפון חייב להיות 10 ספרות";
   if (values.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) errors.email = "אימייל לא תקין";
   return errors;
 }

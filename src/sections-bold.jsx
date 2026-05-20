@@ -2920,7 +2920,7 @@ function StudioBookingLead({ form }) {
                   placeholder="050-0000000"
                   dir="ltr"
                   value={values.phone || ""}
-                  onChange={(e) => setField("phone", e.target.value)}
+                  onChange={(e) => setField("phone", e.target.value.replace(/\D/g, "").slice(0, 10))}
                   onBlur={() => blur("phone")}
                   style={{
                     width: "100%",
@@ -3105,7 +3105,7 @@ function MiniLeadStripe({ form }) {
               placeholder="טלפון"
               dir="ltr"
               value={values.phone || ""}
-              onChange={(e) => setField("phone", e.target.value)}
+              onChange={(e) => setField("phone", e.target.value.replace(/\D/g, "").slice(0, 10))}
               onBlur={() => blur("phone")}
               style={{
                 flex: "1 1 140px",
@@ -3262,7 +3262,7 @@ function InlineLeadForm({ form }) {
               </div>
               <div className={`field ${errors.phone && touched.phone ? "error" : ""}`}>
                 <label>טלפון</label>
-                <input dir="ltr" value={values.phone} onChange={(e) => setField("phone", e.target.value)} onBlur={() => blur("phone")} placeholder="054-000-0000" />
+                <input dir="ltr" value={values.phone} onChange={(e) => setField("phone", e.target.value.replace(/\D/g, "").slice(0, 10))} onBlur={() => blur("phone")} placeholder="054-000-0000" />
                 {errors.phone && touched.phone && <span className="err">{errors.phone}</span>}
               </div>
               <div style={{ marginTop: 4 }}>
@@ -3461,7 +3461,7 @@ function FinalCTA({ form, onCTAClick }) {
                 </div>
                 <div className={`field ${errors.phone && touched.phone ? "error" : ""}`}>
                   <label>טלפון</label>
-                  <input dir="ltr" value={values.phone} onChange={(e) => setField("phone", e.target.value)} onBlur={() => blur("phone")} placeholder="054-000-0000" />
+                  <input dir="ltr" value={values.phone} onChange={(e) => setField("phone", e.target.value.replace(/\D/g, "").slice(0, 10))} onBlur={() => blur("phone")} placeholder="054-000-0000" />
                   {errors.phone && touched.phone && <span className="err">{errors.phone}</span>}
                 </div>
                 <div style={{ marginTop: 2 }}>
