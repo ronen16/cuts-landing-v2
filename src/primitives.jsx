@@ -192,9 +192,10 @@ function useForm() {
     setTouched({ name: true, phone: true, email: true, consent: true });
     if (Object.keys(errs).length === 0) {
       setSubmitted(true);
-      // Fire-and-forget POST to the Make webhook (lead → Monday + WhatsApp +
-      // Claude research). `keepalive: true` lets the request complete after
-      // navigation; we don't await it so the redirect feels instant.
+      // Fire-and-forget POST to our own Vercel Function — creates the Monday
+      // item directly via the Monday GraphQL API. Replaced the Make webhook
+      // (Make's column encoder kept rejecting the payload). `keepalive: true`
+      // ensures the request completes after the redirect fires.
       try {
         const payload = {
           data: {
@@ -209,7 +210,7 @@ function useForm() {
           dateCreated: new Date().toISOString(),
           source: "cuts.co.il-landing",
         };
-        fetch("https://hook.eu2.make.com/nljeo1gq5n7hk8q9vkgqamjjt12urc21", {
+        fetch("/api/lead", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
