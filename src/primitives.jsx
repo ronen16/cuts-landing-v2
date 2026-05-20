@@ -192,6 +192,30 @@ function useForm() {
     setTouched({ name: true, phone: true, email: true, consent: true });
     if (Object.keys(errs).length === 0) {
       setSubmitted(true);
+      // Fire-and-forget POST to the Make webhook (lead → Monday + WhatsApp +
+      // Claude research). `keepalive: true` lets the request complete after
+      // navigation; we don't await it so the redirect feels instant.
+      try {
+        const payload = {
+          data: {
+            full_name: (values.name || "").trim(),
+            phone_number: (values.phone || "").trim(),
+            email: (values.email || "").trim(),
+          },
+          adName: "Landing Page",
+          adsetName: "cuts.co.il",
+          campaignName: "Landing Page Organic",
+          platform: "web",
+          dateCreated: new Date().toISOString(),
+          source: "cuts.co.il-landing",
+        };
+        fetch("https://hook.eu2.make.com/nljeo1gq5n7hk8q9vkgqamjjt12urc21", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+          keepalive: true,
+        }).catch(() => {});
+      } catch (_) {}
       // Redirect every successful lead to the thank-you page.
       try {
         window.location.assign(
