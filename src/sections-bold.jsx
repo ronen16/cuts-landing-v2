@@ -3907,11 +3907,17 @@ function Results({ admin }) {
         {/* Prev arrow (right in RTL) — identical to testimonials */}
         <button
           type="button"
-          onClick={() => scrollByCard(1)}
+          onClick={(e) => {
+            const b = e.currentTarget;
+            b.classList.remove("nudge-prev");
+            void b.offsetWidth;
+            b.classList.add("nudge-prev");
+            scrollByCard(1);
+          }}
           aria-label="הקודם"
+          className="vid-nav-btn"
           style={{
             position: "absolute", top: "50%", right: 12,
-            transform: "translateY(-50%)",
             zIndex: 4,
             width: 52, height: 52, borderRadius: "50%",
             background: "var(--accent)",
@@ -3930,11 +3936,17 @@ function Results({ admin }) {
         {/* Next arrow (left in RTL) — identical to testimonials */}
         <button
           type="button"
-          onClick={() => scrollByCard(-1)}
+          onClick={(e) => {
+            const b = e.currentTarget;
+            b.classList.remove("nudge-next");
+            void b.offsetWidth;
+            b.classList.add("nudge-next");
+            scrollByCard(-1);
+          }}
           aria-label="הבא"
+          className="vid-nav-btn"
           style={{
             position: "absolute", top: "50%", left: 12,
-            transform: "translateY(-50%)",
             zIndex: 4,
             width: 52, height: 52, borderRadius: "50%",
             background: "var(--accent)",
