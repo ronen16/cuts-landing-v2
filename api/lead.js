@@ -62,15 +62,23 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: "server-misconfigured" });
   }
 
+  // Always-populated columns: phone, date, source, and platform (which is
+  // "אורגני" for organic visitors). The ad/adset/campaign columns are only
+  // included when the frontend captured real attribution from the URL —
+  // otherwise they stay empty in Monday so it's visually clear the lead
+  // didn't come from a tracked campaign.
   const columnValues = {
-    [COL.adName]:   String(body.adName       || "Landing Page"),
-    [COL.campaign]: String(body.campaignName || "Landing Page Organic"),
-    [COL.adset]:    String(body.adsetName    || "cuts.co.il"),
-    [COL.platform]: String(body.platform     || "web"),
+    [COL.platform]: String(body.platform || "אורגני"),
     [COL.phone]:    { phone: normalizePhone(phoneRaw), countryShortName: "IL" },
     [COL.date]:     nowInJerusalem(),
     [COL.source]:   { label: "דף נחיתה" },
   };
+  const adName       = String(body.adName       || "").trim();
+  const adsetName    = String(body.adsetName    || "").trim();
+  const campaignName = String(body.campaignName || "").trim();
+  if (adName)       columnValues[COL.adName]   = adName;
+  if (adsetName)    columnValues[COL.adset]    = adsetName;
+  if (campaignName) columnValues[COL.campaign] = campaignName;
 
   const mutation = `mutation ($name: String!, $cols: JSON!) {
     create_item(

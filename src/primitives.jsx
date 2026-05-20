@@ -254,11 +254,12 @@ function useForm() {
             phone_number: (values.phone || "").trim(),
             email: (values.email || "").trim(),
           },
-          // Map captured Meta/UTM params to the Monday columns. Fall back to
-          // sensible defaults so an organic visitor still gets a meaningful row.
-          adName:       (attr && attr.utm_content)  || "Direct",
-          adsetName:    (attr && attr.utm_term)     || "—",
-          campaignName: (attr && attr.utm_campaign) || "Organic",
+          // Map captured Meta/UTM params to the Monday columns. Organic
+          // visitors (no attribution) leave ad/adset/campaign empty — only
+          // the platform column gets "אורגני" so the source is still clear.
+          adName:       (attr && attr.utm_content)  || "",
+          adsetName:    (attr && attr.utm_term)     || "",
+          campaignName: (attr && attr.utm_campaign) || "",
           platform:     platformFromAttribution(attr),
           dateCreated:  new Date().toISOString(),
           source:       "cuts.co.il-landing",
