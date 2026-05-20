@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "publishedAt": "2026-05-20T08:08:32.582Z",
+  "publishedAt": "2026-05-20T14:00:19.873Z",
   "overrides": {
     "sec:how-it-works>button[0]#h:d901835d": "👁 הצג",
     "sec:services>section[0]>div[0]>div[1]>div[0]>h3[0]#h:a5c90c46": "צילום ותאורה מקצועית",
@@ -97,7 +97,14 @@
     "sec:inline-lead-1>section[0]>div[1]>div[0]>div[0]>ul[0]>li[0]#h:317c7a69": "<span style=\"width: 20px; height: 20px; border-radius: 50%; background: var(--accent); color: rgb(10, 10, 10); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 900; flex-shrink: 0;\" data-edit-original=\"✓\" data-edit-original-html=\"✓\" data-edit-id=\"sec:inline-lead-1&gt;section[0]&gt;div[1]&gt;div[0]&gt;div[0]&gt;ul[0]&gt;li[0]&gt;span[0]#h:00002713\" contenteditable=\"true\" spellcheck=\"false\">✓</span>נצלול לעסק שלכם ולקהל היעד.",
     "sec:inline-lead-1>section[0]>div[1]>div[0]>div[0]>ul[0]>li[1]#h:949894e6": "<span style=\"width: 20px; height: 20px; border-radius: 50%; background: var(--accent); color: rgb(10, 10, 10); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 900; flex-shrink: 0;\" data-edit-original=\"✓\" data-edit-original-html=\"✓\" data-edit-id=\"sec:inline-lead-1&gt;section[0]&gt;div[1]&gt;div[0]&gt;div[0]&gt;ul[0]&gt;li[1]&gt;span[0]#h:00002713\" contenteditable=\"true\" spellcheck=\"false\">✓</span>נבדוק אם פודקאסט מתאים לכם.",
     "sec:inline-lead-1>section[0]>div[1]>div[0]>div[0]>ul[0]>li[2]#h:3bece6a9": "<span style=\"width: 20px; height: 20px; border-radius: 50%; background: var(--accent); color: rgb(10, 10, 10); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 900; flex-shrink: 0;\" data-edit-original=\"✓\" data-edit-original-html=\"✓\" data-edit-id=\"sec:inline-lead-1&gt;section[0]&gt;div[1]&gt;div[0]&gt;div[0]&gt;ul[0]&gt;li[2]&gt;span[0]#h:00002713\" contenteditable=\"true\" spellcheck=\"false\">✓</span>נראה לכם דוגמאות אמיתיות.",
-    "sec:studio-booking>section[0]>div[2]>div[0]>div[0]>div[0]>p[0]#h:a2d6dcae": "שיחת אבחון קצרה, ללא עלות. נכיר את העסק שלכם.<br>נבדוק התאמה לפודקאסט, ונראה לכם דוגמאות אמיתיות מתוך האולפן."
+    "sec:studio-booking>section[0]>div[2]>div[0]>div[0]>div[0]>p[0]#h:a2d6dcae": "שיחת אבחון קצרה, ללא עלות. נכיר את העסק שלכם.<br>נבדוק התאמה לפודקאסט, ונראה לכם דוגמאות אמיתיות מתוך האולפן.",
+    "sec:hero>section[0]>div[1]>div[0]>div[2]>button[0]#h:e85712e9": "אני רוצה להפוך למותג ←",
+    "sec:final-cta>section[0]>div[0]>div[0]>form[0]>div[2]>button[0]#h:59018cd1": "בואו נקבע שיחה ←",
+    "sec:inline-lead-1>section[0]>div[1]>div[0]>form[0]>button[0]#h:59018cd1": "בואו נקבע שיחה ←",
+    "root>div[0]>div[0]>footer[0]>div[0]>span[1]#h:b6e03c6e": "© 2026 CUTS. כל הזכויות שמורות.",
+    "sec:hero>section[0]>div[1]>div[0]>div[1]>h1[0]>span[1]>span[0]#h:5caa79a6": "כשהוא כבר יודע מי אתם<span aria-hidden=\"true\" style=\"position: absolute; left: 2%; right: 2%; bottom: -0.08em; height: 5px; background: linear-gradient(90deg, transparent, var(--accent) 15%, var(--accent) 85%, transparent); opacity: 0.5; border-radius: 3px; filter: blur(0.5px);\"></span>",
+    "root>div[0]>div[0]>nav[0]>div[0]>button[0]#h:572946ce": "בואו נדבר ←",
+    "sec:hero>section[0]>div[1]>div[0]>div[1]>div[1]>div[0]>span[2]#h:b071b718": "דמיינו את זה לרגע"
   },
   "sectionOrder": [
     "hero",
