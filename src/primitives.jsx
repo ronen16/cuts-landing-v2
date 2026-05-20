@@ -2,6 +2,56 @@
 
 const LOGO_SRC = (typeof window !== "undefined" && window.__resources && window.__resources.cutsLogo) || "assets/cuts-logo.png";
 
+// Marketing attribution capture — runs on first page load.
+// Meta's URL templates expand {{campaign.name}}, {{ad.name}}, {{adset.name}}
+// and {{site_source_name}} into the visitor's URL, which we cache in
+// sessionStorage so the form can attach them to the lead even if the visitor
+// browses around the site before converting. We only capture on the first
+// landing (when no value is stored yet) — a same-session navigation that
+// removes the UTM params from the URL must not erase the original source.
+(function captureAttribution() {
+  if (typeof window === "undefined" || !window.sessionStorage) return;
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const ATTR_KEYS = [
+      "utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term",
+      "fbclid", "gclid", "ttclid",
+    ];
+    if (!ATTR_KEYS.some((k) => params.has(k))) return;
+    if (sessionStorage.getItem("cuts_attribution")) return;
+    const data = {};
+    for (const k of ATTR_KEYS) {
+      const v = params.get(k);
+      if (v) data[k] = v;
+    }
+    data.landed_at = new Date().toISOString();
+    data.referrer = document.referrer || "";
+    sessionStorage.setItem("cuts_attribution", JSON.stringify(data));
+  } catch (_) {}
+})();
+
+// Read whatever we captured (if anything).
+function getAttribution() {
+  if (typeof window === "undefined" || !window.sessionStorage) return null;
+  try {
+    const raw = sessionStorage.getItem("cuts_attribution");
+    return raw ? JSON.parse(raw) : null;
+  } catch (_) { return null; }
+}
+
+// Map utm_source to a human-readable platform name (Hebrew where it makes sense).
+function platformFromAttribution(attr) {
+  const s = String((attr && attr.utm_source) || "").toLowerCase();
+  if (!s) return attr && attr.fbclid ? "Facebook" : "אורגני";
+  if (s.includes("ig") || s.includes("instagram")) return "Instagram";
+  if (s.includes("fb") || s.includes("facebook")) return "Facebook";
+  if (s.includes("tiktok") || s === "tt") return "TikTok";
+  if (s.includes("youtube") || s === "yt") return "YouTube";
+  if (s.includes("google")) return "Google";
+  if (s.includes("linkedin")) return "LinkedIn";
+  return s;
+}
+
 const NAV = [
 { label: "איך זה עובד", href: "#how" },
 { label: "למה אנחנו", href: "#why" },
@@ -197,18 +247,23 @@ function useForm() {
       // (Make's column encoder kept rejecting the payload). `keepalive: true`
       // ensures the request completes after the redirect fires.
       try {
+        const attr = getAttribution();
         const payload = {
           data: {
             full_name: (values.name || "").trim(),
             phone_number: (values.phone || "").trim(),
             email: (values.email || "").trim(),
           },
-          adName: "Landing Page",
-          adsetName: "cuts.co.il",
-          campaignName: "Landing Page Organic",
-          platform: "web",
-          dateCreated: new Date().toISOString(),
-          source: "cuts.co.il-landing",
+          // Map captured Meta/UTM params to the Monday columns. Fall back to
+          // sensible defaults so an organic visitor still gets a meaningful row.
+          adName:       (attr && attr.utm_content)  || "Direct",
+          adsetName:    (attr && attr.utm_term)     || "—",
+          campaignName: (attr && attr.utm_campaign) || "Organic",
+          platform:     platformFromAttribution(attr),
+          dateCreated:  new Date().toISOString(),
+          source:       "cuts.co.il-landing",
+          // Full attribution snapshot for traceability / future analytics.
+          attribution:  attr || null,
         };
         fetch("/api/lead", {
           method: "POST",
