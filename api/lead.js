@@ -28,6 +28,46 @@ function normalizePhone(raw) {
   return digits;
 }
 
+// Send a WhatsApp greeting via Green API. Best-effort — we still return 200
+// to the frontend even if WhatsApp fails, because the lead is already in
+// Monday. Gracefully no-ops if the env vars are not configured.
+async function sendWhatsApp(phoneIntl, fullName) {
+  const instance = process.env.GREEN_API_INSTANCE_ID;
+  const token = process.env.GREEN_API_TOKEN;
+  if (!instance || !token) {
+    return { sent: false, reason: "not-configured" };
+  }
+  // Green API uses sharded hosts for newer instances — the shard is the
+  // 4-digit prefix of the instance id. e.g. 7105278107 → 7105.api.green-api.com
+  const host = process.env.GREEN_API_HOST || `${String(instance).slice(0, 4)}.api.green-api.com`;
+  const firstName = String(fullName || "").trim().split(/\s+/)[0] || "";
+  const message =
+    `היי${firstName ? " " + firstName : ""}, ראיתי שהשארת לנו פרטים לגבי האולפן פודקאסטים שלנו\n` +
+    `מסקרן אותי לשמוע, מה הנושא של הפודקאסט?`;
+  const url = `https://${host}/waInstance${instance}/sendMessage/${token}`;
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chatId: `${phoneIntl}@c.us`,
+        message,
+        linkPreview: false,
+      }),
+    });
+    const out = await res.json().catch(() => ({}));
+    if (res.ok && out.idMessage) {
+      console.log(`[lead] WhatsApp sent to ${phoneIntl}, idMessage=${out.idMessage}`);
+      return { sent: true, idMessage: out.idMessage };
+    }
+    console.error(`[lead] WhatsApp failed: ${res.status}`, JSON.stringify(out));
+    return { sent: false, status: res.status, detail: out };
+  } catch (err) {
+    console.error("[lead] WhatsApp exception:", err && err.message || err);
+    return { sent: false, error: String(err && err.message || err) };
+  }
+}
+
 function nowInJerusalem() {
   // Monday's date column expects { date: "YYYY-MM-DD", time: "HH:MM:SS" }.
   // Vercel functions run in UTC; format explicitly in Asia/Jerusalem.
@@ -118,7 +158,12 @@ export default async function handler(req, res) {
     }
 
     console.log(`[lead] created Monday item ${itemId} for "${fullName}" (${normalizePhone(phoneRaw)})`);
-    return res.status(200).json({ ok: true, item_id: itemId });
+
+    // Send WhatsApp greeting (awaited so the function completes the call
+    // before Vercel kills the instance; best-effort — failures don't change
+    // the 200 response since the lead is already in Monday).
+    const whatsapp = await sendWhatsApp(normalizePhone(phoneRaw), fullName);
+    return res.status(200).json({ ok: true, item_id: itemId, whatsapp });
   } catch (err) {
     console.error("[lead] exception:", err?.message || err);
     return res.status(500).json({ error: "internal", message: String(err?.message || err) });
