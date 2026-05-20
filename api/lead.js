@@ -28,43 +28,32 @@ function normalizePhone(raw) {
   return digits;
 }
 
-// Send a WhatsApp greeting via Green API. Best-effort — we still return 200
-// to the frontend even if WhatsApp fails, because the lead is already in
-// Monday. Gracefully no-ops if the env vars are not configured.
-async function sendWhatsApp(phoneIntl, fullName) {
-  const instance = process.env.GREEN_API_INSTANCE_ID;
-  const token = process.env.GREEN_API_TOKEN;
-  if (!instance || !token) {
-    return { sent: false, reason: "not-configured" };
-  }
-  // Green API uses sharded hosts for newer instances — the shard is the
-  // 4-digit prefix of the instance id. e.g. 7105278107 → 7105.api.green-api.com
-  const host = process.env.GREEN_API_HOST || `${String(instance).slice(0, 4)}.api.green-api.com`;
-  const firstName = String(fullName || "").trim().split(/\s+/)[0] || "";
-  const message =
-    `היי${firstName ? " " + firstName : ""}, ראיתי שהשארת לנו פרטים לגבי האולפן פודקאסטים שלנו\n` +
-    `מסקרן אותי לשמוע, מה הנושא של הפודקאסט?`;
-  const url = `https://${host}/waInstance${instance}/sendMessage/${token}`;
+// After the Monday item is created, forward the lead to a Make scenario that
+// handles WhatsApp greeting + Tavily search + Claude research + Monday update.
+// Make is better for that pipeline because (a) it's already wired with all the
+// required service connections and (b) the message/research prompts are easy
+// to edit in Make's UI without redeploying code.
+//
+// Best-effort — failures here don't change the 200 we return to the frontend,
+// since the lead is already in Monday and the Make scenario can be replayed
+// from its DLQ if anything downstream errors.
+const MAKE_WEBHOOK_URL = "https://hook.eu2.make.com/nljeo1gq5n7hk8q9vkgqamjjt12urc21";
+
+async function forwardToMake(payload) {
   try {
-    const res = await fetch(url, {
+    const res = await fetch(MAKE_WEBHOOK_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chatId: `${phoneIntl}@c.us`,
-        message,
-        linkPreview: false,
-      }),
+      body: JSON.stringify(payload),
     });
-    const out = await res.json().catch(() => ({}));
-    if (res.ok && out.idMessage) {
-      console.log(`[lead] WhatsApp sent to ${phoneIntl}, idMessage=${out.idMessage}`);
-      return { sent: true, idMessage: out.idMessage };
+    if (!res.ok) {
+      console.error(`[lead] Make webhook failed: ${res.status}`);
+      return { forwarded: false, status: res.status };
     }
-    console.error(`[lead] WhatsApp failed: ${res.status}`, JSON.stringify(out));
-    return { sent: false, status: res.status, detail: out };
+    return { forwarded: true };
   } catch (err) {
-    console.error("[lead] WhatsApp exception:", err && err.message || err);
-    return { sent: false, error: String(err && err.message || err) };
+    console.error("[lead] Make webhook exception:", err && err.message || err);
+    return { forwarded: false, error: String(err && err.message || err) };
   }
 }
 
@@ -159,11 +148,15 @@ export default async function handler(req, res) {
 
     console.log(`[lead] created Monday item ${itemId} for "${fullName}" (${normalizePhone(phoneRaw)})`);
 
-    // Send WhatsApp greeting (awaited so the function completes the call
-    // before Vercel kills the instance; best-effort — failures don't change
-    // the 200 response since the lead is already in Monday).
-    const whatsapp = await sendWhatsApp(normalizePhone(phoneRaw), fullName);
-    return res.status(200).json({ ok: true, item_id: itemId, whatsapp });
+    // Forward to Make for WhatsApp + research pipeline. Awaited so the call
+    // completes before Vercel kills the instance; best-effort — failures
+    // don't change the 200 response since the lead is already in Monday.
+    const enrichment = await forwardToMake({
+      ...body,
+      item_id: itemId,
+      phone_normalized: normalizePhone(phoneRaw),
+    });
+    return res.status(200).json({ ok: true, item_id: itemId, enrichment });
   } catch (err) {
     console.error("[lead] exception:", err?.message || err);
     return res.status(500).json({ error: "internal", message: String(err?.message || err) });
