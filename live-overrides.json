@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "publishedAt": "2026-05-21T12:47:07.455Z",
+  "publishedAt": "2026-05-21T13:37:02.243Z",
   "overrides": {
     "sec:how-it-works>button[0]#h:d901835d": "👁 הצג",
     "sec:services>section[0]>div[0]>div[1]>div[0]>h3[0]#h:a5c90c46": "צילום ותאורה מקצועית",
@@ -234,5 +234,26 @@
       "offsetY": -2
     }
   ],
-  "hiddenGuestsRow1": []
+  "hiddenGuestsRow1": [],
+  "guestsRow2Items": [
+    {
+      "src": "https://drive.google.com/thumbnail?id=1QvzbjMLDzOYJjsj8p7B2e7zj7FU33pn6&sz=w1600",
+      "scale": 1.15,
+      "offsetX": -5,
+      "offsetY": 0
+    },
+    {
+      "src": "https://drive.google.com/thumbnail?id=1LhFSaBSVyFnIl5em2Nw9fw2OTgzy7Xnt&sz=w1600",
+      "scale": 1.1,
+      "offsetX": 4,
+      "offsetY": 0
+    },
+    {
+      "src": "https://drive.google.com/thumbnail?id=1t2TB0kgqTabSD2oFi3VL0vNl-0F58Aky&sz=w1600",
+      "scale": 1.1,
+      "offsetX": 0,
+      "offsetY": 0
+    }
+  ],
+  "hiddenGuestsRow2": []
 }
