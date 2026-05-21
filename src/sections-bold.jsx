@@ -3763,18 +3763,19 @@ function LogoMarquee({ admin }) {
         }
         .cuts-logo-reel:hover { animation-play-state: paused; }
         .cuts-logo-reel img {
-          height: 56px;
+          height: 82px;
           width: auto;
-          margin-inline: clamp(18px, 2.4vw, 36px);
+          margin-inline: clamp(22px, 3vw, 44px);
           opacity: 0.85;
-          filter: brightness(1.05) contrast(1.05);
-          transition: opacity 0.25s ease, filter 0.25s ease, transform 0.25s ease;
+          /* brightness(0)+invert(1) = recolor any colored/black logo to pure
+             white while preserving transparency. Works for any PNG/SVG. */
+          filter: brightness(0) invert(1);
+          transition: opacity 0.25s ease, transform 0.25s ease;
           flex: 0 0 auto;
         }
         .cuts-logo-reel img:hover {
           opacity: 1;
-          filter: brightness(1.15) contrast(1.1);
-          transform: scale(1.05);
+          transform: scale(1.06);
         }
       `}</style>
       <div aria-hidden="true" style={{
