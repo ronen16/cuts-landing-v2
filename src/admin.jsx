@@ -1219,6 +1219,8 @@ window.AdminLogosModal = AdminLogosModal;
 function AdminGuestsModal({ admin }) {
   const [open, setOpen] = React.useState(false);
   const [items, setItems] = React.useState([]);
+  const [dragIdx, setDragIdx] = React.useState(null);
+  const [dropIdx, setDropIdx] = React.useState(null);
 
   // Default = whatever sections-bold exposed as the initial guest list.
   const derive = React.useCallback(() => {
@@ -1269,54 +1271,112 @@ function AdminGuestsModal({ admin }) {
     const n = items.slice(); n[i] = { ...n[i], scale: 1, offsetX: 0, offsetY: 0 }; sync(n);
   };
 
-  const sliderRow = (label, value, onChange, min, max, step, suffix) =>
-    React.createElement("div", { style: { display: "grid", gridTemplateColumns: "62px 1fr 56px", alignItems: "center", gap: 8 } },
-      React.createElement("span", { style: { fontSize: 11, color: "rgba(255,255,255,0.7)" } }, label),
-      React.createElement("input", {
-        type: "range", min, max, step, value,
-        onChange: (e) => onChange(parseFloat(e.target.value)),
-        style: { accentColor: "var(--accent)" },
-      }),
-      React.createElement("span", { style: { fontSize: 11, color: "rgba(255,255,255,0.55)", textAlign: "left", fontFamily: "ui-monospace, monospace" } }, value.toFixed(step < 1 ? 2 : 0) + (suffix || ""))
-    );
+  const reorder = (from, to) => {
+    if (from == null || to == null || from === to || from < 0 || to < 0 || from >= items.length || to >= items.length) return;
+    const n = items.slice();
+    const [moved] = n.splice(from, 1);
+    n.splice(to, 0, moved);
+    sync(n);
+  };
+
+  const Slider = ({ label, value, min, max, step, suffix, onChange }) => (
+    <div style={{ display: "grid", gridTemplateColumns: "54px 1fr 50px", alignItems: "center", columnGap: 10 }}>
+      <span style={{ fontSize: 11, color: "rgba(255,255,255,0.7)" }}>{label}</span>
+      <input
+        type="range" min={min} max={max} step={step} value={value}
+        onChange={(e) => onChange(parseFloat(e.target.value))}
+        style={{ accentColor: "var(--accent)", width: "100%" }}
+      />
+      <span style={{ fontSize: 11, color: "rgba(255,255,255,0.55)", textAlign: "left", fontFamily: "ui-monospace, monospace" }}>
+        {value.toFixed(step < 1 ? 2 : 0)}{suffix || ""}
+      </span>
+    </div>
+  );
 
   return (
     <div className="admin-modal-backdrop" onClick={() => setOpen(false)}>
       <div className="admin-modal admin-modal--wide" onClick={(e) => e.stopPropagation()} dir="rtl">
         <h3 className="admin-modal__title">ניהול תמונות אורחים (שורה 1)</h3>
         <p className="admin-modal__hint">
-          לכל תמונה: סדר, הסתרה, גודל, והזזה ב-X/Y. המקור 16:9 והכרטיס 9:16 — שימוש בסליידרים כדי למרכז את הפנים. שינויים נשמרים אוטומטית — "🚀 העלאה ללייב" כדי לפרסם.
+          גרור תמונות כדי לסדר אותן מחדש. לכל תמונה: גודל והזזה ב-X/Y לכוונון. שינויים נשמרים אוטומטית — "🚀 העלאה ללייב" כדי לפרסם.
         </p>
-        <ul className="admin-videos">
+        <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 10 }}>
           {items.map((g, idx) => {
             const isHidden = hidden.has(g.src);
-            const tilePreview = {
-              width: 72, height: 128, borderRadius: 8, overflow: "hidden",
-              border: "1px solid rgba(255,255,255,0.15)", flexShrink: 0,
-              background: "rgba(0,0,0,0.4)", position: "relative",
-            };
-            const imgStyle = {
-              position: "absolute", inset: 0, width: "100%", height: "100%",
-              objectFit: "cover", objectPosition: "center",
-              transform: `translate(${g.offsetX || 0}%, ${g.offsetY || 0}%) scale(${g.scale || 1})`,
-              transformOrigin: "center", opacity: isHidden ? 0.35 : 1,
-            };
+            const isDragging = dragIdx === idx;
+            const isDropTarget = dropIdx === idx && dragIdx !== null && dragIdx !== idx;
             return (
-              <li key={idx} className={"admin-videos__row" + (isHidden ? " is-hidden" : "")}>
-                <span className="admin-videos__idx">{idx + 1}</span>
-                <div style={tilePreview}>
-                  {g.src && <img src={g.src} alt="" style={imgStyle} />}
+              <li
+                key={idx}
+                draggable
+                onDragStart={(e) => { e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", String(idx)); setDragIdx(idx); }}
+                onDragEnd={() => { setDragIdx(null); setDropIdx(null); }}
+                onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = "move"; if (dropIdx !== idx) setDropIdx(idx); }}
+                onDragLeave={() => { if (dropIdx === idx) setDropIdx(null); }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  const from = Number(e.dataTransfer.getData("text/plain"));
+                  reorder(from, idx);
+                  setDragIdx(null); setDropIdx(null);
+                }}
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "28px 84px 1fr auto",
+                  alignItems: "center",
+                  columnGap: 12, rowGap: 10,
+                  padding: "12px 12px",
+                  border: "1px solid " + (isDropTarget ? "rgba(255,213,0,0.7)" : "rgba(255,255,255,0.08)"),
+                  borderRadius: 10,
+                  background: isDropTarget ? "rgba(255,213,0,0.06)" : "rgba(255,255,255,0.02)",
+                  opacity: isDragging ? 0.4 : 1,
+                  cursor: "grab",
+                  transition: "border-color 0.1s ease, background 0.1s ease",
+                }}
+              >
+                {/* idx number — also a visual "drag handle" hint */}
+                <span style={{
+                  fontFamily: "ui-monospace, monospace", fontSize: 13, fontWeight: 700,
+                  color: "rgba(255,255,255,0.55)", textAlign: "center",
+                  userSelect: "none",
+                }}>
+                  ⋮⋮ {idx + 1}
+                </span>
+
+                {/* live 9:16 preview with the current transform applied */}
+                <div style={{
+                  width: 84, height: 150, borderRadius: 8, overflow: "hidden",
+                  border: "1px solid rgba(255,255,255,0.15)",
+                  background: "rgba(0,0,0,0.4)", position: "relative",
+                }}>
+                  {g.src && (
+                    <img
+                      src={g.src} alt="" draggable="false"
+                      style={{
+                        position: "absolute", inset: 0,
+                        width: "100%", height: "100%",
+                        objectFit: "cover", objectPosition: "center",
+                        transform: `translate(${g.offsetX || 0}%, ${g.offsetY || 0}%) scale(${g.scale || 1})`,
+                        transformOrigin: "center",
+                        opacity: isHidden ? 0.35 : 1,
+                        pointerEvents: "none",
+                      }}
+                    />
+                  )}
                 </div>
-                <div className="admin-videos__info" style={{ gap: 6, paddingInlineStart: 12 }}>
-                  {sliderRow("גודל",  g.scale,   (v) => setField(idx, "scale",   v), 0.5, 3,   0.05, "x")}
-                  {sliderRow("הזזה X", g.offsetX, (v) => setField(idx, "offsetX", v), -100, 100, 1, "%")}
-                  {sliderRow("הזזה Y", g.offsetY, (v) => setField(idx, "offsetY", v), -100, 100, 1, "%")}
+
+                {/* sliders — full row, stacked */}
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  <Slider label="גודל"   value={g.scale}   min={0.5}  max={3}    step={0.05} suffix="x" onChange={(v) => setField(idx, "scale",   v)} />
+                  <Slider label="הזזה X" value={g.offsetX} min={-100} max={100}  step={1}    suffix="%" onChange={(v) => setField(idx, "offsetX", v)} />
+                  <Slider label="הזזה Y" value={g.offsetY} min={-100} max={100}  step={1}    suffix="%" onChange={(v) => setField(idx, "offsetY", v)} />
                 </div>
-                <div className="admin-videos__actions">
+
+                {/* action buttons — vertical column on the side */}
+                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                   <button type="button" className="admin-videos__btn" disabled={idx === 0} title="הזז למעלה" onClick={() => move(idx, -1)}>↑</button>
                   <button type="button" className="admin-videos__btn" disabled={idx === items.length - 1} title="הזז למטה" onClick={() => move(idx, 1)}>↓</button>
                   <button type="button" className="admin-videos__btn" title="איפוס מיקום/זום" onClick={() => resetTransform(idx)}>⟲</button>
-                  <button type="button" className={"admin-videos__btn" + (isHidden ? " is-on" : "")} title={isHidden ? "הצג" : "הסתר"} onClick={() => { admin.toggleGuestsRow1Hidden(g.src); }}>{isHidden ? "מוסתר" : "מוצג"}</button>
+                  <button type="button" className={"admin-videos__btn" + (isHidden ? " is-on" : "")} title={isHidden ? "הצג" : "הסתר"} onClick={() => { admin.toggleGuestsRow1Hidden(g.src); }}>{isHidden ? "🙈" : "👁"}</button>
                   <button type="button" className="admin-videos__btn is-on" title="מחק" onClick={() => del(idx)}>✕</button>
                 </div>
               </li>
