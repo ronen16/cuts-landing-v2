@@ -110,6 +110,7 @@ function App() {
   const AdminVersionsModal = window.AdminVersionsModal;
   const AdminVideosModal = window.AdminVideosModal;
   const AdminPodcastsModal = window.AdminPodcastsModal;
+  const AdminLogosModal = window.AdminLogosModal;
   const AdminPublishSettingsModal = window.AdminPublishSettingsModal;
 
   // Dark/light class — BOLD is dark by default; light is the inverted mode
@@ -136,6 +137,10 @@ function App() {
     const localVideoItems = Array.isArray(admin.videoItems) ? admin.videoItems : null;
     const livePodcastItems = Array.isArray(liveOverrides.podcastItems) ? liveOverrides.podcastItems : null;
     const localPodcastItems = Array.isArray(admin.podcastItems) ? admin.podcastItems : null;
+    const liveLogoItems = Array.isArray(liveOverrides.logoItems) ? liveOverrides.logoItems : null;
+    const localLogoItems = Array.isArray(admin.logoItems) ? admin.logoItems : null;
+    const liveHiddenLogos = Array.isArray(liveOverrides.hiddenLogos) ? liveOverrides.hiddenLogos : [];
+    const localHiddenLogos = Array.isArray(admin.hiddenLogos) ? admin.hiddenLogos : [];
     return {
       ...admin,
       sectionOrder: localOrder || liveOrder,
@@ -146,6 +151,8 @@ function App() {
       podcastOrder: localPodcastOrder || livePodcastOrder,
       hiddenPodcasts: Array.from(new Set([...(liveHiddenPodcasts || []), ...(localHiddenPodcasts || [])])),
       podcastItems: localPodcastItems || livePodcastItems,
+      logoItems: localLogoItems || liveLogoItems,
+      hiddenLogos: Array.from(new Set([...(liveHiddenLogos || []), ...(localHiddenLogos || [])])),
     };
   }, [admin, liveOverrides]);
 
@@ -158,6 +165,7 @@ function App() {
       {AdminVersionsModal && <AdminVersionsModal admin={admin} />}
       {AdminVideosModal && <AdminVideosModal admin={admin} />}
       {AdminPodcastsModal && <AdminPodcastsModal admin={admin} />}
+      {AdminLogosModal && <AdminLogosModal admin={admin} />}
       {AdminPublishSettingsModal && <AdminPublishSettingsModal />}
       {window.AccessibilityWidget && <window.AccessibilityWidget />}
       {window.LegalModal && <window.LegalModal />}

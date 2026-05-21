@@ -32,7 +32,7 @@ const MAX_VERSIONS = 10;
 function loadAdminState() {
   try {
     const raw = localStorage.getItem(ADMIN_STORAGE_KEY);
-    if (!raw) return { unlocked: false, overrides: {}, sectionOrder: null, elementOffsets: {}, hiddenSections: [], videoOrder: null, hiddenVideos: [], videoItems: null, podcastOrder: null, hiddenPodcasts: [], podcastItems: null, publishedVersions: [] };
+    if (!raw) return { unlocked: false, overrides: {}, sectionOrder: null, elementOffsets: {}, hiddenSections: [], videoOrder: null, hiddenVideos: [], videoItems: null, podcastOrder: null, hiddenPodcasts: [], podcastItems: null, logoItems: null, hiddenLogos: [], publishedVersions: [] };
     const parsed = JSON.parse(raw);
     return {
       unlocked: !!parsed.unlocked,
@@ -46,10 +46,12 @@ function loadAdminState() {
       podcastOrder: Array.isArray(parsed.podcastOrder) ? parsed.podcastOrder : null,
       hiddenPodcasts: Array.isArray(parsed.hiddenPodcasts) ? parsed.hiddenPodcasts : [],
       podcastItems: Array.isArray(parsed.podcastItems) ? parsed.podcastItems : null,
+      logoItems: Array.isArray(parsed.logoItems) ? parsed.logoItems : null,
+      hiddenLogos: Array.isArray(parsed.hiddenLogos) ? parsed.hiddenLogos : [],
       publishedVersions: Array.isArray(parsed.publishedVersions) ? parsed.publishedVersions : [],
     };
   } catch (e) {
-    return { unlocked: false, overrides: {}, sectionOrder: null, elementOffsets: {}, hiddenSections: [], videoOrder: null, hiddenVideos: [], videoItems: null, podcastOrder: null, hiddenPodcasts: [], podcastItems: null, publishedVersions: [] };
+    return { unlocked: false, overrides: {}, sectionOrder: null, elementOffsets: {}, hiddenSections: [], videoOrder: null, hiddenVideos: [], videoItems: null, podcastOrder: null, hiddenPodcasts: [], podcastItems: null, logoItems: null, hiddenLogos: [], publishedVersions: [] };
   }
 }
 
@@ -166,6 +168,8 @@ function saveAdminState(state) {
         podcastOrder: state.podcastOrder || null,
         hiddenPodcasts: state.hiddenPodcasts || [],
         podcastItems: state.podcastItems || null,
+        logoItems: state.logoItems || null,
+        hiddenLogos: state.hiddenLogos || [],
         publishedVersions: state.publishedVersions || [],
       })
     );
@@ -266,6 +270,8 @@ function useAdminMode() {
   const [podcastOrder, setPodcastOrder] = React.useState(initial.podcastOrder);
   const [hiddenPodcasts, setHiddenPodcasts] = React.useState(initial.hiddenPodcasts);
   const [podcastItems, setPodcastItems] = React.useState(initial.podcastItems);
+  const [logoItems, setLogoItems] = React.useState(initial.logoItems);
+  const [hiddenLogos, setHiddenLogos] = React.useState(initial.hiddenLogos);
   const [publishedVersions, setPublishedVersions] = React.useState(initial.publishedVersions);
 
   React.useEffect(() => {
@@ -300,6 +306,8 @@ function useAdminMode() {
         setPodcastOrder(Array.isArray(live.podcastOrder) ? live.podcastOrder : null);
         setHiddenPodcasts(Array.isArray(live.hiddenPodcasts) ? live.hiddenPodcasts : []);
         setPodcastItems(Array.isArray(live.podcastItems) ? live.podcastItems : null);
+        setLogoItems(Array.isArray(live.logoItems) ? live.logoItems : null);
+        setHiddenLogos(Array.isArray(live.hiddenLogos) ? live.hiddenLogos : []);
       } catch (_) {
         // offline / rate-limited — keep local; publish guard still protects
       }
@@ -307,8 +315,8 @@ function useAdminMode() {
   }, [unlocked, overrides]);
 
   React.useEffect(() => {
-    saveAdminState({ unlocked, overrides, sectionOrder, elementOffsets, hiddenSections, videoOrder, hiddenVideos, videoItems, podcastOrder, hiddenPodcasts, podcastItems, publishedVersions });
-  }, [unlocked, overrides, sectionOrder, elementOffsets, hiddenSections, videoOrder, hiddenVideos, videoItems, podcastOrder, hiddenPodcasts, podcastItems, publishedVersions]);
+    saveAdminState({ unlocked, overrides, sectionOrder, elementOffsets, hiddenSections, videoOrder, hiddenVideos, videoItems, podcastOrder, hiddenPodcasts, podcastItems, logoItems, hiddenLogos, publishedVersions });
+  }, [unlocked, overrides, sectionOrder, elementOffsets, hiddenSections, videoOrder, hiddenVideos, videoItems, podcastOrder, hiddenPodcasts, podcastItems, logoItems, hiddenLogos, publishedVersions]);
 
   // mutual exclusion
   const setEditingTextSafe = React.useCallback((v) => {
@@ -378,6 +386,18 @@ function useAdminMode() {
     setVideoItems(items);
   }, []);
 
+  const updateLogoItems = React.useCallback((items) => {
+    setLogoItems(items);
+  }, []);
+  const toggleLogoHidden = React.useCallback((src) => {
+    setHiddenLogos((prev) => {
+      const set = new Set(prev);
+      if (set.has(src)) set.delete(src);
+      else set.add(src);
+      return Array.from(set);
+    });
+  }, []);
+
   // Snapshot current state into the versions list (cap at MAX_VERSIONS).
   // Reads fresh from localStorage to avoid stale React closure bugs (edits
   // made just before clicking Publish need to be included).
@@ -393,6 +413,8 @@ function useAdminMode() {
     const livePodcastOrder = current.podcastOrder || null;
     const liveHiddenPodcasts = current.hiddenPodcasts || [];
     const livePodcastItems = current.podcastItems || null;
+    const liveLogoItems = current.logoItems || null;
+    const liveHiddenLogos = current.hiddenLogos || [];
 
     const snapshot = {
       id: "v-" + Date.now() + "-" + Math.random().toString(36).slice(2, 8),
@@ -408,6 +430,8 @@ function useAdminMode() {
       podcastOrder: livePodcastOrder,
       hiddenPodcasts: liveHiddenPodcasts,
       podcastItems: livePodcastItems,
+      logoItems: liveLogoItems,
+      hiddenLogos: liveHiddenLogos,
     };
     setPublishedVersions((prev) => [snapshot, ...prev].slice(0, MAX_VERSIONS));
 
@@ -459,6 +483,8 @@ function useAdminMode() {
         podcastOrder: livePodcastOrder,
         hiddenPodcasts: liveHiddenPodcasts,
         podcastItems: livePodcastItems,
+        logoItems: liveLogoItems,
+        hiddenLogos: liveHiddenLogos,
       };
       const commit = await pushToGitHub(settings, payload);
       return { snapshot, published: true, commitUrl: commit.commit && commit.commit.html_url };
@@ -486,6 +512,8 @@ function useAdminMode() {
     setPodcastOrder(v.podcastOrder || null);
     setHiddenPodcasts(v.hiddenPodcasts || []);
     setPodcastItems(v.podcastItems || null);
+    setLogoItems(v.logoItems || null);
+    setHiddenLogos(v.hiddenLogos || []);
   }, [publishedVersions]);
 
   const deleteVersion = React.useCallback((id) => {
@@ -503,6 +531,8 @@ function useAdminMode() {
     setPodcastOrder(null);
     setHiddenPodcasts([]);
     setPodcastItems(null);
+    setLogoItems(null);
+    setHiddenLogos([]);
     if (window.__cutsRestoreOriginals) window.__cutsRestoreOriginals();
     if (window.__cutsClearAllTransforms) window.__cutsClearAllTransforms();
   }, []);
@@ -529,6 +559,8 @@ function useAdminMode() {
     podcastOrder,
     hiddenPodcasts,
     podcastItems,
+    logoItems,
+    hiddenLogos,
     publishedVersions,
     setEditingText: setEditingTextSafe,
     setDraggingSections: setDraggingSectionsSafe,
@@ -543,6 +575,8 @@ function useAdminMode() {
     updatePodcastOrder,
     togglePodcastHidden,
     updatePodcastItems,
+    updateLogoItems,
+    toggleLogoHidden,
     publishToLive,
     restoreVersion,
     deleteVersion,
@@ -1048,6 +1082,104 @@ function AdminPodcastsModal({ admin }) {
 
 window.AdminPodcastsModal = AdminPodcastsModal;
 
+// ---------- Logos Manager Modal (Clients · static assets + remote URLs) ----------
+
+function AdminLogosModal({ admin }) {
+  const [open, setOpen] = React.useState(false);
+  const [items, setItems] = React.useState([]);
+
+  // Default = whatever the BoldVariation exposed (built-in client logos).
+  // Each item is just { src }. Filename or remote URL — both fine.
+  const derive = React.useCallback(() => {
+    const all = (window.__cutsClientLogos || []).slice();
+    return all.map((l) => ({ src: l.src || l.file || "" }));
+  }, []);
+
+  React.useEffect(() => {
+    const onOpen = () => {
+      const base = Array.isArray(admin.logoItems) && admin.logoItems.length
+        ? admin.logoItems.map((v) => ({ src: v.src || "" }))
+        : derive();
+      setItems(base);
+      setOpen(true);
+    };
+    window.addEventListener("cuts-admin-logos", onOpen);
+    return () => window.removeEventListener("cuts-admin-logos", onOpen);
+  }, [admin.logoItems, derive]);
+
+  if (!open) return null;
+
+  const hidden = new Set(admin.hiddenLogos || []);
+  const sync = (next) => { setItems(next); admin.updateLogoItems(next); };
+  const move = (i, dir) => {
+    const t = i + dir; if (t < 0 || t >= items.length) return;
+    const n = items.slice(); const tmp = n[i]; n[i] = n[t]; n[t] = tmp; sync(n);
+  };
+  const del = (i) => { if (window.confirm("למחוק את הלוגו הזה?")) sync(items.filter((_, x) => x !== i)); };
+  const add = () => {
+    const url = window.prompt("הדבק קישור לתמונה (PNG/SVG):");
+    if (!url || !url.trim()) return;
+    sync([...items, { src: url.trim() }]);
+  };
+
+  return (
+    <div className="admin-modal-backdrop" onClick={() => setOpen(false)}>
+      <div className="admin-modal admin-modal--wide" onClick={(e) => e.stopPropagation()} dir="rtl">
+        <h3 className="admin-modal__title">ניהול לוגואים</h3>
+        <p className="admin-modal__hint">
+          סדר, הסתר או מחק לוגואים. "➕ הוסף לוגו" מאפשר להוסיף לוגו חדש מקישור (PNG/SVG). שינויים נשמרים אוטומטית — לחץ "העלאה ללייב" כדי לפרסם.
+        </p>
+        <ul className="admin-videos">
+          {items.map((v, idx) => {
+            const isHidden = hidden.has(v.src);
+            return (
+              <li key={idx} className={"admin-videos__row" + (isHidden ? " is-hidden" : "")}>
+                <span className="admin-videos__idx">{idx + 1}</span>
+                <div className="admin-videos__info" style={{ alignItems: "center", justifyContent: "center", minHeight: 56 }}>
+                  {v.src ? (
+                    <img
+                      src={v.src}
+                      alt=""
+                      style={{
+                        maxHeight: 44, maxWidth: 160, objectFit: "contain",
+                        opacity: isHidden ? 0.35 : 0.92, filter: "brightness(1.1)",
+                      }}
+                    />
+                  ) : (
+                    <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>ללא תמונה</span>
+                  )}
+                </div>
+                <div className="admin-videos__actions">
+                  <button type="button" className="admin-videos__btn" disabled={idx === 0} title="הזז למעלה" onClick={() => move(idx, -1)}>↑</button>
+                  <button type="button" className="admin-videos__btn" disabled={idx === items.length - 1} title="הזז למטה" onClick={() => move(idx, 1)}>↓</button>
+                  <button type="button" className={"admin-videos__btn" + (isHidden ? " is-on" : "")} title={isHidden ? "הצג" : "הסתר"} onClick={() => { admin.toggleLogoHidden(v.src); }}>{isHidden ? "מוסתר" : "מוצג"}</button>
+                  <button type="button" className="admin-videos__btn is-on" title="מחק" onClick={() => del(idx)}>✕</button>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+        <button type="button" className="admin-modal__btn admin-modal__btn--ghost" style={{ marginBottom: 14 }} onClick={add}>➕ הוסף לוגו</button>
+        <div className="admin-modal__actions">
+          <button
+            type="button"
+            className="admin-modal__btn admin-modal__btn--ghost"
+            onClick={() => {
+              if (window.confirm("לאפס את רשימת הלוגואים וההסתרות לברירת מחדל?")) {
+                admin.updateLogoItems(null);
+                (admin.hiddenLogos || []).slice().forEach((src) => admin.toggleLogoHidden(src));
+                setItems(derive());
+              }
+            }}>איפוס</button>
+          <button type="button" className="admin-modal__btn admin-modal__btn--primary" onClick={() => setOpen(false)}>סגור</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+window.AdminLogosModal = AdminLogosModal;
+
 // ---------- Publish Settings Modal ----------
 
 function AdminPublishSettingsModal() {
@@ -1209,6 +1341,11 @@ function AdminPanel({ admin }) {
       label: "ניהול פרקים",
       onClick: () => window.dispatchEvent(new CustomEvent("cuts-admin-podcasts"))
     }),
+    React.createElement(ToolbarRow, {
+      icon: "🖼️",
+      label: "ניהול לוגואים",
+      onClick: () => window.dispatchEvent(new CustomEvent("cuts-admin-logos"))
+    }),
     React.createElement("div", { className: "admin-toolbar__sep" }),
     React.createElement(ToolbarRow, {
       icon: "🚀",
@@ -1361,6 +1498,11 @@ function importJSON(admin) {
       }
       if (Array.isArray(parsed.videoItems)) admin.updateVideoItems(parsed.videoItems);
       if (Array.isArray(parsed.podcastItems)) admin.updatePodcastItems(parsed.podcastItems);
+      if (Array.isArray(parsed.logoItems)) admin.updateLogoItems(parsed.logoItems);
+      if (Array.isArray(parsed.hiddenLogos)) {
+        const cur = new Set(admin.hiddenLogos);
+        parsed.hiddenLogos.forEach((id) => { if (!cur.has(id)) admin.toggleLogoHidden(id); });
+      }
       window.alert("Imported successfully.");
     } catch (err) {
       window.alert("Failed to import: " + err.message);

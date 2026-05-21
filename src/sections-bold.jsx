@@ -3725,10 +3725,27 @@ const CLIENT_LOGOS = [
   { file: "orbit.svg", name: "Orbit" },
 ];
 
-function LogoMarquee() {
-  if (!CLIENT_LOGOS.length) return null;
+// Built-in client logos, exposed for the admin panel so it can prefill the
+// editor with the defaults. Each item is normalized to a single `src` field
+// (relative path for static, or remote URL when added via the admin).
+const DEFAULT_CLIENT_LOGOS = CLIENT_LOGOS.map((l) => ({ src: `assets/logos/${l.file}` }));
+if (typeof window !== "undefined") window.__cutsClientLogos = DEFAULT_CLIENT_LOGOS;
+
+function orderAndFilterLogos(admin) {
+  const hidden = new Set((admin && admin.hiddenLogos) || []);
+  const items = admin && Array.isArray(admin.logoItems) ? admin.logoItems : null;
+  const base = items && items.length ? items : DEFAULT_CLIENT_LOGOS;
+  return base.filter((l) => l && l.src && !hidden.has(l.src));
+}
+
+function LogoMarquee({ admin }) {
+  const logos = React.useMemo(
+    () => orderAndFilterLogos(admin),
+    [admin && admin.logoItems, admin && admin.hiddenLogos]
+  );
+  if (!logos.length) return null;
   // 2 identical halves + translateX(-50%) → perfectly seamless loop.
-  const reel = [...CLIENT_LOGOS, ...CLIENT_LOGOS];
+  const reel = [...logos, ...logos];
   return (
     <div style={{ position: "relative", marginTop: 64, overflow: "hidden", direction: "ltr" }}>
       <style>{`
@@ -3769,7 +3786,7 @@ function LogoMarquee() {
       }} />
       <div className="cuts-logo-reel" style={{ direction: "ltr" }}>
         {reel.map((l, i) => (
-          <img key={i} src={`assets/logos/${l.file}`} alt={l.name} draggable="false" />
+          <img key={i} src={l.src} alt="" draggable="false" />
         ))}
       </div>
     </div>
@@ -4093,7 +4110,7 @@ function Results({ admin }) {
       </div>
 
       <div className="wrap" style={{ marginTop: 36, marginBottom: 24 }}>
-        <LogoMarquee />
+        <LogoMarquee admin={admin} />
       </div>
     </section>);
 
