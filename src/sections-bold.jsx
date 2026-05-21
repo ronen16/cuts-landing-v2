@@ -3763,19 +3763,24 @@ function LogoMarquee({ admin }) {
         }
         .cuts-logo-reel:hover { animation-play-state: paused; }
         .cuts-logo-reel img {
-          height: 82px;
-          width: auto;
-          margin-inline: clamp(22px, 3vw, 44px);
-          opacity: 0.85;
+          /* Uniform tile so every logo lands at the same visual size
+             regardless of source aspect ratio. object-fit:contain preserves
+             ratio inside the box; flex:0 0 auto keeps width fixed. */
+          width: 200px;
+          height: 110px;
+          object-fit: contain;
+          object-position: center;
+          margin-inline: clamp(10px, 1.6vw, 24px);
+          opacity: 0.9;
           /* brightness(0)+invert(1) = recolor any colored/black logo to pure
-             white while preserving transparency. Works for any PNG/SVG. */
+             white while preserving transparency. */
           filter: brightness(0) invert(1);
           transition: opacity 0.25s ease, transform 0.25s ease;
           flex: 0 0 auto;
         }
         .cuts-logo-reel img:hover {
           opacity: 1;
-          transform: scale(1.06);
+          transform: scale(1.05);
         }
       `}</style>
       <div aria-hidden="true" style={{
