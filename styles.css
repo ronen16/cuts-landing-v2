@@ -567,7 +567,7 @@ body.admin-dragging-sections .section-hide-toggle { display: inline-flex; }
 
 /* Versions modal */
 .admin-modal--wide {
-  width: min(520px, 92vw);
+  width: min(880px, 96vw);
 }
 .admin-modal__hint {
   color: rgba(255,255,255,0.6);
@@ -766,6 +766,35 @@ body.admin-dragging-sections .section-hide-toggle { display: inline-flex; }
   font-size: 13px;
   text-align: center;
   margin-top: 6px;
+}
+
+/* Admin guests modal — desktop: side-by-side; mobile: stacked */
+.admin-guest-row {
+  display: grid;
+  grid-template-columns: 32px auto minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 12px;
+  row-gap: 10px;
+}
+.admin-guest-row__preview {
+  width: min(360px, 38vw);
+  aspect-ratio: 16 / 9;
+}
+@media (max-width: 720px) {
+  .admin-guest-row {
+    grid-template-columns: 32px minmax(0, 1fr) auto;
+    grid-template-areas:
+      "handle preview buttons"
+      "handle fields  buttons";
+  }
+  .admin-guest-row > :nth-child(1) { grid-area: handle; }
+  .admin-guest-row > :nth-child(2) { grid-area: preview; justify-self: stretch; }
+  .admin-guest-row > :nth-child(3) { grid-area: fields; }
+  .admin-guest-row > :nth-child(4) { grid-area: buttons; }
+  .admin-guest-row__preview {
+    width: 100%;
+    max-width: 100%;
+  }
 }
 
 /* ===== Accessibility widget ===== */

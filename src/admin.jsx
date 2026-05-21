@@ -1282,19 +1282,19 @@ function AdminGuestsModal({ admin }) {
   const NumField = ({ label, value, min, max, step, suffix, onChange }) => {
     const decimals = step < 1 ? 2 : 0;
     return (
-      <div style={{ display: "grid", gridTemplateColumns: "44px 1fr", alignItems: "center", columnGap: 8 }}>
-        <span style={{ fontSize: 11, color: "rgba(255,255,255,0.75)" }}>{label}{suffix ? ` ${suffix}` : ""}</span>
-        <div style={{ display: "flex", alignItems: "stretch", gap: 3 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "72px 1fr", alignItems: "center", columnGap: 10 }}>
+        <span style={{ fontSize: 13, color: "rgba(255,255,255,0.78)", fontWeight: 600 }}>{label}{suffix ? ` ${suffix}` : ""}</span>
+        <div style={{ display: "flex", alignItems: "stretch", gap: 6 }}>
           <button
             type="button"
             onClick={() => onChange(Math.max(min, +(value - step).toFixed(decimals)))}
             title="פחות"
             style={{
-              width: 22, padding: 0, lineHeight: 1, flexShrink: 0,
+              width: 32, padding: 0, lineHeight: 1, flexShrink: 0,
               background: "rgba(255,255,255,0.06)",
               border: "1px solid rgba(255,255,255,0.14)",
               borderRadius: 6, color: "rgba(255,255,255,0.85)",
-              cursor: "pointer", fontWeight: 700, fontSize: 14,
+              cursor: "pointer", fontWeight: 700, fontSize: 16,
             }}
           >−</button>
           <input
@@ -1310,13 +1310,13 @@ function AdminGuestsModal({ admin }) {
               onChange(+clamped.toFixed(decimals));
             }}
             style={{
-              flex: 1, minWidth: 0, padding: "5px 4px",
+              flex: 1, minWidth: 0, padding: "7px 8px",
               background: "rgba(255,255,255,0.05)",
               border: "1px solid rgba(255,255,255,0.14)",
               borderRadius: 6,
               color: "rgba(255,255,255,0.92)",
               fontFamily: "ui-monospace, monospace",
-              fontSize: 12, fontWeight: 700,
+              fontSize: 14, fontWeight: 700,
               textAlign: "center", direction: "ltr",
             }}
           />
@@ -1325,11 +1325,11 @@ function AdminGuestsModal({ admin }) {
             onClick={() => onChange(Math.min(max, +(value + step).toFixed(decimals)))}
             title="יותר"
             style={{
-              width: 22, padding: 0, lineHeight: 1, flexShrink: 0,
+              width: 32, padding: 0, lineHeight: 1, flexShrink: 0,
               background: "rgba(255,255,255,0.06)",
               border: "1px solid rgba(255,255,255,0.14)",
               borderRadius: 6, color: "rgba(255,255,255,0.85)",
-              cursor: "pointer", fontWeight: 700, fontSize: 14,
+              cursor: "pointer", fontWeight: 700, fontSize: 16,
             }}
           >+</button>
         </div>
@@ -1358,6 +1358,7 @@ function AdminGuestsModal({ admin }) {
             return (
               <li
                 key={idx}
+                className="admin-guest-row"
                 draggable
                 onDragStart={(e) => { e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", String(idx)); setDragIdx(idx); }}
                 onDragEnd={() => { setDragIdx(null); setDropIdx(null); }}
@@ -1370,10 +1371,6 @@ function AdminGuestsModal({ admin }) {
                   setDragIdx(null); setDropIdx(null);
                 }}
                 style={{
-                  display: "grid",
-                  gridTemplateColumns: "28px 96px minmax(0, 1fr) auto",
-                  alignItems: "center",
-                  columnGap: 12, rowGap: 10,
                   padding: "12px 12px",
                   border: "1px solid " + (isDropTarget ? "rgba(255,213,0,0.7)" : "rgba(255,255,255,0.08)"),
                   borderRadius: 10,
@@ -1395,8 +1392,8 @@ function AdminGuestsModal({ admin }) {
                 {/* 16:9 preview of the full source image, with a 9:16 viewport
                     overlay (yellow) showing the portion that will appear on the site.
                     The image transform matches the site exactly; the viewport stays put. */}
-                <div style={{
-                  width: 96, height: 54, borderRadius: 8, overflow: "hidden",
+                <div className="admin-guest-row__preview" style={{
+                  borderRadius: 10, overflow: "hidden",
                   border: "1px solid rgba(255,255,255,0.15)",
                   background: "rgba(0,0,0,0.4)", position: "relative",
                 }}>
