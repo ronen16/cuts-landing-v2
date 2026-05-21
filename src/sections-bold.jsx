@@ -3535,12 +3535,23 @@ const DEFAULT_GUESTS_ROW1 = [
   { src: "assets/guests/guest-05.jpg", scale: 1, offsetX: 0, offsetY: 0 },
   { src: "assets/guests/guest-06.jpg", scale: 1, offsetX: 0, offsetY: 0 },
 ];
-if (typeof window !== "undefined") window.__cutsGuestsRow1 = DEFAULT_GUESTS_ROW1;
+const DEFAULT_GUESTS_ROW2 = [];
+if (typeof window !== "undefined") {
+  window.__cutsGuestsRow1 = DEFAULT_GUESTS_ROW1;
+  window.__cutsGuestsRow2 = DEFAULT_GUESTS_ROW2;
+}
 
 function orderAndFilterGuestsRow1(admin) {
   const hidden = new Set((admin && admin.hiddenGuestsRow1) || []);
   const items = admin && Array.isArray(admin.guestsRow1Items) ? admin.guestsRow1Items : null;
   const base = items && items.length ? items : DEFAULT_GUESTS_ROW1;
+  return base.filter((g) => g && g.src && !hidden.has(g.src));
+}
+
+function orderAndFilterGuestsRow2(admin) {
+  const hidden = new Set((admin && admin.hiddenGuestsRow2) || []);
+  const items = admin && Array.isArray(admin.guestsRow2Items) ? admin.guestsRow2Items : null;
+  const base = items && items.length ? items : DEFAULT_GUESTS_ROW2;
   return base.filter((g) => g && g.src && !hidden.has(g.src));
 }
 
@@ -3599,7 +3610,7 @@ function GuestStrip({ admin }) {
             wrapper's edge is inside the viewport (the "disappearing" gap). */}
         {(() => {
           const row1 = orderAndFilterGuestsRow1(admin);
-          const row2 = []; // row 2 still placeholder until images arrive
+          const row2 = orderAndFilterGuestsRow2(admin);
           const rows = [
             { dir: "rtl", offset: 0,  duration: 22, fillTo: 10, width: 176, aspect: "9 / 16", items: row1 },
             { dir: "ltr", offset: 10, duration: 36, fillTo: 6,  width: 462, aspect: "16 / 9", items: row2 },

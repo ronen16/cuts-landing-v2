@@ -146,6 +146,10 @@ function App() {
     const localGuestsRow1Items = Array.isArray(admin.guestsRow1Items) ? admin.guestsRow1Items : null;
     const liveHiddenGuestsRow1 = Array.isArray(liveOverrides.hiddenGuestsRow1) ? liveOverrides.hiddenGuestsRow1 : [];
     const localHiddenGuestsRow1 = Array.isArray(admin.hiddenGuestsRow1) ? admin.hiddenGuestsRow1 : [];
+    const liveGuestsRow2Items = Array.isArray(liveOverrides.guestsRow2Items) ? liveOverrides.guestsRow2Items : null;
+    const localGuestsRow2Items = Array.isArray(admin.guestsRow2Items) ? admin.guestsRow2Items : null;
+    const liveHiddenGuestsRow2 = Array.isArray(liveOverrides.hiddenGuestsRow2) ? liveOverrides.hiddenGuestsRow2 : [];
+    const localHiddenGuestsRow2 = Array.isArray(admin.hiddenGuestsRow2) ? admin.hiddenGuestsRow2 : [];
     return {
       ...admin,
       sectionOrder: localOrder || liveOrder,
@@ -160,6 +164,8 @@ function App() {
       hiddenLogos: Array.from(new Set([...(liveHiddenLogos || []), ...(localHiddenLogos || [])])),
       guestsRow1Items: localGuestsRow1Items || liveGuestsRow1Items,
       hiddenGuestsRow1: Array.from(new Set([...(liveHiddenGuestsRow1 || []), ...(localHiddenGuestsRow1 || [])])),
+      guestsRow2Items: localGuestsRow2Items || liveGuestsRow2Items,
+      hiddenGuestsRow2: Array.from(new Set([...(liveHiddenGuestsRow2 || []), ...(localHiddenGuestsRow2 || [])])),
     };
   }, [admin, liveOverrides]);
 

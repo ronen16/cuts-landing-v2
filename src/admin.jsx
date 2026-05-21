@@ -32,7 +32,7 @@ const MAX_VERSIONS = 10;
 function loadAdminState() {
   try {
     const raw = localStorage.getItem(ADMIN_STORAGE_KEY);
-    if (!raw) return { unlocked: false, overrides: {}, sectionOrder: null, elementOffsets: {}, hiddenSections: [], videoOrder: null, hiddenVideos: [], videoItems: null, podcastOrder: null, hiddenPodcasts: [], podcastItems: null, logoItems: null, hiddenLogos: [], guestsRow1Items: null, hiddenGuestsRow1: [], publishedVersions: [] };
+    if (!raw) return { unlocked: false, overrides: {}, sectionOrder: null, elementOffsets: {}, hiddenSections: [], videoOrder: null, hiddenVideos: [], videoItems: null, podcastOrder: null, hiddenPodcasts: [], podcastItems: null, logoItems: null, hiddenLogos: [], guestsRow1Items: null, hiddenGuestsRow1: [], guestsRow2Items: null, hiddenGuestsRow2: [], publishedVersions: [] };
     const parsed = JSON.parse(raw);
     return {
       unlocked: !!parsed.unlocked,
@@ -50,10 +50,12 @@ function loadAdminState() {
       hiddenLogos: Array.isArray(parsed.hiddenLogos) ? parsed.hiddenLogos : [],
       guestsRow1Items: Array.isArray(parsed.guestsRow1Items) ? parsed.guestsRow1Items : null,
       hiddenGuestsRow1: Array.isArray(parsed.hiddenGuestsRow1) ? parsed.hiddenGuestsRow1 : [],
+      guestsRow2Items: Array.isArray(parsed.guestsRow2Items) ? parsed.guestsRow2Items : null,
+      hiddenGuestsRow2: Array.isArray(parsed.hiddenGuestsRow2) ? parsed.hiddenGuestsRow2 : [],
       publishedVersions: Array.isArray(parsed.publishedVersions) ? parsed.publishedVersions : [],
     };
   } catch (e) {
-    return { unlocked: false, overrides: {}, sectionOrder: null, elementOffsets: {}, hiddenSections: [], videoOrder: null, hiddenVideos: [], videoItems: null, podcastOrder: null, hiddenPodcasts: [], podcastItems: null, logoItems: null, hiddenLogos: [], guestsRow1Items: null, hiddenGuestsRow1: [], publishedVersions: [] };
+    return { unlocked: false, overrides: {}, sectionOrder: null, elementOffsets: {}, hiddenSections: [], videoOrder: null, hiddenVideos: [], videoItems: null, podcastOrder: null, hiddenPodcasts: [], podcastItems: null, logoItems: null, hiddenLogos: [], guestsRow1Items: null, hiddenGuestsRow1: [], guestsRow2Items: null, hiddenGuestsRow2: [], publishedVersions: [] };
   }
 }
 
@@ -174,6 +176,8 @@ function saveAdminState(state) {
         hiddenLogos: state.hiddenLogos || [],
         guestsRow1Items: state.guestsRow1Items || null,
         hiddenGuestsRow1: state.hiddenGuestsRow1 || [],
+        guestsRow2Items: state.guestsRow2Items || null,
+        hiddenGuestsRow2: state.hiddenGuestsRow2 || [],
         publishedVersions: state.publishedVersions || [],
       })
     );
@@ -278,6 +282,8 @@ function useAdminMode() {
   const [hiddenLogos, setHiddenLogos] = React.useState(initial.hiddenLogos);
   const [guestsRow1Items, setGuestsRow1Items] = React.useState(initial.guestsRow1Items);
   const [hiddenGuestsRow1, setHiddenGuestsRow1] = React.useState(initial.hiddenGuestsRow1);
+  const [guestsRow2Items, setGuestsRow2Items] = React.useState(initial.guestsRow2Items);
+  const [hiddenGuestsRow2, setHiddenGuestsRow2] = React.useState(initial.hiddenGuestsRow2);
   const [publishedVersions, setPublishedVersions] = React.useState(initial.publishedVersions);
 
   React.useEffect(() => {
@@ -316,6 +322,8 @@ function useAdminMode() {
         setHiddenLogos(Array.isArray(live.hiddenLogos) ? live.hiddenLogos : []);
         setGuestsRow1Items(Array.isArray(live.guestsRow1Items) ? live.guestsRow1Items : null);
         setHiddenGuestsRow1(Array.isArray(live.hiddenGuestsRow1) ? live.hiddenGuestsRow1 : []);
+        setGuestsRow2Items(Array.isArray(live.guestsRow2Items) ? live.guestsRow2Items : null);
+        setHiddenGuestsRow2(Array.isArray(live.hiddenGuestsRow2) ? live.hiddenGuestsRow2 : []);
       } catch (_) {
         // offline / rate-limited — keep local; publish guard still protects
       }
@@ -323,8 +331,8 @@ function useAdminMode() {
   }, [unlocked, overrides]);
 
   React.useEffect(() => {
-    saveAdminState({ unlocked, overrides, sectionOrder, elementOffsets, hiddenSections, videoOrder, hiddenVideos, videoItems, podcastOrder, hiddenPodcasts, podcastItems, logoItems, hiddenLogos, guestsRow1Items, hiddenGuestsRow1, publishedVersions });
-  }, [unlocked, overrides, sectionOrder, elementOffsets, hiddenSections, videoOrder, hiddenVideos, videoItems, podcastOrder, hiddenPodcasts, podcastItems, logoItems, hiddenLogos, guestsRow1Items, hiddenGuestsRow1, publishedVersions]);
+    saveAdminState({ unlocked, overrides, sectionOrder, elementOffsets, hiddenSections, videoOrder, hiddenVideos, videoItems, podcastOrder, hiddenPodcasts, podcastItems, logoItems, hiddenLogos, guestsRow1Items, hiddenGuestsRow1, guestsRow2Items, hiddenGuestsRow2, publishedVersions });
+  }, [unlocked, overrides, sectionOrder, elementOffsets, hiddenSections, videoOrder, hiddenVideos, videoItems, podcastOrder, hiddenPodcasts, podcastItems, logoItems, hiddenLogos, guestsRow1Items, hiddenGuestsRow1, guestsRow2Items, hiddenGuestsRow2, publishedVersions]);
 
   // mutual exclusion
   const setEditingTextSafe = React.useCallback((v) => {
@@ -418,6 +426,18 @@ function useAdminMode() {
     });
   }, []);
 
+  const updateGuestsRow2Items = React.useCallback((items) => {
+    setGuestsRow2Items(items);
+  }, []);
+  const toggleGuestsRow2Hidden = React.useCallback((src) => {
+    setHiddenGuestsRow2((prev) => {
+      const set = new Set(prev);
+      if (set.has(src)) set.delete(src);
+      else set.add(src);
+      return Array.from(set);
+    });
+  }, []);
+
   // Snapshot current state into the versions list (cap at MAX_VERSIONS).
   // Reads fresh from localStorage to avoid stale React closure bugs (edits
   // made just before clicking Publish need to be included).
@@ -437,6 +457,8 @@ function useAdminMode() {
     const liveHiddenLogos = current.hiddenLogos || [];
     const liveGuestsRow1Items = current.guestsRow1Items || null;
     const liveHiddenGuestsRow1 = current.hiddenGuestsRow1 || [];
+    const liveGuestsRow2Items = current.guestsRow2Items || null;
+    const liveHiddenGuestsRow2 = current.hiddenGuestsRow2 || [];
 
     const snapshot = {
       id: "v-" + Date.now() + "-" + Math.random().toString(36).slice(2, 8),
@@ -456,6 +478,8 @@ function useAdminMode() {
       hiddenLogos: liveHiddenLogos,
       guestsRow1Items: liveGuestsRow1Items,
       hiddenGuestsRow1: liveHiddenGuestsRow1,
+      guestsRow2Items: liveGuestsRow2Items,
+      hiddenGuestsRow2: liveHiddenGuestsRow2,
     };
     setPublishedVersions((prev) => [snapshot, ...prev].slice(0, MAX_VERSIONS));
 
@@ -511,6 +535,8 @@ function useAdminMode() {
         hiddenLogos: liveHiddenLogos,
         guestsRow1Items: liveGuestsRow1Items,
         hiddenGuestsRow1: liveHiddenGuestsRow1,
+        guestsRow2Items: liveGuestsRow2Items,
+        hiddenGuestsRow2: liveHiddenGuestsRow2,
       };
       const commit = await pushToGitHub(settings, payload);
       return { snapshot, published: true, commitUrl: commit.commit && commit.commit.html_url };
@@ -542,6 +568,8 @@ function useAdminMode() {
     setHiddenLogos(v.hiddenLogos || []);
     setGuestsRow1Items(v.guestsRow1Items || null);
     setHiddenGuestsRow1(v.hiddenGuestsRow1 || []);
+    setGuestsRow2Items(v.guestsRow2Items || null);
+    setHiddenGuestsRow2(v.hiddenGuestsRow2 || []);
   }, [publishedVersions]);
 
   const deleteVersion = React.useCallback((id) => {
@@ -563,6 +591,8 @@ function useAdminMode() {
     setHiddenLogos([]);
     setGuestsRow1Items(null);
     setHiddenGuestsRow1([]);
+    setGuestsRow2Items(null);
+    setHiddenGuestsRow2([]);
     if (window.__cutsRestoreOriginals) window.__cutsRestoreOriginals();
     if (window.__cutsClearAllTransforms) window.__cutsClearAllTransforms();
   }, []);
@@ -593,6 +623,8 @@ function useAdminMode() {
     hiddenLogos,
     guestsRow1Items,
     hiddenGuestsRow1,
+    guestsRow2Items,
+    hiddenGuestsRow2,
     publishedVersions,
     setEditingText: setEditingTextSafe,
     setDraggingSections: setDraggingSectionsSafe,
@@ -611,6 +643,8 @@ function useAdminMode() {
     toggleLogoHidden,
     updateGuestsRow1Items,
     toggleGuestsRow1Hidden,
+    updateGuestsRow2Items,
+    toggleGuestsRow2Hidden,
     publishToLive,
     restoreVersion,
     deleteVersion,
@@ -1218,42 +1252,54 @@ window.AdminLogosModal = AdminLogosModal;
 
 function AdminGuestsModal({ admin }) {
   const [open, setOpen] = React.useState(false);
+  const [row, setRow] = React.useState(1); // 1 or 2
   const [items, setItems] = React.useState([]);
   const [dragIdx, setDragIdx] = React.useState(null);
   const [dropIdx, setDropIdx] = React.useState(null);
 
-  // Default = whatever sections-bold exposed as the initial guest list.
+  // Row-specific accessors. Row 1 = portrait 9:16 tiles on the site (source
+  // 16:9 → cropped to a 9:16 strip). Row 2 = landscape 16:9 tiles (source
+  // and tile share aspect, no cropping needed).
+  const adminItems = row === 1 ? admin.guestsRow1Items : admin.guestsRow2Items;
+  const adminHidden = row === 1 ? admin.hiddenGuestsRow1 : admin.hiddenGuestsRow2;
+  const updateItems = row === 1 ? admin.updateGuestsRow1Items : admin.updateGuestsRow2Items;
+  const toggleHidden = row === 1 ? admin.toggleGuestsRow1Hidden : admin.toggleGuestsRow2Hidden;
+  const defaultsKey = row === 1 ? "__cutsGuestsRow1" : "__cutsGuestsRow2";
+
   const derive = React.useCallback(() => {
-    const all = (window.__cutsGuestsRow1 || []).slice();
+    const all = (window[defaultsKey] || []).slice();
     return all.map((g) => ({
       src: g.src || "",
       scale: typeof g.scale === "number" ? g.scale : 1,
       offsetX: typeof g.offsetX === "number" ? g.offsetX : 0,
       offsetY: typeof g.offsetY === "number" ? g.offsetY : 0,
     }));
-  }, []);
+  }, [defaultsKey]);
+
+  // Re-derive items when the modal opens OR when the user switches rows.
+  React.useEffect(() => {
+    if (!open) return;
+    const base = Array.isArray(adminItems) && adminItems.length
+      ? adminItems.map((g) => ({
+          src: g.src || "",
+          scale: typeof g.scale === "number" ? g.scale : 1,
+          offsetX: typeof g.offsetX === "number" ? g.offsetX : 0,
+          offsetY: typeof g.offsetY === "number" ? g.offsetY : 0,
+        }))
+      : derive();
+    setItems(base);
+  }, [open, row, adminItems, derive]);
 
   React.useEffect(() => {
-    const onOpen = () => {
-      const base = Array.isArray(admin.guestsRow1Items) && admin.guestsRow1Items.length
-        ? admin.guestsRow1Items.map((g) => ({
-            src: g.src || "",
-            scale: typeof g.scale === "number" ? g.scale : 1,
-            offsetX: typeof g.offsetX === "number" ? g.offsetX : 0,
-            offsetY: typeof g.offsetY === "number" ? g.offsetY : 0,
-          }))
-        : derive();
-      setItems(base);
-      setOpen(true);
-    };
+    const onOpen = () => setOpen(true);
     window.addEventListener("cuts-admin-guests", onOpen);
     return () => window.removeEventListener("cuts-admin-guests", onOpen);
-  }, [admin.guestsRow1Items, derive]);
+  }, []);
 
   if (!open) return null;
 
-  const hidden = new Set(admin.hiddenGuestsRow1 || []);
-  const sync = (next) => { setItems(next); admin.updateGuestsRow1Items(next); };
+  const hidden = new Set(adminHidden || []);
+  const sync = (next) => { setItems(next); updateItems(next); };
   const move = (i, dir) => {
     const t = i + dir; if (t < 0 || t >= items.length) return;
     const n = items.slice(); const tmp = n[i]; n[i] = n[t]; n[t] = tmp; sync(n);
@@ -1337,10 +1383,29 @@ function AdminGuestsModal({ admin }) {
     );
   };
 
+  const rowTabBtn = (n, label) => (
+    <button
+      type="button"
+      onClick={() => setRow(n)}
+      style={{
+        flex: 1, padding: "10px 14px",
+        background: row === n ? "var(--accent)" : "rgba(255,255,255,0.04)",
+        color: row === n ? "#0A0A0A" : "rgba(255,255,255,0.78)",
+        border: "1px solid " + (row === n ? "var(--accent)" : "rgba(255,255,255,0.12)"),
+        borderRadius: 8, cursor: "pointer", fontWeight: 800, fontSize: 14,
+        transition: "background 0.15s, color 0.15s",
+      }}
+    >{label}</button>
+  );
+
   return (
     <div className="admin-modal-backdrop" onClick={() => setOpen(false)}>
       <div className="admin-modal admin-modal--wide" onClick={(e) => e.stopPropagation()} dir="rtl">
-        <h3 className="admin-modal__title">ניהול תמונות אורחים (שורה 1)</h3>
+        <h3 className="admin-modal__title">ניהול תמונות אורחים</h3>
+        <div style={{ display: "flex", gap: 8, marginBottom: 14 }}>
+          {rowTabBtn(1, "שורה 1 (9:16)")}
+          {rowTabBtn(2, "שורה 2 (16:9)")}
+        </div>
         <p className="admin-modal__hint">
           גרור תמונות כדי לסדר אותן מחדש. לכל תמונה: הקלד ישירות את ערכי הגודל וההזזה (X/Y), או השתמש בכפתורי − / +. שינויים נשמרים אוטומטית — "🚀 העלאה ללייב" כדי לפרסם.
         </p>
@@ -1411,17 +1476,20 @@ function AdminGuestsModal({ admin }) {
                       }}
                     />
                   )}
-                  {/* 9:16 visible-on-site window. 9/16 ÷ 16/9 = 81/256 ≈ 31.64% of the
-                      16:9 preview's width — same ratio that objectFit:cover gives on the live page. */}
-                  <div style={{
-                    position: "absolute", top: 0, bottom: 0,
-                    left: "50%", transform: "translateX(-50%)",
-                    width: "31.64%",
-                    border: "2px solid var(--accent)",
-                    boxShadow: "0 0 0 9999px rgba(0,0,0,0.45)",
-                    pointerEvents: "none",
-                    boxSizing: "border-box",
-                  }} />
+                  {/* Row 1 only: 9:16 visible-on-site window. 9/16 ÷ 16/9 ≈ 31.64% of
+                      the 16:9 preview's width — same ratio objectFit:cover produces on
+                      the live page. Row 2 fills the tile completely so no overlay. */}
+                  {row === 1 && (
+                    <div style={{
+                      position: "absolute", top: 0, bottom: 0,
+                      left: "50%", transform: "translateX(-50%)",
+                      width: "31.64%",
+                      border: "2px solid var(--accent)",
+                      boxShadow: "0 0 0 9999px rgba(0,0,0,0.45)",
+                      pointerEvents: "none",
+                      boxSizing: "border-box",
+                    }} />
+                  )}
                 </div>
 
                 {/* editable number fields — type values directly */}
@@ -1436,7 +1504,7 @@ function AdminGuestsModal({ admin }) {
                   <button type="button" className="admin-videos__btn" disabled={idx === 0} title="הזז למעלה" onClick={() => move(idx, -1)}>↑</button>
                   <button type="button" className="admin-videos__btn" disabled={idx === items.length - 1} title="הזז למטה" onClick={() => move(idx, 1)}>↓</button>
                   <button type="button" className="admin-videos__btn" title="איפוס מיקום/זום" onClick={() => resetTransform(idx)}>⟲</button>
-                  <button type="button" className={"admin-videos__btn" + (isHidden ? " is-on" : "")} title={isHidden ? "הצג" : "הסתר"} onClick={() => { admin.toggleGuestsRow1Hidden(g.src); }}>{isHidden ? "🙈" : "👁"}</button>
+                  <button type="button" className={"admin-videos__btn" + (isHidden ? " is-on" : "")} title={isHidden ? "הצג" : "הסתר"} onClick={() => { toggleHidden(g.src); }}>{isHidden ? "🙈" : "👁"}</button>
                   <button type="button" className="admin-videos__btn is-on" title="מחק" onClick={() => del(idx)}>✕</button>
                 </div>
               </li>
@@ -1449,9 +1517,9 @@ function AdminGuestsModal({ admin }) {
             type="button"
             className="admin-modal__btn admin-modal__btn--ghost"
             onClick={() => {
-              if (window.confirm("לאפס את רשימת התמונות וההסתרות לברירת מחדל?")) {
-                admin.updateGuestsRow1Items(null);
-                (admin.hiddenGuestsRow1 || []).slice().forEach((src) => admin.toggleGuestsRow1Hidden(src));
+              if (window.confirm(`לאפס את רשימת התמונות וההסתרות של שורה ${row} לברירת מחדל?`)) {
+                updateItems(null);
+                (adminHidden || []).slice().forEach((src) => toggleHidden(src));
                 setItems(derive());
               }
             }}>איפוס</button>
@@ -1796,6 +1864,11 @@ function importJSON(admin) {
       if (Array.isArray(parsed.hiddenGuestsRow1)) {
         const cur = new Set(admin.hiddenGuestsRow1);
         parsed.hiddenGuestsRow1.forEach((id) => { if (!cur.has(id)) admin.toggleGuestsRow1Hidden(id); });
+      }
+      if (Array.isArray(parsed.guestsRow2Items)) admin.updateGuestsRow2Items(parsed.guestsRow2Items);
+      if (Array.isArray(parsed.hiddenGuestsRow2)) {
+        const cur = new Set(admin.hiddenGuestsRow2);
+        parsed.hiddenGuestsRow2.forEach((id) => { if (!cur.has(id)) admin.toggleGuestsRow2Hidden(id); });
       }
       window.alert("Imported successfully.");
     } catch (err) {
