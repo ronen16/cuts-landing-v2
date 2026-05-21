@@ -32,7 +32,7 @@ const MAX_VERSIONS = 10;
 function loadAdminState() {
   try {
     const raw = localStorage.getItem(ADMIN_STORAGE_KEY);
-    if (!raw) return { unlocked: false, overrides: {}, sectionOrder: null, elementOffsets: {}, hiddenSections: [], videoOrder: null, hiddenVideos: [], videoItems: null, podcastOrder: null, hiddenPodcasts: [], podcastItems: null, logoItems: null, hiddenLogos: [], publishedVersions: [] };
+    if (!raw) return { unlocked: false, overrides: {}, sectionOrder: null, elementOffsets: {}, hiddenSections: [], videoOrder: null, hiddenVideos: [], videoItems: null, podcastOrder: null, hiddenPodcasts: [], podcastItems: null, logoItems: null, hiddenLogos: [], guestsRow1Items: null, hiddenGuestsRow1: [], publishedVersions: [] };
     const parsed = JSON.parse(raw);
     return {
       unlocked: !!parsed.unlocked,
@@ -48,10 +48,12 @@ function loadAdminState() {
       podcastItems: Array.isArray(parsed.podcastItems) ? parsed.podcastItems : null,
       logoItems: Array.isArray(parsed.logoItems) ? parsed.logoItems : null,
       hiddenLogos: Array.isArray(parsed.hiddenLogos) ? parsed.hiddenLogos : [],
+      guestsRow1Items: Array.isArray(parsed.guestsRow1Items) ? parsed.guestsRow1Items : null,
+      hiddenGuestsRow1: Array.isArray(parsed.hiddenGuestsRow1) ? parsed.hiddenGuestsRow1 : [],
       publishedVersions: Array.isArray(parsed.publishedVersions) ? parsed.publishedVersions : [],
     };
   } catch (e) {
-    return { unlocked: false, overrides: {}, sectionOrder: null, elementOffsets: {}, hiddenSections: [], videoOrder: null, hiddenVideos: [], videoItems: null, podcastOrder: null, hiddenPodcasts: [], podcastItems: null, logoItems: null, hiddenLogos: [], publishedVersions: [] };
+    return { unlocked: false, overrides: {}, sectionOrder: null, elementOffsets: {}, hiddenSections: [], videoOrder: null, hiddenVideos: [], videoItems: null, podcastOrder: null, hiddenPodcasts: [], podcastItems: null, logoItems: null, hiddenLogos: [], guestsRow1Items: null, hiddenGuestsRow1: [], publishedVersions: [] };
   }
 }
 
@@ -170,6 +172,8 @@ function saveAdminState(state) {
         podcastItems: state.podcastItems || null,
         logoItems: state.logoItems || null,
         hiddenLogos: state.hiddenLogos || [],
+        guestsRow1Items: state.guestsRow1Items || null,
+        hiddenGuestsRow1: state.hiddenGuestsRow1 || [],
         publishedVersions: state.publishedVersions || [],
       })
     );
@@ -272,6 +276,8 @@ function useAdminMode() {
   const [podcastItems, setPodcastItems] = React.useState(initial.podcastItems);
   const [logoItems, setLogoItems] = React.useState(initial.logoItems);
   const [hiddenLogos, setHiddenLogos] = React.useState(initial.hiddenLogos);
+  const [guestsRow1Items, setGuestsRow1Items] = React.useState(initial.guestsRow1Items);
+  const [hiddenGuestsRow1, setHiddenGuestsRow1] = React.useState(initial.hiddenGuestsRow1);
   const [publishedVersions, setPublishedVersions] = React.useState(initial.publishedVersions);
 
   React.useEffect(() => {
@@ -308,6 +314,8 @@ function useAdminMode() {
         setPodcastItems(Array.isArray(live.podcastItems) ? live.podcastItems : null);
         setLogoItems(Array.isArray(live.logoItems) ? live.logoItems : null);
         setHiddenLogos(Array.isArray(live.hiddenLogos) ? live.hiddenLogos : []);
+        setGuestsRow1Items(Array.isArray(live.guestsRow1Items) ? live.guestsRow1Items : null);
+        setHiddenGuestsRow1(Array.isArray(live.hiddenGuestsRow1) ? live.hiddenGuestsRow1 : []);
       } catch (_) {
         // offline / rate-limited — keep local; publish guard still protects
       }
@@ -315,8 +323,8 @@ function useAdminMode() {
   }, [unlocked, overrides]);
 
   React.useEffect(() => {
-    saveAdminState({ unlocked, overrides, sectionOrder, elementOffsets, hiddenSections, videoOrder, hiddenVideos, videoItems, podcastOrder, hiddenPodcasts, podcastItems, logoItems, hiddenLogos, publishedVersions });
-  }, [unlocked, overrides, sectionOrder, elementOffsets, hiddenSections, videoOrder, hiddenVideos, videoItems, podcastOrder, hiddenPodcasts, podcastItems, logoItems, hiddenLogos, publishedVersions]);
+    saveAdminState({ unlocked, overrides, sectionOrder, elementOffsets, hiddenSections, videoOrder, hiddenVideos, videoItems, podcastOrder, hiddenPodcasts, podcastItems, logoItems, hiddenLogos, guestsRow1Items, hiddenGuestsRow1, publishedVersions });
+  }, [unlocked, overrides, sectionOrder, elementOffsets, hiddenSections, videoOrder, hiddenVideos, videoItems, podcastOrder, hiddenPodcasts, podcastItems, logoItems, hiddenLogos, guestsRow1Items, hiddenGuestsRow1, publishedVersions]);
 
   // mutual exclusion
   const setEditingTextSafe = React.useCallback((v) => {
@@ -398,6 +406,18 @@ function useAdminMode() {
     });
   }, []);
 
+  const updateGuestsRow1Items = React.useCallback((items) => {
+    setGuestsRow1Items(items);
+  }, []);
+  const toggleGuestsRow1Hidden = React.useCallback((src) => {
+    setHiddenGuestsRow1((prev) => {
+      const set = new Set(prev);
+      if (set.has(src)) set.delete(src);
+      else set.add(src);
+      return Array.from(set);
+    });
+  }, []);
+
   // Snapshot current state into the versions list (cap at MAX_VERSIONS).
   // Reads fresh from localStorage to avoid stale React closure bugs (edits
   // made just before clicking Publish need to be included).
@@ -415,6 +435,8 @@ function useAdminMode() {
     const livePodcastItems = current.podcastItems || null;
     const liveLogoItems = current.logoItems || null;
     const liveHiddenLogos = current.hiddenLogos || [];
+    const liveGuestsRow1Items = current.guestsRow1Items || null;
+    const liveHiddenGuestsRow1 = current.hiddenGuestsRow1 || [];
 
     const snapshot = {
       id: "v-" + Date.now() + "-" + Math.random().toString(36).slice(2, 8),
@@ -432,6 +454,8 @@ function useAdminMode() {
       podcastItems: livePodcastItems,
       logoItems: liveLogoItems,
       hiddenLogos: liveHiddenLogos,
+      guestsRow1Items: liveGuestsRow1Items,
+      hiddenGuestsRow1: liveHiddenGuestsRow1,
     };
     setPublishedVersions((prev) => [snapshot, ...prev].slice(0, MAX_VERSIONS));
 
@@ -485,6 +509,8 @@ function useAdminMode() {
         podcastItems: livePodcastItems,
         logoItems: liveLogoItems,
         hiddenLogos: liveHiddenLogos,
+        guestsRow1Items: liveGuestsRow1Items,
+        hiddenGuestsRow1: liveHiddenGuestsRow1,
       };
       const commit = await pushToGitHub(settings, payload);
       return { snapshot, published: true, commitUrl: commit.commit && commit.commit.html_url };
@@ -514,6 +540,8 @@ function useAdminMode() {
     setPodcastItems(v.podcastItems || null);
     setLogoItems(v.logoItems || null);
     setHiddenLogos(v.hiddenLogos || []);
+    setGuestsRow1Items(v.guestsRow1Items || null);
+    setHiddenGuestsRow1(v.hiddenGuestsRow1 || []);
   }, [publishedVersions]);
 
   const deleteVersion = React.useCallback((id) => {
@@ -533,6 +561,8 @@ function useAdminMode() {
     setPodcastItems(null);
     setLogoItems(null);
     setHiddenLogos([]);
+    setGuestsRow1Items(null);
+    setHiddenGuestsRow1([]);
     if (window.__cutsRestoreOriginals) window.__cutsRestoreOriginals();
     if (window.__cutsClearAllTransforms) window.__cutsClearAllTransforms();
   }, []);
@@ -561,6 +591,8 @@ function useAdminMode() {
     podcastItems,
     logoItems,
     hiddenLogos,
+    guestsRow1Items,
+    hiddenGuestsRow1,
     publishedVersions,
     setEditingText: setEditingTextSafe,
     setDraggingSections: setDraggingSectionsSafe,
@@ -577,6 +609,8 @@ function useAdminMode() {
     updatePodcastItems,
     updateLogoItems,
     toggleLogoHidden,
+    updateGuestsRow1Items,
+    toggleGuestsRow1Hidden,
     publishToLive,
     restoreVersion,
     deleteVersion,
@@ -1180,6 +1214,136 @@ function AdminLogosModal({ admin }) {
 
 window.AdminLogosModal = AdminLogosModal;
 
+// ---------- Guests Manager Modal (Row 1 podcast guest images) ----------
+
+function AdminGuestsModal({ admin }) {
+  const [open, setOpen] = React.useState(false);
+  const [items, setItems] = React.useState([]);
+
+  // Default = whatever sections-bold exposed as the initial guest list.
+  const derive = React.useCallback(() => {
+    const all = (window.__cutsGuestsRow1 || []).slice();
+    return all.map((g) => ({
+      src: g.src || "",
+      scale: typeof g.scale === "number" ? g.scale : 1,
+      offsetX: typeof g.offsetX === "number" ? g.offsetX : 0,
+      offsetY: typeof g.offsetY === "number" ? g.offsetY : 0,
+    }));
+  }, []);
+
+  React.useEffect(() => {
+    const onOpen = () => {
+      const base = Array.isArray(admin.guestsRow1Items) && admin.guestsRow1Items.length
+        ? admin.guestsRow1Items.map((g) => ({
+            src: g.src || "",
+            scale: typeof g.scale === "number" ? g.scale : 1,
+            offsetX: typeof g.offsetX === "number" ? g.offsetX : 0,
+            offsetY: typeof g.offsetY === "number" ? g.offsetY : 0,
+          }))
+        : derive();
+      setItems(base);
+      setOpen(true);
+    };
+    window.addEventListener("cuts-admin-guests", onOpen);
+    return () => window.removeEventListener("cuts-admin-guests", onOpen);
+  }, [admin.guestsRow1Items, derive]);
+
+  if (!open) return null;
+
+  const hidden = new Set(admin.hiddenGuestsRow1 || []);
+  const sync = (next) => { setItems(next); admin.updateGuestsRow1Items(next); };
+  const move = (i, dir) => {
+    const t = i + dir; if (t < 0 || t >= items.length) return;
+    const n = items.slice(); const tmp = n[i]; n[i] = n[t]; n[t] = tmp; sync(n);
+  };
+  const del = (i) => { if (window.confirm("למחוק את התמונה הזאת?")) sync(items.filter((_, x) => x !== i)); };
+  const add = () => {
+    const url = window.prompt("הדבק קישור לתמונה (JPG/PNG):");
+    if (!url || !url.trim()) return;
+    sync([...items, { src: url.trim(), scale: 1, offsetX: 0, offsetY: 0 }]);
+  };
+  const setField = (i, key, val) => {
+    const n = items.slice(); n[i] = { ...n[i], [key]: val }; sync(n);
+  };
+  const resetTransform = (i) => {
+    const n = items.slice(); n[i] = { ...n[i], scale: 1, offsetX: 0, offsetY: 0 }; sync(n);
+  };
+
+  const sliderRow = (label, value, onChange, min, max, step, suffix) =>
+    React.createElement("div", { style: { display: "grid", gridTemplateColumns: "62px 1fr 56px", alignItems: "center", gap: 8 } },
+      React.createElement("span", { style: { fontSize: 11, color: "rgba(255,255,255,0.7)" } }, label),
+      React.createElement("input", {
+        type: "range", min, max, step, value,
+        onChange: (e) => onChange(parseFloat(e.target.value)),
+        style: { accentColor: "var(--accent)" },
+      }),
+      React.createElement("span", { style: { fontSize: 11, color: "rgba(255,255,255,0.55)", textAlign: "left", fontFamily: "ui-monospace, monospace" } }, value.toFixed(step < 1 ? 2 : 0) + (suffix || ""))
+    );
+
+  return (
+    <div className="admin-modal-backdrop" onClick={() => setOpen(false)}>
+      <div className="admin-modal admin-modal--wide" onClick={(e) => e.stopPropagation()} dir="rtl">
+        <h3 className="admin-modal__title">ניהול תמונות אורחים (שורה 1)</h3>
+        <p className="admin-modal__hint">
+          לכל תמונה: סדר, הסתרה, גודל, והזזה ב-X/Y. המקור 16:9 והכרטיס 9:16 — שימוש בסליידרים כדי למרכז את הפנים. שינויים נשמרים אוטומטית — "🚀 העלאה ללייב" כדי לפרסם.
+        </p>
+        <ul className="admin-videos">
+          {items.map((g, idx) => {
+            const isHidden = hidden.has(g.src);
+            const tilePreview = {
+              width: 72, height: 128, borderRadius: 8, overflow: "hidden",
+              border: "1px solid rgba(255,255,255,0.15)", flexShrink: 0,
+              background: "rgba(0,0,0,0.4)", position: "relative",
+            };
+            const imgStyle = {
+              position: "absolute", inset: 0, width: "100%", height: "100%",
+              objectFit: "cover", objectPosition: "center",
+              transform: `translate(${g.offsetX || 0}%, ${g.offsetY || 0}%) scale(${g.scale || 1})`,
+              transformOrigin: "center", opacity: isHidden ? 0.35 : 1,
+            };
+            return (
+              <li key={idx} className={"admin-videos__row" + (isHidden ? " is-hidden" : "")}>
+                <span className="admin-videos__idx">{idx + 1}</span>
+                <div style={tilePreview}>
+                  {g.src && <img src={g.src} alt="" style={imgStyle} />}
+                </div>
+                <div className="admin-videos__info" style={{ gap: 6, paddingInlineStart: 12 }}>
+                  {sliderRow("גודל",  g.scale,   (v) => setField(idx, "scale",   v), 0.5, 3,   0.05, "x")}
+                  {sliderRow("הזזה X", g.offsetX, (v) => setField(idx, "offsetX", v), -100, 100, 1, "%")}
+                  {sliderRow("הזזה Y", g.offsetY, (v) => setField(idx, "offsetY", v), -100, 100, 1, "%")}
+                </div>
+                <div className="admin-videos__actions">
+                  <button type="button" className="admin-videos__btn" disabled={idx === 0} title="הזז למעלה" onClick={() => move(idx, -1)}>↑</button>
+                  <button type="button" className="admin-videos__btn" disabled={idx === items.length - 1} title="הזז למטה" onClick={() => move(idx, 1)}>↓</button>
+                  <button type="button" className="admin-videos__btn" title="איפוס מיקום/זום" onClick={() => resetTransform(idx)}>⟲</button>
+                  <button type="button" className={"admin-videos__btn" + (isHidden ? " is-on" : "")} title={isHidden ? "הצג" : "הסתר"} onClick={() => { admin.toggleGuestsRow1Hidden(g.src); }}>{isHidden ? "מוסתר" : "מוצג"}</button>
+                  <button type="button" className="admin-videos__btn is-on" title="מחק" onClick={() => del(idx)}>✕</button>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+        <button type="button" className="admin-modal__btn admin-modal__btn--ghost" style={{ marginBottom: 14 }} onClick={add}>➕ הוסף תמונה</button>
+        <div className="admin-modal__actions">
+          <button
+            type="button"
+            className="admin-modal__btn admin-modal__btn--ghost"
+            onClick={() => {
+              if (window.confirm("לאפס את רשימת התמונות וההסתרות לברירת מחדל?")) {
+                admin.updateGuestsRow1Items(null);
+                (admin.hiddenGuestsRow1 || []).slice().forEach((src) => admin.toggleGuestsRow1Hidden(src));
+                setItems(derive());
+              }
+            }}>איפוס</button>
+          <button type="button" className="admin-modal__btn admin-modal__btn--primary" onClick={() => setOpen(false)}>סגור</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+window.AdminGuestsModal = AdminGuestsModal;
+
 // ---------- Publish Settings Modal ----------
 
 function AdminPublishSettingsModal() {
@@ -1346,6 +1510,11 @@ function AdminPanel({ admin }) {
       label: "ניהול לוגואים",
       onClick: () => window.dispatchEvent(new CustomEvent("cuts-admin-logos"))
     }),
+    React.createElement(ToolbarRow, {
+      icon: "👥",
+      label: "תמונות אורחים",
+      onClick: () => window.dispatchEvent(new CustomEvent("cuts-admin-guests"))
+    }),
     React.createElement("div", { className: "admin-toolbar__sep" }),
     React.createElement(ToolbarRow, {
       icon: "🚀",
@@ -1502,6 +1671,11 @@ function importJSON(admin) {
       if (Array.isArray(parsed.hiddenLogos)) {
         const cur = new Set(admin.hiddenLogos);
         parsed.hiddenLogos.forEach((id) => { if (!cur.has(id)) admin.toggleLogoHidden(id); });
+      }
+      if (Array.isArray(parsed.guestsRow1Items)) admin.updateGuestsRow1Items(parsed.guestsRow1Items);
+      if (Array.isArray(parsed.hiddenGuestsRow1)) {
+        const cur = new Set(admin.hiddenGuestsRow1);
+        parsed.hiddenGuestsRow1.forEach((id) => { if (!cur.has(id)) admin.toggleGuestsRow1Hidden(id); });
       }
       window.alert("Imported successfully.");
     } catch (err) {

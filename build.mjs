@@ -72,6 +72,14 @@ async function run() {
       await copy(path.join("assets/logos", l), path.join(DIST, "assets", "logos", l));
     }
   } catch (_) {}
+  // guests folder (podcast guest stills for the marquee)
+  try {
+    const guests = await fs.readdir("assets/guests");
+    await fs.mkdir(path.join(DIST, "assets", "guests"), { recursive: true });
+    for (const g of guests) {
+      await copy(path.join("assets/guests", g), path.join(DIST, "assets", "guests", g));
+    }
+  } catch (_) {}
 
   // 4. Production index.html — React prod CDN, no Babel, compiled .js.
   // Cache-bust every local asset with a per-build version so browsers can

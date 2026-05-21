@@ -3524,7 +3524,27 @@ function FinalCTA({ form, onCTAClick }) {
 
 // ---------- GUEST STRIP (from previous version — option B) ----------
 
-function GuestStrip() {
+// Built-in guest images for row 1. Each item has src + scale/offsetX/offsetY
+// for cropping a 16:9 source into the 9:16 tile. Defaults to no transform
+// (center-cover crop). Exposed on window so the admin panel can read them.
+const DEFAULT_GUESTS_ROW1 = [
+  { src: "assets/guests/guest-01.jpg", scale: 1, offsetX: 0, offsetY: 0 },
+  { src: "assets/guests/guest-02.jpg", scale: 1, offsetX: 0, offsetY: 0 },
+  { src: "assets/guests/guest-03.jpg", scale: 1, offsetX: 0, offsetY: 0 },
+  { src: "assets/guests/guest-04.jpg", scale: 1, offsetX: 0, offsetY: 0 },
+  { src: "assets/guests/guest-05.jpg", scale: 1, offsetX: 0, offsetY: 0 },
+  { src: "assets/guests/guest-06.jpg", scale: 1, offsetX: 0, offsetY: 0 },
+];
+if (typeof window !== "undefined") window.__cutsGuestsRow1 = DEFAULT_GUESTS_ROW1;
+
+function orderAndFilterGuestsRow1(admin) {
+  const hidden = new Set((admin && admin.hiddenGuestsRow1) || []);
+  const items = admin && Array.isArray(admin.guestsRow1Items) ? admin.guestsRow1Items : null;
+  const base = items && items.length ? items : DEFAULT_GUESTS_ROW1;
+  return base.filter((g) => g && g.src && !hidden.has(g.src));
+}
+
+function GuestStrip({ admin }) {
   return (
     <section style={{
       padding: "76px 0 64px",
@@ -3577,94 +3597,130 @@ function GuestStrip() {
             viewport, and the animation moves exactly one set width (33.333%).
             That keeps the seam invisible AND prevents any moment where the
             wrapper's edge is inside the viewport (the "disappearing" gap). */}
-        {[
-          { dir: "rtl", offset: 0, duration: 22, count: 10, width: 176, aspect: "9 / 16" },
-          { dir: "ltr", offset: 10, duration: 36, count: 6,  width: 462, aspect: "16 / 9" },
-        ].map((row, rowIdx) =>
-        <div key={rowIdx} className="guest-marquee-row" style={{
-          // Force LTR so the wrapper anchors to the viewport's LEFT edge.
-          // Without this, the parent's RTL pushes the wrapper to the right
-          // and translateX leaves an empty band on whichever side gets vacated.
-          direction: "ltr",
-          display: "flex",
-          animation: `marquee-${row.dir} ${row.duration}s linear infinite`,
-          width: "max-content",
-          padding: "4px 0"
-        }}>
-          {[...Array(3)].flatMap((_, dup) =>
-          Array.from({ length: row.count }, (_, k) => k + 1).map((n, i) =>
-          <div
-            key={`${rowIdx}-${dup}-${i}`}
-            aria-hidden={dup > 0 ? "true" : undefined}
-            data-guest-num={row.offset + n}
-            style={{
-              flexShrink: 0,
-              width: row.width, aspectRatio: row.aspect,
-              marginInlineEnd: 14,
-              background: "var(--card)",
-              border: "1px solid var(--line2)",
-              borderRadius: 12,
-              position: "relative",
-              overflow: "hidden"
-            }}>
-            
-                {/* yellow corner brackets */}
-                <span aria-hidden="true" style={{
-              position: "absolute", top: 10, right: 10, width: 14, height: 14,
-              borderTop: "2px solid var(--accent)", borderRight: "2px solid var(--accent)"
-            }} />
-                <span aria-hidden="true" style={{
-              position: "absolute", bottom: 10, left: 10, width: 14, height: 14,
-              borderBottom: "2px solid var(--accent)", borderLeft: "2px solid var(--accent)"
-            }} />
-
-                {/* Scan line */}
-                <span aria-hidden="true" style={{
-              position: "absolute", top: "50%", left: 0, right: 0, height: 1,
-              background: "linear-gradient(to right, transparent, rgba(255,213,0,0.18), transparent)"
-            }} />
-
-                {/* Top: index + REC dot */}
-                <div style={{
-              position: "absolute", top: 18, left: 18, right: 18,
-              display: "flex", justifyContent: "space-between", alignItems: "center",
-              zIndex: 2
-            }}>
-                  <span className="mono" style={{
-                fontSize: 9, letterSpacing: "0.18em",
-                color: "var(--accent)", fontWeight: 700
-              }}>GUEST · {String(row.offset + n).padStart(2, "0")}</span>
-                  <span style={{
-                display: "inline-flex", alignItems: "center", gap: 6,
-                fontFamily: "var(--font-mono)", fontSize: 9, letterSpacing: "0.18em",
-                color: "rgba(255,255,255,0.45)"
+        {(() => {
+          const row1 = orderAndFilterGuestsRow1(admin);
+          const row2 = []; // row 2 still placeholder until images arrive
+          const rows = [
+            { dir: "rtl", offset: 0,  duration: 22, fillTo: 10, width: 176, aspect: "9 / 16", items: row1 },
+            { dir: "ltr", offset: 10, duration: 36, fillTo: 6,  width: 462, aspect: "16 / 9", items: row2 },
+          ];
+          return rows.map((row, rowIdx) => {
+            const items = row.items.length
+              ? row.items
+              : Array.from({ length: row.fillTo }, () => null); // null = placeholder
+            const padded = items.length < 3 ? [...items, ...items, ...items] : items;
+            return (
+              <div key={rowIdx} className="guest-marquee-row" style={{
+                direction: "ltr",
+                display: "flex",
+                animation: `marquee-${row.dir} ${row.duration}s linear infinite`,
+                width: "max-content",
+                padding: "4px 0"
               }}>
-                    <span style={{
-                  width: 6, height: 6, borderRadius: "50%",
-                  background: "var(--accent)",
-                  animation: "guestRec 1.6s ease-in-out infinite"
-                }} />
-                    REC
-                  </span>
-                </div>
+                {[...Array(3)].flatMap((_, dup) =>
+                  padded.map((item, i) => {
+                    const n = row.offset + (i + 1);
+                    return (
+                      <div
+                        key={`${rowIdx}-${dup}-${i}`}
+                        aria-hidden={dup > 0 ? "true" : undefined}
+                        data-guest-num={n}
+                        style={{
+                          flexShrink: 0,
+                          width: row.width, aspectRatio: row.aspect,
+                          marginInlineEnd: 14,
+                          background: "var(--card)",
+                          border: "1px solid var(--line2)",
+                          borderRadius: 12,
+                          position: "relative",
+                          overflow: "hidden"
+                        }}>
 
-                {/* Center: silhouette placeholder */}
-                <div style={{
-              position: "absolute", inset: 0,
-              display: "flex", alignItems: "center", justifyContent: "center",
-              zIndex: 2
-            }}>
-                  <svg width="66" height="66" viewBox="0 0 90 90" fill="none" aria-hidden="true">
-                    <circle cx="45" cy="32" r="18" stroke="rgba(255,213,0,0.4)" strokeWidth="1.5" strokeDasharray="3 3" />
-                    <path d="M14 84 C 14 64, 30 56, 45 56 C 60 56, 76 64, 76 84"
-                stroke="rgba(255,213,0,0.4)" strokeWidth="1.5" strokeDasharray="3 3" fill="none" />
-                  </svg>
-                </div>
+                        {/* image (if present) — covers the tile, custom transform */}
+                        {item && item.src && (
+                          <img
+                            src={item.src}
+                            alt=""
+                            draggable="false"
+                            style={{
+                              position: "absolute", inset: 0,
+                              width: "100%", height: "100%",
+                              objectFit: "cover", objectPosition: "center",
+                              transform: `translate(${item.offsetX || 0}%, ${item.offsetY || 0}%) scale(${item.scale || 1})`,
+                              transformOrigin: "center",
+                              zIndex: 1,
+                              pointerEvents: "none",
+                            }}
+                          />
+                        )}
+
+                        {/* yellow corner brackets */}
+                        <span aria-hidden="true" style={{
+                          position: "absolute", top: 10, right: 10, width: 14, height: 14,
+                          borderTop: "2px solid var(--accent)", borderRight: "2px solid var(--accent)",
+                          zIndex: 3
+                        }} />
+                        <span aria-hidden="true" style={{
+                          position: "absolute", bottom: 10, left: 10, width: 14, height: 14,
+                          borderBottom: "2px solid var(--accent)", borderLeft: "2px solid var(--accent)",
+                          zIndex: 3
+                        }} />
+
+                        {/* Scan line */}
+                        <span aria-hidden="true" style={{
+                          position: "absolute", top: "50%", left: 0, right: 0, height: 1,
+                          background: "linear-gradient(to right, transparent, rgba(255,213,0,0.18), transparent)",
+                          zIndex: 3
+                        }} />
+
+                        {/* Top: index + REC dot */}
+                        <div style={{
+                          position: "absolute", top: 18, left: 18, right: 18,
+                          display: "flex", justifyContent: "space-between", alignItems: "center",
+                          zIndex: 3
+                        }}>
+                          <span className="mono" style={{
+                            fontSize: 9, letterSpacing: "0.18em",
+                            color: "var(--accent)", fontWeight: 700,
+                            textShadow: "0 1px 4px rgba(0,0,0,0.7)"
+                          }}>GUEST · {String(n).padStart(2, "0")}</span>
+                          <span style={{
+                            display: "inline-flex", alignItems: "center", gap: 6,
+                            fontFamily: "var(--font-mono)", fontSize: 9, letterSpacing: "0.18em",
+                            color: "rgba(255,255,255,0.55)",
+                            textShadow: "0 1px 4px rgba(0,0,0,0.7)"
+                          }}>
+                            <span style={{
+                              width: 6, height: 6, borderRadius: "50%",
+                              background: "var(--accent)",
+                              animation: "guestRec 1.6s ease-in-out infinite"
+                            }} />
+                            REC
+                          </span>
+                        </div>
+
+                        {/* Center silhouette only when there is no real image */}
+                        {!(item && item.src) && (
+                          <div style={{
+                            position: "absolute", inset: 0,
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            zIndex: 2
+                          }}>
+                            <svg width="66" height="66" viewBox="0 0 90 90" fill="none" aria-hidden="true">
+                              <circle cx="45" cy="32" r="18" stroke="rgba(255,213,0,0.4)" strokeWidth="1.5" strokeDasharray="3 3" />
+                              <path d="M14 84 C 14 64, 30 56, 45 56 C 60 56, 76 64, 76 84"
+                                stroke="rgba(255,213,0,0.4)" strokeWidth="1.5" strokeDasharray="3 3" fill="none" />
+                            </svg>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })
+                )}
               </div>
-          )
-          )}
-        </div>
-        )}
+            );
+          });
+        })()}
       </div>
 
       <style>{`
@@ -6790,7 +6846,7 @@ function BoldVariation({ onCTAClick, form, admin }) {
     { id: "services",         Comp: (p) => <ServicesOld onCTAClick={p.onCTAClick} /> },
     { id: "studio-booking",   Comp: (p) => <StudioBookingLead form={p.form} /> },
     { id: "results",          Comp: (p) => <Results admin={p.admin} /> },
-    { id: "guest-strip",      Comp: (p) => <GuestStrip /> },
+    { id: "guest-strip",      Comp: (p) => <GuestStrip admin={p.admin} /> },
     { id: "guarantee",        Comp: (p) => <Guarantee onCTAClick={p.onCTAClick} /> },
     { id: "mini-lead-2",      Comp: (p) => <MiniLeadStripe form={p.form} /> },
     { id: "faq",              Comp: (p) => <FAQSection /> },

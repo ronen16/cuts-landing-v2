@@ -111,6 +111,7 @@ function App() {
   const AdminVideosModal = window.AdminVideosModal;
   const AdminPodcastsModal = window.AdminPodcastsModal;
   const AdminLogosModal = window.AdminLogosModal;
+  const AdminGuestsModal = window.AdminGuestsModal;
   const AdminPublishSettingsModal = window.AdminPublishSettingsModal;
 
   // Dark/light class — BOLD is dark by default; light is the inverted mode
@@ -141,6 +142,10 @@ function App() {
     const localLogoItems = Array.isArray(admin.logoItems) ? admin.logoItems : null;
     const liveHiddenLogos = Array.isArray(liveOverrides.hiddenLogos) ? liveOverrides.hiddenLogos : [];
     const localHiddenLogos = Array.isArray(admin.hiddenLogos) ? admin.hiddenLogos : [];
+    const liveGuestsRow1Items = Array.isArray(liveOverrides.guestsRow1Items) ? liveOverrides.guestsRow1Items : null;
+    const localGuestsRow1Items = Array.isArray(admin.guestsRow1Items) ? admin.guestsRow1Items : null;
+    const liveHiddenGuestsRow1 = Array.isArray(liveOverrides.hiddenGuestsRow1) ? liveOverrides.hiddenGuestsRow1 : [];
+    const localHiddenGuestsRow1 = Array.isArray(admin.hiddenGuestsRow1) ? admin.hiddenGuestsRow1 : [];
     return {
       ...admin,
       sectionOrder: localOrder || liveOrder,
@@ -153,6 +158,8 @@ function App() {
       podcastItems: localPodcastItems || livePodcastItems,
       logoItems: localLogoItems || liveLogoItems,
       hiddenLogos: Array.from(new Set([...(liveHiddenLogos || []), ...(localHiddenLogos || [])])),
+      guestsRow1Items: localGuestsRow1Items || liveGuestsRow1Items,
+      hiddenGuestsRow1: Array.from(new Set([...(liveHiddenGuestsRow1 || []), ...(localHiddenGuestsRow1 || [])])),
     };
   }, [admin, liveOverrides]);
 
@@ -166,6 +173,7 @@ function App() {
       {AdminVideosModal && <AdminVideosModal admin={admin} />}
       {AdminPodcastsModal && <AdminPodcastsModal admin={admin} />}
       {AdminLogosModal && <AdminLogosModal admin={admin} />}
+      {AdminGuestsModal && <AdminGuestsModal admin={admin} />}
       {AdminPublishSettingsModal && <AdminPublishSettingsModal />}
       {window.AccessibilityWidget && <window.AccessibilityWidget />}
       {window.LegalModal && <window.LegalModal />}
