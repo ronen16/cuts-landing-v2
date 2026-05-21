@@ -3613,7 +3613,7 @@ function GuestStrip({ admin }) {
           const row2 = orderAndFilterGuestsRow2(admin);
           const rows = [
             { dir: "rtl", offset: 0,  duration: 22, fillTo: 10, width: 176, aspect: "9 / 16", items: row1 },
-            { dir: "ltr", offset: 10, duration: 36, fillTo: 6,  width: 462, aspect: "16 / 9", items: row2 },
+            { dir: "ltr", offset: 10, duration: 28, fillTo: 6,  width: 462, aspect: "16 / 9", items: row2 },
           ];
           return rows.map((row, rowIdx) => {
             const items = row.items.length
