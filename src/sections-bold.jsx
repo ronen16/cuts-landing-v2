@@ -3654,52 +3654,7 @@ function GuestStrip({ admin }) {
                           />
                         )}
 
-                        {/* yellow corner brackets */}
-                        <span aria-hidden="true" style={{
-                          position: "absolute", top: 10, right: 10, width: 14, height: 14,
-                          borderTop: "2px solid var(--accent)", borderRight: "2px solid var(--accent)",
-                          zIndex: 3
-                        }} />
-                        <span aria-hidden="true" style={{
-                          position: "absolute", bottom: 10, left: 10, width: 14, height: 14,
-                          borderBottom: "2px solid var(--accent)", borderLeft: "2px solid var(--accent)",
-                          zIndex: 3
-                        }} />
-
-                        {/* Scan line */}
-                        <span aria-hidden="true" style={{
-                          position: "absolute", top: "50%", left: 0, right: 0, height: 1,
-                          background: "linear-gradient(to right, transparent, rgba(255,213,0,0.18), transparent)",
-                          zIndex: 3
-                        }} />
-
-                        {/* Top: index + REC dot */}
-                        <div style={{
-                          position: "absolute", top: 18, left: 18, right: 18,
-                          display: "flex", justifyContent: "space-between", alignItems: "center",
-                          zIndex: 3
-                        }}>
-                          <span className="mono" style={{
-                            fontSize: 9, letterSpacing: "0.18em",
-                            color: "var(--accent)", fontWeight: 700,
-                            textShadow: "0 1px 4px rgba(0,0,0,0.7)"
-                          }}>GUEST · {String(n).padStart(2, "0")}</span>
-                          <span style={{
-                            display: "inline-flex", alignItems: "center", gap: 6,
-                            fontFamily: "var(--font-mono)", fontSize: 9, letterSpacing: "0.18em",
-                            color: "rgba(255,255,255,0.55)",
-                            textShadow: "0 1px 4px rgba(0,0,0,0.7)"
-                          }}>
-                            <span style={{
-                              width: 6, height: 6, borderRadius: "50%",
-                              background: "var(--accent)",
-                              animation: "guestRec 1.6s ease-in-out infinite"
-                            }} />
-                            REC
-                          </span>
-                        </div>
-
-                        {/* Center silhouette only when there is no real image */}
+                        {/* Empty placeholder silhouette only when there is no image */}
                         {!(item && item.src) && (
                           <div style={{
                             position: "absolute", inset: 0,
@@ -3707,9 +3662,9 @@ function GuestStrip({ admin }) {
                             zIndex: 2
                           }}>
                             <svg width="66" height="66" viewBox="0 0 90 90" fill="none" aria-hidden="true">
-                              <circle cx="45" cy="32" r="18" stroke="rgba(255,213,0,0.4)" strokeWidth="1.5" strokeDasharray="3 3" />
+                              <circle cx="45" cy="32" r="18" stroke="rgba(255,255,255,0.18)" strokeWidth="1.5" strokeDasharray="3 3" />
                               <path d="M14 84 C 14 64, 30 56, 45 56 C 60 56, 76 64, 76 84"
-                                stroke="rgba(255,213,0,0.4)" strokeWidth="1.5" strokeDasharray="3 3" fill="none" />
+                                stroke="rgba(255,255,255,0.18)" strokeWidth="1.5" strokeDasharray="3 3" fill="none" />
                             </svg>
                           </div>
                         )}
