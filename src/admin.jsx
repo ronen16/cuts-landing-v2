@@ -1300,7 +1300,13 @@ function AdminGuestsModal({ admin }) {
         <p className="admin-modal__hint">
           גרור תמונות כדי לסדר אותן מחדש. לכל תמונה: גודל והזזה ב-X/Y לכוונון. שינויים נשמרים אוטומטית — "🚀 העלאה ללייב" כדי לפרסם.
         </p>
-        <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 10 }}>
+        <ul style={{
+          listStyle: "none", margin: 0, padding: "4px 4px 4px 0",
+          display: "flex", flexDirection: "column", gap: 10,
+          maxHeight: "60vh", overflowY: "auto",
+          // hide native scrollbar in WebKit/Firefox while keeping it usable
+          scrollbarWidth: "thin", scrollbarColor: "rgba(255,213,0,0.45) transparent",
+        }}>
           {items.map((g, idx) => {
             const isHidden = hidden.has(g.src);
             const isDragging = dragIdx === idx;
