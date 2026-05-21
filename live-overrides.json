@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "publishedAt": "2026-05-21T09:54:34.509Z",
+  "publishedAt": "2026-05-21T12:47:07.455Z",
   "overrides": {
     "sec:how-it-works>button[0]#h:d901835d": "👁 הצג",
     "sec:services>section[0]>div[0]>div[1]>div[0]>h3[0]#h:a5c90c46": "צילום ותאורה מקצועית",
@@ -193,5 +193,46 @@
       "youtubeId": "3lKjAMaAue8",
       "title": ""
     }
-  ]
+  ],
+  "logoItems": null,
+  "hiddenLogos": [],
+  "guestsRow1Items": [
+    {
+      "src": "assets/guests/guest-01.jpg",
+      "scale": 1.05,
+      "offsetX": 0,
+      "offsetY": 0
+    },
+    {
+      "src": "assets/guests/guest-02.jpg",
+      "scale": 1.2,
+      "offsetX": 9,
+      "offsetY": 0
+    },
+    {
+      "src": "assets/guests/guest-05.jpg",
+      "scale": 1.1,
+      "offsetX": 4,
+      "offsetY": 0
+    },
+    {
+      "src": "assets/guests/guest-03.jpg",
+      "scale": 1.2,
+      "offsetX": 6,
+      "offsetY": 0
+    },
+    {
+      "src": "assets/guests/guest-04.jpg",
+      "scale": 1.1,
+      "offsetX": 3,
+      "offsetY": 0
+    },
+    {
+      "src": "assets/guests/guest-06.jpg",
+      "scale": 1.1,
+      "offsetX": 0,
+      "offsetY": -2
+    }
+  ],
+  "hiddenGuestsRow1": []
 }
