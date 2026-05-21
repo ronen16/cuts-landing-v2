@@ -1219,8 +1219,9 @@ window.AdminLogosModal = AdminLogosModal;
 function AdminGuestsModal({ admin }) {
   const [open, setOpen] = React.useState(false);
   const [items, setItems] = React.useState([]);
-  const [dragIdx, setDragIdx] = React.useState(null);
-  const [dropIdx, setDropIdx] = React.useState(null);
+  // editable index input — keyed by row idx; while a row is being edited
+  // we store the in-progress text here so we don't fight React on every keystroke.
+  const [idxDraft, setIdxDraft] = React.useState({});
 
   // Default = whatever sections-bold exposed as the initial guest list.
   const derive = React.useCallback(() => {
@@ -1298,7 +1299,7 @@ function AdminGuestsModal({ admin }) {
       <div className="admin-modal admin-modal--wide" onClick={(e) => e.stopPropagation()} dir="rtl">
         <h3 className="admin-modal__title">ניהול תמונות אורחים (שורה 1)</h3>
         <p className="admin-modal__hint">
-          גרור תמונות כדי לסדר אותן מחדש. לכל תמונה: גודל והזזה ב-X/Y לכוונון. שינויים נשמרים אוטומטית — "🚀 העלאה ללייב" כדי לפרסם.
+          ערוך את המספר במיקום הראשון כדי להזיז תמונה ישירות, או השתמש בחצים ↑/↓. לכל תמונה: גודל והזזה ב-X/Y לכוונון. שינויים נשמרים אוטומטית — "🚀 העלאה ללייב" כדי לפרסם.
         </p>
         <ul style={{
           listStyle: "none", margin: 0, padding: "4px 4px 4px 0",
@@ -1309,44 +1310,51 @@ function AdminGuestsModal({ admin }) {
         }}>
           {items.map((g, idx) => {
             const isHidden = hidden.has(g.src);
-            const isDragging = dragIdx === idx;
-            const isDropTarget = dropIdx === idx && dragIdx !== null && dragIdx !== idx;
+            const idxValue = idxDraft[idx] != null ? idxDraft[idx] : String(idx + 1);
+            const commitIdxEdit = (raw) => {
+              setIdxDraft((d) => { const n = { ...d }; delete n[idx]; return n; });
+              if (raw == null || raw === "") return;
+              const target = parseInt(raw, 10);
+              if (!Number.isFinite(target)) return;
+              const to = Math.max(0, Math.min(items.length - 1, target - 1));
+              if (to !== idx) reorder(idx, to);
+            };
             return (
               <li
                 key={idx}
-                draggable
-                onDragStart={(e) => { e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", String(idx)); setDragIdx(idx); }}
-                onDragEnd={() => { setDragIdx(null); setDropIdx(null); }}
-                onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = "move"; if (dropIdx !== idx) setDropIdx(idx); }}
-                onDragLeave={() => { if (dropIdx === idx) setDropIdx(null); }}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  const from = Number(e.dataTransfer.getData("text/plain"));
-                  reorder(from, idx);
-                  setDragIdx(null); setDropIdx(null);
-                }}
                 style={{
                   display: "grid",
-                  gridTemplateColumns: "28px 84px 1fr auto",
+                  gridTemplateColumns: "48px 84px 1fr auto",
                   alignItems: "center",
                   columnGap: 12, rowGap: 10,
                   padding: "12px 12px",
-                  border: "1px solid " + (isDropTarget ? "rgba(255,213,0,0.7)" : "rgba(255,255,255,0.08)"),
+                  border: "1px solid rgba(255,255,255,0.08)",
                   borderRadius: 10,
-                  background: isDropTarget ? "rgba(255,213,0,0.06)" : "rgba(255,255,255,0.02)",
-                  opacity: isDragging ? 0.4 : 1,
-                  cursor: "grab",
-                  transition: "border-color 0.1s ease, background 0.1s ease",
+                  background: "rgba(255,255,255,0.02)",
                 }}
               >
-                {/* idx number — also a visual "drag handle" hint */}
-                <span style={{
-                  fontFamily: "ui-monospace, monospace", fontSize: 13, fontWeight: 700,
-                  color: "rgba(255,255,255,0.55)", textAlign: "center",
-                  userSelect: "none",
-                }}>
-                  ⋮⋮ {idx + 1}
-                </span>
+                {/* editable position number — type a new index and press Enter */}
+                <input
+                  type="number"
+                  min={1}
+                  max={items.length}
+                  value={idxValue}
+                  onChange={(e) => setIdxDraft((d) => ({ ...d, [idx]: e.target.value }))}
+                  onBlur={(e) => commitIdxEdit(e.currentTarget.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter") { e.currentTarget.blur(); } }}
+                  title="הקלד מיקום חדש ולחץ Enter"
+                  style={{
+                    width: "100%", padding: "6px 4px",
+                    background: "rgba(255,255,255,0.05)",
+                    border: "1px solid rgba(255,255,255,0.12)",
+                    borderRadius: 6,
+                    color: "rgba(255,255,255,0.92)",
+                    fontFamily: "ui-monospace, monospace",
+                    fontSize: 13, fontWeight: 700,
+                    textAlign: "center",
+                    direction: "ltr",
+                  }}
+                />
 
                 {/* live 9:16 preview with the current transform applied */}
                 <div style={{
