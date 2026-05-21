@@ -3706,26 +3706,10 @@ if (typeof window !== "undefined") window.__cutsPodcastVideos = PODCAST_VIDEOS;
 // === לוגואים של לקוחות (רצועת לופ) ===
 // כל קובץ ב-assets/logos/. מומלץ PNG/SVG שקוף בהיר (הרקע כהה).
 // להוסיף לוגו חדש = להוסיף שורה כאן + הקובץ ל-assets/logos/.
-const CLIENT_LOGOS = [
-  { file: "logo-01.png" },
-  { file: "logo-02.png" },
-  { file: "logo-03.png" },
-  { file: "logo-04.png" },
-  { file: "logo-05.png" },
-  { file: "logo-06.png" },
-  { file: "logo-07.png" },
-  { file: "logo-08.png" },
-  { file: "logo-09.png" },
-  { file: "logo-10.png" },
-  { file: "logo-11.png" },
-  { file: "logo-12.png" },
-  { file: "logo-13.png" },
-  { file: "logo-14.png" },
-  { file: "logo-15.png" },
-  { file: "logo-16.png" },
-  { file: "logo-17.png" },
-  { file: "logo-18.png" },
-];
+// Empty by default — the marquee hides itself when there are no logos.
+// Add via the admin panel ("🖼️ ניהול לוגואים" → "➕ הוסף לוגו") once cleaner
+// white-on-transparent source files are ready.
+const CLIENT_LOGOS = [];
 
 // Built-in client logos, exposed for the admin panel so it can prefill the
 // editor with the defaults. Each item is normalized to a single `src` field
