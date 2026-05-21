@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "publishedAt": "2026-05-21T13:37:02.243Z",
+  "publishedAt": "2026-05-21T13:38:48.467Z",
   "overrides": {
     "sec:how-it-works>button[0]#h:d901835d": "👁 הצג",
     "sec:services>section[0]>div[0]>div[1]>div[0]>h3[0]#h:a5c90c46": "צילום ותאורה מקצועית",
@@ -158,7 +158,8 @@
     "csBIrDweyuU"
   ],
   "hiddenPodcasts": [
-    "csBIrDweyuU"
+    "csBIrDweyuU",
+    "yS0Zlpwmr3M"
   ],
   "podcastItems": [
     {
@@ -174,7 +175,7 @@
       "title": ""
     },
     {
-      "youtubeId": "yS0Zlpwmr3M",
+      "youtubeId": "NIFt8sRNvJA",
       "title": ""
     },
     {
