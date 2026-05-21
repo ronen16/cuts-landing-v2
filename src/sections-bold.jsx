@@ -3707,22 +3707,24 @@ if (typeof window !== "undefined") window.__cutsPodcastVideos = PODCAST_VIDEOS;
 // כל קובץ ב-assets/logos/. מומלץ PNG/SVG שקוף בהיר (הרקע כהה).
 // להוסיף לוגו חדש = להוסיף שורה כאן + הקובץ ל-assets/logos/.
 const CLIENT_LOGOS = [
-  { file: "northbound.svg", name: "Northbound" },
-  { file: "lumen.svg", name: "Lumen" },
-  { file: "vector42.svg", name: "Vector42" },
-  { file: "glowbrands.svg", name: "Glow Brands" },
-  { file: "helix.svg", name: "Helix" },
-  { file: "pulse.svg", name: "Pulse" },
-  { file: "loopstudio.svg", name: "Loop Studio" },
-  { file: "lavi.svg", name: "Lavi" },
-  { file: "davidovtech.svg", name: "DavidovTech" },
-  { file: "sora.svg", name: "Sora" },
-  { file: "apex.svg", name: "Apex" },
-  { file: "meridian.svg", name: "Meridian" },
-  { file: "kinetic.svg", name: "Kinetic" },
-  { file: "nova.svg", name: "Nova" },
-  { file: "stratos.svg", name: "Stratos" },
-  { file: "orbit.svg", name: "Orbit" },
+  { file: "logo-01.png" },
+  { file: "logo-02.png" },
+  { file: "logo-03.png" },
+  { file: "logo-04.png" },
+  { file: "logo-05.png" },
+  { file: "logo-06.png" },
+  { file: "logo-07.png" },
+  { file: "logo-08.png" },
+  { file: "logo-09.png" },
+  { file: "logo-10.png" },
+  { file: "logo-11.png" },
+  { file: "logo-12.png" },
+  { file: "logo-13.png" },
+  { file: "logo-14.png" },
+  { file: "logo-15.png" },
+  { file: "logo-16.png" },
+  { file: "logo-17.png" },
+  { file: "logo-18.png" },
 ];
 
 // Built-in client logos, exposed for the admin panel so it can prefill the
@@ -3761,17 +3763,18 @@ function LogoMarquee({ admin }) {
         }
         .cuts-logo-reel:hover { animation-play-state: paused; }
         .cuts-logo-reel img {
-          height: 36px;
+          height: 56px;
           width: auto;
-          margin-inline: clamp(14px, 1.8vw, 28px);
-          opacity: 0.55;
-          filter: grayscale(1) brightness(1.7);
-          transition: opacity 0.25s ease, filter 0.25s ease;
+          margin-inline: clamp(18px, 2.4vw, 36px);
+          opacity: 0.85;
+          filter: brightness(1.05) contrast(1.05);
+          transition: opacity 0.25s ease, filter 0.25s ease, transform 0.25s ease;
           flex: 0 0 auto;
         }
         .cuts-logo-reel img:hover {
           opacity: 1;
-          filter: grayscale(0) brightness(1);
+          filter: brightness(1.15) contrast(1.1);
+          transform: scale(1.05);
         }
       `}</style>
       <div aria-hidden="true" style={{
