@@ -1219,9 +1219,8 @@ window.AdminLogosModal = AdminLogosModal;
 function AdminGuestsModal({ admin }) {
   const [open, setOpen] = React.useState(false);
   const [items, setItems] = React.useState([]);
-  // editable index input — keyed by row idx; while a row is being edited
-  // we store the in-progress text here so we don't fight React on every keystroke.
-  const [idxDraft, setIdxDraft] = React.useState({});
+  const [dragIdx, setDragIdx] = React.useState(null);
+  const [dropIdx, setDropIdx] = React.useState(null);
 
   // Default = whatever sections-bold exposed as the initial guest list.
   const derive = React.useCallback(() => {
@@ -1280,26 +1279,75 @@ function AdminGuestsModal({ admin }) {
     sync(n);
   };
 
-  const Slider = ({ label, value, min, max, step, suffix, onChange }) => (
-    <div style={{ display: "grid", gridTemplateColumns: "54px 1fr 50px", alignItems: "center", columnGap: 10 }}>
-      <span style={{ fontSize: 11, color: "rgba(255,255,255,0.7)" }}>{label}</span>
-      <input
-        type="range" min={min} max={max} step={step} value={value}
-        onChange={(e) => onChange(parseFloat(e.target.value))}
-        style={{ accentColor: "var(--accent)", width: "100%" }}
-      />
-      <span style={{ fontSize: 11, color: "rgba(255,255,255,0.55)", textAlign: "left", fontFamily: "ui-monospace, monospace" }}>
-        {value.toFixed(step < 1 ? 2 : 0)}{suffix || ""}
-      </span>
-    </div>
-  );
+  const NumField = ({ label, value, min, max, step, suffix, onChange }) => {
+    const decimals = step < 1 ? 2 : 0;
+    return (
+      <div style={{ display: "grid", gridTemplateColumns: "64px 1fr", alignItems: "center", columnGap: 10 }}>
+        <span style={{ fontSize: 12, color: "rgba(255,255,255,0.75)" }}>{label}</span>
+        <div style={{ display: "flex", alignItems: "stretch", gap: 4 }}>
+          <button
+            type="button"
+            onClick={() => onChange(Math.max(min, +(value - step).toFixed(decimals)))}
+            title="פחות"
+            style={{
+              width: 28, padding: 0, lineHeight: 1,
+              background: "rgba(255,255,255,0.06)",
+              border: "1px solid rgba(255,255,255,0.14)",
+              borderRadius: 6, color: "rgba(255,255,255,0.85)",
+              cursor: "pointer", fontWeight: 700,
+            }}
+          >−</button>
+          <input
+            type="number"
+            min={min} max={max} step={step}
+            value={value}
+            onChange={(e) => {
+              const raw = e.target.value;
+              if (raw === "" || raw === "-") return;
+              const v = parseFloat(raw);
+              if (!Number.isFinite(v)) return;
+              const clamped = Math.max(min, Math.min(max, v));
+              onChange(+clamped.toFixed(decimals));
+            }}
+            style={{
+              flex: 1, minWidth: 0, padding: "6px 8px",
+              background: "rgba(255,255,255,0.05)",
+              border: "1px solid rgba(255,255,255,0.14)",
+              borderRadius: 6,
+              color: "rgba(255,255,255,0.92)",
+              fontFamily: "ui-monospace, monospace",
+              fontSize: 13, fontWeight: 700,
+              textAlign: "center", direction: "ltr",
+            }}
+          />
+          <button
+            type="button"
+            onClick={() => onChange(Math.min(max, +(value + step).toFixed(decimals)))}
+            title="יותר"
+            style={{
+              width: 28, padding: 0, lineHeight: 1,
+              background: "rgba(255,255,255,0.06)",
+              border: "1px solid rgba(255,255,255,0.14)",
+              borderRadius: 6, color: "rgba(255,255,255,0.85)",
+              cursor: "pointer", fontWeight: 700,
+            }}
+          >+</button>
+          <span style={{
+            fontSize: 11, color: "rgba(255,255,255,0.5)",
+            fontFamily: "ui-monospace, monospace",
+            alignSelf: "center", minWidth: 14,
+          }}>{suffix || ""}</span>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="admin-modal-backdrop" onClick={() => setOpen(false)}>
       <div className="admin-modal admin-modal--wide" onClick={(e) => e.stopPropagation()} dir="rtl">
         <h3 className="admin-modal__title">ניהול תמונות אורחים (שורה 1)</h3>
         <p className="admin-modal__hint">
-          ערוך את המספר במיקום הראשון כדי להזיז תמונה ישירות, או השתמש בחצים ↑/↓. לכל תמונה: גודל והזזה ב-X/Y לכוונון. שינויים נשמרים אוטומטית — "🚀 העלאה ללייב" כדי לפרסם.
+          גרור תמונות כדי לסדר אותן מחדש. לכל תמונה: הקלד ישירות את ערכי הגודל וההזזה (X/Y), או השתמש בכפתורי − / +. שינויים נשמרים אוטומטית — "🚀 העלאה ללייב" כדי לפרסם.
         </p>
         <ul style={{
           listStyle: "none", margin: 0, padding: "4px 4px 4px 0",
@@ -1310,51 +1358,44 @@ function AdminGuestsModal({ admin }) {
         }}>
           {items.map((g, idx) => {
             const isHidden = hidden.has(g.src);
-            const idxValue = idxDraft[idx] != null ? idxDraft[idx] : String(idx + 1);
-            const commitIdxEdit = (raw) => {
-              setIdxDraft((d) => { const n = { ...d }; delete n[idx]; return n; });
-              if (raw == null || raw === "") return;
-              const target = parseInt(raw, 10);
-              if (!Number.isFinite(target)) return;
-              const to = Math.max(0, Math.min(items.length - 1, target - 1));
-              if (to !== idx) reorder(idx, to);
-            };
+            const isDragging = dragIdx === idx;
+            const isDropTarget = dropIdx === idx && dragIdx !== null && dragIdx !== idx;
             return (
               <li
                 key={idx}
+                draggable
+                onDragStart={(e) => { e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", String(idx)); setDragIdx(idx); }}
+                onDragEnd={() => { setDragIdx(null); setDropIdx(null); }}
+                onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = "move"; if (dropIdx !== idx) setDropIdx(idx); }}
+                onDragLeave={() => { if (dropIdx === idx) setDropIdx(null); }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  const from = Number(e.dataTransfer.getData("text/plain"));
+                  reorder(from, idx);
+                  setDragIdx(null); setDropIdx(null);
+                }}
                 style={{
                   display: "grid",
-                  gridTemplateColumns: "48px 84px 1fr auto",
+                  gridTemplateColumns: "28px 84px 1fr auto",
                   alignItems: "center",
                   columnGap: 12, rowGap: 10,
                   padding: "12px 12px",
-                  border: "1px solid rgba(255,255,255,0.08)",
+                  border: "1px solid " + (isDropTarget ? "rgba(255,213,0,0.7)" : "rgba(255,255,255,0.08)"),
                   borderRadius: 10,
-                  background: "rgba(255,255,255,0.02)",
+                  background: isDropTarget ? "rgba(255,213,0,0.06)" : "rgba(255,255,255,0.02)",
+                  opacity: isDragging ? 0.4 : 1,
+                  cursor: "grab",
+                  transition: "border-color 0.1s ease, background 0.1s ease",
                 }}
               >
-                {/* editable position number — type a new index and press Enter */}
-                <input
-                  type="number"
-                  min={1}
-                  max={items.length}
-                  value={idxValue}
-                  onChange={(e) => setIdxDraft((d) => ({ ...d, [idx]: e.target.value }))}
-                  onBlur={(e) => commitIdxEdit(e.currentTarget.value)}
-                  onKeyDown={(e) => { if (e.key === "Enter") { e.currentTarget.blur(); } }}
-                  title="הקלד מיקום חדש ולחץ Enter"
-                  style={{
-                    width: "100%", padding: "6px 4px",
-                    background: "rgba(255,255,255,0.05)",
-                    border: "1px solid rgba(255,255,255,0.12)",
-                    borderRadius: 6,
-                    color: "rgba(255,255,255,0.92)",
-                    fontFamily: "ui-monospace, monospace",
-                    fontSize: 13, fontWeight: 700,
-                    textAlign: "center",
-                    direction: "ltr",
-                  }}
-                />
+                {/* idx number — also a visual "drag handle" hint */}
+                <span style={{
+                  fontFamily: "ui-monospace, monospace", fontSize: 13, fontWeight: 700,
+                  color: "rgba(255,255,255,0.55)", textAlign: "center",
+                  userSelect: "none",
+                }}>
+                  ⋮⋮ {idx + 1}
+                </span>
 
                 {/* live 9:16 preview with the current transform applied */}
                 <div style={{
@@ -1378,11 +1419,11 @@ function AdminGuestsModal({ admin }) {
                   )}
                 </div>
 
-                {/* sliders — full row, stacked */}
+                {/* editable number fields — type values directly */}
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                  <Slider label="גודל"   value={g.scale}   min={0.5}  max={3}    step={0.05} suffix="x" onChange={(v) => setField(idx, "scale",   v)} />
-                  <Slider label="הזזה X" value={g.offsetX} min={-100} max={100}  step={1}    suffix="%" onChange={(v) => setField(idx, "offsetX", v)} />
-                  <Slider label="הזזה Y" value={g.offsetY} min={-100} max={100}  step={1}    suffix="%" onChange={(v) => setField(idx, "offsetY", v)} />
+                  <NumField label="גודל"   value={g.scale}   min={0.5}  max={3}    step={0.05} suffix="x" onChange={(v) => setField(idx, "scale",   v)} />
+                  <NumField label="הזזה X" value={g.offsetX} min={-100} max={100}  step={1}    suffix="%" onChange={(v) => setField(idx, "offsetX", v)} />
+                  <NumField label="הזזה Y" value={g.offsetY} min={-100} max={100}  step={1}    suffix="%" onChange={(v) => setField(idx, "offsetY", v)} />
                 </div>
 
                 {/* action buttons — vertical column on the side */}
