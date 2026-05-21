@@ -3650,7 +3650,7 @@ function GuestStrip({ admin }) {
                         {/* image (if present) — covers the tile, custom transform */}
                         {item && item.src && (
                           <img
-                            src={item.src}
+                            src={(window.__cutsDriveUrlToImage && window.__cutsDriveUrlToImage(item.src)) || item.src}
                             alt=""
                             draggable="false"
                             style={{

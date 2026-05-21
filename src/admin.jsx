@@ -15,6 +15,26 @@ const DEFAULT_PUBLISH_SETTINGS = {
   token: "",
 };
 
+// ---------- image url helpers ----------
+
+// Google Drive "view" sharing URLs (https://drive.google.com/file/d/ID/view…)
+// render an HTML page, not the image — so an <img> tag pointed at them shows
+// black. Convert any Drive sharing URL to the thumbnail endpoint, which serves
+// the actual JPEG and works in <img src>. File must be shared as
+// "Anyone with the link can view" for this to work without auth.
+function driveUrlToImage(url) {
+  if (typeof url !== "string" || !url) return url;
+  // Already a direct image endpoint — leave it alone.
+  if (/drive\.google\.com\/(?:uc|thumbnail)\?/.test(url)) return url;
+  if (/lh3\.googleusercontent\.com\//.test(url)) return url;
+  const m =
+    url.match(/\/file\/d\/([a-zA-Z0-9_-]{20,})/) ||
+    url.match(/[?&]id=([a-zA-Z0-9_-]{20,})/);
+  if (m) return `https://drive.google.com/thumbnail?id=${m[1]}&sz=w1600`;
+  return url;
+}
+if (typeof window !== "undefined") window.__cutsDriveUrlToImage = driveUrlToImage;
+
 // ---------- crypto helper ----------
 
 async function sha256Hex(input) {
@@ -1306,9 +1326,12 @@ function AdminGuestsModal({ admin }) {
   };
   const del = (i) => { if (window.confirm("למחוק את התמונה הזאת?")) sync(items.filter((_, x) => x !== i)); };
   const add = () => {
-    const url = window.prompt("הדבק קישור לתמונה (JPG/PNG):");
+    const url = window.prompt(
+      "הדבק קישור לתמונה (JPG/PNG) או קישור שיתוף של Google Drive.\n" +
+      "טיפ: בדרייב — לחץ ימני → שתף → \"כל מי שיש לו את הקישור\"."
+    );
     if (!url || !url.trim()) return;
-    sync([...items, { src: url.trim(), scale: 1, offsetX: 0, offsetY: 0 }]);
+    sync([...items, { src: driveUrlToImage(url.trim()), scale: 1, offsetX: 0, offsetY: 0 }]);
   };
   const setField = (i, key, val) => {
     const n = items.slice(); n[i] = { ...n[i], [key]: val }; sync(n);
@@ -1464,7 +1487,7 @@ function AdminGuestsModal({ admin }) {
                 }}>
                   {g.src && (
                     <img
-                      src={g.src} alt="" draggable="false"
+                      src={driveUrlToImage(g.src)} alt="" draggable="false"
                       style={{
                         position: "absolute", inset: 0,
                         width: "100%", height: "100%",
