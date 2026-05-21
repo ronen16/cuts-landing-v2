@@ -1282,19 +1282,19 @@ function AdminGuestsModal({ admin }) {
   const NumField = ({ label, value, min, max, step, suffix, onChange }) => {
     const decimals = step < 1 ? 2 : 0;
     return (
-      <div style={{ display: "grid", gridTemplateColumns: "64px 1fr", alignItems: "center", columnGap: 10 }}>
-        <span style={{ fontSize: 12, color: "rgba(255,255,255,0.75)" }}>{label}</span>
-        <div style={{ display: "flex", alignItems: "stretch", gap: 4 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "44px 1fr", alignItems: "center", columnGap: 8 }}>
+        <span style={{ fontSize: 11, color: "rgba(255,255,255,0.75)" }}>{label}{suffix ? ` ${suffix}` : ""}</span>
+        <div style={{ display: "flex", alignItems: "stretch", gap: 3 }}>
           <button
             type="button"
             onClick={() => onChange(Math.max(min, +(value - step).toFixed(decimals)))}
             title="פחות"
             style={{
-              width: 28, padding: 0, lineHeight: 1,
+              width: 22, padding: 0, lineHeight: 1, flexShrink: 0,
               background: "rgba(255,255,255,0.06)",
               border: "1px solid rgba(255,255,255,0.14)",
               borderRadius: 6, color: "rgba(255,255,255,0.85)",
-              cursor: "pointer", fontWeight: 700,
+              cursor: "pointer", fontWeight: 700, fontSize: 14,
             }}
           >−</button>
           <input
@@ -1310,13 +1310,13 @@ function AdminGuestsModal({ admin }) {
               onChange(+clamped.toFixed(decimals));
             }}
             style={{
-              flex: 1, minWidth: 0, padding: "6px 8px",
+              flex: 1, minWidth: 0, padding: "5px 4px",
               background: "rgba(255,255,255,0.05)",
               border: "1px solid rgba(255,255,255,0.14)",
               borderRadius: 6,
               color: "rgba(255,255,255,0.92)",
               fontFamily: "ui-monospace, monospace",
-              fontSize: 13, fontWeight: 700,
+              fontSize: 12, fontWeight: 700,
               textAlign: "center", direction: "ltr",
             }}
           />
@@ -1325,18 +1325,13 @@ function AdminGuestsModal({ admin }) {
             onClick={() => onChange(Math.min(max, +(value + step).toFixed(decimals)))}
             title="יותר"
             style={{
-              width: 28, padding: 0, lineHeight: 1,
+              width: 22, padding: 0, lineHeight: 1, flexShrink: 0,
               background: "rgba(255,255,255,0.06)",
               border: "1px solid rgba(255,255,255,0.14)",
               borderRadius: 6, color: "rgba(255,255,255,0.85)",
-              cursor: "pointer", fontWeight: 700,
+              cursor: "pointer", fontWeight: 700, fontSize: 14,
             }}
           >+</button>
-          <span style={{
-            fontSize: 11, color: "rgba(255,255,255,0.5)",
-            fontFamily: "ui-monospace, monospace",
-            alignSelf: "center", minWidth: 14,
-          }}>{suffix || ""}</span>
         </div>
       </div>
     );
@@ -1376,7 +1371,7 @@ function AdminGuestsModal({ admin }) {
                 }}
                 style={{
                   display: "grid",
-                  gridTemplateColumns: "28px 84px 1fr auto",
+                  gridTemplateColumns: "28px 96px minmax(0, 1fr) auto",
                   alignItems: "center",
                   columnGap: 12, rowGap: 10,
                   padding: "12px 12px",
@@ -1397,9 +1392,11 @@ function AdminGuestsModal({ admin }) {
                   ⋮⋮ {idx + 1}
                 </span>
 
-                {/* live 9:16 preview with the current transform applied */}
+                {/* 16:9 preview of the full source image, with a 9:16 viewport
+                    overlay (yellow) showing the portion that will appear on the site.
+                    The image transform matches the site exactly; the viewport stays put. */}
                 <div style={{
-                  width: 84, height: 150, borderRadius: 8, overflow: "hidden",
+                  width: 96, height: 54, borderRadius: 8, overflow: "hidden",
                   border: "1px solid rgba(255,255,255,0.15)",
                   background: "rgba(0,0,0,0.4)", position: "relative",
                 }}>
@@ -1417,6 +1414,17 @@ function AdminGuestsModal({ admin }) {
                       }}
                     />
                   )}
+                  {/* 9:16 visible-on-site window. 9/16 ÷ 16/9 = 81/256 ≈ 31.64% of the
+                      16:9 preview's width — same ratio that objectFit:cover gives on the live page. */}
+                  <div style={{
+                    position: "absolute", top: 0, bottom: 0,
+                    left: "50%", transform: "translateX(-50%)",
+                    width: "31.64%",
+                    border: "2px solid var(--accent)",
+                    boxShadow: "0 0 0 9999px rgba(0,0,0,0.45)",
+                    pointerEvents: "none",
+                    boxSizing: "border-box",
+                  }} />
                 </div>
 
                 {/* editable number fields — type values directly */}
