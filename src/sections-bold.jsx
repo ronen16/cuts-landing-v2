@@ -4569,7 +4569,7 @@ function ProblemOld() {
         `}</style>
 
         {/* Paragraph card — centered, climactic */}
-        <div style={{
+        <div className="problem-paragraph-card" style={{
           background: "var(--bg)",
           border: "1px solid rgba(239,68,68,0.16)",
           borderRadius: 22,

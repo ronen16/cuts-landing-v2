@@ -78,7 +78,8 @@ img { display: block; max-width: 100%; }
   .hero-eyebrow-label { font-size: 14px !important; letter-spacing: 0.16em !important; }
   .hero-eyebrow-extra { display: none !important; }
   /* Keep the red punchline on a single line on mobile */
-  .problem-punchline { font-size: clamp(15px, 5.6cqw, 22px) !important; white-space: nowrap !important; }
+  .problem-paragraph-card { padding: 32px 20px 30px !important; }
+  .problem-punchline { font-size: clamp(15px, 5.4cqw, 22px) !important; white-space: nowrap !important; }
   /* Multi-column grids collapse on a narrow canvas. Desktop styles stay
      inline+untouched; these override only inside the container query, so
      !important here is the documented way to beat the inline grid value. */
