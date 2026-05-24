@@ -66,6 +66,9 @@ img { display: block; max-width: 100%; }
 }
 
 .wrap { max-width: 1280px; margin: 0 auto; padding: 0 32px; }
+@container (max-width: 600px) {
+  .wrap { padding: 0 18px; }
+}
 .mono { font-family: var(--font-mono); letter-spacing: 0.02em; }
 .display { font-family: var(--font-display); font-weight: 900; letter-spacing: -0.02em; line-height: 0.92; }
 

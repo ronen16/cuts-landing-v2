@@ -928,12 +928,12 @@ function SocialProofSection({ onCTAClick, admin }) {
         .pod-play-btn { transition: transform 0.3s cubic-bezier(0.2,0.8,0.2,1); }
         [data-case-card]:hover .pod-play-btn { transform: scale(1.08); }
         .pod-play-ring { animation: vidPlayPulse 2.4s ease-in-out infinite; }
-        @media (max-width: 900px) {
+        @container (max-width: 900px) {
           .testimonial-video-scroller > [data-vid-card] {
             flex: 0 0 calc((100% - 20px) / 2) !important;
           }
         }
-        @media (max-width: 560px) {
+        @container (max-width: 560px) {
           .testimonial-video-scroller > [data-vid-card] {
             flex: 0 0 80% !important;
           }
@@ -1694,7 +1694,7 @@ function Guarantee({ onCTAClick }) {
           color: rgba(255,255,255,0.55);
         }
 
-        @media (max-width: 768px) {
+        @container (max-width: 768px) {
           .guarantee-row { padding: 24px 22px 22px; }
           .guarantee-row__main { font-size: 17px; }
         }
@@ -1859,7 +1859,7 @@ function Guarantee({ onCTAClick }) {
           font-weight: 900;
           letter-spacing: 0.01em;
         }
-        @media (max-width: 640px) {
+        @container (max-width: 640px) {
           .week-only-banner {
             padding: 14px 20px;
             gap: 10px;
@@ -2247,7 +2247,7 @@ function Guarantee({ onCTAClick }) {
           font-size: 1.1em;
         }
 
-        @media (max-width: 768px) {
+        @container (max-width: 768px) {
           .bonus-card__num-watermark { font-size: 120px; }
           .bonus-card__title { font-size: 17px; }
           .bonus-card__value-num { font-size: 16px; }
@@ -3001,7 +3001,7 @@ function StudioBookingLead({ form }) {
           0%, 100% { opacity: 1; transform: scale(1); }
           50% { opacity: 0.4; transform: scale(0.7); }
         }
-        @media (max-width: 880px) {
+        @container (max-width: 880px) {
           .studio-booking-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
         }
       `}</style>
@@ -3155,7 +3155,7 @@ function MiniLeadStripe({ form }) {
       </div>
 
       <style>{`
-        @media (max-width: 720px) {
+        @container (max-width: 720px) {
           .mini-lead-row { flex-direction: column; align-items: stretch !important; }
           .mini-lead-row > div:first-child { text-align: center; }
         }
@@ -3697,7 +3697,7 @@ function GuestStrip({ admin }) {
           50% { opacity: 0.3; transform: scale(0.7); }
         }
         .guest-marquee-row:hover { animation-play-state: paused; }
-        @media (max-width: 768px) {
+        @container (max-width: 768px) {
           .guest-marquee-row > div { width: 110px !important; }
         }
       `}</style>
