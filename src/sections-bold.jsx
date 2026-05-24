@@ -4791,20 +4791,18 @@ function ProblemOld() {
                       </circle>
                     </>
                   }
-                  {/* year label — on mobile show only the '22 / '27 anchors */}
-                  {(!chartMob || isAnchor) &&
+                  {/* year label — every year, same as desktop */}
                   <text x={x} y={CHART_H + (chartMob ? 40 : 28)}
-                  textAnchor="middle"
+                  textAnchor={chartMob && isFirst ? "start" : chartMob && isLast ? "end" : "middle"}
                   fill={isAnchor ? "rgba(239,68,68,0.9)" : "rgba(255,255,255,0.42)"}
                   style={{
-                    fontSize: chartMob ? 22 : 13, fontFamily: "ui-monospace, monospace", letterSpacing: "0.05em",
+                    fontSize: chartMob ? 19 : 13, fontFamily: "ui-monospace, monospace", letterSpacing: "0.05em",
                     fontWeight: isAnchor ? 800 : 500,
                     opacity: inView ? 1 : 0,
                     transition: `opacity 0.4s ease ${dotDelay + 0.1}s`
                   }}>
                     {p.year}
                   </text>
-                  }
                 </g>);
             })}
 
