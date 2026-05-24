@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "publishedAt": "2026-05-21T13:38:48.467Z",
+  "publishedAt": "2026-05-24T17:14:28.059Z",
   "overrides": {
     "sec:how-it-works>button[0]#h:d901835d": "👁 הצג",
     "sec:services>section[0]>div[0]>div[1]>div[0]>h3[0]#h:a5c90c46": "צילום ותאורה מקצועית",
@@ -106,8 +106,12 @@
     "root>div[0]>div[0]>nav[0]>div[0]>button[0]#h:572946ce": "בואו נדבר ←",
     "sec:hero>section[0]>div[1]>div[0]>div[1]>div[1]>div[0]>span[2]#h:b071b718": "דמיינו את זה לרגע",
     "sec:services>section[0]>div[0]>div[0]>h2[0]>span[1]>span[0]#h:50ed6a4a": "אנחנו דואגים לכל השאר.<span aria-hidden=\"true\" style=\"position: absolute; left: 3%; right: 3%; bottom: -0.06em; height: 5px; background: linear-gradient(90deg, transparent, var(--accent) 15%, var(--accent) 85%, transparent); opacity: 0.55; border-radius: 3px; filter: blur(0.5px);\"></span>",
-    "sec:services>section[0]>div[0]>p[0]#h:5115a882": "אתם לא צריכים ציוד יקר, לא צריכים לחפש עורכים, ולא צריכים לחפש צלמים ומעצבים,&nbsp;\nאנחנו בונים את כל המכונה."
+    "sec:services>section[0]>div[0]>p[0]#h:5115a882": "אתם לא צריכים ציוד יקר, לא צריכים לחפש עורכים, ולא צריכים לחפש צלמים ומעצבים,&nbsp;\nאנחנו בונים את כל המכונה.",
+    "sec:problem>section[0]>div[1]>div[1]>div[1]>div[2]#h:02ba0b67": "2.23%",
+    "sec:problem>section[0]>div[1]>div[1]>div[0]>div[2]#h:0000a760": "+25%"
   },
+  "overridesDesktop": {},
+  "overridesMobile": {},
   "sectionOrder": [
     "hero",
     "problem",
@@ -132,6 +136,8 @@
       "y": 0
     }
   },
+  "elementOffsetsDesktop": {},
+  "elementOffsetsMobile": {},
   "hiddenSections": [
     "how-it-works"
   ],
