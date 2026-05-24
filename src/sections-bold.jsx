@@ -263,7 +263,7 @@ function Hero({ onCTAClick }) {
             </div>
 
             <h1 className="display" style={{
-              fontSize: "clamp(44px, 6.6vw, 112px)",
+              fontSize: "clamp(44px, 6.6cqw, 112px)",
               margin: 0,
               fontWeight: 900,
               lineHeight: 1.05,
@@ -332,7 +332,7 @@ function Hero({ onCTAClick }) {
 
           </div>
 
-          <p style={{ fontSize: "clamp(18px, 1.6vw, 24px)",
+          <p style={{ fontSize: "clamp(18px, 1.6cqw, 24px)",
             lineHeight: 1.5,
             margin: "0 auto 44px",
             opacity: 0.82,
@@ -579,7 +579,7 @@ function SocialProofSection({ onCTAClick, admin }) {
 
           </p>
           <h2 className="display" style={{
-            fontSize: "clamp(36px, 5.5vw, 64px)",
+            fontSize: "clamp(36px, 5.5cqw, 64px)",
             margin: 0, fontWeight: 900, lineHeight: 1,
             textWrap: "balance"
           }}>
@@ -950,7 +950,7 @@ function PainPoint({ onCTAClick }) {
     <section style={{ padding: "76px 0" }}>
       <div className="wrap" style={{ maxWidth: 900, textAlign: "center" }}>
         <h2 className="display" style={{
-          fontSize: "clamp(36px, 5vw, 56px)",
+          fontSize: "clamp(36px, 5cqw, 56px)",
           margin: "0 0 24px", fontWeight: 800, lineHeight: 1.15
         }}>
           התייחס לכאב הגדול ביותר שאתה פותר ולעולם של{" "}
@@ -1002,7 +1002,7 @@ function BigBenefitRow({ n, imageSide = "right", summary, headline, body, onCTAC
         </p>
 
         <h2 className="display" style={{
-        fontSize: "clamp(32px, 4.2vw, 56px)",
+        fontSize: "clamp(32px, 4.2cqw, 56px)",
         margin: 0, fontWeight: 800, lineHeight: 1.1
       }}>
           {headline}
@@ -1090,7 +1090,7 @@ function Differentiators({ onCTAClick }) {
     <section style={{ padding: "76px 0" }}>
       <div className="wrap">
         <h2 className="display" style={{
-          fontSize: "clamp(36px, 5vw, 56px)",
+          fontSize: "clamp(36px, 5cqw, 56px)",
           textAlign: "center", margin: "0 auto 64px", maxWidth: 900,
           fontWeight: 800, lineHeight: 1.15
         }}>
@@ -1145,7 +1145,7 @@ function HowItWorks({ onCTAClick }) {
     <section id="how" style={{ padding: "76px 0", background: "var(--card)", borderTop: "1px solid var(--line2)", borderBottom: "1px solid var(--line2)" }}>
       <div className="wrap">
         <h2 className="display" style={{
-          fontSize: "clamp(36px, 5vw, 56px)",
+          fontSize: "clamp(36px, 5cqw, 56px)",
           textAlign: "center", margin: "0 auto 64px", maxWidth: 900,
           fontWeight: 800, lineHeight: 1.15
         }}>
@@ -1219,8 +1219,8 @@ function CountdownDigit({ value, label }) {
     <div style={{ textAlign: "center" }}>
       <div style={{
         position: "relative",
-        width: "clamp(80px, 10vw, 130px)",
-        height: "clamp(96px, 12vw, 160px)",
+        width: "clamp(80px, 10cqw, 130px)",
+        height: "clamp(96px, 12cqw, 160px)",
         perspective: 600
       }}>
         {/* Static bg card */}
@@ -1242,7 +1242,7 @@ function CountdownDigit({ value, label }) {
         <div className="display" style={{
           position: "absolute", inset: 0,
           display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: "clamp(48px, 6.5vw, 92px)",
+          fontSize: "clamp(48px, 6.5cqw, 92px)",
           fontWeight: 900,
           color: "var(--accent)",
           letterSpacing: "-0.04em",
@@ -1470,12 +1470,12 @@ function Guarantee({ onCTAClick }) {
         }
         .guarantee-step__title {
           position: relative; z-index: 1;
-          font-size: clamp(16px, 1.4vw, 19px); font-weight: 800;
+          font-size: clamp(16px, 1.4cqw, 19px); font-weight: 800;
           margin-bottom: 6px; line-height: 1.3;
         }
         .guarantee-step__sub {
           position: relative; z-index: 1;
-          font-size: clamp(13px, 1.05vw, 14px);
+          font-size: clamp(13px, 1.05cqw, 14px);
           opacity: 0.62; line-height: 1.5;
         }
 
@@ -1677,7 +1677,7 @@ function Guarantee({ onCTAClick }) {
 
         /* Main + sub copy */
         .guarantee-row__main {
-          font-size: clamp(18px, 1.5vw, 22px);
+          font-size: clamp(18px, 1.5cqw, 22px);
           font-weight: 800;
           line-height: 1.35;
         }
@@ -1688,7 +1688,7 @@ function Guarantee({ onCTAClick }) {
           text-shadow: 0 0 24px rgba(255,213,0,0.4);
         }
         .guarantee-row__sub {
-          font-size: clamp(13px, 1.05vw, 15px);
+          font-size: clamp(13px, 1.05cqw, 15px);
           margin-top: 10px;
           line-height: 1.55;
           color: rgba(255,255,255,0.55);
@@ -2044,7 +2044,7 @@ function Guarantee({ onCTAClick }) {
         }
         .bonus-card__title {
           position: relative; z-index: 1;
-          font-size: clamp(18px, 1.5vw, 21px);
+          font-size: clamp(18px, 1.5cqw, 21px);
           font-weight: 800;
           line-height: 1.3;
           color: #fff;
@@ -2167,7 +2167,7 @@ function Guarantee({ onCTAClick }) {
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: clamp(24px, 4vw, 48px);
+          gap: clamp(24px, 4cqw, 48px);
           flex-wrap: wrap;
         }
         .bonus-total__col { text-align: center; }
@@ -2185,7 +2185,7 @@ function Guarantee({ onCTAClick }) {
         }
         .bonus-total__regular-num {
           color: #fff;
-          font-size: clamp(48px, 6vw, 80px);
+          font-size: clamp(48px, 6cqw, 80px);
           font-weight: 900;
           line-height: 1;
           letter-spacing: -0.03em;
@@ -2197,7 +2197,7 @@ function Guarantee({ onCTAClick }) {
         }
         .bonus-total__arrow {
           color: var(--accent);
-          font-size: clamp(28px, 3vw, 44px);
+          font-size: clamp(28px, 3cqw, 44px);
           margin-top: 22px;
           opacity: 0.85;
           animation: arrowSlide 1.8s ease-in-out infinite;
@@ -2209,7 +2209,7 @@ function Guarantee({ onCTAClick }) {
         }
         .bonus-total__free {
           display: inline-block;
-          font-size: clamp(64px, 8vw, 112px);
+          font-size: clamp(64px, 8cqw, 112px);
           font-weight: 900;
           color: var(--accent);
           line-height: 1;
@@ -2236,7 +2236,7 @@ function Guarantee({ onCTAClick }) {
           background: rgba(255,213,0,0.08);
           border: 1px solid rgba(255,213,0,0.4);
           border-radius: 999px;
-          font-size: clamp(14px, 1.1vw, 16px);
+          font-size: clamp(14px, 1.1cqw, 16px);
           font-weight: 800;
           color: #fff;
         }
@@ -2301,7 +2301,7 @@ function Guarantee({ onCTAClick }) {
           transition: "opacity 0.7s ease 0.15s, transform 0.7s cubic-bezier(0.2,0.8,0.2,1) 0.15s"
         }}>
           <h2 className="display" style={{
-            fontSize: "clamp(40px, 6vw, 84px)",
+            fontSize: "clamp(40px, 6cqw, 84px)",
             margin: 0, fontWeight: 900, lineHeight: 1,
             textWrap: "balance"
           }}>
@@ -2329,7 +2329,7 @@ function Guarantee({ onCTAClick }) {
           </h2>
         </div>
 
-        <p style={{ fontSize: "clamp(16px, 1.4vw, 20px)",
+        <p style={{ fontSize: "clamp(16px, 1.4cqw, 20px)",
           textAlign: "center", margin: "0 auto 56px", maxWidth: 600,
           opacity: inView ? 0.6 : 0, lineHeight: 1.6,
           transform: inView ? "translateY(0)" : "translateY(8px)",
@@ -2469,7 +2469,7 @@ function Guarantee({ onCTAClick }) {
           </div>
 
           <h3 className="display" style={{
-            fontSize: "clamp(24px, 2.4vw, 32px)", fontWeight: 900,
+            fontSize: "clamp(24px, 2.4cqw, 32px)", fontWeight: 900,
             textAlign: "center", margin: "24px 0 10px", lineHeight: 1.2
           }}>
             סוגרים <span style={{ color: "var(--accent)" }}>השבוע</span> — מקבלים גם את זה.
@@ -2536,7 +2536,7 @@ function Guarantee({ onCTAClick }) {
             textAlign: "center"
           }}>
             <div className="display" style={{
-              fontSize: "clamp(18px, 1.7vw, 22px)", fontWeight: 800,
+              fontSize: "clamp(18px, 1.7cqw, 22px)", fontWeight: 800,
               lineHeight: 1.4,
               color: "rgb(255,255,255)",
               marginBottom: 18
@@ -2551,20 +2551,20 @@ function Guarantee({ onCTAClick }) {
 
             <div style={{
               display: "flex", alignItems: "flex-start", justifyContent: "center",
-              gap: "clamp(10px, 1.4vw, 22px)"
+              gap: "clamp(10px, 1.4cqw, 22px)"
             }}>
               <CountdownDigit value={time.s} label="שניות" />
               <div className="display" style={{
-                fontSize: "clamp(40px, 5.5vw, 76px)", fontWeight: 900,
+                fontSize: "clamp(40px, 5.5cqw, 76px)", fontWeight: 900,
                 color: "var(--accent)", opacity: 0.5,
-                lineHeight: "clamp(80px, 10vw, 132px)",
+                lineHeight: "clamp(80px, 10cqw, 132px)",
                 animation: "secondsPulse 1s ease-in-out infinite"
               }}>:</div>
               <CountdownDigit value={time.m} label="דקות" />
               <div className="display" style={{
-                fontSize: "clamp(40px, 5.5vw, 76px)", fontWeight: 900,
+                fontSize: "clamp(40px, 5.5cqw, 76px)", fontWeight: 900,
                 color: "var(--accent)", opacity: 0.5,
-                lineHeight: "clamp(80px, 10vw, 132px)",
+                lineHeight: "clamp(80px, 10cqw, 132px)",
                 animation: "secondsPulse 1s ease-in-out infinite"
               }}>:</div>
               <CountdownDigit value={time.h} label="שעות" />
@@ -2587,7 +2587,7 @@ function FAQSection() {
     <section id="faq" style={{ padding: "76px 0", background: "var(--card)", borderTop: "1px solid var(--line2)", borderBottom: "1px solid var(--line2)" }}>
       <div className="wrap" style={{ maxWidth: 900 }}>
         <h2 className="display" style={{
-          fontSize: "clamp(36px, 4.5vw, 52px)",
+          fontSize: "clamp(36px, 4.5cqw, 52px)",
           textAlign: "center", margin: "0 0 56px",
           fontWeight: 800, lineHeight: 1.15
         }}>
@@ -2829,7 +2829,7 @@ function StudioBookingLead({ form }) {
                 </div>
 
                 <h2 className="display" style={{
-                fontSize: "clamp(26px, 3.2vw, 38px)",
+                fontSize: "clamp(26px, 3.2cqw, 38px)",
                 margin: "0 0 14px", fontWeight: 900, lineHeight: 1.1,
                 textWrap: "balance"
               }}>
@@ -3064,7 +3064,7 @@ function MiniLeadStripe({ form }) {
                 שיחת אבחון · ללא עלות
               </div>
               <h3 className="display" style={{
-              fontSize: "clamp(22px, 2.4vw, 30px)",
+              fontSize: "clamp(22px, 2.4cqw, 30px)",
               margin: 0, fontWeight: 900, lineHeight: 1.15
             }}>
                 רוצה לראות אם זה מתאים לך?{" "}
@@ -3207,7 +3207,7 @@ function InlineLeadForm({ form }) {
             </div>
 
             <h2 className="display" style={{
-              fontSize: "clamp(32px, 4.2vw, 56px)",
+              fontSize: "clamp(32px, 4.2cqw, 56px)",
               margin: "0 0 20px", fontWeight: 900, lineHeight: 1.1
             }}>
               מוכן לבנות פודקאסט<br />
@@ -3306,7 +3306,7 @@ function FinalCTA({ form, onCTAClick }) {
             </p>
 
             <h2 className="display" style={{
-              fontSize: "clamp(28px, 3.6vw, 42px)",
+              fontSize: "clamp(28px, 3.6cqw, 42px)",
               margin: 0, fontWeight: 800, lineHeight: 1.1
             }}>
               סיכום אחרון —{" "}
@@ -3574,7 +3574,7 @@ function GuestStrip({ admin }) {
       <div className="wrap" style={{ position: "relative", zIndex: 2, marginBottom: 56 }}>
         <div style={{ textAlign: "center", maxWidth: 1100, marginLeft: "auto", marginRight: "auto" }}>
           <h2 className="display" style={{
-            fontSize: "clamp(40px, 6vw, 84px)",
+            fontSize: "clamp(40px, 6cqw, 84px)",
             margin: 0, fontWeight: 900, lineHeight: 1.1,
             textWrap: "balance"
           }}>
@@ -3776,7 +3776,7 @@ function LogoMarquee({ admin }) {
           height: 110px;
           object-fit: contain;
           object-position: center;
-          margin-inline: clamp(10px, 1.6vw, 24px);
+          margin-inline: clamp(10px, 1.6cqw, 24px);
           opacity: 0.9;
           /* brightness(0)+invert(1) = recolor any colored/black logo to pure
              white while preserving transparency. */
@@ -3909,7 +3909,7 @@ function Results({ admin }) {
       <div className="wrap">
         <div style={{ textAlign: "center", marginBottom: 56, maxWidth: 1100, marginLeft: "auto", marginRight: "auto" }}>
           <h2 className="display" style={{
-            fontSize: "clamp(40px, 6vw, 84px)",
+            fontSize: "clamp(40px, 6cqw, 84px)",
             margin: 0, fontWeight: 900, lineHeight: 1.1,
             textWrap: "balance"
           }}>
@@ -4215,7 +4215,7 @@ function BridgeMessage() {
 
         {/* Big headline — bold style with yellow highlight */}
         <h2 className="display" style={{
-          fontSize: "clamp(40px, 6vw, 84px)",
+          fontSize: "clamp(40px, 6cqw, 84px)",
           margin: "0 auto 28px", maxWidth: 1100,
           fontWeight: 900, lineHeight: 1.08, textAlign: "center",
           textWrap: "balance",
@@ -4232,7 +4232,7 @@ function BridgeMessage() {
         </h2>
 
         <p style={{
-          fontSize: "clamp(17px, 1.5vw, 21px)",
+          fontSize: "clamp(17px, 1.5cqw, 21px)",
           lineHeight: 1.6, margin: "0 auto 80px", maxWidth: 680,
           textAlign: "center", opacity: 0.7,
           opacity: inView ? 0.7 : 0,
@@ -4275,7 +4275,7 @@ function BridgeMessage() {
             position: "relative"
           }}>
               <div className="display" style={{
-              fontSize: "clamp(56px, 7vw, 96px)",
+              fontSize: "clamp(56px, 7cqw, 96px)",
               fontWeight: 900, lineHeight: 1,
               color: "var(--accent)",
               letterSpacing: "-0.02em"
@@ -4293,7 +4293,7 @@ function BridgeMessage() {
 
         {/* Closing line — quiet truth */}
         <p style={{
-          fontSize: "clamp(18px, 1.6vw, 24px)",
+          fontSize: "clamp(18px, 1.6cqw, 24px)",
           lineHeight: 1.5, margin: "64px auto 0", maxWidth: 760,
           textAlign: "center", fontWeight: 600,
           opacity: inView ? 1 : 0,
@@ -4411,7 +4411,7 @@ function ProblemOld() {
 
         {/* Big headline — fear tone with red highlight on consequence */}
         <h2 className="display" style={{
-          fontSize: "clamp(40px, 6.4vw, 92px)",
+          fontSize: "clamp(40px, 6.4cqw, 92px)",
           margin: "0 auto 28px", maxWidth: 1180,
           fontWeight: 900, lineHeight: 0.98, textAlign: "center",
           textWrap: "balance", letterSpacing: "-0.015em"
@@ -4462,7 +4462,7 @@ function ProblemOld() {
 
         {/* Sub-line — quiet, factual sting */}
         <p style={{
-          fontSize: "clamp(16px, 1.5vw, 20px)",
+          fontSize: "clamp(16px, 1.5cqw, 20px)",
           lineHeight: 1.6, margin: "0 auto 64px", maxWidth: 640,
           textAlign: "center", opacity: inView ? 0.65 : 0,
           transform: inView ? "translateY(0)" : "translateY(12px)",
@@ -4519,7 +4519,7 @@ function ProblemOld() {
             }}>{s.tag}</div>
               {/* big number */}
               <div className="display" style={{
-              fontSize: "clamp(36px, 3.6vw, 52px)",
+              fontSize: "clamp(36px, 3.6cqw, 52px)",
               fontWeight: 900, lineHeight: 1, color: "#ef4444",
               marginBottom: 14,
               fontVariantNumeric: "tabular-nums",
@@ -4574,7 +4574,7 @@ function ProblemOld() {
             pointerEvents: "none", filter: "blur(20px)"
           }} />
           <div style={{
-            fontSize: "clamp(18px, 1.55vw, 22px)",
+            fontSize: "clamp(18px, 1.55cqw, 22px)",
             lineHeight: 1.85,
             textAlign: "center",
             maxWidth: 880, margin: "0 auto",
@@ -4894,7 +4894,7 @@ function SolutionOld() {
 
       <div className="wrap" style={{ position: "relative", zIndex: 1 }}>
         <h2 className="display" style={{
-          fontSize: "clamp(42px, 7.4vw, 112px)",
+          fontSize: "clamp(42px, 7.4cqw, 112px)",
           margin: "0 auto 48px",
           fontWeight: 900,
           textAlign: "center",
@@ -4953,7 +4953,7 @@ function SolutionOld() {
         {/* Lead paragraph — centered, hierarchic */}
         <div style={{ textAlign: "center", maxWidth: 880, margin: "0 auto 64px" }}>
           <p style={{
-            fontSize: "clamp(18px, 1.6vw, 22px)",
+            fontSize: "clamp(18px, 1.6cqw, 22px)",
             lineHeight: 1.6,
             opacity: 0.9,
             margin: 0,
@@ -5179,7 +5179,7 @@ function ClosingPullQuote() {
       {/* Quote */}
       <p className="display" style={{
         position: "relative",
-        fontSize: "clamp(28px, 3.6vw, 52px)",
+        fontSize: "clamp(28px, 3.6cqw, 52px)",
         lineHeight: 1.05,
         margin: 0,
         fontWeight: 800,
@@ -5358,7 +5358,7 @@ function ServicesAIStats() {
             <div style={{
             fontFamily: "var(--font-display)",
             fontWeight: 900,
-            fontSize: "clamp(38px, 4.4vw, 56px)",
+            fontSize: "clamp(38px, 4.4cqw, 56px)",
             lineHeight: 1,
             color: "var(--accent)",
             letterSpacing: "-0.02em",
@@ -5403,7 +5403,7 @@ function ServicesOld({ onCTAClick }) {
       <div className="wrap">
         <div style={{ textAlign: "center", marginBottom: 24, maxWidth: 1100, marginLeft: "auto", marginRight: "auto" }}>
           <h2 className="display" style={{
-            fontSize: "clamp(40px, 6vw, 84px)",
+            fontSize: "clamp(40px, 6cqw, 84px)",
             margin: 0, fontWeight: 900, lineHeight: 1,
             textWrap: "balance"
           }}>
@@ -5582,7 +5582,7 @@ function HowItWorksInteractive() {
       <div className="wrap">
         <div style={{ textAlign: "center", marginBottom: 64, maxWidth: 1000, marginLeft: "auto", marginRight: "auto" }}>
           <h2 className="display" style={{
-            fontSize: "clamp(36px, 5.5vw, 64px)",
+            fontSize: "clamp(36px, 5.5cqw, 64px)",
             margin: 0, fontWeight: 900, lineHeight: 1,
             textWrap: "balance"
           }}>
@@ -5811,7 +5811,7 @@ function WhoItsForOld() {
       <div className="wrap" style={{ maxWidth: 1100 }}>
         <div style={{ textAlign: "center", marginBottom: 56, maxWidth: 1000, marginLeft: "auto", marginRight: "auto" }}>
           <h2 className="display" style={{
-            fontSize: "clamp(36px, 5.5vw, 64px)",
+            fontSize: "clamp(36px, 5.5cqw, 64px)",
             margin: 0, fontWeight: 900, lineHeight: 1,
             textWrap: "balance"
           }}>
@@ -5885,7 +5885,7 @@ function WhoItsForOld() {
                 <span aria-hidden="true" className="who-card__bar" />
                 <span className="who-card__index mono" aria-hidden="true">{`0${i + 1} / 04`}</span>
                 <h3 className="display" style={{
-                  fontSize: "clamp(22px, 2vw, 28px)",
+                  fontSize: "clamp(22px, 2cqw, 28px)",
                   fontWeight: 800, margin: "20px 0 10px",
                   lineHeight: 1.3, position: "relative", zIndex: 1,
                   display: "flex", alignItems: "baseline", gap: 10, flexWrap: "wrap"
@@ -6158,7 +6158,7 @@ function InteractiveVerdictOld() {
           </div>
 
           <p className="display" style={{
-            fontSize: "clamp(20px, 1.9vw, 26px)",
+            fontSize: "clamp(20px, 1.9cqw, 26px)",
             lineHeight: 1.4, margin: "0 0 24px", fontWeight: 800,
             color: "rgba(255,255,255,0.75)"
           }}>
@@ -6235,7 +6235,7 @@ function InteractiveVerdictOld() {
           </div>
 
           <p className="display" style={{
-            fontSize: "clamp(20px, 1.9vw, 26px)",
+            fontSize: "clamp(20px, 1.9cqw, 26px)",
             lineHeight: 1.4, margin: "0 0 24px", fontWeight: 800,
             color: "#fff",
             position: "relative", zIndex: 1
@@ -6564,7 +6564,7 @@ function WhyUsOld() {
   return (
     <section id="why" style={{ padding: "76px 0" }}>
       <div className="wrap">
-        <h2 className="display" style={{ fontSize: "clamp(38px, 6vw, 84px)", margin: "0 0 64px", maxWidth: 1100 }}>
+        <h2 className="display" style={{ fontSize: "clamp(38px, 6cqw, 84px)", margin: "0 0 64px", maxWidth: 1100 }}>
           אנחנו לא חברת הפקה.<br />
           <span style={{ color: "var(--accent)" }}>אנחנו שותפים לתוצאה העסקית.</span>
         </h2>
