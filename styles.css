@@ -77,6 +77,8 @@ img { display: block; max-width: 100%; }
   .hero-eyebrow-row { gap: 12px !important; }
   .hero-eyebrow-label { font-size: 14px !important; letter-spacing: 0.16em !important; }
   .hero-eyebrow-extra { display: none !important; }
+  /* Keep the red punchline on a single line on mobile */
+  .problem-punchline { font-size: clamp(15px, 5.6cqw, 22px) !important; white-space: nowrap !important; }
   /* Multi-column grids collapse on a narrow canvas. Desktop styles stay
      inline+untouched; these override only inside the container query, so
      !important here is the documented way to beat the inline grid value. */

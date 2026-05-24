@@ -4597,7 +4597,7 @@ function ProblemOld() {
             <p style={{ margin: "0 0 18px", opacity: 0.85 }}>
               כל בעל עסק מרגיש את זה עכשיו: <strong style={{ color: "#fff", fontWeight: 800 }}>מחירי הלידים מזנקים, אחוזי ההמרה צונחים.</strong><br />אנשים גוללים הלאה לפני שהם בכלל יודעים מי אתה.<br />זה לא מצב זמני, מחירי הלידים עולים כל שנה - <strong style={{ color: "#fff", fontWeight: 800 }}>ואין סיבה שזה יעצור.</strong><br />כל עוד אתם משלמים על תשומת לב - <strong style={{ color: "#fff", fontWeight: 800 }}>מישהו אחר יכול להציע יותר ולקחת אותה מכם.</strong><br />
             </p>
-            <p style={{
+            <p className="problem-punchline" style={{
               margin: 0,
               color: "#ef4444",
               fontWeight: 800,
