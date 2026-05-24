@@ -169,9 +169,19 @@ function App() {
     };
   }, [admin, liveOverrides]);
 
+  // Editor preview device — constrains the rendered site to a phone-width
+  // container (via .site-canvas--mobile) so the admin can preview mobile on a
+  // desktop. The canvas establishes a CSS container so @container rules — the
+  // same ones a real phone triggers — fire at the 402px width. FABs/panels stay
+  // OUTSIDE the canvas so their position:fixed anchors to the viewport.
+  const previewMobile = admin.previewDevice === "mobile";
+  const canvasClass = "site-canvas" + (previewMobile ? " site-canvas--mobile" : "");
+
   return (
     <div className={`theme-bold ${modeClass}`}>
-      <Variant onCTAClick={onCTAClick} form={form} admin={effectiveAdmin} />
+      <div className={canvasClass}>
+        <Variant onCTAClick={onCTAClick} form={form} admin={effectiveAdmin} />
+      </div>
       <TweaksPanel open={tweaksOpen} tweaks={tweaks} setTweaks={setTweaks} />
       {AdminPanel && <AdminPanel admin={admin} />}
       {AdminPasswordModal && <AdminPasswordModal />}

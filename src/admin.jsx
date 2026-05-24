@@ -4,6 +4,9 @@
 
 const ADMIN_STORAGE_KEY = "cuts_admin_v1";
 const PUBLISH_SETTINGS_KEY = "cuts_publish_settings_v1";
+// Editor-only preference (which device the live preview is constrained to).
+// Kept in its own key so it never leaks into published content.
+const PREVIEW_DEVICE_KEY = "cuts_preview_device_v1";
 const ADMIN_PASSWORD_HASH = "86e2b4e7068dff297e717358659f5e2ef4376e37019d3427bc68339869b9e224";
 const LOGO_CLICK_WINDOW_MS = 10000;
 const LOGO_CLICK_THRESHOLD = 5;
@@ -48,6 +51,18 @@ async function sha256Hex(input) {
 // ---------- storage helpers ----------
 
 const MAX_VERSIONS = 10;
+
+function loadPreviewDevice() {
+  try {
+    const v = localStorage.getItem(PREVIEW_DEVICE_KEY);
+    return v === "mobile" ? "mobile" : "desktop";
+  } catch (_) {
+    return "desktop";
+  }
+}
+function savePreviewDevice(device) {
+  try { localStorage.setItem(PREVIEW_DEVICE_KEY, device === "mobile" ? "mobile" : "desktop"); } catch (_) {}
+}
 
 function loadAdminState() {
   try {
@@ -305,6 +320,15 @@ function useAdminMode() {
   const [guestsRow2Items, setGuestsRow2Items] = React.useState(initial.guestsRow2Items);
   const [hiddenGuestsRow2, setHiddenGuestsRow2] = React.useState(initial.hiddenGuestsRow2);
   const [publishedVersions, setPublishedVersions] = React.useState(initial.publishedVersions);
+  // Editor-only: which device width the live preview is constrained to.
+  // Persisted separately from content so it never enters a publish payload.
+  const [previewDevice, setPreviewDeviceState] = React.useState(loadPreviewDevice);
+
+  const setPreviewDevice = React.useCallback((device) => {
+    const next = device === "mobile" ? "mobile" : "desktop";
+    setPreviewDeviceState(next);
+    savePreviewDevice(next);
+  }, []);
 
   React.useEffect(() => {
     const onUnlock = () => setUnlocked(true);
@@ -646,6 +670,8 @@ function useAdminMode() {
     guestsRow2Items,
     hiddenGuestsRow2,
     publishedVersions,
+    previewDevice,
+    setPreviewDevice,
     setEditingText: setEditingTextSafe,
     setDraggingSections: setDraggingSectionsSafe,
     setMovingElements: setMovingElementsSafe,
@@ -1706,6 +1732,14 @@ function AdminPanel({ admin }) {
       active: admin.movingElements,
       onClick: () => admin.setMovingElements(!admin.movingElements)
     }),
+    React.createElement("div", { className: "admin-toolbar__sep" }),
+    React.createElement(ToolbarRow, {
+      icon: admin.previewDevice === "mobile" ? "🖥️" : "📱",
+      label: admin.previewDevice === "mobile" ? "תצוגת דסקטופ" : "תצוגת מובייל",
+      active: admin.previewDevice === "mobile",
+      onClick: () => admin.setPreviewDevice(admin.previewDevice === "mobile" ? "desktop" : "mobile")
+    }),
+    React.createElement("div", { className: "admin-toolbar__sep" }),
     React.createElement(ToolbarRow, {
       icon: "🎬",
       label: "ניהול סרטונים",
