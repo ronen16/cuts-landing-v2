@@ -3845,7 +3845,6 @@ function Results({ admin }) {
   // copy and silently re-center on transitionend so it never hits an
   // edge — endless in both directions, no jump.
   const viewportRef = React.useRef(null);
-  const PER_VIEW = 3;
   const GAP = 20;
   const N = cases.length;
   const loopItems = N > 0 ? [...cases, ...cases, ...cases] : [];
@@ -3860,13 +3859,26 @@ function Results({ admin }) {
     const vp = viewportRef.current;
     if (!vp) return;
     const w = vp.clientWidth;
-    setCardW(Math.max(0, (w - (PER_VIEW - 1) * GAP) / PER_VIEW));
+    // Cards per view scales with the carousel's own width — so it responds to
+    // the .site-canvas mobile frame (and real phones) just like @container.
+    const pv = w < 560 ? 1 : w < 900 ? 2 : 3;
+    setCardW(Math.max(0, (w - (pv - 1) * GAP) / pv));
   }, []);
 
   React.useEffect(() => {
     measure();
     window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
+    // The window doesn't resize when the canvas is toggled to mobile, so also
+    // observe the viewport element's own box.
+    let ro;
+    if (viewportRef.current && window.ResizeObserver) {
+      ro = new ResizeObserver(measure);
+      ro.observe(viewportRef.current);
+    }
+    return () => {
+      window.removeEventListener("resize", measure);
+      if (ro) ro.disconnect();
+    };
   }, [measure]);
 
   // Re-center to the middle copy whenever the list changes.
