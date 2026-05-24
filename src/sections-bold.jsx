@@ -4374,8 +4374,30 @@ function ProblemOld() {
     return vals.map((v, i) => ({ v, year: years[i] }));
   }, []);
 
-  const CHART_W = 1080;
+  // Chart geometry. On a narrow canvas we compress the width (and bump the
+  // in-SVG font/badge sizes) so labels stay legible instead of scaling down
+  // to ~28% with the whole 1080px-wide desktop chart.
+  const chartBoxRef = React.useRef(null);
+  const [chartW, setChartW] = React.useState(1080);
+  React.useEffect(() => {
+    const measure = () => {
+      const el = chartBoxRef.current;
+      if (!el) return;
+      setChartW(el.clientWidth < 560 ? 560 : 1080);
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    let ro;
+    if (chartBoxRef.current && window.ResizeObserver) {
+      ro = new ResizeObserver(measure);
+      ro.observe(chartBoxRef.current);
+    }
+    return () => { window.removeEventListener("resize", measure); if (ro) ro.disconnect(); };
+  }, []);
+
+  const CHART_W = chartW;
   const CHART_H = 210;
+  const chartMob = CHART_W < 700; // compressed (mobile) layout
   const pathD = React.useMemo(() => {
     const n = chartPoints.length;
     return chartPoints.
@@ -4385,7 +4407,7 @@ function ProblemOld() {
       return `${i === 0 ? "M" : "L"} ${x.toFixed(1)} ${y.toFixed(1)}`;
     }).
     join(" ");
-  }, [chartPoints]);
+  }, [chartPoints, CHART_W]);
 
   const areaD = pathD + ` L ${CHART_W} ${CHART_H} L 0 ${CHART_H} Z`;
 
@@ -4586,7 +4608,7 @@ function ProblemOld() {
             background: "radial-gradient(ellipse, rgba(239,68,68,0.07), transparent 70%)",
             pointerEvents: "none", filter: "blur(20px)"
           }} />
-          <div style={{
+          <div ref={chartBoxRef} style={{
             fontSize: "clamp(18px, 1.55cqw, 22px)",
             lineHeight: 1.85,
             textAlign: "center",
@@ -4702,6 +4724,7 @@ function ProblemOld() {
                 opacity: inView ? 1 : 0,
                 transition: "opacity 0.4s ease 2.6s"
               }} />
+            {!chartMob &&
             <text x={CHART_W * 0.6 - 12} y={20}
             textAnchor="end"
             fill="rgba(239,68,68,0.85)"
@@ -4713,6 +4736,7 @@ function ProblemOld() {
             }}>
               תחזית →
             </text>
+            }
 
             {/* area fill — animated reveal from right (past) to left (future) */}
             <path d={areaD} fill="url(#areaFill)" style={{
@@ -4767,18 +4791,20 @@ function ProblemOld() {
                       </circle>
                     </>
                   }
-                  {/* year label */}
-                  <text x={x} y={CHART_H + 28}
+                  {/* year label — on mobile show only the '22 / '27 anchors */}
+                  {(!chartMob || isAnchor) &&
+                  <text x={x} y={CHART_H + (chartMob ? 40 : 28)}
                   textAnchor="middle"
                   fill={isAnchor ? "rgba(239,68,68,0.9)" : "rgba(255,255,255,0.42)"}
                   style={{
-                    fontSize: 13, fontFamily: "ui-monospace, monospace", letterSpacing: "0.05em",
+                    fontSize: chartMob ? 22 : 13, fontFamily: "ui-monospace, monospace", letterSpacing: "0.05em",
                     fontWeight: isAnchor ? 800 : 500,
                     opacity: inView ? 1 : 0,
                     transition: `opacity 0.4s ease ${dotDelay + 0.1}s`
                   }}>
                     {p.year}
                   </text>
+                  }
                 </g>);
             })}
 
@@ -4786,9 +4812,10 @@ function ProblemOld() {
             {(() => {
               const px = 0;
               const py = CHART_H - chartPoints[0].v * CHART_H;
-              const badgeW = 188,badgeH = 38;
+              const badgeW = chartMob ? 232 : 188, badgeH = chartMob ? 50 : 38;
               const badgeX = px + 24;
-              const badgeY = py + 24;
+              // Mobile: park in the free top-left corner (the line is low here)
+              const badgeY = chartMob ? 12 : py + 24;
               return (
                 <g style={{
                   opacity: inView ? 1 : 0,
@@ -4798,17 +4825,17 @@ function ProblemOld() {
                   {/* connector */}
                   <line
                     x1={badgeX + 18} x2={px + 4}
-                    y1={badgeY} y2={py + 6}
+                    y1={chartMob ? badgeY + badgeH : badgeY} y2={chartMob ? py - 6 : py + 6}
                     stroke="rgba(239,68,68,0.55)" strokeWidth="1.5"
                     strokeDasharray="3 3" />
                   {/* badge */}
                   <rect x={badgeX} y={badgeY} width={badgeW} height={badgeH} rx={10}
                   fill="rgba(239,68,68,0.18)" stroke="#ef4444" strokeWidth="1.5"
                   filter="url(#lineGlow)" />
-                  <text x={badgeX + badgeW / 2} y={badgeY + badgeH / 2 + 6}
+                  <text x={badgeX + badgeW / 2} y={badgeY + badgeH / 2 + (chartMob ? 8 : 6)}
                   textAnchor="middle"
                   fill="#fff"
-                  style={{ fontSize: 15, fontWeight: 800, direction: "rtl" }}>
+                  style={{ fontSize: chartMob ? 23 : 15, fontWeight: 800, direction: "rtl" }}>
                     שילמתם 10₪ לליד
                   </text>
                 </g>);
@@ -4819,9 +4846,10 @@ function ProblemOld() {
               const lastIdx = chartPoints.length - 1;
               const px = CHART_W;
               const py = CHART_H - chartPoints[lastIdx].v * CHART_H;
-              const badgeW = 188,badgeH = 38;
+              const badgeW = chartMob ? 232 : 188, badgeH = chartMob ? 50 : 38;
               const badgeX = px - badgeW - 24;
-              const badgeY = py - 14;
+              // Mobile: park in the free bottom-right corner (the line is high here)
+              const badgeY = chartMob ? CHART_H - badgeH - 4 : py - 14;
               return (
                 <g style={{
                   opacity: inView ? 1 : 0,
@@ -4830,16 +4858,16 @@ function ProblemOld() {
                 }}>
                   <line
                     x1={badgeX + badgeW - 18} x2={px - 4}
-                    y1={badgeY + badgeH} y2={py + 4}
+                    y1={chartMob ? badgeY : badgeY + badgeH} y2={py + 4}
                     stroke="rgba(239,68,68,0.55)" strokeWidth="1.5"
                     strokeDasharray="3 3" />
                   <rect x={badgeX} y={badgeY} width={badgeW} height={badgeH} rx={10}
                   fill="rgba(239,68,68,0.18)" stroke="#ef4444" strokeWidth="1.5"
                   filter="url(#lineGlow)" />
-                  <text x={badgeX + badgeW / 2} y={badgeY + badgeH / 2 + 6}
+                  <text x={badgeX + badgeW / 2} y={badgeY + badgeH / 2 + (chartMob ? 8 : 6)}
                   textAnchor="middle"
                   fill="#fff"
-                  style={{ fontSize: 15, fontWeight: 800, direction: "rtl" }}>
+                  style={{ fontSize: chartMob ? 23 : 15, fontWeight: 800, direction: "rtl" }}>
                     תשלמו 300₪+ לליד
                   </text>
                 </g>);
