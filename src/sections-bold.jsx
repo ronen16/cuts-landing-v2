@@ -4791,9 +4791,11 @@ function ProblemOld() {
                       </circle>
                     </>
                   }
-                  {/* year label — every year, same as desktop */}
-                  <text x={x} y={CHART_H + (chartMob ? 40 : 28)}
-                  textAnchor={chartMob && isFirst ? "start" : chartMob && isLast ? "end" : "middle"}
+                  {/* year label — every year, same as desktop.
+                      On mobile keep edge years middle-anchored but nudged in
+                      from the SVG edge so '22 / '27 aren't clipped. */}
+                  <text x={chartMob && isFirst ? x + 18 : chartMob && isLast ? x - 18 : x} y={CHART_H + (chartMob ? 40 : 28)}
+                  textAnchor="middle"
                   fill={isAnchor ? "rgba(239,68,68,0.9)" : "rgba(255,255,255,0.42)"}
                   style={{
                     fontSize: chartMob ? 19 : 13, fontFamily: "ui-monospace, monospace", letterSpacing: "0.05em",
