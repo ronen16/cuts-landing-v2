@@ -67,13 +67,15 @@ function savePreviewDevice(device) {
 function loadAdminState() {
   try {
     const raw = localStorage.getItem(ADMIN_STORAGE_KEY);
-    if (!raw) return { unlocked: false, overrides: {}, sectionOrder: null, elementOffsets: {}, hiddenSections: [], videoOrder: null, hiddenVideos: [], videoItems: null, podcastOrder: null, hiddenPodcasts: [], podcastItems: null, logoItems: null, hiddenLogos: [], guestsRow1Items: null, hiddenGuestsRow1: [], guestsRow2Items: null, hiddenGuestsRow2: [], publishedVersions: [] };
+    if (!raw) return { unlocked: false, overrides: {}, overridesMobile: {}, sectionOrder: null, elementOffsets: {}, elementOffsetsMobile: {}, hiddenSections: [], videoOrder: null, hiddenVideos: [], videoItems: null, podcastOrder: null, hiddenPodcasts: [], podcastItems: null, logoItems: null, hiddenLogos: [], guestsRow1Items: null, hiddenGuestsRow1: [], guestsRow2Items: null, hiddenGuestsRow2: [], publishedVersions: [] };
     const parsed = JSON.parse(raw);
     return {
       unlocked: !!parsed.unlocked,
       overrides: parsed.overrides || {},
+      overridesMobile: parsed.overridesMobile || {},
       sectionOrder: Array.isArray(parsed.sectionOrder) ? parsed.sectionOrder : null,
       elementOffsets: parsed.elementOffsets || {},
+      elementOffsetsMobile: parsed.elementOffsetsMobile || {},
       hiddenSections: Array.isArray(parsed.hiddenSections) ? parsed.hiddenSections : [],
       videoOrder: Array.isArray(parsed.videoOrder) ? parsed.videoOrder : null,
       hiddenVideos: Array.isArray(parsed.hiddenVideos) ? parsed.hiddenVideos : [],
@@ -90,7 +92,7 @@ function loadAdminState() {
       publishedVersions: Array.isArray(parsed.publishedVersions) ? parsed.publishedVersions : [],
     };
   } catch (e) {
-    return { unlocked: false, overrides: {}, sectionOrder: null, elementOffsets: {}, hiddenSections: [], videoOrder: null, hiddenVideos: [], videoItems: null, podcastOrder: null, hiddenPodcasts: [], podcastItems: null, logoItems: null, hiddenLogos: [], guestsRow1Items: null, hiddenGuestsRow1: [], guestsRow2Items: null, hiddenGuestsRow2: [], publishedVersions: [] };
+    return { unlocked: false, overrides: {}, overridesMobile: {}, sectionOrder: null, elementOffsets: {}, elementOffsetsMobile: {}, hiddenSections: [], videoOrder: null, hiddenVideos: [], videoItems: null, podcastOrder: null, hiddenPodcasts: [], podcastItems: null, logoItems: null, hiddenLogos: [], guestsRow1Items: null, hiddenGuestsRow1: [], guestsRow2Items: null, hiddenGuestsRow2: [], publishedVersions: [] };
   }
 }
 
@@ -198,8 +200,10 @@ function saveAdminState(state) {
         updated: new Date().toISOString(),
         unlocked: state.unlocked,
         overrides: state.overrides,
+        overridesMobile: state.overridesMobile || {},
         sectionOrder: state.sectionOrder,
         elementOffsets: state.elementOffsets || {},
+        elementOffsetsMobile: state.elementOffsetsMobile || {},
         hiddenSections: state.hiddenSections || [],
         videoOrder: state.videoOrder || null,
         hiddenVideos: state.hiddenVideos || [],
@@ -304,8 +308,13 @@ function useAdminMode() {
   const [draggingSections, setDraggingSections] = React.useState(false);
   const [movingElements, setMovingElements] = React.useState(false);
   const [overrides, setOverrides] = React.useState(initial.overrides);
+  // Mobile-only override layers (text + element positions). Applied ON TOP of
+  // the shared desktop base when the view is mobile. Edits made while the
+  // preview is "mobile" land here, so they never touch the desktop base.
+  const [overridesMobile, setOverridesMobile] = React.useState(initial.overridesMobile || {});
   const [sectionOrder, setSectionOrder] = React.useState(initial.sectionOrder);
   const [elementOffsets, setElementOffsets] = React.useState(initial.elementOffsets);
+  const [elementOffsetsMobile, setElementOffsetsMobile] = React.useState(initial.elementOffsetsMobile || {});
   const [hiddenSections, setHiddenSections] = React.useState(initial.hiddenSections);
   const [videoOrder, setVideoOrder] = React.useState(initial.videoOrder);
   const [hiddenVideos, setHiddenVideos] = React.useState(initial.hiddenVideos);
@@ -330,6 +339,15 @@ function useAdminMode() {
     savePreviewDevice(next);
   }, []);
 
+  // Which content layer edits land in. Kept in a ref (so updateOverride /
+  // updateElementOffset stay stable) plus a window flag (so the direct
+  // localStorage writer in attachInlineEditing can route too).
+  const editLayerRef = React.useRef(previewDevice === "mobile" ? "mobile" : "desktop");
+  React.useEffect(() => {
+    editLayerRef.current = previewDevice === "mobile" ? "mobile" : "desktop";
+    window.__cutsEditLayer = editLayerRef.current;
+  }, [previewDevice]);
+
   React.useEffect(() => {
     const onUnlock = () => setUnlocked(true);
     window.addEventListener("cuts-admin-unlock", onUnlock);
@@ -353,8 +371,10 @@ function useAdminMode() {
         const localCount = Object.keys(overrides || {}).length;
         if (liveCount < localCount) return; // keep local unpublished work
         setOverrides(live.overrides || {});
+        setOverridesMobile(live.overridesMobile || {});
         setSectionOrder(live.sectionOrder || null);
         setElementOffsets(live.elementOffsets || {});
+        setElementOffsetsMobile(live.elementOffsetsMobile || {});
         setHiddenSections(Array.isArray(live.hiddenSections) ? live.hiddenSections : []);
         setVideoOrder(Array.isArray(live.videoOrder) ? live.videoOrder : null);
         setHiddenVideos(Array.isArray(live.hiddenVideos) ? live.hiddenVideos : []);
@@ -375,8 +395,8 @@ function useAdminMode() {
   }, [unlocked, overrides]);
 
   React.useEffect(() => {
-    saveAdminState({ unlocked, overrides, sectionOrder, elementOffsets, hiddenSections, videoOrder, hiddenVideos, videoItems, podcastOrder, hiddenPodcasts, podcastItems, logoItems, hiddenLogos, guestsRow1Items, hiddenGuestsRow1, guestsRow2Items, hiddenGuestsRow2, publishedVersions });
-  }, [unlocked, overrides, sectionOrder, elementOffsets, hiddenSections, videoOrder, hiddenVideos, videoItems, podcastOrder, hiddenPodcasts, podcastItems, logoItems, hiddenLogos, guestsRow1Items, hiddenGuestsRow1, guestsRow2Items, hiddenGuestsRow2, publishedVersions]);
+    saveAdminState({ unlocked, overrides, overridesMobile, sectionOrder, elementOffsets, elementOffsetsMobile, hiddenSections, videoOrder, hiddenVideos, videoItems, podcastOrder, hiddenPodcasts, podcastItems, logoItems, hiddenLogos, guestsRow1Items, hiddenGuestsRow1, guestsRow2Items, hiddenGuestsRow2, publishedVersions });
+  }, [unlocked, overrides, overridesMobile, sectionOrder, elementOffsets, elementOffsetsMobile, hiddenSections, videoOrder, hiddenVideos, videoItems, podcastOrder, hiddenPodcasts, podcastItems, logoItems, hiddenLogos, guestsRow1Items, hiddenGuestsRow1, guestsRow2Items, hiddenGuestsRow2, publishedVersions]);
 
   // mutual exclusion
   const setEditingTextSafe = React.useCallback((v) => {
@@ -393,7 +413,8 @@ function useAdminMode() {
   }, []);
 
   const updateOverride = React.useCallback((id, text) => {
-    setOverrides((prev) => ({ ...prev, [id]: text }));
+    if (editLayerRef.current === "mobile") setOverridesMobile((prev) => ({ ...prev, [id]: text }));
+    else setOverrides((prev) => ({ ...prev, [id]: text }));
   }, []);
 
   const updateSectionOrder = React.useCallback((order) => {
@@ -401,7 +422,8 @@ function useAdminMode() {
   }, []);
 
   const updateElementOffset = React.useCallback((id, x, y) => {
-    setElementOffsets((prev) => ({ ...prev, [id]: { x, y } }));
+    if (editLayerRef.current === "mobile") setElementOffsetsMobile((prev) => ({ ...prev, [id]: { x, y } }));
+    else setElementOffsets((prev) => ({ ...prev, [id]: { x, y } }));
   }, []);
 
   const toggleSectionHidden = React.useCallback((id) => {
@@ -488,8 +510,10 @@ function useAdminMode() {
   const publishToLive = React.useCallback(async () => {
     const current = loadAdminState();
     const liveOverrides = current.overrides || {};
+    const liveOverridesMobile = current.overridesMobile || {};
     const liveSectionOrder = current.sectionOrder;
     const liveElementOffsets = current.elementOffsets || {};
+    const liveElementOffsetsMobile = current.elementOffsetsMobile || {};
     const liveHiddenSections = current.hiddenSections || [];
     const liveVideoOrder = current.videoOrder || null;
     const liveHiddenVideos = current.hiddenVideos || [];
@@ -509,8 +533,10 @@ function useAdminMode() {
       timestamp: new Date().toISOString(),
       label: new Date().toLocaleString("he-IL"),
       overrides: liveOverrides,
+      overridesMobile: liveOverridesMobile,
       sectionOrder: liveSectionOrder,
       elementOffsets: liveElementOffsets,
+      elementOffsetsMobile: liveElementOffsetsMobile,
       hiddenSections: liveHiddenSections,
       videoOrder: liveVideoOrder,
       hiddenVideos: liveHiddenVideos,
@@ -566,8 +592,10 @@ function useAdminMode() {
         version: 1,
         publishedAt: snapshot.timestamp,
         overrides: liveOverrides,
+        overridesMobile: liveOverridesMobile,
         sectionOrder: liveSectionOrder,
         elementOffsets: liveElementOffsets,
+        elementOffsetsMobile: liveElementOffsetsMobile,
         hiddenSections: liveHiddenSections,
         videoOrder: liveVideoOrder,
         hiddenVideos: liveHiddenVideos,
@@ -599,8 +627,10 @@ function useAdminMode() {
     const v = publishedVersions.find((x) => x.id === id);
     if (!v) return;
     setOverrides(v.overrides || {});
+    setOverridesMobile(v.overridesMobile || {});
     setSectionOrder(v.sectionOrder || null);
     setElementOffsets(v.elementOffsets || {});
+    setElementOffsetsMobile(v.elementOffsetsMobile || {});
     setHiddenSections(v.hiddenSections || []);
     setVideoOrder(v.videoOrder || null);
     setHiddenVideos(v.hiddenVideos || []);
@@ -622,8 +652,10 @@ function useAdminMode() {
 
   const resetAll = React.useCallback(() => {
     setOverrides({});
+    setOverridesMobile({});
     setSectionOrder(null);
     setElementOffsets({});
+    setElementOffsetsMobile({});
     setHiddenSections([]);
     setVideoOrder(null);
     setHiddenVideos([]);
@@ -654,8 +686,10 @@ function useAdminMode() {
     draggingSections,
     movingElements,
     overrides,
+    overridesMobile,
     sectionOrder,
     elementOffsets,
+    elementOffsetsMobile,
     hiddenSections,
     videoOrder,
     hiddenVideos,
@@ -809,6 +843,7 @@ function applyOverridesToDOM(overrides) {
 function restoreOriginals() {
   const elements = getAllEditableElements();
   for (const el of elements) {
+    if (document.activeElement === el) continue; // never wipe an in-progress edit
     const originalHtml = el.dataset.editOriginalHtml;
     if (originalHtml != null && el.innerHTML !== originalHtml) {
       el.innerHTML = originalHtml;
@@ -1848,8 +1883,10 @@ function exportJSON(admin) {
     version: 1,
     exportedAt: new Date().toISOString(),
     overrides: admin.overrides,
+    overridesMobile: admin.overridesMobile,
     sectionOrder: admin.sectionOrder,
     elementOffsets: admin.elementOffsets,
+    elementOffsetsMobile: admin.elementOffsetsMobile,
     hiddenSections: admin.hiddenSections,
     videoOrder: admin.videoOrder,
     hiddenVideos: admin.hiddenVideos,
@@ -1951,8 +1988,11 @@ function attachInlineEditing(rootEl, editing, onChange) {
     const newHtml = (el.innerHTML || "").replace(/(?:&nbsp;|\s)+$/g, "");
     try {
       const cur = JSON.parse(localStorage.getItem(ADMIN_STORAGE_KEY) || "{}");
-      cur.overrides = cur.overrides || {};
-      cur.overrides[id] = newHtml;
+      // Route the in-progress edit to the active layer (mobile preview → mobile
+      // layer) so a desktop base value is never touched while editing mobile.
+      const key = window.__cutsEditLayer === "mobile" ? "overridesMobile" : "overrides";
+      cur[key] = cur[key] || {};
+      cur[key][id] = newHtml;
       cur.updated = new Date().toISOString();
       cur.version = 1;
       localStorage.setItem(ADMIN_STORAGE_KEY, JSON.stringify(cur));

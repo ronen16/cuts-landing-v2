@@ -38,16 +38,42 @@ function App() {
     return () => { cancelled = true; };
   }, []);
 
+  // Is the rendered view mobile? Measured from the .site-canvas width so it's
+  // true both for a real phone (canvas = viewport) and the admin mobile preview
+  // (canvas forced to 402). The 600px breakpoint matches the @container layout
+  // rules — so the content layer and the layout flip together.
+  const canvasRef = React.useRef(null);
+  const [canvasMobile, setCanvasMobile] = React.useState(false);
+  React.useEffect(() => {
+    const el = canvasRef.current;
+    if (!el) return;
+    const measure = () => setCanvasMobile(el.clientWidth > 0 && el.clientWidth <= 600);
+    measure();
+    let ro;
+    if (window.ResizeObserver) { ro = new ResizeObserver(measure); ro.observe(el); }
+    window.addEventListener("resize", measure);
+    return () => { window.removeEventListener("resize", measure); if (ro) ro.disconnect(); };
+  }, []);
+
   // Merge: live values are the baseline; user's local overrides win on top.
+  // Base (shared/desktop) layer:
   const mergedOverrides = React.useMemo(() => {
     if (!liveOverrides) return admin.overrides;
     return { ...(liveOverrides.overrides || {}), ...(admin.overrides || {}) };
   }, [liveOverrides, admin.overrides]);
+  // Mobile override layer (applied on top of the base only when mobile):
+  const mergedOverridesMobile = React.useMemo(() => {
+    return { ...((liveOverrides && liveOverrides.overridesMobile) || {}), ...(admin.overridesMobile || {}) };
+  }, [liveOverrides, admin.overridesMobile]);
+  // Effective text overrides for the current view.
+  const effOverrides = React.useMemo(() => {
+    return canvasMobile ? { ...mergedOverrides, ...mergedOverridesMobile } : mergedOverrides;
+  }, [canvasMobile, mergedOverrides, mergedOverridesMobile]);
 
   // Apply content overrides on every render + watch for re-renders
   React.useEffect(() => {
     if (!window.__cutsApplyOverrides) return;
-    const apply = () => window.__cutsApplyOverrides(mergedOverrides);
+    const apply = () => window.__cutsApplyOverrides(effOverrides);
     apply();
     const rootEl = document.getElementById("root");
     if (!rootEl) return;
@@ -64,7 +90,17 @@ function App() {
       obs.disconnect();
       if (timer) clearTimeout(timer);
     };
-  }, [mergedOverrides]);
+  }, [effOverrides]);
+
+  // When the view flips device, reset all editable elements to their original
+  // first, then re-apply — otherwise a value that only exists in one layer
+  // (e.g. a mobile-only text edit) would linger after switching back.
+  React.useEffect(() => {
+    if (!window.__cutsApplyOverrides) return;
+    if (window.__cutsRestoreOriginals) window.__cutsRestoreOriginals();
+    window.__cutsApplyOverrides(effOverrides);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [canvasMobile]);
 
   // Wire inline editing
   React.useEffect(() => {
@@ -80,16 +116,24 @@ function App() {
     return window.__cutsAttachMoveListeners(rootEl, admin.movingElements, admin.updateElementOffset);
   }, [admin.movingElements, admin.updateElementOffset]);
 
-  // Apply saved element offsets to the DOM on render (live + local)
+  // Apply saved element offsets to the DOM on render (live + local).
   const mergedOffsets = React.useMemo(() => {
     if (!liveOverrides) return admin.elementOffsets;
     return { ...(liveOverrides.elementOffsets || {}), ...(admin.elementOffsets || {}) };
   }, [liveOverrides, admin.elementOffsets]);
+  const mergedOffsetsMobile = React.useMemo(() => {
+    return { ...((liveOverrides && liveOverrides.elementOffsetsMobile) || {}), ...(admin.elementOffsetsMobile || {}) };
+  }, [liveOverrides, admin.elementOffsetsMobile]);
+  // Effective offsets — applyElementOffsets clears transforms for ids not in
+  // the map, so switching device cleanly drops the other layer's positions.
+  const effOffsets = React.useMemo(() => {
+    return canvasMobile ? { ...mergedOffsets, ...mergedOffsetsMobile } : mergedOffsets;
+  }, [canvasMobile, mergedOffsets, mergedOffsetsMobile]);
 
   React.useEffect(() => {
     if (!window.__cutsApplyElementOffsets) return;
-    window.__cutsApplyElementOffsets(mergedOffsets);
-  }, [mergedOffsets]);
+    window.__cutsApplyElementOffsets(effOffsets);
+  }, [effOffsets]);
 
   // Body class for admin mode (used by CSS to style editable elements)
   React.useEffect(() => {
@@ -179,7 +223,7 @@ function App() {
 
   return (
     <div className={`theme-bold ${modeClass}`}>
-      <div className={canvasClass}>
+      <div className={canvasClass} ref={canvasRef}>
         <Variant onCTAClick={onCTAClick} form={form} admin={effectiveAdmin} />
       </div>
       <TweaksPanel open={tweaksOpen} tweaks={tweaks} setTweaks={setTweaks} />
