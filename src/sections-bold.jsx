@@ -1031,7 +1031,7 @@ function BigBenefitRow({ n, imageSide = "right", summary, headline, body, onCTAC
       borderBottom: alt ? "1px solid var(--line2)" : "none"
     }}>
       <div className="wrap">
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "center" }}>
+        <div className="cq-stack" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "center" }}>
           {cols[0]}
           {cols[1]}
         </div>
@@ -1098,7 +1098,7 @@ function Differentiators({ onCTAClick }) {
           <span style={{ color: "var(--accent)" }}>איך אתם עושים זאת ומה הופך אתכם לשונים.</span>
         </h2>
 
-        <div style={{
+        <div className="cq-stack" style={{
           display: "grid",
           gridTemplateColumns: "repeat(3, 1fr)",
           gap: 32, marginBottom: 56
@@ -1155,7 +1155,7 @@ function HowItWorks({ onCTAClick }) {
           </span>
         </h2>
 
-        <div style={{
+        <div className="cq-stack" style={{
           display: "grid",
           gridTemplateColumns: "repeat(3, 1fr)",
           gap: 32, marginBottom: 56
@@ -2339,7 +2339,7 @@ function Guarantee({ onCTAClick }) {
         </p>
 
         {/* How it works — 3 steps */}
-        <div style={{
+        <div className="cq-stack" style={{
           maxWidth: 1100, margin: "0 auto 36px",
           display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16,
           opacity: inView ? 1 : 0,
@@ -2369,7 +2369,7 @@ function Guarantee({ onCTAClick }) {
         </div>
 
         {/* Reassurance pair — two outcome cards */}
-        <div style={{
+        <div className="cq-stack" style={{
           maxWidth: 980, margin: "0 auto 56px",
           display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 18,
           opacity: inView ? 1 : 0,
@@ -2481,7 +2481,7 @@ function Guarantee({ onCTAClick }) {
             רק מי שמתחיל פרק <strong style={{ color: "var(--accent)", fontWeight: 800 }}>השבוע</strong> מקבל 4 מדריכים דיגיטליים בחינם — שיעזרו לכם להפיק את המקסימום מהפודקאסטים שלכם.
           </p>
 
-          <div style={{
+          <div className="cq-stack" style={{
             display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 14,
             marginBottom: 18
           }}>
@@ -3184,7 +3184,7 @@ function InlineLeadForm({ form }) {
       }} />
 
       <div className="wrap" style={{ position: "relative", zIndex: 1 }}>
-        <div style={{
+        <div className="cq-stack" style={{
           display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "center"
         }}>
           {/* Left — pitch */}
@@ -3298,7 +3298,7 @@ function FinalCTA({ form, onCTAClick }) {
   return (
     <section id="cta" style={{ padding: "56px 0" }}>
       <div className="wrap" style={{ maxWidth: 1000 }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1.1fr 1fr", gap: 40, alignItems: "stretch" }}>
+        <div className="cq-stack" style={{ display: "grid", gridTemplateColumns: "1.1fr 1fr", gap: 40, alignItems: "stretch" }}>
           {/* Left — recap */}
           <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: 32 }}>
             <p className="mono" style={{ fontSize: 14, opacity: 0.7, margin: 0, letterSpacing: "0.06em" }}>
@@ -4243,7 +4243,7 @@ function BridgeMessage() {
         </p>
 
         {/* Three-stat grid — bold-style yellow numerics */}
-        <div style={{
+        <div className="cq-stack-2" style={{
           display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 0,
           maxWidth: 1100, margin: "0 auto",
           border: "1px solid var(--line2)", borderRadius: 20,
@@ -4479,7 +4479,7 @@ function ProblemOld() {
         `}</style>
 
         {/* Three live stats — restructured per reference */}
-        <div style={{
+        <div className="cq-stack" style={{
           display: "grid", gridTemplateColumns: "repeat(3, 1fr)",
           gap: 18, marginBottom: 36
         }}>
@@ -4967,7 +4967,7 @@ function SolutionOld() {
         </div>
 
         {/* Interactive Pillar cards */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
+        <div className="cq-stack" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
           {PILLARS.map((p, i) => {
             const isHover = hoveredPillar === i;
             const ex = PILLAR_EXAMPLES[i];
@@ -5341,7 +5341,7 @@ function ServicesAIStats() {
         </div>
       </div>
 
-      <div style={{
+      <div className="cq-stack-2" style={{
         display: "grid",
         gridTemplateColumns: "repeat(4, 1fr)",
         gap: 0
@@ -5435,7 +5435,7 @@ function ServicesOld({ onCTAClick }) {
           אנחנו בונים את כל המכונה.
         </p>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 20 }}>
+        <div className="cq-stack" style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 20 }}>
           {SERVICES.map((s, i) => {
             const span = s.highlight ? 6 : 3;
             return (
@@ -5632,7 +5632,7 @@ function HowItWorksInteractive() {
             borderRadius: 2
           }} />
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24, position: "relative", zIndex: 1 }}>
+          <div className="cq-stack" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24, position: "relative", zIndex: 1 }}>
             {STEPS.map((s, i) => {
               const isActive = shown === i;
               const reached = i <= shown;
@@ -5839,7 +5839,7 @@ function WhoItsForOld() {
           </h2>
         </div>
 
-        <div style={{
+        <div className="cq-stack" style={{
           display: "grid",
           gridTemplateColumns: "1fr 1fr",
           gap: 20,
@@ -6109,7 +6109,7 @@ function InteractiveVerdictOld() {
 
   return (
     <div ref={wrapRef} style={{ marginTop: 12, position: "relative" }}>
-      <div style={{
+      <div className="cq-stack" style={{
         display: "grid",
         gridTemplateColumns: "1fr 1fr",
         gap: 20,
@@ -6569,7 +6569,7 @@ function WhyUsOld() {
           <span style={{ color: "var(--accent)" }}>אנחנו שותפים לתוצאה העסקית.</span>
         </h2>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
+        <div className="cq-stack" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
           {WHY_US.map((w, i) => {
             const isHover = hovered === i;
             if (w.highlight) {

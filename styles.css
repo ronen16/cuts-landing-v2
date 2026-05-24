@@ -68,6 +68,12 @@ img { display: block; max-width: 100%; }
 .wrap { max-width: 1280px; margin: 0 auto; padding: 0 32px; }
 @container (max-width: 600px) {
   .wrap { padding: 0 18px; }
+  /* Multi-column grids collapse on a narrow canvas. Desktop styles stay
+     inline+untouched; these override only inside the container query, so
+     !important here is the documented way to beat the inline grid value. */
+  .cq-stack { grid-template-columns: 1fr !important; gap: 28px !important; }
+  .cq-stack > * { grid-column: auto !important; }
+  .cq-stack-2 { grid-template-columns: 1fr 1fr !important; }
 }
 .mono { font-family: var(--font-mono); letter-spacing: 0.02em; }
 .display { font-family: var(--font-display); font-weight: 900; letter-spacing: -0.02em; line-height: 0.92; }
