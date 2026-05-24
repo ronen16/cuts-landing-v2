@@ -159,12 +159,13 @@ function Hero({ onCTAClick }) {
             }} />
 
             {/* eyebrow — camera viewfinder frame */}
-            <div style={{
+            <div className="hero-eyebrow" style={{
               display: "inline-block",
               position: "relative",
               padding: "26px 78px",
               marginBottom: 40,
-              zIndex: 2
+              zIndex: 2,
+              maxWidth: "100%"
             }}>
               {/* outer glow halo */}
               <span aria-hidden="true" style={{
@@ -202,7 +203,7 @@ function Hero({ onCTAClick }) {
               }} />
 
               {/* content row */}
-              <div style={{
+              <div className="hero-eyebrow-row" style={{
                 display: "inline-flex", alignItems: "center", gap: 20,
                 position: "relative", zIndex: 1
               }}>
@@ -223,10 +224,10 @@ function Hero({ onCTAClick }) {
                   }}>REC</span>
                 </span>
 
-                <span style={{ width: 1, height: 22, background: "rgba(255,213,0,0.4)" }} />
+                <span className="hero-eyebrow-extra" style={{ width: 1, height: 22, background: "rgba(255,213,0,0.4)" }} />
 
                 {/* microphone icon */}
-                <svg width="22" height="28" viewBox="0 0 16 20" fill="none" style={{
+                <svg className="hero-eyebrow-extra" width="22" height="28" viewBox="0 0 16 20" fill="none" style={{
                   filter: "drop-shadow(0 0 6px rgba(255,213,0,0.7))"
                 }}>
                   <rect x="5" y="1" width="6" height="10" rx="3" stroke="var(--accent)" strokeWidth="1.6" />
@@ -235,7 +236,7 @@ function Hero({ onCTAClick }) {
                 </svg>
 
                 {/* label */}
-                <span className="mono" style={{
+                <span className="mono hero-eyebrow-label" style={{
                   fontSize: 22, letterSpacing: "0.30em", fontWeight: 900,
                   color: "var(--accent)",
                   textShadow: "0 0 24px rgba(255,213,0,0.7), 0 0 48px rgba(255,213,0,0.35)",
@@ -245,7 +246,7 @@ function Hero({ onCTAClick }) {
                 </span>
 
                 {/* audio level bars */}
-                <span style={{
+                <span className="hero-eyebrow-extra" style={{
                   display: "inline-flex", alignItems: "center", gap: 4, height: 26
                 }}>
                   {[0.6, 0.9, 0.45, 0.8, 0.55].map((h, i) =>

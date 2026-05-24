@@ -354,11 +354,11 @@ function TopNav({ variant, onCTAClick }) {
       background: bg,
       borderBottom: "1px solid var(--line2)"
     }}>
-      <div className="wrap" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: 72 }}>
+      <div className="wrap topnav-row" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: 72 }}>
         <a href="#" onClick={(e) => { if (window.__cutsLogoClick) { e.preventDefault(); window.__cutsLogoClick(); } }} style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <img src={LOGO_SRC} alt="Cuts" style={{ height: 34 }} />
         </a>
-        <ul style={{ display: "flex", gap: 28, listStyle: "none", margin: 0, padding: 0, fontSize: 15, fontWeight: 500 }}>
+        <ul className="topnav-links" style={{ display: "flex", gap: 28, listStyle: "none", margin: 0, padding: 0, fontSize: 15, fontWeight: 500 }}>
           {NAV.map((n) =>
           <li key={n.href}>
               <a href={n.href} onClick={(e) => {e.preventDefault();scrollToId(n.href);}} style={{ opacity: 0.8 }}>
@@ -367,7 +367,7 @@ function TopNav({ variant, onCTAClick }) {
             </li>
           )}
         </ul>
-        <button className="btn btn-primary" onClick={onCTAClick} style={{ padding: "10px 18px", transform: "scale(1)", fontSize: "16px" }}>
+        <button className="btn btn-primary topnav-cta" onClick={onCTAClick} style={{ padding: "10px 18px", transform: "scale(1)", fontSize: "16px" }}>
           בוא נדבר ←
         </button>
       </div>
