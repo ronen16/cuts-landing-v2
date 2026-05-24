@@ -61,14 +61,20 @@ function App() {
     if (!liveOverrides) return admin.overrides;
     return { ...(liveOverrides.overrides || {}), ...(admin.overrides || {}) };
   }, [liveOverrides, admin.overrides]);
-  // Mobile override layer (applied on top of the base only when mobile):
+  // Per-device override layers (applied on top of the shared base for that
+  // device only): desktop layer on wide views, mobile layer on narrow views.
+  const mergedOverridesDesktop = React.useMemo(() => {
+    return { ...((liveOverrides && liveOverrides.overridesDesktop) || {}), ...(admin.overridesDesktop || {}) };
+  }, [liveOverrides, admin.overridesDesktop]);
   const mergedOverridesMobile = React.useMemo(() => {
     return { ...((liveOverrides && liveOverrides.overridesMobile) || {}), ...(admin.overridesMobile || {}) };
   }, [liveOverrides, admin.overridesMobile]);
   // Effective text overrides for the current view.
   const effOverrides = React.useMemo(() => {
-    return canvasMobile ? { ...mergedOverrides, ...mergedOverridesMobile } : mergedOverrides;
-  }, [canvasMobile, mergedOverrides, mergedOverridesMobile]);
+    return canvasMobile
+      ? { ...mergedOverrides, ...mergedOverridesMobile }
+      : { ...mergedOverrides, ...mergedOverridesDesktop };
+  }, [canvasMobile, mergedOverrides, mergedOverridesDesktop, mergedOverridesMobile]);
 
   // Apply content overrides on every render + watch for re-renders
   React.useEffect(() => {
@@ -121,14 +127,19 @@ function App() {
     if (!liveOverrides) return admin.elementOffsets;
     return { ...(liveOverrides.elementOffsets || {}), ...(admin.elementOffsets || {}) };
   }, [liveOverrides, admin.elementOffsets]);
+  const mergedOffsetsDesktop = React.useMemo(() => {
+    return { ...((liveOverrides && liveOverrides.elementOffsetsDesktop) || {}), ...(admin.elementOffsetsDesktop || {}) };
+  }, [liveOverrides, admin.elementOffsetsDesktop]);
   const mergedOffsetsMobile = React.useMemo(() => {
     return { ...((liveOverrides && liveOverrides.elementOffsetsMobile) || {}), ...(admin.elementOffsetsMobile || {}) };
   }, [liveOverrides, admin.elementOffsetsMobile]);
   // Effective offsets — applyElementOffsets clears transforms for ids not in
   // the map, so switching device cleanly drops the other layer's positions.
   const effOffsets = React.useMemo(() => {
-    return canvasMobile ? { ...mergedOffsets, ...mergedOffsetsMobile } : mergedOffsets;
-  }, [canvasMobile, mergedOffsets, mergedOffsetsMobile]);
+    return canvasMobile
+      ? { ...mergedOffsets, ...mergedOffsetsMobile }
+      : { ...mergedOffsets, ...mergedOffsetsDesktop };
+  }, [canvasMobile, mergedOffsets, mergedOffsetsDesktop, mergedOffsetsMobile]);
 
   React.useEffect(() => {
     if (!window.__cutsApplyElementOffsets) return;

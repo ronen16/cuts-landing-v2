@@ -4,9 +4,10 @@
 
 const ADMIN_STORAGE_KEY = "cuts_admin_v1";
 const PUBLISH_SETTINGS_KEY = "cuts_publish_settings_v1";
-// Editor-only preference (which device the live preview is constrained to).
-// Kept in its own key so it never leaks into published content.
-const PREVIEW_DEVICE_KEY = "cuts_preview_device_v1";
+// Editor-only preference: edit mode — "both" (shared), "desktop", or "mobile".
+// It picks BOTH the preview width and which layer edits write to. Kept in its
+// own key so it never leaks into published content.
+const EDIT_MODE_KEY = "cuts_edit_mode_v1";
 const ADMIN_PASSWORD_HASH = "86e2b4e7068dff297e717358659f5e2ef4376e37019d3427bc68339869b9e224";
 const LOGO_CLICK_WINDOW_MS = 10000;
 const LOGO_CLICK_THRESHOLD = 5;
@@ -52,29 +53,32 @@ async function sha256Hex(input) {
 
 const MAX_VERSIONS = 10;
 
-function loadPreviewDevice() {
+const EDIT_MODES = ["both", "desktop", "mobile"];
+function loadEditMode() {
   try {
-    const v = localStorage.getItem(PREVIEW_DEVICE_KEY);
-    return v === "mobile" ? "mobile" : "desktop";
+    const v = localStorage.getItem(EDIT_MODE_KEY);
+    return EDIT_MODES.includes(v) ? v : "both";
   } catch (_) {
-    return "desktop";
+    return "both";
   }
 }
-function savePreviewDevice(device) {
-  try { localStorage.setItem(PREVIEW_DEVICE_KEY, device === "mobile" ? "mobile" : "desktop"); } catch (_) {}
+function saveEditMode(mode) {
+  try { localStorage.setItem(EDIT_MODE_KEY, EDIT_MODES.includes(mode) ? mode : "both"); } catch (_) {}
 }
 
 function loadAdminState() {
   try {
     const raw = localStorage.getItem(ADMIN_STORAGE_KEY);
-    if (!raw) return { unlocked: false, overrides: {}, overridesMobile: {}, sectionOrder: null, elementOffsets: {}, elementOffsetsMobile: {}, hiddenSections: [], videoOrder: null, hiddenVideos: [], videoItems: null, podcastOrder: null, hiddenPodcasts: [], podcastItems: null, logoItems: null, hiddenLogos: [], guestsRow1Items: null, hiddenGuestsRow1: [], guestsRow2Items: null, hiddenGuestsRow2: [], publishedVersions: [] };
+    if (!raw) return { unlocked: false, overrides: {}, overridesDesktop: {}, overridesMobile: {}, sectionOrder: null, elementOffsets: {}, elementOffsetsDesktop: {}, elementOffsetsMobile: {}, hiddenSections: [], videoOrder: null, hiddenVideos: [], videoItems: null, podcastOrder: null, hiddenPodcasts: [], podcastItems: null, logoItems: null, hiddenLogos: [], guestsRow1Items: null, hiddenGuestsRow1: [], guestsRow2Items: null, hiddenGuestsRow2: [], publishedVersions: [] };
     const parsed = JSON.parse(raw);
     return {
       unlocked: !!parsed.unlocked,
       overrides: parsed.overrides || {},
+      overridesDesktop: parsed.overridesDesktop || {},
       overridesMobile: parsed.overridesMobile || {},
       sectionOrder: Array.isArray(parsed.sectionOrder) ? parsed.sectionOrder : null,
       elementOffsets: parsed.elementOffsets || {},
+      elementOffsetsDesktop: parsed.elementOffsetsDesktop || {},
       elementOffsetsMobile: parsed.elementOffsetsMobile || {},
       hiddenSections: Array.isArray(parsed.hiddenSections) ? parsed.hiddenSections : [],
       videoOrder: Array.isArray(parsed.videoOrder) ? parsed.videoOrder : null,
@@ -92,7 +96,7 @@ function loadAdminState() {
       publishedVersions: Array.isArray(parsed.publishedVersions) ? parsed.publishedVersions : [],
     };
   } catch (e) {
-    return { unlocked: false, overrides: {}, overridesMobile: {}, sectionOrder: null, elementOffsets: {}, elementOffsetsMobile: {}, hiddenSections: [], videoOrder: null, hiddenVideos: [], videoItems: null, podcastOrder: null, hiddenPodcasts: [], podcastItems: null, logoItems: null, hiddenLogos: [], guestsRow1Items: null, hiddenGuestsRow1: [], guestsRow2Items: null, hiddenGuestsRow2: [], publishedVersions: [] };
+    return { unlocked: false, overrides: {}, overridesDesktop: {}, overridesMobile: {}, sectionOrder: null, elementOffsets: {}, elementOffsetsDesktop: {}, elementOffsetsMobile: {}, hiddenSections: [], videoOrder: null, hiddenVideos: [], videoItems: null, podcastOrder: null, hiddenPodcasts: [], podcastItems: null, logoItems: null, hiddenLogos: [], guestsRow1Items: null, hiddenGuestsRow1: [], guestsRow2Items: null, hiddenGuestsRow2: [], publishedVersions: [] };
   }
 }
 
@@ -200,9 +204,11 @@ function saveAdminState(state) {
         updated: new Date().toISOString(),
         unlocked: state.unlocked,
         overrides: state.overrides,
+        overridesDesktop: state.overridesDesktop || {},
         overridesMobile: state.overridesMobile || {},
         sectionOrder: state.sectionOrder,
         elementOffsets: state.elementOffsets || {},
+        elementOffsetsDesktop: state.elementOffsetsDesktop || {},
         elementOffsetsMobile: state.elementOffsetsMobile || {},
         hiddenSections: state.hiddenSections || [],
         videoOrder: state.videoOrder || null,
@@ -308,12 +314,16 @@ function useAdminMode() {
   const [draggingSections, setDraggingSections] = React.useState(false);
   const [movingElements, setMovingElements] = React.useState(false);
   const [overrides, setOverrides] = React.useState(initial.overrides);
-  // Mobile-only override layers (text + element positions). Applied ON TOP of
-  // the shared desktop base when the view is mobile. Edits made while the
-  // preview is "mobile" land here, so they never touch the desktop base.
+  // Per-device override layers (text + element positions). `overrides` is the
+  // shared base (mode "both"). The desktop/mobile layers are applied ON TOP of
+  // the base for that device only. Edits route to a layer based on edit mode:
+  //   both → base (+ device layers for that id cleared) → shows on both
+  //   desktop → overridesDesktop only · mobile → overridesMobile only
+  const [overridesDesktop, setOverridesDesktop] = React.useState(initial.overridesDesktop || {});
   const [overridesMobile, setOverridesMobile] = React.useState(initial.overridesMobile || {});
   const [sectionOrder, setSectionOrder] = React.useState(initial.sectionOrder);
   const [elementOffsets, setElementOffsets] = React.useState(initial.elementOffsets);
+  const [elementOffsetsDesktop, setElementOffsetsDesktop] = React.useState(initial.elementOffsetsDesktop || {});
   const [elementOffsetsMobile, setElementOffsetsMobile] = React.useState(initial.elementOffsetsMobile || {});
   const [hiddenSections, setHiddenSections] = React.useState(initial.hiddenSections);
   const [videoOrder, setVideoOrder] = React.useState(initial.videoOrder);
@@ -329,24 +339,27 @@ function useAdminMode() {
   const [guestsRow2Items, setGuestsRow2Items] = React.useState(initial.guestsRow2Items);
   const [hiddenGuestsRow2, setHiddenGuestsRow2] = React.useState(initial.hiddenGuestsRow2);
   const [publishedVersions, setPublishedVersions] = React.useState(initial.publishedVersions);
-  // Editor-only: which device width the live preview is constrained to.
-  // Persisted separately from content so it never enters a publish payload.
-  const [previewDevice, setPreviewDeviceState] = React.useState(loadPreviewDevice);
+  // Editor-only: edit mode — "both" | "desktop" | "mobile". Picks the preview
+  // width AND which layer edits write to. Persisted separately so it never
+  // enters a publish payload.
+  const [editMode, setEditModeState] = React.useState(loadEditMode);
+  // Mobile preview width is shown for the "mobile" mode only.
+  const previewDevice = editMode === "mobile" ? "mobile" : "desktop";
 
-  const setPreviewDevice = React.useCallback((device) => {
-    const next = device === "mobile" ? "mobile" : "desktop";
-    setPreviewDeviceState(next);
-    savePreviewDevice(next);
+  const setEditMode = React.useCallback((mode) => {
+    const next = EDIT_MODES.includes(mode) ? mode : "both";
+    setEditModeState(next);
+    saveEditMode(next);
   }, []);
 
-  // Which content layer edits land in. Kept in a ref (so updateOverride /
-  // updateElementOffset stay stable) plus a window flag (so the direct
-  // localStorage writer in attachInlineEditing can route too).
-  const editLayerRef = React.useRef(previewDevice === "mobile" ? "mobile" : "desktop");
+  // Mode kept in a ref (so updateOverride / updateElementOffset stay stable)
+  // plus a window flag (so the direct localStorage writer in attachInlineEditing
+  // can route too).
+  const editModeRef = React.useRef(editMode);
   React.useEffect(() => {
-    editLayerRef.current = previewDevice === "mobile" ? "mobile" : "desktop";
-    window.__cutsEditLayer = editLayerRef.current;
-  }, [previewDevice]);
+    editModeRef.current = editMode;
+    window.__cutsEditMode = editMode;
+  }, [editMode]);
 
   React.useEffect(() => {
     const onUnlock = () => setUnlocked(true);
@@ -371,9 +384,11 @@ function useAdminMode() {
         const localCount = Object.keys(overrides || {}).length;
         if (liveCount < localCount) return; // keep local unpublished work
         setOverrides(live.overrides || {});
+        setOverridesDesktop(live.overridesDesktop || {});
         setOverridesMobile(live.overridesMobile || {});
         setSectionOrder(live.sectionOrder || null);
         setElementOffsets(live.elementOffsets || {});
+        setElementOffsetsDesktop(live.elementOffsetsDesktop || {});
         setElementOffsetsMobile(live.elementOffsetsMobile || {});
         setHiddenSections(Array.isArray(live.hiddenSections) ? live.hiddenSections : []);
         setVideoOrder(Array.isArray(live.videoOrder) ? live.videoOrder : null);
@@ -395,8 +410,8 @@ function useAdminMode() {
   }, [unlocked, overrides]);
 
   React.useEffect(() => {
-    saveAdminState({ unlocked, overrides, overridesMobile, sectionOrder, elementOffsets, elementOffsetsMobile, hiddenSections, videoOrder, hiddenVideos, videoItems, podcastOrder, hiddenPodcasts, podcastItems, logoItems, hiddenLogos, guestsRow1Items, hiddenGuestsRow1, guestsRow2Items, hiddenGuestsRow2, publishedVersions });
-  }, [unlocked, overrides, overridesMobile, sectionOrder, elementOffsets, elementOffsetsMobile, hiddenSections, videoOrder, hiddenVideos, videoItems, podcastOrder, hiddenPodcasts, podcastItems, logoItems, hiddenLogos, guestsRow1Items, hiddenGuestsRow1, guestsRow2Items, hiddenGuestsRow2, publishedVersions]);
+    saveAdminState({ unlocked, overrides, overridesDesktop, overridesMobile, sectionOrder, elementOffsets, elementOffsetsDesktop, elementOffsetsMobile, hiddenSections, videoOrder, hiddenVideos, videoItems, podcastOrder, hiddenPodcasts, podcastItems, logoItems, hiddenLogos, guestsRow1Items, hiddenGuestsRow1, guestsRow2Items, hiddenGuestsRow2, publishedVersions });
+  }, [unlocked, overrides, overridesDesktop, overridesMobile, sectionOrder, elementOffsets, elementOffsetsDesktop, elementOffsetsMobile, hiddenSections, videoOrder, hiddenVideos, videoItems, podcastOrder, hiddenPodcasts, podcastItems, logoItems, hiddenLogos, guestsRow1Items, hiddenGuestsRow1, guestsRow2Items, hiddenGuestsRow2, publishedVersions]);
 
   // mutual exclusion
   const setEditingTextSafe = React.useCallback((v) => {
@@ -413,8 +428,17 @@ function useAdminMode() {
   }, []);
 
   const updateOverride = React.useCallback((id, text) => {
-    if (editLayerRef.current === "mobile") setOverridesMobile((prev) => ({ ...prev, [id]: text }));
-    else setOverrides((prev) => ({ ...prev, [id]: text }));
+    const mode = editModeRef.current;
+    if (mode === "mobile") {
+      setOverridesMobile((prev) => ({ ...prev, [id]: text }));
+    } else if (mode === "desktop") {
+      setOverridesDesktop((prev) => ({ ...prev, [id]: text }));
+    } else {
+      // both → shared base, and clear any device-specific shadow for this id
+      setOverrides((prev) => ({ ...prev, [id]: text }));
+      setOverridesDesktop((prev) => { if (!(id in prev)) return prev; const n = { ...prev }; delete n[id]; return n; });
+      setOverridesMobile((prev) => { if (!(id in prev)) return prev; const n = { ...prev }; delete n[id]; return n; });
+    }
   }, []);
 
   const updateSectionOrder = React.useCallback((order) => {
@@ -422,8 +446,16 @@ function useAdminMode() {
   }, []);
 
   const updateElementOffset = React.useCallback((id, x, y) => {
-    if (editLayerRef.current === "mobile") setElementOffsetsMobile((prev) => ({ ...prev, [id]: { x, y } }));
-    else setElementOffsets((prev) => ({ ...prev, [id]: { x, y } }));
+    const mode = editModeRef.current;
+    if (mode === "mobile") {
+      setElementOffsetsMobile((prev) => ({ ...prev, [id]: { x, y } }));
+    } else if (mode === "desktop") {
+      setElementOffsetsDesktop((prev) => ({ ...prev, [id]: { x, y } }));
+    } else {
+      setElementOffsets((prev) => ({ ...prev, [id]: { x, y } }));
+      setElementOffsetsDesktop((prev) => { if (!(id in prev)) return prev; const n = { ...prev }; delete n[id]; return n; });
+      setElementOffsetsMobile((prev) => { if (!(id in prev)) return prev; const n = { ...prev }; delete n[id]; return n; });
+    }
   }, []);
 
   const toggleSectionHidden = React.useCallback((id) => {
@@ -510,9 +542,11 @@ function useAdminMode() {
   const publishToLive = React.useCallback(async () => {
     const current = loadAdminState();
     const liveOverrides = current.overrides || {};
+    const liveOverridesDesktop = current.overridesDesktop || {};
     const liveOverridesMobile = current.overridesMobile || {};
     const liveSectionOrder = current.sectionOrder;
     const liveElementOffsets = current.elementOffsets || {};
+    const liveElementOffsetsDesktop = current.elementOffsetsDesktop || {};
     const liveElementOffsetsMobile = current.elementOffsetsMobile || {};
     const liveHiddenSections = current.hiddenSections || [];
     const liveVideoOrder = current.videoOrder || null;
@@ -533,9 +567,11 @@ function useAdminMode() {
       timestamp: new Date().toISOString(),
       label: new Date().toLocaleString("he-IL"),
       overrides: liveOverrides,
+      overridesDesktop: liveOverridesDesktop,
       overridesMobile: liveOverridesMobile,
       sectionOrder: liveSectionOrder,
       elementOffsets: liveElementOffsets,
+      elementOffsetsDesktop: liveElementOffsetsDesktop,
       elementOffsetsMobile: liveElementOffsetsMobile,
       hiddenSections: liveHiddenSections,
       videoOrder: liveVideoOrder,
@@ -592,9 +628,11 @@ function useAdminMode() {
         version: 1,
         publishedAt: snapshot.timestamp,
         overrides: liveOverrides,
+        overridesDesktop: liveOverridesDesktop,
         overridesMobile: liveOverridesMobile,
         sectionOrder: liveSectionOrder,
         elementOffsets: liveElementOffsets,
+        elementOffsetsDesktop: liveElementOffsetsDesktop,
         elementOffsetsMobile: liveElementOffsetsMobile,
         hiddenSections: liveHiddenSections,
         videoOrder: liveVideoOrder,
@@ -627,9 +665,11 @@ function useAdminMode() {
     const v = publishedVersions.find((x) => x.id === id);
     if (!v) return;
     setOverrides(v.overrides || {});
+    setOverridesDesktop(v.overridesDesktop || {});
     setOverridesMobile(v.overridesMobile || {});
     setSectionOrder(v.sectionOrder || null);
     setElementOffsets(v.elementOffsets || {});
+    setElementOffsetsDesktop(v.elementOffsetsDesktop || {});
     setElementOffsetsMobile(v.elementOffsetsMobile || {});
     setHiddenSections(v.hiddenSections || []);
     setVideoOrder(v.videoOrder || null);
@@ -652,9 +692,11 @@ function useAdminMode() {
 
   const resetAll = React.useCallback(() => {
     setOverrides({});
+    setOverridesDesktop({});
     setOverridesMobile({});
     setSectionOrder(null);
     setElementOffsets({});
+    setElementOffsetsDesktop({});
     setElementOffsetsMobile({});
     setHiddenSections([]);
     setVideoOrder(null);
@@ -686,9 +728,11 @@ function useAdminMode() {
     draggingSections,
     movingElements,
     overrides,
+    overridesDesktop,
     overridesMobile,
     sectionOrder,
     elementOffsets,
+    elementOffsetsDesktop,
     elementOffsetsMobile,
     hiddenSections,
     videoOrder,
@@ -705,7 +749,8 @@ function useAdminMode() {
     hiddenGuestsRow2,
     publishedVersions,
     previewDevice,
-    setPreviewDevice,
+    editMode,
+    setEditMode,
     setEditingText: setEditingTextSafe,
     setDraggingSections: setDraggingSectionsSafe,
     setMovingElements: setMovingElementsSafe,
@@ -1768,11 +1813,24 @@ function AdminPanel({ admin }) {
       onClick: () => admin.setMovingElements(!admin.movingElements)
     }),
     React.createElement("div", { className: "admin-toolbar__sep" }),
+    React.createElement("div", { className: "admin-toolbar__modelabel" }, "מצב עריכה:"),
     React.createElement(ToolbarRow, {
-      icon: admin.previewDevice === "mobile" ? "🖥️" : "📱",
-      label: admin.previewDevice === "mobile" ? "תצוגת דסקטופ" : "תצוגת מובייל",
-      active: admin.previewDevice === "mobile",
-      onClick: () => admin.setPreviewDevice(admin.previewDevice === "mobile" ? "desktop" : "mobile")
+      icon: "🖥️📱",
+      label: "שניהם (דסקטופ + מובייל)",
+      active: admin.editMode === "both",
+      onClick: () => admin.setEditMode("both")
+    }),
+    React.createElement(ToolbarRow, {
+      icon: "🖥️",
+      label: "דסקטופ בלבד",
+      active: admin.editMode === "desktop",
+      onClick: () => admin.setEditMode("desktop")
+    }),
+    React.createElement(ToolbarRow, {
+      icon: "📱",
+      label: "מובייל בלבד",
+      active: admin.editMode === "mobile",
+      onClick: () => admin.setEditMode("mobile")
     }),
     React.createElement("div", { className: "admin-toolbar__sep" }),
     React.createElement(ToolbarRow, {
@@ -1883,9 +1941,11 @@ function exportJSON(admin) {
     version: 1,
     exportedAt: new Date().toISOString(),
     overrides: admin.overrides,
+    overridesDesktop: admin.overridesDesktop,
     overridesMobile: admin.overridesMobile,
     sectionOrder: admin.sectionOrder,
     elementOffsets: admin.elementOffsets,
+    elementOffsetsDesktop: admin.elementOffsetsDesktop,
     elementOffsetsMobile: admin.elementOffsetsMobile,
     hiddenSections: admin.hiddenSections,
     videoOrder: admin.videoOrder,
@@ -1988,11 +2048,21 @@ function attachInlineEditing(rootEl, editing, onChange) {
     const newHtml = (el.innerHTML || "").replace(/(?:&nbsp;|\s)+$/g, "");
     try {
       const cur = JSON.parse(localStorage.getItem(ADMIN_STORAGE_KEY) || "{}");
-      // Route the in-progress edit to the active layer (mobile preview → mobile
-      // layer) so a desktop base value is never touched while editing mobile.
-      const key = window.__cutsEditLayer === "mobile" ? "overridesMobile" : "overrides";
-      cur[key] = cur[key] || {};
-      cur[key][id] = newHtml;
+      // Route the in-progress edit to the layer for the active edit mode, so a
+      // desktop/shared value is never touched while editing only-mobile, etc.
+      const mode = window.__cutsEditMode || "both";
+      if (mode === "mobile") {
+        cur.overridesMobile = cur.overridesMobile || {};
+        cur.overridesMobile[id] = newHtml;
+      } else if (mode === "desktop") {
+        cur.overridesDesktop = cur.overridesDesktop || {};
+        cur.overridesDesktop[id] = newHtml;
+      } else {
+        cur.overrides = cur.overrides || {};
+        cur.overrides[id] = newHtml;
+        if (cur.overridesDesktop) delete cur.overridesDesktop[id];
+        if (cur.overridesMobile) delete cur.overridesMobile[id];
+      }
       cur.updated = new Date().toISOString();
       cur.version = 1;
       localStorage.setItem(ADMIN_STORAGE_KEY, JSON.stringify(cur));

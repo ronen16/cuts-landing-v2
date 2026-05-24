@@ -399,6 +399,13 @@ details.faq .answer { padding-top: 14px; color: var(--fg); opacity: 0.75; line-h
   background: rgba(255,255,255,0.08);
   margin: 4px 6px;
 }
+.admin-toolbar__modelabel {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: rgba(255,255,255,0.45);
+  padding: 2px 8px;
+}
 
 /* Edit Text mode — outline editable elements on hover/focus */
 body.admin-editing-text [data-edit-id] {
