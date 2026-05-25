@@ -935,16 +935,25 @@ function SocialProofSection({ onCTAClick, admin }) {
           }
         }
         @container (max-width: 560px) {
-          /* One full video per screen — no side gutters, no peeking neighbours */
-          .vid-carousel { padding-inline: 0 !important; }
-          .testimonial-video-scroller { padding: 16px 0 24px !important; }
+          /* One video per screen — centered card with comfortable side margins
+             (not full-bleed), neighbours hidden. */
+          .vid-carousel { padding-inline: 20px !important; }
+          .testimonial-video-scroller { padding: 16px 0 22px !important; }
           .testimonial-video-scroller > [data-vid-card] {
             flex: 0 0 100% !important;
           }
           .vid-fade { display: none !important; }
-          /* arrows overlay the card edges */
-          .vid-nav-prev { right: 8px !important; width: 46px !important; height: 46px !important; }
-          .vid-nav-next { left: 8px !important; width: 46px !important; height: 46px !important; }
+          /* arrows sit just inside the card's rounded corners, dark + subtle */
+          .vid-nav-prev, .vid-nav-next {
+            width: 42px !important; height: 42px !important;
+            background: rgba(10,10,10,0.6) !important;
+            border: 1px solid rgba(255,255,255,0.25) !important;
+            color: #fff !important;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.45) !important;
+            backdrop-filter: none !important;
+          }
+          .vid-nav-prev { right: 30px !important; }
+          .vid-nav-next { left: 30px !important; }
         }
       `}</style>
     </section>);
