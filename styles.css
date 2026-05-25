@@ -90,9 +90,9 @@ img { display: block; max-width: 100%; }
      the full canvas width (break past the wrap padding) + tighter tracking so
      the long "גורמים ללקוחות לבוא אליכם." line can be bigger. */
   .solution-headline {
-    font-size: clamp(24px, 8.2cqw, 46px) !important;
-    letter-spacing: -0.045em !important;
-    margin-inline: -16px !important;
+    font-size: clamp(25px, 8.7cqw, 48px) !important;
+    letter-spacing: -0.05em !important;
+    margin-inline: -18px !important;
   }
   .solution-headline > span { white-space: nowrap; }
 }
