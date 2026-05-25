@@ -503,6 +503,23 @@ function SocialProofSection({ onCTAClick, admin }) {
   // Render 3 copies for seamless infinite scroll
   const loopVideos = [...videos, ...videos, ...videos];
 
+  // On a narrow canvas (mobile / mobile-preview) stack the videos vertically
+  // (one after another) instead of the horizontal carousel — measured from the
+  // carousel width so it matches the real phone and the admin preview alike.
+  const carouselRef = React.useRef(null);
+  const [stacked, setStacked] = React.useState(false);
+  React.useEffect(() => {
+    const el = carouselRef.current;
+    if (!el) return;
+    const measure = () => setStacked(el.clientWidth > 0 && el.clientWidth <= 600);
+    measure();
+    let ro;
+    if (window.ResizeObserver) { ro = new ResizeObserver(measure); ro.observe(el); }
+    window.addEventListener("resize", measure);
+    return () => { window.removeEventListener("resize", measure); if (ro) ro.disconnect(); };
+  }, []);
+  const renderList = stacked ? videos : loopVideos;
+
   // Helper: compute step size + section width (for one copy of videos)
   const getMetrics = () => {
     const el = scrollerRef.current;
@@ -611,8 +628,9 @@ function SocialProofSection({ onCTAClick, admin }) {
         </div>
       </div>
 
-      {/* Carousel — videos in single row, 9:16, with arrows */}
-      <div className="vid-carousel" style={{
+      {/* Carousel — videos in single row, 9:16, with arrows.
+          On a narrow canvas this becomes a vertical stack (.is-stacked). */}
+      <div ref={carouselRef} className={"vid-carousel" + (stacked ? " is-stacked" : "")} style={{
         position: "relative",
         marginBottom: 0,
         maxWidth: 1280,
@@ -707,7 +725,7 @@ function SocialProofSection({ onCTAClick, admin }) {
             scrollbarWidth: "none"
           }}>
           
-          {loopVideos.map((v, i) => {
+          {renderList.map((v, i) => {
           const hasVideo = Boolean(v.vimeoId);
           const isPlaying = playingIdx === i;
           return (
@@ -934,27 +952,24 @@ function SocialProofSection({ onCTAClick, admin }) {
             flex: 0 0 calc((100% - 20px) / 2) !important;
           }
         }
-        @container (max-width: 560px) {
-          /* One video per screen — centered card with comfortable side margins
-             (not full-bleed), neighbours hidden. */
-          .vid-carousel { padding-inline: 40px !important; }
-          .testimonial-video-scroller { padding: 16px 0 22px !important; }
-          .testimonial-video-scroller > [data-vid-card] {
-            flex: 0 0 100% !important;
-          }
-          .vid-fade { display: none !important; }
-          /* arrows sit just inside the card's rounded corners, dark + subtle */
-          .vid-nav-prev, .vid-nav-next {
-            width: 42px !important; height: 42px !important;
-            background: rgba(10,10,10,0.6) !important;
-            border: 1px solid rgba(255,255,255,0.25) !important;
-            color: #fff !important;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.45) !important;
-            backdrop-filter: none !important;
-          }
-          .vid-nav-prev { right: 48px !important; }
-          .vid-nav-next { left: 48px !important; }
+        /* Mobile: stack the videos vertically (one after another). The
+           .is-stacked class is toggled by JS when the carousel is ≤600px, so
+           no breakpoint mismatch — these rules just style that mode. */
+        .vid-carousel.is-stacked { padding-inline: 24px !important; }
+        .vid-carousel.is-stacked .testimonial-video-scroller {
+          flex-direction: column !important;
+          overflow: visible !important;
+          gap: 18px !important;
+          padding: 8px 0 !important;
+          scroll-snap-type: none !important;
         }
+        .vid-carousel.is-stacked .testimonial-video-scroller > [data-vid-card] {
+          flex: none !important;
+          width: 100% !important;
+        }
+        .vid-carousel.is-stacked .vid-nav-prev,
+        .vid-carousel.is-stacked .vid-nav-next,
+        .vid-carousel.is-stacked .vid-fade { display: none !important; }
       `}</style>
     </section>);
 
