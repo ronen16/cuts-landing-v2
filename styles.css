@@ -96,8 +96,8 @@ img { display: block; max-width: 100%; }
   .solution-headline > span { white-space: nowrap; }
   /* Social-proof headline: one sentence per line (2 lines), sized to fit. */
   .socialproof-headline {
-    font-size: clamp(18px, 7.6cqw, 44px) !important;
-    letter-spacing: -0.05em !important;
+    font-size: clamp(20px, 8.2cqw, 46px) !important;
+    letter-spacing: -0.07em !important;
     margin-inline: -18px !important;
     line-height: 1.14 !important;
   }
