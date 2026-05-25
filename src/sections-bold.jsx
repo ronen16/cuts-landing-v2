@@ -937,7 +937,7 @@ function SocialProofSection({ onCTAClick, admin }) {
         @container (max-width: 560px) {
           /* One video per screen — centered card with comfortable side margins
              (not full-bleed), neighbours hidden. */
-          .vid-carousel { padding-inline: 20px !important; }
+          .vid-carousel { padding-inline: 40px !important; }
           .testimonial-video-scroller { padding: 16px 0 22px !important; }
           .testimonial-video-scroller > [data-vid-card] {
             flex: 0 0 100% !important;
@@ -952,8 +952,8 @@ function SocialProofSection({ onCTAClick, admin }) {
             box-shadow: 0 4px 14px rgba(0,0,0,0.45) !important;
             backdrop-filter: none !important;
           }
-          .vid-nav-prev { right: 30px !important; }
-          .vid-nav-next { left: 30px !important; }
+          .vid-nav-prev { right: 48px !important; }
+          .vid-nav-next { left: 48px !important; }
         }
       `}</style>
     </section>);
