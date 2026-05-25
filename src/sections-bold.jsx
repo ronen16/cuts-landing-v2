@@ -612,7 +612,7 @@ function SocialProofSection({ onCTAClick, admin }) {
       </div>
 
       {/* Carousel — videos in single row, 9:16, with arrows */}
-      <div style={{
+      <div className="vid-carousel" style={{
         position: "relative",
         marginBottom: 0,
         maxWidth: 1280,
@@ -620,12 +620,12 @@ function SocialProofSection({ onCTAClick, admin }) {
         paddingInline: 80
       }}>
         {/* Edge fades */}
-        <div aria-hidden="true" style={{
+        <div aria-hidden="true" className="vid-fade" style={{
           position: "absolute", top: 0, bottom: 0, right: 80, width: 40, zIndex: 3,
           pointerEvents: "none",
           background: "linear-gradient(to left, var(--card), transparent)"
         }} />
-        <div aria-hidden="true" style={{
+        <div aria-hidden="true" className="vid-fade" style={{
           position: "absolute", top: 0, bottom: 0, left: 80, width: 40, zIndex: 3,
           pointerEvents: "none",
           background: "linear-gradient(to right, var(--card), transparent)"
@@ -643,7 +643,7 @@ function SocialProofSection({ onCTAClick, admin }) {
           }}
           disabled={!canPrev}
           aria-label="הקודם"
-          className="vid-nav-btn"
+          className="vid-nav-btn vid-nav-prev"
           style={{
             position: "absolute", top: "50%", right: 12,
             zIndex: 4,
@@ -674,7 +674,7 @@ function SocialProofSection({ onCTAClick, admin }) {
           }}
           disabled={!canNext}
           aria-label="הבא"
-          className="vid-nav-btn"
+          className="vid-nav-btn vid-nav-next"
           style={{
             position: "absolute", top: "50%", left: 12,
             zIndex: 4,
@@ -935,9 +935,16 @@ function SocialProofSection({ onCTAClick, admin }) {
           }
         }
         @container (max-width: 560px) {
+          /* One full video per screen — no side gutters, no peeking neighbours */
+          .vid-carousel { padding-inline: 0 !important; }
+          .testimonial-video-scroller { padding: 16px 0 24px !important; }
           .testimonial-video-scroller > [data-vid-card] {
-            flex: 0 0 80% !important;
+            flex: 0 0 100% !important;
           }
+          .vid-fade { display: none !important; }
+          /* arrows overlay the card edges */
+          .vid-nav-prev { right: 8px !important; width: 46px !important; height: 46px !important; }
+          .vid-nav-next { left: 8px !important; width: 46px !important; height: 46px !important; }
         }
       `}</style>
     </section>);
