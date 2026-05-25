@@ -5147,7 +5147,7 @@ function ClosingPullQuote() {
   }, []);
 
   return (
-    <div ref={ref} style={{
+    <div ref={ref} className="pullquote" style={{
       marginTop: 80,
       position: "relative",
       padding: "40px 24px",
@@ -5172,7 +5172,7 @@ function ClosingPullQuote() {
       }} />
 
       {/* Massive quote glyph */}
-      <div aria-hidden="true" style={{
+      <div aria-hidden="true" className="pullquote-glyph" style={{
         position: "relative",
         fontSize: 140, lineHeight: 0.6,
         fontFamily: "Georgia, serif",
@@ -5203,7 +5203,7 @@ function ClosingPullQuote() {
           background: "var(--accent)",
           transition: "width 0.7s cubic-bezier(0.2,0.8,0.2,1) 0.35s"
         }} />
-        <span className="mono" style={{
+        <span className="mono pullquote-eyebrow" style={{
           fontSize: 14, fontWeight: 800,
           letterSpacing: "0.24em",
           color: "var(--accent)",
@@ -5218,7 +5218,7 @@ function ClosingPullQuote() {
       </div>
 
       {/* Quote */}
-      <p className="display" style={{
+      <p className="display pullquote-text" style={{
         position: "relative",
         fontSize: "clamp(28px, 3.6cqw, 52px)",
         lineHeight: 1.05,

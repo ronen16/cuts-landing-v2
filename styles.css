@@ -95,6 +95,11 @@ img { display: block; max-width: 100%; }
     margin-inline: -18px !important;
   }
   .solution-headline > span { white-space: nowrap; }
+  /* "השורה התחתונה" pull-quote: tighten the gaps and enlarge the text. */
+  .pullquote { margin-top: 28px !important; padding: 14px 6px !important; }
+  .pullquote-glyph { font-size: 78px !important; margin-bottom: 0 !important; }
+  .pullquote-eyebrow { font-size: 16px !important; }
+  .pullquote-text { font-size: clamp(30px, 8.2cqw, 46px) !important; line-height: 1.12 !important; }
 }
 .mono { font-family: var(--font-mono); letter-spacing: 0.02em; }
 .display { font-family: var(--font-display); font-weight: 900; letter-spacing: -0.02em; line-height: 0.92; }
