@@ -156,10 +156,14 @@ img { display: block; max-width: 100%; }
     mix-blend-mode: normal !important;
     opacity: 0.5;
   }
-  /* Freeze purely-decorative (aria-hidden) glow/pulse loops — they repaint
-     box-shadow/filter every frame for no content value. Marquees keep moving
-     (their animation lives on the row, which is not aria-hidden). */
-  [aria-hidden="true"] { animation: none !important; }
+  /* Freeze purely-decorative (aria-hidden) glow/pulse loops AND drop their
+     blur — large blurred layers are the most expensive thing a phone GPU
+     paints. Marquees keep moving (their animation lives on the row, which is
+     not aria-hidden). */
+  [aria-hidden="true"] { animation: none !important; filter: none !important; }
+  /* Reveal-on-scroll entrance animations stutter on slow phones and make
+     content "jump" in — show everything immediately on mobile instead. */
+  .reveal-init { opacity: 1 !important; transform: none !important; transition: none !important; }
 }
 
 /* ===== EDITORIAL ===== */
