@@ -579,7 +579,7 @@ function SocialProofSection({ onCTAClick, admin }) {
           }}>
 
           </p>
-          <h2 className="display" style={{
+          <h2 className="display socialproof-headline" style={{
             fontSize: "clamp(36px, 5.5cqw, 64px)",
             margin: 0, fontWeight: 900, lineHeight: 1,
             textWrap: "balance"

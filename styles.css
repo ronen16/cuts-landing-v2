@@ -94,6 +94,14 @@ img { display: block; max-width: 100%; }
     margin-inline: -18px !important;
   }
   .solution-headline > span { white-space: nowrap; }
+  /* Social-proof headline: one sentence per line (2 lines), sized to fit. */
+  .socialproof-headline {
+    font-size: clamp(18px, 7.6cqw, 44px) !important;
+    letter-spacing: -0.05em !important;
+    margin-inline: -18px !important;
+    line-height: 1.14 !important;
+  }
+  .socialproof-headline > span { white-space: nowrap; }
   /* "השורה התחתונה" pull-quote: tighten the gaps and enlarge the text. */
   .pullquote { margin-top: 28px !important; padding: 14px 6px !important; }
   .pullquote-glyph { font-size: 78px !important; margin-bottom: 0 !important; }
