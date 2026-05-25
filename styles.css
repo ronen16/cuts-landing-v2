@@ -86,15 +86,9 @@ img { display: block; max-width: 100%; }
   .cq-stack { grid-template-columns: 1fr !important; gap: 28px !important; }
   .cq-stack > * { grid-column: auto !important; }
   .cq-stack-2 { grid-template-columns: 1fr 1fr !important; }
-  /* Solution headline: keep each line on one row but as large as fits — use
-     the full canvas width (break past the wrap padding) + tighter tracking so
-     the long "גורמים ללקוחות לבוא אליכם." line can be bigger. */
-  .solution-headline {
-    font-size: clamp(25px, 8.7cqw, 48px) !important;
-    letter-spacing: -0.05em !important;
-    margin-inline: -18px !important;
-  }
-  .solution-headline > span { white-space: nowrap; }
+  /* Solution headline: match the "פודקאסט לא מתאים לכולם" heading size and
+     let the lines wrap naturally (balanced) instead of a cramped single row. */
+  .solution-headline { font-size: clamp(36px, 5.5cqw, 64px) !important; }
   /* "השורה התחתונה" pull-quote: tighten the gaps and enlarge the text. */
   .pullquote { margin-top: 28px !important; padding: 14px 6px !important; }
   .pullquote-glyph { font-size: 78px !important; margin-bottom: 0 !important; }
