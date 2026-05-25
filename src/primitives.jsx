@@ -348,7 +348,7 @@ function LogoMarquee({ color = "currentColor", logos = PRIMITIVES_CLIENT_LOGOS }
 function TopNav({ variant, onCTAClick }) {
   const bg = "rgba(10,10,10,0.78)";
   return (
-    <nav style={{
+    <nav className="topnav" style={{
       position: "sticky", top: 0, zIndex: 30,
       backdropFilter: "blur(14px)",
       background: bg,

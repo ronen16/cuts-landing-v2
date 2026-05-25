@@ -135,6 +135,33 @@ img { display: block; max-width: 100%; }
 
 .theme-bold .paper-swap { background: #F5F2E8; color: #0A0A0A; }
 
+/* ===== Mobile performance (real devices ≤600px) =====
+   These target actual phones via viewport width — the cheap fixes that stop
+   per-frame repaints during scroll. The desktop look is untouched. */
+@media (max-width: 600px) {
+  /* backdrop-filter recomputes the blur of everything behind a sticky/fixed
+     bar on every scroll frame — brutal on phones. Drop it everywhere. */
+  *, *::before, *::after {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  /* Without the blur the translucent nav shows scrolling content through it;
+     make it near-opaque instead. */
+  .topnav { background: rgba(10,10,10,0.96) !important; }
+  /* The fixed, full-viewport, blurred + screen-blended, infinitely-animating
+     aura is the biggest scroll-jank source — make it a cheap static layer. */
+  .theme-bold::before {
+    animation: none !important;
+    filter: none !important;
+    mix-blend-mode: normal !important;
+    opacity: 0.5;
+  }
+  /* Freeze purely-decorative (aria-hidden) glow/pulse loops — they repaint
+     box-shadow/filter every frame for no content value. Marquees keep moving
+     (their animation lives on the row, which is not aria-hidden). */
+  [aria-hidden="true"] { animation: none !important; }
+}
+
 /* ===== EDITORIAL ===== */
 .theme-editorial {
   --bg: #FAF7F0;
