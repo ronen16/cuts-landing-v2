@@ -2728,7 +2728,7 @@ function StudioBookingLead({ form }) {
   }, []);
 
   return (
-    <section ref={sectionRef} style={{
+    <section ref={sectionRef} className="studio-section" style={{
       padding: "72px 0",
       position: "relative",
       overflow: "hidden",
@@ -2754,7 +2754,7 @@ function StudioBookingLead({ form }) {
       }} />
 
       <div className="wrap" style={{ position: "relative", zIndex: 1, maxWidth: 920 }}>
-        <div style={{
+        <div className="studio-card" style={{
           background: "var(--card)",
           border: "1px solid var(--line2)",
           borderRadius: 24,
@@ -2806,7 +2806,7 @@ function StudioBookingLead({ form }) {
               {/* RIGHT side (in RTL = first) — pitch */}
               <div>
                 {/* live availability chip */}
-                <div style={{
+                <div className="studio-chip" style={{
                 display: "inline-flex", alignItems: "center", gap: 10,
                 padding: "8px 14px",
                 background: "rgba(255,213,0,0.1)",
@@ -2829,7 +2829,7 @@ function StudioBookingLead({ form }) {
                 }}>זמינים השבוע</span>
                 </div>
 
-                <h2 className="display" style={{
+                <h2 className="display studio-pitch-title" style={{
                 fontSize: "clamp(26px, 3.2cqw, 38px)",
                 margin: "0 0 14px", fontWeight: 900, lineHeight: 1.1,
                 textWrap: "balance"
@@ -2843,7 +2843,7 @@ function StudioBookingLead({ form }) {
                   ייראה.
                 </h2>
 
-                <p style={{
+                <p className="studio-pitch-sub" style={{
                 fontSize: 16, lineHeight: 1.65, opacity: 0.78,
                 margin: "0 0 28px", maxWidth: 460
               }}>
@@ -2855,6 +2855,7 @@ function StudioBookingLead({ form }) {
 
               {/* LEFT side (in RTL = second) — form */}
               <form onSubmit={(e) => {e.preventDefault();submit();}}
+            className="studio-form"
             style={{
               background: "var(--bg)",
               border: "1px solid var(--line2)",
@@ -3004,6 +3005,21 @@ function StudioBookingLead({ form }) {
         }
         @container (max-width: 880px) {
           .studio-booking-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
+        }
+        /* Mobile: make the booking section far more compact (less dead space). */
+        @media (max-width: 600px) {
+          .studio-section { padding: 34px 0 !important; }
+          .studio-card { padding: 20px 14px !important; border-radius: 18px !important; }
+          .studio-booking-grid { gap: 18px !important; }
+          .studio-chip { margin-bottom: 12px !important; }
+          .studio-pitch-title { margin: 0 0 8px !important; }
+          .studio-pitch-sub { margin: 0 !important; font-size: 14px !important; line-height: 1.5 !important; }
+          .studio-form { padding: 16px !important; gap: 10px !important; }
+          /* empty decorative header row + its divider — pure dead space */
+          .studio-form > div:first-of-type { display: none !important; }
+          .studio-form label { margin-bottom: 4px !important; }
+          .studio-form input { padding: 11px 14px !important; }
+          .studio-form button[type="submit"] { padding: 14px 20px !important; margin-top: 2px !important; }
         }
       `}</style>
     </section>);
