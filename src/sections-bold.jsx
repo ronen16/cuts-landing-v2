@@ -4934,7 +4934,7 @@ function SolutionOld() {
       }} />
 
       <div className="wrap" style={{ position: "relative", zIndex: 1 }}>
-        <h2 className="display" style={{
+        <h2 className="display solution-headline" style={{
           fontSize: "clamp(42px, 7.4cqw, 112px)",
           margin: "0 auto 48px",
           fontWeight: 900,
