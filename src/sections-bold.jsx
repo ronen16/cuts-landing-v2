@@ -3037,8 +3037,9 @@ function StudioBookingLead({ form }) {
         @container (max-width: 880px) {
           .studio-booking-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
         }
-        /* Mobile: make the booking section far more compact (less dead space). */
-        @media (max-width: 600px) {
+        /* Mobile: make the booking section far more compact (less dead space).
+           Uses @container so it also applies in the admin mobile-preview frame. */
+        @container (max-width: 600px) {
           .studio-section { padding: 34px 0 !important; }
           .studio-card { padding: 20px 14px !important; border-radius: 18px !important; }
           .studio-booking-grid { gap: 18px !important; }
