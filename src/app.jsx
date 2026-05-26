@@ -173,56 +173,61 @@ function App() {
   const dark = tweaks.dark;
   const modeClass = !dark ? "light" : "";
 
-  // Merge live + local for section order + hidden sections so visitors see
-  // the published structure even without any localStorage.
+  // Resolve list/section content for the CURRENT VIEW (canvasMobile). Each
+  // field = its per-device layer (local wins over live) if that layer defines
+  // it, else the shared base (local wins / hidden = union, as before). This is
+  // what makes a real mobile visitor and the mobile preview show the mobile
+  // arrangement while desktop shows its own.
   const effectiveAdmin = React.useMemo(() => {
-    if (!liveOverrides) return admin;
-    const liveOrder = Array.isArray(liveOverrides.sectionOrder) ? liveOverrides.sectionOrder : null;
-    const liveHidden = Array.isArray(liveOverrides.hiddenSections) ? liveOverrides.hiddenSections : [];
-    const localOrder = Array.isArray(admin.sectionOrder) ? admin.sectionOrder : null;
-    const localHidden = Array.isArray(admin.hiddenSections) ? admin.hiddenSections : [];
-    const liveVideoOrder = Array.isArray(liveOverrides.videoOrder) ? liveOverrides.videoOrder : null;
-    const liveHiddenVideos = Array.isArray(liveOverrides.hiddenVideos) ? liveOverrides.hiddenVideos : [];
-    const localVideoOrder = Array.isArray(admin.videoOrder) ? admin.videoOrder : null;
-    const localHiddenVideos = Array.isArray(admin.hiddenVideos) ? admin.hiddenVideos : [];
-    const livePodcastOrder = Array.isArray(liveOverrides.podcastOrder) ? liveOverrides.podcastOrder : null;
-    const liveHiddenPodcasts = Array.isArray(liveOverrides.hiddenPodcasts) ? liveOverrides.hiddenPodcasts : [];
-    const localPodcastOrder = Array.isArray(admin.podcastOrder) ? admin.podcastOrder : null;
-    const localHiddenPodcasts = Array.isArray(admin.hiddenPodcasts) ? admin.hiddenPodcasts : [];
-    const liveVideoItems = Array.isArray(liveOverrides.videoItems) ? liveOverrides.videoItems : null;
-    const localVideoItems = Array.isArray(admin.videoItems) ? admin.videoItems : null;
-    const livePodcastItems = Array.isArray(liveOverrides.podcastItems) ? liveOverrides.podcastItems : null;
-    const localPodcastItems = Array.isArray(admin.podcastItems) ? admin.podcastItems : null;
-    const liveLogoItems = Array.isArray(liveOverrides.logoItems) ? liveOverrides.logoItems : null;
-    const localLogoItems = Array.isArray(admin.logoItems) ? admin.logoItems : null;
-    const liveHiddenLogos = Array.isArray(liveOverrides.hiddenLogos) ? liveOverrides.hiddenLogos : [];
-    const localHiddenLogos = Array.isArray(admin.hiddenLogos) ? admin.hiddenLogos : [];
-    const liveGuestsRow1Items = Array.isArray(liveOverrides.guestsRow1Items) ? liveOverrides.guestsRow1Items : null;
-    const localGuestsRow1Items = Array.isArray(admin.guestsRow1Items) ? admin.guestsRow1Items : null;
-    const liveHiddenGuestsRow1 = Array.isArray(liveOverrides.hiddenGuestsRow1) ? liveOverrides.hiddenGuestsRow1 : [];
-    const localHiddenGuestsRow1 = Array.isArray(admin.hiddenGuestsRow1) ? admin.hiddenGuestsRow1 : [];
-    const liveGuestsRow2Items = Array.isArray(liveOverrides.guestsRow2Items) ? liveOverrides.guestsRow2Items : null;
-    const localGuestsRow2Items = Array.isArray(admin.guestsRow2Items) ? admin.guestsRow2Items : null;
-    const liveHiddenGuestsRow2 = Array.isArray(liveOverrides.hiddenGuestsRow2) ? liveOverrides.hiddenGuestsRow2 : [];
-    const localHiddenGuestsRow2 = Array.isArray(admin.hiddenGuestsRow2) ? admin.hiddenGuestsRow2 : [];
+    const live = liveOverrides || {};
+    const cb = admin.contentBase || {};
+    const liveLayerD = live.layerDesktop || {};
+    const liveLayerM = live.layerMobile || {};
+    const locLayerD = admin.layerDesktop || {};
+    const locLayerM = admin.layerMobile || {};
+    // The device layer value (local-then-live) if the field is defined there.
+    const layerFor = (field) => {
+      if (canvasMobile) {
+        if (field in locLayerM) return locLayerM[field];
+        if (field in liveLayerM) return liveLayerM[field];
+      } else {
+        if (field in locLayerD) return locLayerD[field];
+        if (field in liveLayerD) return liveLayerD[field];
+      }
+      return undefined;
+    };
+    // Shared base (matches the previous merge: local wins for order/items;
+    // hidden lists are unioned).
+    const baseArr = (field) => {
+      if (Array.isArray(cb[field])) return cb[field];
+      return Array.isArray(live[field]) ? live[field] : null;
+    };
+    const baseHidden = (field) => Array.from(new Set([
+      ...(Array.isArray(live[field]) ? live[field] : []),
+      ...(Array.isArray(cb[field]) ? cb[field] : []),
+    ]));
+    const withLayer = (field, baseVal) => {
+      const lv = layerFor(field);
+      return lv !== undefined ? lv : baseVal;
+    };
     return {
       ...admin,
-      sectionOrder: localOrder || liveOrder,
-      hiddenSections: Array.from(new Set([...(liveHidden || []), ...(localHidden || [])])),
-      videoOrder: localVideoOrder || liveVideoOrder,
-      hiddenVideos: Array.from(new Set([...(liveHiddenVideos || []), ...(localHiddenVideos || [])])),
-      videoItems: localVideoItems || liveVideoItems,
-      podcastOrder: localPodcastOrder || livePodcastOrder,
-      hiddenPodcasts: Array.from(new Set([...(liveHiddenPodcasts || []), ...(localHiddenPodcasts || [])])),
-      podcastItems: localPodcastItems || livePodcastItems,
-      logoItems: localLogoItems || liveLogoItems,
-      hiddenLogos: Array.from(new Set([...(liveHiddenLogos || []), ...(localHiddenLogos || [])])),
-      guestsRow1Items: localGuestsRow1Items || liveGuestsRow1Items,
-      hiddenGuestsRow1: Array.from(new Set([...(liveHiddenGuestsRow1 || []), ...(localHiddenGuestsRow1 || [])])),
-      guestsRow2Items: localGuestsRow2Items || liveGuestsRow2Items,
-      hiddenGuestsRow2: Array.from(new Set([...(liveHiddenGuestsRow2 || []), ...(localHiddenGuestsRow2 || [])])),
+      sectionOrder: withLayer("sectionOrder", baseArr("sectionOrder")),
+      hiddenSections: withLayer("hiddenSections", baseHidden("hiddenSections")),
+      videoOrder: withLayer("videoOrder", baseArr("videoOrder")),
+      hiddenVideos: withLayer("hiddenVideos", baseHidden("hiddenVideos")),
+      videoItems: withLayer("videoItems", baseArr("videoItems")),
+      podcastOrder: withLayer("podcastOrder", baseArr("podcastOrder")),
+      hiddenPodcasts: withLayer("hiddenPodcasts", baseHidden("hiddenPodcasts")),
+      podcastItems: withLayer("podcastItems", baseArr("podcastItems")),
+      logoItems: withLayer("logoItems", baseArr("logoItems")),
+      hiddenLogos: withLayer("hiddenLogos", baseHidden("hiddenLogos")),
+      guestsRow1Items: withLayer("guestsRow1Items", baseArr("guestsRow1Items")),
+      hiddenGuestsRow1: withLayer("hiddenGuestsRow1", baseHidden("hiddenGuestsRow1")),
+      guestsRow2Items: withLayer("guestsRow2Items", baseArr("guestsRow2Items")),
+      hiddenGuestsRow2: withLayer("hiddenGuestsRow2", baseHidden("hiddenGuestsRow2")),
     };
-  }, [admin, liveOverrides]);
+  }, [admin, liveOverrides, canvasMobile]);
 
   // Editor preview device — constrains the rendered site to a phone-width
   // container (via .site-canvas--mobile) so the admin can preview mobile on a

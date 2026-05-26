@@ -69,7 +69,7 @@ function saveEditMode(mode) {
 function loadAdminState() {
   try {
     const raw = localStorage.getItem(ADMIN_STORAGE_KEY);
-    if (!raw) return { unlocked: false, overrides: {}, overridesDesktop: {}, overridesMobile: {}, sectionOrder: null, elementOffsets: {}, elementOffsetsDesktop: {}, elementOffsetsMobile: {}, hiddenSections: [], videoOrder: null, hiddenVideos: [], videoItems: null, podcastOrder: null, hiddenPodcasts: [], podcastItems: null, logoItems: null, hiddenLogos: [], guestsRow1Items: null, hiddenGuestsRow1: [], guestsRow2Items: null, hiddenGuestsRow2: [], publishedVersions: [] };
+    if (!raw) return { unlocked: false, overrides: {}, overridesDesktop: {}, overridesMobile: {}, sectionOrder: null, elementOffsets: {}, elementOffsetsDesktop: {}, elementOffsetsMobile: {}, hiddenSections: [], videoOrder: null, hiddenVideos: [], videoItems: null, podcastOrder: null, hiddenPodcasts: [], podcastItems: null, logoItems: null, hiddenLogos: [], guestsRow1Items: null, hiddenGuestsRow1: [], guestsRow2Items: null, hiddenGuestsRow2: [], layerDesktop: {}, layerMobile: {}, publishedVersions: [] };
     const parsed = JSON.parse(raw);
     return {
       unlocked: !!parsed.unlocked,
@@ -93,10 +93,12 @@ function loadAdminState() {
       hiddenGuestsRow1: Array.isArray(parsed.hiddenGuestsRow1) ? parsed.hiddenGuestsRow1 : [],
       guestsRow2Items: Array.isArray(parsed.guestsRow2Items) ? parsed.guestsRow2Items : null,
       hiddenGuestsRow2: Array.isArray(parsed.hiddenGuestsRow2) ? parsed.hiddenGuestsRow2 : [],
+      layerDesktop: (parsed.layerDesktop && typeof parsed.layerDesktop === "object") ? parsed.layerDesktop : {},
+      layerMobile: (parsed.layerMobile && typeof parsed.layerMobile === "object") ? parsed.layerMobile : {},
       publishedVersions: Array.isArray(parsed.publishedVersions) ? parsed.publishedVersions : [],
     };
   } catch (e) {
-    return { unlocked: false, overrides: {}, overridesDesktop: {}, overridesMobile: {}, sectionOrder: null, elementOffsets: {}, elementOffsetsDesktop: {}, elementOffsetsMobile: {}, hiddenSections: [], videoOrder: null, hiddenVideos: [], videoItems: null, podcastOrder: null, hiddenPodcasts: [], podcastItems: null, logoItems: null, hiddenLogos: [], guestsRow1Items: null, hiddenGuestsRow1: [], guestsRow2Items: null, hiddenGuestsRow2: [], publishedVersions: [] };
+    return { unlocked: false, overrides: {}, overridesDesktop: {}, overridesMobile: {}, sectionOrder: null, elementOffsets: {}, elementOffsetsDesktop: {}, elementOffsetsMobile: {}, hiddenSections: [], videoOrder: null, hiddenVideos: [], videoItems: null, podcastOrder: null, hiddenPodcasts: [], podcastItems: null, logoItems: null, hiddenLogos: [], guestsRow1Items: null, hiddenGuestsRow1: [], guestsRow2Items: null, hiddenGuestsRow2: [], layerDesktop: {}, layerMobile: {}, publishedVersions: [] };
   }
 }
 
@@ -223,6 +225,8 @@ function saveAdminState(state) {
         hiddenGuestsRow1: state.hiddenGuestsRow1 || [],
         guestsRow2Items: state.guestsRow2Items || null,
         hiddenGuestsRow2: state.hiddenGuestsRow2 || [],
+        layerDesktop: state.layerDesktop || {},
+        layerMobile: state.layerMobile || {},
         publishedVersions: state.publishedVersions || [],
       })
     );
@@ -361,6 +365,68 @@ function useAdminMode() {
     window.__cutsEditMode = editMode;
   }, [editMode]);
 
+  // ----- Per-device content layers (lists + sections) -----
+  // Each layer object holds, per device, a full independent value for any of
+  // the LAYERED_FIELDS. "both" mode writes the shared base (and clears that
+  // field from both layers); "desktop"/"mobile" write their own layer. A field
+  // resolves as layer[field] ?? base (replace semantics).
+  const [layerDesktop, setLayerDesktop] = React.useState(initial.layerDesktop || {});
+  const [layerMobile, setLayerMobile] = React.useState(initial.layerMobile || {});
+
+  // Base values mirrored to refs so toggle/update callbacks read fresh without
+  // re-creating (keeps them stable; avoids stale closures).
+  const baseRef = React.useRef({});
+  baseRef.current = {
+    videoItems, videoOrder, hiddenVideos,
+    podcastItems, podcastOrder, hiddenPodcasts,
+    logoItems, hiddenLogos,
+    guestsRow1Items, hiddenGuestsRow1,
+    guestsRow2Items, hiddenGuestsRow2,
+    sectionOrder, hiddenSections,
+  };
+  const layerDesktopRef = React.useRef(layerDesktop); layerDesktopRef.current = layerDesktop;
+  const layerMobileRef = React.useRef(layerMobile); layerMobileRef.current = layerMobile;
+
+  const baseSetters = React.useRef(null);
+  baseSetters.current = {
+    videoItems: setVideoItems, videoOrder: setVideoOrder, hiddenVideos: setHiddenVideos,
+    podcastItems: setPodcastItems, podcastOrder: setPodcastOrder, hiddenPodcasts: setHiddenPodcasts,
+    logoItems: setLogoItems, hiddenLogos: setHiddenLogos,
+    guestsRow1Items: setGuestsRow1Items, hiddenGuestsRow1: setHiddenGuestsRow1,
+    guestsRow2Items: setGuestsRow2Items, hiddenGuestsRow2: setHiddenGuestsRow2,
+    sectionOrder: setSectionOrder, hiddenSections: setHiddenSections,
+  };
+
+  // Write a layered field, routing by the active edit mode.
+  const setLayeredField = React.useCallback((field, value) => {
+    const mode = editModeRef.current;
+    if (mode === "mobile") {
+      setLayerMobile((p) => ({ ...p, [field]: value }));
+    } else if (mode === "desktop") {
+      setLayerDesktop((p) => ({ ...p, [field]: value }));
+    } else {
+      // both → shared base; clear any device-specific copy so it inherits base
+      baseSetters.current[field](value);
+      setLayerDesktop((p) => { if (!(field in p)) return p; const n = { ...p }; delete n[field]; return n; });
+      setLayerMobile((p) => { if (!(field in p)) return p; const n = { ...p }; delete n[field]; return n; });
+    }
+  }, []);
+
+  // Current effective value of a layered field for the ACTIVE edit layer.
+  const resolveLayeredForEdit = React.useCallback((field) => {
+    const mode = editModeRef.current;
+    const layer = mode === "mobile" ? layerMobileRef.current : mode === "desktop" ? layerDesktopRef.current : null;
+    if (layer && field in layer) return layer[field];
+    return baseRef.current[field];
+  }, []);
+
+  const toggleLayeredHidden = React.useCallback((field, id) => {
+    const cur = resolveLayeredForEdit(field) || [];
+    const set = new Set(cur);
+    if (set.has(id)) set.delete(id); else set.add(id);
+    setLayeredField(field, Array.from(set));
+  }, [resolveLayeredForEdit, setLayeredField]);
+
   React.useEffect(() => {
     const onUnlock = () => setUnlocked(true);
     window.addEventListener("cuts-admin-unlock", onUnlock);
@@ -403,6 +469,8 @@ function useAdminMode() {
         setHiddenGuestsRow1(Array.isArray(live.hiddenGuestsRow1) ? live.hiddenGuestsRow1 : []);
         setGuestsRow2Items(Array.isArray(live.guestsRow2Items) ? live.guestsRow2Items : null);
         setHiddenGuestsRow2(Array.isArray(live.hiddenGuestsRow2) ? live.hiddenGuestsRow2 : []);
+        setLayerDesktop(live.layerDesktop && typeof live.layerDesktop === "object" ? live.layerDesktop : {});
+        setLayerMobile(live.layerMobile && typeof live.layerMobile === "object" ? live.layerMobile : {});
       } catch (_) {
         // offline / rate-limited — keep local; publish guard still protects
       }
@@ -410,8 +478,8 @@ function useAdminMode() {
   }, [unlocked, overrides]);
 
   React.useEffect(() => {
-    saveAdminState({ unlocked, overrides, overridesDesktop, overridesMobile, sectionOrder, elementOffsets, elementOffsetsDesktop, elementOffsetsMobile, hiddenSections, videoOrder, hiddenVideos, videoItems, podcastOrder, hiddenPodcasts, podcastItems, logoItems, hiddenLogos, guestsRow1Items, hiddenGuestsRow1, guestsRow2Items, hiddenGuestsRow2, publishedVersions });
-  }, [unlocked, overrides, overridesDesktop, overridesMobile, sectionOrder, elementOffsets, elementOffsetsDesktop, elementOffsetsMobile, hiddenSections, videoOrder, hiddenVideos, videoItems, podcastOrder, hiddenPodcasts, podcastItems, logoItems, hiddenLogos, guestsRow1Items, hiddenGuestsRow1, guestsRow2Items, hiddenGuestsRow2, publishedVersions]);
+    saveAdminState({ unlocked, overrides, overridesDesktop, overridesMobile, sectionOrder, elementOffsets, elementOffsetsDesktop, elementOffsetsMobile, hiddenSections, videoOrder, hiddenVideos, videoItems, podcastOrder, hiddenPodcasts, podcastItems, logoItems, hiddenLogos, guestsRow1Items, hiddenGuestsRow1, guestsRow2Items, hiddenGuestsRow2, layerDesktop, layerMobile, publishedVersions });
+  }, [unlocked, overrides, overridesDesktop, overridesMobile, sectionOrder, elementOffsets, elementOffsetsDesktop, elementOffsetsMobile, hiddenSections, videoOrder, hiddenVideos, videoItems, podcastOrder, hiddenPodcasts, podcastItems, logoItems, hiddenLogos, guestsRow1Items, hiddenGuestsRow1, guestsRow2Items, hiddenGuestsRow2, layerDesktop, layerMobile, publishedVersions]);
 
   // mutual exclusion
   const setEditingTextSafe = React.useCallback((v) => {
@@ -442,8 +510,8 @@ function useAdminMode() {
   }, []);
 
   const updateSectionOrder = React.useCallback((order) => {
-    setSectionOrder(order);
-  }, []);
+    setLayeredField("sectionOrder", order);
+  }, [setLayeredField]);
 
   const updateElementOffset = React.useCallback((id, x, y) => {
     const mode = editModeRef.current;
@@ -458,83 +526,24 @@ function useAdminMode() {
     }
   }, []);
 
-  const toggleSectionHidden = React.useCallback((id) => {
-    setHiddenSections((prev) => {
-      const set = new Set(prev);
-      if (set.has(id)) set.delete(id);
-      else set.add(id);
-      return Array.from(set);
-    });
-  }, []);
+  const toggleSectionHidden = React.useCallback((id) => toggleLayeredHidden("hiddenSections", id), [toggleLayeredHidden]);
 
-  const updateVideoOrder = React.useCallback((order) => {
-    setVideoOrder(order);
-  }, []);
+  const updateVideoOrder = React.useCallback((order) => setLayeredField("videoOrder", order), [setLayeredField]);
+  const toggleVideoHidden = React.useCallback((id) => toggleLayeredHidden("hiddenVideos", id), [toggleLayeredHidden]);
+  const updateVideoItems = React.useCallback((items) => setLayeredField("videoItems", items), [setLayeredField]);
 
-  const toggleVideoHidden = React.useCallback((id) => {
-    setHiddenVideos((prev) => {
-      const set = new Set(prev);
-      if (set.has(id)) set.delete(id);
-      else set.add(id);
-      return Array.from(set);
-    });
-  }, []);
+  const updatePodcastOrder = React.useCallback((order) => setLayeredField("podcastOrder", order), [setLayeredField]);
+  const togglePodcastHidden = React.useCallback((id) => toggleLayeredHidden("hiddenPodcasts", id), [toggleLayeredHidden]);
+  const updatePodcastItems = React.useCallback((items) => setLayeredField("podcastItems", items), [setLayeredField]);
 
-  const updatePodcastOrder = React.useCallback((order) => {
-    setPodcastOrder(order);
-  }, []);
+  const updateLogoItems = React.useCallback((items) => setLayeredField("logoItems", items), [setLayeredField]);
+  const toggleLogoHidden = React.useCallback((src) => toggleLayeredHidden("hiddenLogos", src), [toggleLayeredHidden]);
 
-  const togglePodcastHidden = React.useCallback((id) => {
-    setHiddenPodcasts((prev) => {
-      const set = new Set(prev);
-      if (set.has(id)) set.delete(id);
-      else set.add(id);
-      return Array.from(set);
-    });
-  }, []);
+  const updateGuestsRow1Items = React.useCallback((items) => setLayeredField("guestsRow1Items", items), [setLayeredField]);
+  const toggleGuestsRow1Hidden = React.useCallback((src) => toggleLayeredHidden("hiddenGuestsRow1", src), [toggleLayeredHidden]);
 
-  const updatePodcastItems = React.useCallback((items) => {
-    setPodcastItems(items);
-  }, []);
-  const updateVideoItems = React.useCallback((items) => {
-    setVideoItems(items);
-  }, []);
-
-  const updateLogoItems = React.useCallback((items) => {
-    setLogoItems(items);
-  }, []);
-  const toggleLogoHidden = React.useCallback((src) => {
-    setHiddenLogos((prev) => {
-      const set = new Set(prev);
-      if (set.has(src)) set.delete(src);
-      else set.add(src);
-      return Array.from(set);
-    });
-  }, []);
-
-  const updateGuestsRow1Items = React.useCallback((items) => {
-    setGuestsRow1Items(items);
-  }, []);
-  const toggleGuestsRow1Hidden = React.useCallback((src) => {
-    setHiddenGuestsRow1((prev) => {
-      const set = new Set(prev);
-      if (set.has(src)) set.delete(src);
-      else set.add(src);
-      return Array.from(set);
-    });
-  }, []);
-
-  const updateGuestsRow2Items = React.useCallback((items) => {
-    setGuestsRow2Items(items);
-  }, []);
-  const toggleGuestsRow2Hidden = React.useCallback((src) => {
-    setHiddenGuestsRow2((prev) => {
-      const set = new Set(prev);
-      if (set.has(src)) set.delete(src);
-      else set.add(src);
-      return Array.from(set);
-    });
-  }, []);
+  const updateGuestsRow2Items = React.useCallback((items) => setLayeredField("guestsRow2Items", items), [setLayeredField]);
+  const toggleGuestsRow2Hidden = React.useCallback((src) => toggleLayeredHidden("hiddenGuestsRow2", src), [toggleLayeredHidden]);
 
   // Snapshot current state into the versions list (cap at MAX_VERSIONS).
   // Reads fresh from localStorage to avoid stale React closure bugs (edits
@@ -561,6 +570,8 @@ function useAdminMode() {
     const liveHiddenGuestsRow1 = current.hiddenGuestsRow1 || [];
     const liveGuestsRow2Items = current.guestsRow2Items || null;
     const liveHiddenGuestsRow2 = current.hiddenGuestsRow2 || [];
+    const liveLayerDesktop = current.layerDesktop || {};
+    const liveLayerMobile = current.layerMobile || {};
 
     const snapshot = {
       id: "v-" + Date.now() + "-" + Math.random().toString(36).slice(2, 8),
@@ -586,6 +597,8 @@ function useAdminMode() {
       hiddenGuestsRow1: liveHiddenGuestsRow1,
       guestsRow2Items: liveGuestsRow2Items,
       hiddenGuestsRow2: liveHiddenGuestsRow2,
+      layerDesktop: liveLayerDesktop,
+      layerMobile: liveLayerMobile,
     };
     setPublishedVersions((prev) => [snapshot, ...prev].slice(0, MAX_VERSIONS));
 
@@ -647,6 +660,8 @@ function useAdminMode() {
         hiddenGuestsRow1: liveHiddenGuestsRow1,
         guestsRow2Items: liveGuestsRow2Items,
         hiddenGuestsRow2: liveHiddenGuestsRow2,
+        layerDesktop: liveLayerDesktop,
+        layerMobile: liveLayerMobile,
       };
       const commit = await pushToGitHub(settings, payload);
       return { snapshot, published: true, commitUrl: commit.commit && commit.commit.html_url };
@@ -684,6 +699,8 @@ function useAdminMode() {
     setHiddenGuestsRow1(v.hiddenGuestsRow1 || []);
     setGuestsRow2Items(v.guestsRow2Items || null);
     setHiddenGuestsRow2(v.hiddenGuestsRow2 || []);
+    setLayerDesktop(v.layerDesktop || {});
+    setLayerMobile(v.layerMobile || {});
   }, [publishedVersions]);
 
   const deleteVersion = React.useCallback((id) => {
@@ -711,6 +728,8 @@ function useAdminMode() {
     setHiddenGuestsRow1([]);
     setGuestsRow2Items(null);
     setHiddenGuestsRow2([]);
+    setLayerDesktop({});
+    setLayerMobile({});
     if (window.__cutsRestoreOriginals) window.__cutsRestoreOriginals();
     if (window.__cutsClearAllTransforms) window.__cutsClearAllTransforms();
   }, []);
@@ -722,6 +741,21 @@ function useAdminMode() {
     setMovingElements(false);
   }, []);
 
+  // Resolve a layered field for the editor's current view (which equals the
+  // active edit mode's device). Modals + in-page admin UI read these so they
+  // always show/edit the layer matching the chosen mode.
+  const editViewLayer = previewDevice === "mobile" ? layerMobile : layerDesktop;
+  const pick = (field, baseVal) => (field in editViewLayer ? editViewLayer[field] : baseVal);
+  // Raw base values (for app.jsx to resolve by the live viewport, not editMode).
+  const contentBase = {
+    sectionOrder, hiddenSections,
+    videoOrder, hiddenVideos, videoItems,
+    podcastOrder, hiddenPodcasts, podcastItems,
+    logoItems, hiddenLogos,
+    guestsRow1Items, hiddenGuestsRow1,
+    guestsRow2Items, hiddenGuestsRow2,
+  };
+
   return {
     unlocked,
     editingText,
@@ -730,23 +764,28 @@ function useAdminMode() {
     overrides,
     overridesDesktop,
     overridesMobile,
-    sectionOrder,
     elementOffsets,
     elementOffsetsDesktop,
     elementOffsetsMobile,
-    hiddenSections,
-    videoOrder,
-    hiddenVideos,
-    videoItems,
-    podcastOrder,
-    hiddenPodcasts,
-    podcastItems,
-    logoItems,
-    hiddenLogos,
-    guestsRow1Items,
-    hiddenGuestsRow1,
-    guestsRow2Items,
-    hiddenGuestsRow2,
+    // Layered list/section fields — exposed resolved for the active edit view.
+    sectionOrder: pick("sectionOrder", sectionOrder),
+    hiddenSections: pick("hiddenSections", hiddenSections),
+    videoOrder: pick("videoOrder", videoOrder),
+    hiddenVideos: pick("hiddenVideos", hiddenVideos),
+    videoItems: pick("videoItems", videoItems),
+    podcastOrder: pick("podcastOrder", podcastOrder),
+    hiddenPodcasts: pick("hiddenPodcasts", hiddenPodcasts),
+    podcastItems: pick("podcastItems", podcastItems),
+    logoItems: pick("logoItems", logoItems),
+    hiddenLogos: pick("hiddenLogos", hiddenLogos),
+    guestsRow1Items: pick("guestsRow1Items", guestsRow1Items),
+    hiddenGuestsRow1: pick("hiddenGuestsRow1", hiddenGuestsRow1),
+    guestsRow2Items: pick("guestsRow2Items", guestsRow2Items),
+    hiddenGuestsRow2: pick("hiddenGuestsRow2", hiddenGuestsRow2),
+    // Raw layers + base for viewport-based resolution on the live site.
+    contentBase,
+    layerDesktop,
+    layerMobile,
     publishedVersions,
     previewDevice,
     editMode,
