@@ -5600,20 +5600,7 @@ function ServicesOld({ onCTAClick }) {
           אנחנו בונים את כל המכונה.
         </p>
 
-        <div className="cq-stack services-machine" style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 20, position: "relative" }}>
-          {/* "Production engine": animated wires link the 4 modules to a glowing
-              core in the 2x2 gap (desktop) / a flowing vertical spine (mobile). */}
-          <div className="machine-wires" aria-hidden="true">
-            <div className="machine-wire machine-wire--h"><span className="machine-wire__pulse" /></div>
-            <div className="machine-wire machine-wire--v"><span className="machine-wire__pulse" /></div>
-            <div className="machine-hub">
-              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round">
-                <rect x="7.5" y="7.5" width="9" height="9" rx="2.4" fill="rgba(255,213,0,0.14)" />
-                <circle cx="12" cy="12" r="1.8" fill="var(--accent)" stroke="none" />
-                <path d="M12 3.2v3M12 17.8v3M3.2 12h3M17.8 12h3" />
-              </svg>
-            </div>
-          </div>
+        <div className="cq-stack" style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 20 }}>
           {SERVICES.map((s, i) => {
             const span = s.highlight ? 6 : 3;
             return (
@@ -5677,54 +5664,6 @@ function ServicesOld({ onCTAClick }) {
         </div>
 
       </div>
-
-      <style>{`
-        .services-machine { position: relative; }
-        .machine-wires { position: absolute; inset: -6px 0; pointer-events: none; }
-        .machine-wire { position: absolute; background: rgba(255,213,0,0.13); overflow: hidden; border-radius: 2px; }
-        .machine-wire--v { left: 50%; top: 0; bottom: 0; width: 2px; transform: translateX(-50%); }
-        .machine-wire--h { top: 50%; left: 0; right: 0; height: 2px; transform: translateY(-50%); }
-        .machine-wire__pulse { position: absolute; }
-        .machine-wire--v .machine-wire__pulse {
-          left: -1px; right: -1px; height: 84px; top: 0;
-          background: linear-gradient(180deg, transparent, var(--accent), transparent);
-          box-shadow: 0 0 14px 1px rgba(255,213,0,0.55);
-          animation: wireFlowV 3.4s linear infinite;
-        }
-        .machine-wire--h .machine-wire__pulse {
-          top: -1px; bottom: -1px; width: 84px; left: 0;
-          background: linear-gradient(90deg, transparent, var(--accent), transparent);
-          box-shadow: 0 0 14px 1px rgba(255,213,0,0.55);
-          animation: wireFlowH 4.2s linear infinite;
-        }
-        @keyframes wireFlowV { 0% { top: -14%; } 100% { top: 100%; } }
-        @keyframes wireFlowH { 0% { left: -14%; } 100% { left: 100%; } }
-        .machine-hub {
-          position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
-          width: 72px; height: 72px; border-radius: 50%; z-index: 4;
-          display: flex; align-items: center; justify-content: center;
-          background: radial-gradient(circle, rgba(255,213,0,0.16), rgba(12,12,12,0.96) 72%);
-          border: 1.5px solid rgba(255,213,0,0.5);
-          box-shadow: 0 0 28px rgba(255,213,0,0.22), inset 0 0 18px rgba(255,213,0,0.1);
-        }
-        .machine-hub::after {
-          content: ""; position: absolute; inset: -7px; border-radius: 50%;
-          border: 1px solid rgba(255,213,0,0.35);
-          animation: hubPulse 2.6s ease-out infinite;
-        }
-        @keyframes hubPulse { 0% { transform: scale(0.92); opacity: 0.7; } 100% { transform: scale(1.55); opacity: 0; } }
-        .machine-card { isolation: isolate; }
-        .machine-card::before {
-          content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-          background: linear-gradient(90deg, transparent, rgba(255,213,0,0.55), transparent);
-          opacity: 0.4; transition: opacity .3s ease; z-index: 3; pointer-events: none;
-        }
-        .machine-card:hover::before { opacity: 1; }
-        /* Mobile: the cross + core collapse to a single flowing vertical spine. */
-        @container (max-width: 600px) {
-          .machine-wire--h, .machine-hub { display: none !important; }
-        }
-      `}</style>
     </section>);
 
 }
@@ -5749,7 +5688,6 @@ function ServiceCard({ s, i, span, children }) {
   return (
     <div
       ref={ref}
-      className="machine-card"
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}
       style={{
