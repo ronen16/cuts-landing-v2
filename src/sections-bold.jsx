@@ -733,7 +733,12 @@ function SocialProofSection({ onCTAClick, admin }) {
             key={i}
             data-vid-card="true"
             className="vid-card"
-            onClick={() => { if (hasVideo) { setPlayingIdx(i); setLoadedIdx(null); } }}
+            onClick={() => {
+              if (!hasVideo) return;
+              // Mobile: open the real Vimeo page (inline embeds are flaky on iOS).
+              if (stacked) { window.open("https://vimeo.com/" + v.vimeoId, "_blank", "noopener"); }
+              else { setPlayingIdx(i); setLoadedIdx(null); }
+            }}
             style={{
               flex: "0 0 calc((100% - 60px) / 4)",
               aspectRatio: "9 / 16",
@@ -4202,7 +4207,13 @@ function Results({ admin }) {
           <div
             key={i}
             data-case-card
-            onClick={() => { if (hasVideo) setPlayingIdx(i); }}
+            onClick={() => {
+              if (!hasVideo) return;
+              // Inline cross-site embeds are unreliable on mobile (iOS autoplay
+              // / tracking prevention) — open the real video instead.
+              if (stacked) { window.open("https://www.youtube.com/watch?v=" + c.youtubeId, "_blank", "noopener"); }
+              else { setPlayingIdx(i); }
+            }}
             style={{
               flex: stacked ? "0 0 auto" : `0 0 ${cardW}px`,
               width: stacked ? "100%" : undefined,
