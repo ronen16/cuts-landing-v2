@@ -948,23 +948,29 @@ function SocialProofSection({ onCTAClick, admin }) {
           box-shadow: 0 12px 30px -14px rgba(0,0,0,0.7);
           transition: transform 0.35s cubic-bezier(0.2,0.8,0.2,1), box-shadow 0.35s ease;
         }
-        .vid-card:hover {
-          transform: translateY(-5px);
-          box-shadow: inset 0 1px 0 rgba(255,255,255,0.05),
-                      0 22px 48px -12px rgba(0,0,0,0.7),
-                      0 14px 60px -6px rgba(255,213,0,0.14),
-                      0 0 110px rgba(255,213,0,0.06);
+        /* Hover lifts/scales ONLY on real-hover (desktop). On touch they fire on
+           the first tap, MOVE the card, and iOS aborts the tap — the animation
+           shows but nothing opens. @media(hover:hover) keeps them off touch. */
+        @media (hover: hover) {
+          .vid-card:hover {
+            transform: translateY(-5px);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.05),
+                        0 22px 48px -12px rgba(0,0,0,0.7),
+                        0 14px 60px -6px rgba(255,213,0,0.14),
+                        0 0 110px rgba(255,213,0,0.06);
+          }
+          [data-vid-card]:hover .vid-play-btn { transform: scale(1.08); }
+          [data-case-card]:hover .pod-play-btn { transform: scale(1.08); }
+          [data-case-card]:hover { transform: translateY(-4px); border-color: rgba(255,213,0,0.4); }
         }
         .vid-card__ring { display: none; }
         .vid-play-btn { transition: transform 0.3s cubic-bezier(0.2,0.8,0.2,1); }
-        [data-vid-card]:hover .vid-play-btn { transform: scale(1.08); }
         .vid-play-ring { animation: vidPlayPulse 2.4s ease-in-out infinite; }
         @keyframes vidPlayPulse {
           0%, 100% { transform: scale(1); opacity: 0.6; }
           50%      { transform: scale(1.14); opacity: 0; }
         }
         .pod-play-btn { transition: transform 0.3s cubic-bezier(0.2,0.8,0.2,1); }
-        [data-case-card]:hover .pod-play-btn { transform: scale(1.08); }
         .pod-play-ring { animation: vidPlayPulse 2.4s ease-in-out infinite; }
         @container (max-width: 900px) {
           .testimonial-video-scroller > [data-vid-card] {
@@ -4239,14 +4245,6 @@ function Results({ admin }) {
               cursor: hasVideo ? "pointer" : "default",
               display: "flex", flexDirection: "column",
               transition: "transform 0.25s ease, border-color 0.25s ease"
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = "translateY(-4px)";
-              e.currentTarget.style.borderColor = "rgba(255,213,0,0.4)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.borderColor = "var(--line2)";
             }}>
               {/* Mobile: native full-card link — opens the video on one tap.
                   A JS onClick gets aborted by the hover-lift on iOS. */}
