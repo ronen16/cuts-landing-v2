@@ -3625,8 +3625,7 @@ function GuestTile({ item, n, aspectStr, dup, width }) {
         flexShrink: 0,
         width, aspectRatio: aspectStr,
         marginInlineEnd: 14,
-        background: "var(--card)",
-        border: "1px solid var(--line2)",
+        background: "var(--bg)",
         borderRadius: 12,
         position: "relative",
         overflow: "hidden"
@@ -3647,6 +3646,19 @@ function GuestTile({ item, n, aspectStr, dup, width }) {
             pointerEvents: "none",
           }}
         />
+      )}
+      {/* Feather all four edges into the section background so the bright image
+          melts into the dark rather than sitting in a hard-edged black frame. */}
+      {hasImg && (
+        <div aria-hidden="true" style={{
+          position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none",
+          borderRadius: 12,
+          background:
+            "linear-gradient(to bottom, var(--bg), transparent 13%)," +
+            "linear-gradient(to top, var(--bg), transparent 13%)," +
+            "linear-gradient(to right, var(--bg), transparent 9%)," +
+            "linear-gradient(to left, var(--bg), transparent 9%)"
+        }} />
       )}
       {!hasImg && (
         <div style={{
