@@ -3641,8 +3641,10 @@ function GuestTile({ item, n, aspectStr, dup, width }) {
             width: "100%", height: "100%",
             objectFit: "cover",
             objectPosition: guestObjectPosition(ct.offsetX, ct.offsetY),
-            transform: `scale(${ct.scale})`,
+            transform: `scale(${ct.scale}) translateZ(0)`,
             transformOrigin: "center",
+            backfaceVisibility: "hidden",
+            WebkitBackfaceVisibility: "hidden",
             zIndex: 1,
             pointerEvents: "none",
           }}
@@ -3787,12 +3789,16 @@ function GuestStrip({ admin }) {
           50% { opacity: 0.3; transform: scale(0.7); }
         }
         .guest-marquee-row:hover { animation-play-state: paused; }
+        /* Promote rows to their own GPU layer so images don't momentarily
+           repaint to black (compositing flicker) during the animation. */
+        .guest-marquee-row { will-change: transform; }
         @container (max-width: 768px) {
           /* Tall (9:16) row stays compact so more faces scroll past; wide
-             (16:9) row shows ~one image at a time, scrolling faster on mobile. */
+             (16:9) row shows ~one image at a time. Both run faster on mobile. */
           .guest-marquee-row--tall > div { width: 105px !important; }
           .guest-marquee-row--wide > div { width: 255px !important; }
-          .guest-marquee-row--wide { animation-duration: 15s !important; }
+          .guest-marquee-row--tall { animation-duration: 15s !important; }
+          .guest-marquee-row--wide { animation-duration: 11s !important; }
           /* Blend the seam with the section above (Results): start the guest
              section at Results' card tone and fade to the page bg so there's no
              hard line OR tone step. Bottom already meets the next (bg) section. */
