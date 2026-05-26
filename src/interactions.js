@@ -2,18 +2,6 @@
 // Non-invasive — injects overlays and upgrades existing elements via event listeners.
 
 (function () {
-  // --- 1. Scroll progress bar ---
-  const progressBar = document.createElement("div");
-  progressBar.id = "scroll-progress";
-  Object.assign(progressBar.style, {
-    position: "fixed", top: "0", left: "0", right: "0",
-    height: "3px", background: "var(--accent, #FFD500)",
-    transformOrigin: "right", transform: "scaleX(0)",
-    zIndex: "100", transition: "transform .08s linear",
-    boxShadow: "0 0 12px var(--accent, #FFD500)",
-  });
-  document.body.appendChild(progressBar);
-
   // --- 2. Cursor glow ---
   const cursor = document.createElement("div");
   cursor.id = "cursor-glow";
@@ -44,14 +32,6 @@
   }
   loop();
 
-  // --- 3. Scroll handler ---
-  function onScroll() {
-    const h = document.documentElement;
-    const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight || 1);
-    progressBar.style.transform = `scaleX(${Math.min(1, Math.max(0, scrolled))})`;
-  }
-  window.addEventListener("scroll", onScroll, { passive: true });
-  onScroll();
 
   // --- 4. Reveal on scroll ---
   function setupReveal() {
