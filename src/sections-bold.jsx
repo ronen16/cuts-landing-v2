@@ -3594,19 +3594,70 @@ const DEFAULT_GUESTS_ROW1 = [
 ];
 const DEFAULT_GUESTS_ROW2 = [];
 
-// Keep a guest image's transform within the bounds that still fully COVER the
-// tile — so panning/zooming can never expose the tile's dark background
-// ("black edges"). objectFit:cover already fills at scale 1; a portrait tile
-// (9:16) fed a 16:9 source has huge horizontal slack but ZERO vertical slack at
-// scale 1, so vertical panning needs zoom. Scale is floored at 1 (shrinking
-// below cover is what creates edges).
-function clampGuestTransform(scale, offsetX, offsetY, portrait) {
+// Keep a guest image's transform within bounds that still fully COVER the tile,
+// so panning/zooming can never expose the tile's dark background ("black edge").
+// The <img> is objectFit:cover and CLIPPED to its element box (= the tile at
+// rest); a CSS transform moves that clipped box. So the only travel that stays
+// covered is the scale overflow — 50*(s-1) — in BOTH axes, independent of the
+// source aspect (the cover overflow is clipped, it grants no panning room).
+// Scale floors at 1 (below cover would leave gaps). SAFETY trims the last sliver
+// so subpixel rounding + the tile's 1px border can't reveal a hairline.
+const GUEST_PAN_SAFETY = 1.5; // percent
+function clampGuestTransform(scale, offsetX, offsetY) {
   const s = Math.max(1, Math.min(3, Number(scale) || 1));
-  const coverX = portrait ? (256 / 81) : 1; // 16:9 in 9:16 ≈ 3.16× horizontal overflow
-  const maxTx = 50 * (coverX * s - 1);
-  const maxTy = 50 * (s - 1);
-  const clamp = (v, m) => Math.max(-m, Math.min(m, Number(v) || 0));
-  return { scale: s, offsetX: clamp(offsetX, maxTx), offsetY: clamp(offsetY, maxTy) };
+  const max = Math.max(0, 50 * (s - 1) - GUEST_PAN_SAFETY);
+  const clamp = (v) => Math.max(-max, Math.min(max, Number(v) || 0));
+  return { scale: s, offsetX: clamp(offsetX), offsetY: clamp(offsetY) };
+}
+
+function GuestTile({ item, n, aspectStr, dup, width }) {
+  const hasImg = !!(item && item.src);
+  const ct = hasImg ? clampGuestTransform(item.scale, item.offsetX, item.offsetY) : null;
+  return (
+    <div
+      aria-hidden={dup > 0 ? "true" : undefined}
+      data-guest-num={n}
+      style={{
+        flexShrink: 0,
+        width, aspectRatio: aspectStr,
+        marginInlineEnd: 14,
+        background: "var(--card)",
+        border: "1px solid var(--line2)",
+        borderRadius: 12,
+        position: "relative",
+        overflow: "hidden"
+      }}>
+      {hasImg && (
+        <img
+          src={(window.__cutsDriveUrlToImage && window.__cutsDriveUrlToImage(item.src)) || item.src}
+          alt=""
+          draggable="false"
+          style={{
+            position: "absolute", inset: 0,
+            width: "100%", height: "100%",
+            objectFit: "cover", objectPosition: "center",
+            transform: `translate(${ct.offsetX}%, ${ct.offsetY}%) scale(${ct.scale})`,
+            transformOrigin: "center",
+            zIndex: 1,
+            pointerEvents: "none",
+          }}
+        />
+      )}
+      {!hasImg && (
+        <div style={{
+          position: "absolute", inset: 0,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          zIndex: 2
+        }}>
+          <svg width="66" height="66" viewBox="0 0 90 90" fill="none" aria-hidden="true">
+            <circle cx="45" cy="32" r="18" stroke="rgba(255,255,255,0.18)" strokeWidth="1.5" strokeDasharray="3 3" />
+            <path d="M14 84 C 14 64, 30 56, 45 56 C 60 56, 76 64, 76 84"
+              stroke="rgba(255,255,255,0.18)" strokeWidth="1.5" strokeDasharray="3 3" fill="none" />
+          </svg>
+        </div>
+      )}
+    </div>
+  );
 }
 
 if (typeof window !== "undefined") {
@@ -3705,56 +3756,15 @@ function GuestStrip({ admin }) {
                 {[...Array(3)].flatMap((_, dup) =>
                   padded.map((item, i) => {
                     const n = row.offset + (i + 1);
-                    const ct = item ? clampGuestTransform(item.scale, item.offsetX, item.offsetY, row.aspect === "9 / 16") : null;
                     return (
-                      <div
+                      <GuestTile
                         key={`${rowIdx}-${dup}-${i}`}
-                        aria-hidden={dup > 0 ? "true" : undefined}
-                        data-guest-num={n}
-                        style={{
-                          flexShrink: 0,
-                          width: row.width, aspectRatio: row.aspect,
-                          marginInlineEnd: 14,
-                          background: "var(--card)",
-                          border: "1px solid var(--line2)",
-                          borderRadius: 12,
-                          position: "relative",
-                          overflow: "hidden"
-                        }}>
-
-                        {/* image (if present) — covers the tile, custom transform */}
-                        {item && item.src && (
-                          <img
-                            src={(window.__cutsDriveUrlToImage && window.__cutsDriveUrlToImage(item.src)) || item.src}
-                            alt=""
-                            draggable="false"
-                            style={{
-                              position: "absolute", inset: 0,
-                              width: "100%", height: "100%",
-                              objectFit: "cover", objectPosition: "center",
-                              transform: `translate(${ct.offsetX}%, ${ct.offsetY}%) scale(${ct.scale})`,
-                              transformOrigin: "center",
-                              zIndex: 1,
-                              pointerEvents: "none",
-                            }}
-                          />
-                        )}
-
-                        {/* Empty placeholder silhouette only when there is no image */}
-                        {!(item && item.src) && (
-                          <div style={{
-                            position: "absolute", inset: 0,
-                            display: "flex", alignItems: "center", justifyContent: "center",
-                            zIndex: 2
-                          }}>
-                            <svg width="66" height="66" viewBox="0 0 90 90" fill="none" aria-hidden="true">
-                              <circle cx="45" cy="32" r="18" stroke="rgba(255,255,255,0.18)" strokeWidth="1.5" strokeDasharray="3 3" />
-                              <path d="M14 84 C 14 64, 30 56, 45 56 C 60 56, 76 64, 76 84"
-                                stroke="rgba(255,255,255,0.18)" strokeWidth="1.5" strokeDasharray="3 3" fill="none" />
-                            </svg>
-                          </div>
-                        )}
-                      </div>
+                        item={item}
+                        n={n}
+                        aspectStr={row.aspect}
+                        dup={dup}
+                        width={row.width}
+                      />
                     );
                   })
                 )}

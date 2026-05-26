@@ -1485,10 +1485,11 @@ function AdminGuestsModal({ admin }) {
   const setField = (i, key, val) => {
     const n = items.slice();
     let item = { ...n[i], [key]: val };
-    // Clamp so the image always covers the tile (no black edges). row 1 = 9:16
-    // portrait tile; row 2 = 16:9. Re-clamps offsets whenever scale changes too.
+    // Clamp so the image always covers the tile (no black edges). Pan room is
+    // the scale overflow only — the objectFit:cover content is clipped to the
+    // element box, so source aspect grants no extra travel.
     if (window.__cutsClampGuestTransform) {
-      const ct = window.__cutsClampGuestTransform(item.scale, item.offsetX, item.offsetY, row === 1);
+      const ct = window.__cutsClampGuestTransform(item.scale, item.offsetX, item.offsetY);
       item = { ...item, scale: ct.scale, offsetX: ct.offsetX, offsetY: ct.offsetY };
     }
     n[i] = item; sync(n);
