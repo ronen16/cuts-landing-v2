@@ -3987,7 +3987,7 @@ function Results({ admin }) {
             margin: 0, fontWeight: 900, lineHeight: 1.1,
             textWrap: "balance"
           }}>
-            <span style={{ opacity: 0.92 }}>ככה נראים </span>
+            <span style={{ opacity: 0.92, display: "block" }}>ככה נראים</span>
             <span style={{
               color: "var(--accent)",
               textShadow: "0 0 50px rgba(255,213,0,0.45), 0 0 90px rgba(255,213,0,0.2)",
