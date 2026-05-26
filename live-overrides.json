@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "publishedAt": "2026-05-26T09:36:47.492Z",
+  "publishedAt": "2026-05-26T11:28:24.026Z",
   "overrides": {
     "sec:how-it-works>button[0]#h:d901835d": "👁 הצג",
     "sec:services>section[0]>div[0]>div[1]>div[0]>h3[0]#h:a5c90c46": "צילום ותאורה מקצועית",
@@ -239,37 +239,37 @@
     {
       "src": "https://drive.google.com/thumbnail?id=1xaZLUfFoLCDR9zNKeMNw5PnMBOOzumIy&sz=w1600",
       "scale": 1.05,
-      "offsetX": 1,
+      "offsetX": -1,
       "offsetY": 0
     },
     {
       "src": "https://drive.google.com/thumbnail?id=1qlSipj17jULXyaVafgbEv9-s7U1H_cjz&sz=w1600",
-      "scale": 1.1,
-      "offsetX": 4,
+      "scale": 1.05,
+      "offsetX": -7,
       "offsetY": 4
     },
     {
       "src": "assets/guests/guest-02.jpg",
-      "scale": 1.2,
-      "offsetX": 7,
+      "scale": 1.1,
+      "offsetX": -7,
       "offsetY": 0
     },
     {
       "src": "assets/guests/guest-01.jpg",
       "scale": 1.05,
-      "offsetX": 0,
+      "offsetX": -1,
       "offsetY": 0
     },
     {
       "src": "https://drive.google.com/thumbnail?id=1X0JFz9tULPITNPIWfDgTcPLKyBtUtSM-&sz=w1600",
-      "scale": 1.3,
-      "offsetX": 13,
+      "scale": 1.05,
+      "offsetX": -11,
       "offsetY": 2
     },
     {
       "src": "assets/guests/guest-05.jpg",
-      "scale": 1.2,
-      "offsetX": 8,
+      "scale": 1,
+      "offsetX": -10,
       "offsetY": 2
     },
     {
@@ -280,44 +280,44 @@
     },
     {
       "src": "assets/guests/guest-03.jpg",
-      "scale": 1.2,
-      "offsetX": 4,
+      "scale": 1.1,
+      "offsetX": -4,
       "offsetY": 0
     },
     {
       "src": "https://drive.google.com/thumbnail?id=1WMjy8Lc34ZoFcdhX39mrvwBgiqIF0uKK&sz=w1600",
       "scale": 1.05,
-      "offsetX": 2,
+      "offsetX": 0,
       "offsetY": 0
     },
     {
       "src": "assets/guests/guest-04.jpg",
-      "scale": 1.1,
-      "offsetX": 3,
+      "scale": 1.05,
+      "offsetX": -1,
       "offsetY": 0
     },
     {
       "src": "https://drive.google.com/thumbnail?id=1DPm5kz3TMfHevPCNvstm3sYKtTuptwhZ&sz=w1600",
-      "scale": 1.1,
-      "offsetX": 3,
+      "scale": 1,
+      "offsetX": -3,
       "offsetY": 2
     },
     {
       "src": "https://drive.google.com/thumbnail?id=1uBIakQH4Dn_dlCQpVwtVKIJRPZGPdct4&sz=w1600",
-      "scale": 1.25,
-      "offsetX": 0,
+      "scale": 1.15,
+      "offsetX": 1,
       "offsetY": 5
     },
     {
       "src": "https://drive.google.com/thumbnail?id=1XL5gL3E-iqhhiy1-x1mJF0gtIzOL2KfS&sz=w1600",
-      "scale": 1.1,
-      "offsetX": 5,
+      "scale": 1,
+      "offsetX": -8,
       "offsetY": 4
     },
     {
       "src": "https://drive.google.com/thumbnail?id=1jaN_cvd5alBbZzXS0WS1a8ys9-ANWqL1&sz=w1600",
-      "scale": 1.1,
-      "offsetX": -2,
+      "scale": 1.05,
+      "offsetX": 3,
       "offsetY": 0
     }
   ],
