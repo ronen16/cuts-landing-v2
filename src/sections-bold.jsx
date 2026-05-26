@@ -3207,6 +3207,9 @@ function MiniLeadStripe({ form }) {
         @container (max-width: 720px) {
           .mini-lead-row { flex-direction: column; align-items: stretch !important; gap: 16px !important; }
           .mini-lead-row > div:first-child { text-align: center; }
+          /* In column flow the children's "flex: 1 1 280/520px" becomes a huge
+             HEIGHT — reset to content height so there's no dead space. */
+          .mini-lead-row > * { flex: 0 0 auto !important; }
           /* Stack the form fields full-width at normal height (no odd wrapping) */
           .mini-lead-form { flex-direction: column !important; flex-wrap: nowrap !important; gap: 12px !important; }
           .mini-lead-form > input,
