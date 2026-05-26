@@ -1,0 +1,737 @@
+- generic [ref=e3]:
+  - generic [ref=e5]:
+    - navigation [ref=e6]:
+      - generic [ref=e7]:
+        - link "Cuts" [ref=e8] [cursor=pointer]:
+          - /url: "#"
+          - img "Cuts" [ref=e9]
+        - list [ref=e10]:
+          - listitem [ref=e11]:
+            - link "איך זה עובד" [ref=e12] [cursor=pointer]:
+              - /url: "#how"
+          - listitem [ref=e13]:
+            - link "למה אנחנו" [ref=e14] [cursor=pointer]:
+              - /url: "#why"
+          - listitem [ref=e15]:
+            - link "תוצאות" [ref=e16] [cursor=pointer]:
+              - /url: "#results"
+          - listitem [ref=e17]:
+            - link "שאלות" [ref=e18] [cursor=pointer]:
+              - /url: "#faq"
+        - button "בואו נדבר ←" [ref=e19] [cursor=pointer]
+    - generic [ref=e23]:
+      - generic [ref=e24]:
+        - generic [ref=e26]: LIVE
+        - generic [ref=e28]: שחם 8, פתח תקווה
+      - generic [ref=e29]:
+        - generic [ref=e35]:
+          - generic [ref=e38]: REC
+          - img [ref=e40]
+          - generic [ref=e44]: דמיינו את זה לרגע
+        - heading "הליד הבא שלכם מגיע לפגישה כשהוא כבר יודע מי אתם ורק רוצה לדעת איך מתחילים." [level=1] [ref=e51]:
+          - generic [ref=e52]: הליד הבא שלכם מגיע לפגישה
+          - generic [ref=e54]: כשהוא כבר יודע מי אתם
+          - generic [ref=e56]:
+            - text: ורק רוצה לדעת
+            - generic [ref=e57]: איך מתחילים.
+      - paragraph [ref=e59]: פעם הייתם צריכים להסביר מי אתם בכל שיחת מכירה. עם פודקאסט — הם כבר יודעים.
+      - button "אני רוצה להפוך למותג ←" [ref=e61] [cursor=pointer]
+      - paragraph [ref=e62]:
+        - generic [ref=e63]: אין שיחת מכירה לוחצת
+        - generic [ref=e65]: 30 דקות, ללא עלות
+        - generic [ref=e67]: נחזור אליך תוך 24 שעות
+    - generic [ref=e70]:
+      - generic [ref=e72]:
+        - paragraph
+        - heading "לפני שאתם ממשיכים לקרוא זה מה שהלקוחות שלנו מספרים." [level=2] [ref=e73]:
+          - generic [ref=e74]: לפני שאתם ממשיכים לקרוא
+          - generic [ref=e76]: זה מה שהלקוחות שלנו מספרים.
+      - generic [ref=e78]:
+        - button "הקודם" [ref=e79] [cursor=pointer]:
+          - img [ref=e80]
+        - button "הבא" [ref=e82] [cursor=pointer]:
+          - img [ref=e83]
+        - generic [ref=e85]:
+          - generic [ref=e86] [cursor=pointer]:
+            - img "בן לביא" [ref=e87]
+            - img [ref=e92]
+            - generic [ref=e97]:
+              - generic [ref=e98]: בן לביא
+              - generic [ref=e99]: יזם · לביא טכנולוגיות
+          - generic [ref=e100] [cursor=pointer]:
+            - img "תמיר מנדבוסקי" [ref=e101]
+            - img [ref=e106]
+            - generic [ref=e111]:
+              - generic [ref=e112]: תמיר מנדבוסקי
+              - generic [ref=e113]: מייסד · סטודיו תמיר
+          - generic [ref=e114] [cursor=pointer]:
+            - img "רון לנדסמן" [ref=e115]
+            - img [ref=e120]
+            - generic [ref=e125]:
+              - generic [ref=e126]: רון לנדסמן
+              - generic [ref=e127]: סמנכ"ל שיווק
+          - generic [ref=e128] [cursor=pointer]:
+            - img "עומר מיראן" [ref=e129]
+            - img [ref=e134]
+            - generic [ref=e139]:
+              - generic [ref=e140]: עומר מיראן
+              - generic [ref=e141]: יזם · נדל"ן ופיננסים
+          - generic [ref=e142] [cursor=pointer]:
+            - img "מור פאר" [ref=e143]
+            - img [ref=e148]
+            - generic [ref=e153]:
+              - generic [ref=e154]: מור פאר
+              - generic [ref=e155]: מאמנת עסקית
+          - generic [ref=e156] [cursor=pointer]:
+            - img "רם יצחק שדה" [ref=e157]
+            - img [ref=e162]
+            - generic [ref=e167]:
+              - generic [ref=e168]: רם יצחק שדה
+              - generic [ref=e169]: יועץ אסטרטגי לעסקים
+          - generic [ref=e170] [cursor=pointer]:
+            - img "שגיא גורניק" [ref=e171]
+            - img [ref=e176]
+            - generic [ref=e181]:
+              - generic [ref=e182]: שגיא גורניק
+              - generic [ref=e183]: מנכ"ל · קבוצת גורניק
+          - generic [ref=e184] [cursor=pointer]:
+            - img "עופר ברקן" [ref=e185]
+            - img [ref=e190]
+            - generic [ref=e195]:
+              - generic [ref=e196]: עופר ברקן
+              - generic [ref=e197]: מייסד · ברקן דיגיטל
+          - generic [ref=e198] [cursor=pointer]:
+            - img "בן לביא" [ref=e199]
+            - img [ref=e204]
+            - generic [ref=e209]:
+              - generic [ref=e210]: בן לביא
+              - generic [ref=e211]: יזם · לביא טכנולוגיות
+          - generic [ref=e212] [cursor=pointer]:
+            - img "תמיר מנדבוסקי" [ref=e213]
+            - img [ref=e218]
+            - generic [ref=e223]:
+              - generic [ref=e224]: תמיר מנדבוסקי
+              - generic [ref=e225]: מייסד · סטודיו תמיר
+          - generic [ref=e226] [cursor=pointer]:
+            - img "רון לנדסמן" [ref=e227]
+            - img [ref=e232]
+            - generic [ref=e237]:
+              - generic [ref=e238]: רון לנדסמן
+              - generic [ref=e239]: סמנכ"ל שיווק
+          - generic [ref=e240] [cursor=pointer]:
+            - img "עומר מיראן" [ref=e241]
+            - img [ref=e246]
+            - generic [ref=e251]:
+              - generic [ref=e252]: עומר מיראן
+              - generic [ref=e253]: יזם · נדל"ן ופיננסים
+          - generic [ref=e254] [cursor=pointer]:
+            - img "מור פאר" [ref=e255]
+            - img [ref=e260]
+            - generic [ref=e265]:
+              - generic [ref=e266]: מור פאר
+              - generic [ref=e267]: מאמנת עסקית
+          - generic [ref=e268] [cursor=pointer]:
+            - img "רם יצחק שדה" [ref=e269]
+            - img [ref=e274]
+            - generic [ref=e279]:
+              - generic [ref=e280]: רם יצחק שדה
+              - generic [ref=e281]: יועץ אסטרטגי לעסקים
+          - generic [ref=e282] [cursor=pointer]:
+            - img "שגיא גורניק" [ref=e283]
+            - img [ref=e288]
+            - generic [ref=e293]:
+              - generic [ref=e294]: שגיא גורניק
+              - generic [ref=e295]: מנכ"ל · קבוצת גורניק
+          - generic [ref=e296] [cursor=pointer]:
+            - img "עופר ברקן" [ref=e297]
+            - img [ref=e302]
+            - generic [ref=e307]:
+              - generic [ref=e308]: עופר ברקן
+              - generic [ref=e309]: מייסד · ברקן דיגיטל
+          - generic [ref=e310] [cursor=pointer]:
+            - img "בן לביא" [ref=e311]
+            - img [ref=e316]
+            - generic [ref=e321]:
+              - generic [ref=e322]: בן לביא
+              - generic [ref=e323]: יזם · לביא טכנולוגיות
+          - generic [ref=e324] [cursor=pointer]:
+            - img "תמיר מנדבוסקי" [ref=e325]
+            - img [ref=e330]
+            - generic [ref=e335]:
+              - generic [ref=e336]: תמיר מנדבוסקי
+              - generic [ref=e337]: מייסד · סטודיו תמיר
+          - generic [ref=e338] [cursor=pointer]:
+            - img "רון לנדסמן" [ref=e339]
+            - img [ref=e344]
+            - generic [ref=e349]:
+              - generic [ref=e350]: רון לנדסמן
+              - generic [ref=e351]: סמנכ"ל שיווק
+          - generic [ref=e352] [cursor=pointer]:
+            - img "עומר מיראן" [ref=e353]
+            - img [ref=e358]
+            - generic [ref=e363]:
+              - generic [ref=e364]: עומר מיראן
+              - generic [ref=e365]: יזם · נדל"ן ופיננסים
+          - generic [ref=e366] [cursor=pointer]:
+            - img "מור פאר" [ref=e367]
+            - img [ref=e372]
+            - generic [ref=e377]:
+              - generic [ref=e378]: מור פאר
+              - generic [ref=e379]: מאמנת עסקית
+          - generic [ref=e380] [cursor=pointer]:
+            - img "רם יצחק שדה" [ref=e381]
+            - img [ref=e386]
+            - generic [ref=e391]:
+              - generic [ref=e392]: רם יצחק שדה
+              - generic [ref=e393]: יועץ אסטרטגי לעסקים
+          - generic [ref=e394] [cursor=pointer]:
+            - img "שגיא גורניק" [ref=e395]
+            - img [ref=e400]
+            - generic [ref=e405]:
+              - generic [ref=e406]: שגיא גורניק
+              - generic [ref=e407]: מנכ"ל · קבוצת גורניק
+          - generic [ref=e408] [cursor=pointer]:
+            - img "עופר ברקן" [ref=e409]
+            - img [ref=e414]
+            - generic [ref=e419]:
+              - generic [ref=e420]: עופר ברקן
+              - generic [ref=e421]: מייסד · ברקן דיגיטל
+    - generic [ref=e427]:
+      - generic [ref=e428]:
+        - generic [ref=e429]: שיחת אבחון · ללא עלות
+        - heading "רוצים לראות אם זה מתאים לכם? השאירו פרטים." [level=3] [ref=e430]
+      - generic [ref=e431]:
+        - textbox "שם מלא" [ref=e432]
+        - textbox "טלפון" [ref=e433]
+        - button "שליחה ←" [ref=e434] [cursor=pointer]
+        - generic [ref=e436] [cursor=pointer]:
+          - checkbox "אני מאשר/ת שקראתי ואני מסכים/ה לתקנון האתר"
+          - img [ref=e438]
+          - generic [ref=e440]:
+            - text: אני מאשר/ת שקראתי ואני מסכים/ה
+            - button "לתקנון האתר" [ref=e441]
+    - generic [ref=e445]:
+      - generic [ref=e448]: אזהרה · המציאות החדשה של 2026
+      - heading "המשחק של הפרסום הממומן השתנה. מי שלא מבין את זה, ימשיך לשלם יותר ולסגור פחות." [level=2] [ref=e449]:
+        - generic [ref=e450]: המשחק של הפרסום הממומן השתנה.
+        - generic [ref=e451]: מי שלא מבין את זה,
+        - generic [ref=e453]: ימשיך לשלם יותר ולסגור פחות.
+      - paragraph [ref=e455]: הנתונים מהשנה האחרונה לא משאירים מקום לפרשנות.
+      - generic [ref=e456]:
+        - generic [ref=e457]:
+          - generic [ref=e458]: ↑ עולה
+          - generic [ref=e459]: +25%
+          - generic [ref=e460]: עליית מחיר ליד בגוגל
+          - generic [ref=e462]: כל שנה אתם משלמים יותר — ומקבלים לידים פחות רלוונטיים
+        - generic [ref=e463]:
+          - generic [ref=e464]: ↓ יורד
+          - generic [ref=e465]: 2.23%
+          - generic [ref=e466]: אחוז המרה ממוצע ב־B2B
+          - generic [ref=e468]: מתוך 100 אנשים שרואים את המודעה — 98 גוללים הלאה בלי לעצור
+        - generic [ref=e469]:
+          - generic [ref=e470]: ↑ עולה
+          - generic [ref=e471]: 96%
+          - generic [ref=e472]: נוטשים את האתר שלכם
+          - generic [ref=e474]: מתוך 100 אנשים שנכנסים — 96 עוזבים בלי להשאיר פרטים. כי הם עוד לא סומכים עליכם
+      - generic [ref=e475]:
+        - generic [ref=e476]:
+          - paragraph [ref=e477]:
+            - text: אנחנו יודעים שאתם מרגישים את זה עכשיו -
+            - strong [ref=e478]: מחירי הלידים מזנקים, אחוזי ההמרה צונחים.
+            - text: הקהל שלכם גולל הלאה לפני שהם בכלל יודעים מי אתם.
+            - text: זה לא מצב זמני, מחירי הלידים עולים כל שנה -
+            - strong [ref=e479]: ואין סיבה שזה יעצור.
+            - text: כל עוד אתם משלמים על תשומת לב -
+            - strong [ref=e480]: מישהו אחר יכול להציע יותר ולקחת אותה מכם.
+          - paragraph [ref=e481]: יש רק דרך אחת לצאת מהמשחק הזה.
+        - generic [ref=e487]: מחיר ליד ממוצע
+        - img [ref=e488]:
+          - generic [ref=e489]: תחזית →
+          - generic [ref=e493]: "'22"
+          - generic [ref=e495]: "'23"
+          - generic [ref=e497]: "'24"
+          - generic [ref=e499]: "'25"
+          - generic [ref=e501]: "'26"
+          - generic [ref=e503]: "'27"
+          - generic [ref=e507]: שילמתם 10₪ לליד
+          - generic [ref=e511]: תשלמו 300₪+ לליד
+    - generic [ref=e515]:
+      - heading "מפסיקים למכור בכוח גורמים ללקוחות לבוא אליכם." [level=2] [ref=e516]:
+        - generic [ref=e518]:
+          - text: מפסיקים
+          - generic [ref=e519]: למכור בכוח
+        - generic [ref=e522]: גורמים ללקוחות לבוא אליכם.
+      - paragraph [ref=e525]:
+        - text: פודקאסט הוא הכלי השיווקי היחיד שמייצר שלושה דברים בו־זמנית,
+        - text: "שאף פורמט אחר לא נותן:"
+      - generic [ref=e526]:
+        - generic [ref=e527] [cursor=pointer]:
+          - generic: "01"
+          - generic [ref=e528]: "01"
+          - heading "קשר אישי עמוק" [level=3] [ref=e529]
+          - paragraph [ref=e530]: 30–60 דקות שבהן הלקוח הפוטנציאלי שומע אותך מדבר, חושב, מתלבט, צוחק. הוא מתחיל להרגיש שהוא מכיר אותך. לא כספק, כבן אדם.
+          - generic:
+            - generic: תרחיש אמיתי
+            - list:
+              - listitem: לקוח מאזין בדרך לעבודה.
+              - listitem: שומע אותך נאבק בסוגיה שגם הוא נאבק בה.
+              - listitem: מרגיש שהוא מכיר אותך חודשים לפני פגישה.
+          - generic [ref=e531]: ←
+        - generic [ref=e532] [cursor=pointer]:
+          - generic: "02"
+          - generic [ref=e533]: "02"
+          - heading "ביסוס סמכות מקצועית" [level=3] [ref=e534]
+          - paragraph [ref=e535]: כל פרק אתה מנתח, משתף ידע, מראיין. הלקוח כבר לא מחפש ״מי יעשה לי את זה״. הוא מחפש דווקא אותך.
+          - generic:
+            - generic: תרחיש אמיתי
+            - list:
+              - listitem: פרק על טעות נפוצה בתחום שלך.
+              - listitem: לקוח מגגל את הבעיה, מוצא את הפרק.
+              - listitem: הוא פונה אליך — לא למתחרה.
+          - generic [ref=e536]: ←
+        - generic [ref=e537] [cursor=pointer]:
+          - generic: "03"
+          - generic [ref=e538]: "03"
+          - heading "אמון שנבנה לאורך זמן" [level=3] [ref=e539]
+          - paragraph [ref=e540]: עד שהלקוח מגיע לשיחת מכירה — הוא כבר ״מכיר אותך מהפודקאסט״, 90% מעבודת השכנוע כבר קרתה. הוא לא בא להתמקח — הוא בא להצטרף.
+          - generic:
+            - generic: תרחיש אמיתי
+            - list:
+              - listitem: ״שמעתי את הפרק על…״.
+              - listitem: במקום ״תשכנע אותי למה אתה״.
+              - listitem: שיחת מכירה הופכת לשיחת הצטרפות.
+          - generic [ref=e541]: ←
+      - generic [ref=e542]:
+        - generic [ref=e544]: השורה התחתונה
+        - paragraph [ref=e545]:
+          - generic [ref=e546]:
+            - text: זה בדיוק ההבדל בין
+            - generic [ref=e547]: לקוח שמתמקח על כל שקל
+            - text: ","
+          - generic [ref=e548]:
+            - text: ללקוח ששואל
+            - generic [ref=e549]: איפה להעביר את התשלום
+            - text: .
+    - generic [ref=e554]:
+      - generic [ref=e555]:
+        - generic [ref=e558]: שיחת אבחון · ללא עלות
+        - heading "מוכנים לבנות פודקאסט שמייצר לכם לקוחות?" [level=2] [ref=e559]:
+          - text: מוכנים לבנות פודקאסט
+          - text: שמייצר לכם לקוחות?
+        - paragraph [ref=e560]:
+          - text: השאירו פרטים ונחזור אליכם תוך 24 שעות לקביעת שיחת אבחון ללא עלות.
+          - text: בלי שיחת מכירה לוחצת, ובלי התחייבות.
+        - list [ref=e561]:
+          - listitem [ref=e562]:
+            - generic [ref=e563]: ✓
+            - text: נצלול לעסק שלכם ולקהל היעד.
+          - listitem [ref=e564]:
+            - generic [ref=e565]: ✓
+            - text: נבדוק אם פודקאסט מתאים לכם.
+          - listitem [ref=e566]:
+            - generic [ref=e567]: ✓
+            - text: נראה לכם דוגמאות אמיתיות.
+      - generic [ref=e568]:
+        - generic [ref=e569]:
+          - generic [ref=e570]: שם מלא
+          - textbox "משה לוי" [ref=e571]
+        - generic [ref=e572]:
+          - generic [ref=e573]: טלפון
+          - textbox "054-000-0000" [ref=e574]
+        - generic [ref=e576] [cursor=pointer]:
+          - checkbox "אני מאשר/ת שקראתי ואני מסכים/ה לתקנון האתר"
+          - img [ref=e578]
+          - generic [ref=e580]:
+            - text: אני מאשר/ת שקראתי ואני מסכים/ה
+            - button "לתקנון האתר" [ref=e581]
+        - button "בואו נקבע שיחה ←" [ref=e582] [cursor=pointer]
+        - paragraph [ref=e583]: אין שיחת מכירה לוחצת · נחזור תוך 24 שעות
+    - generic [ref=e587]:
+      - heading "פודקאסט לא מתאים לכולם. אבל אם אתם כאן כנראה שזה בדיוק בשבילכם." [level=2] [ref=e589]:
+        - generic [ref=e590]: פודקאסט לא מתאים לכולם.
+        - generic [ref=e591]:
+          - text: אבל אם אתם כאן
+          - generic [ref=e592]: כנראה שזה בדיוק בשבילכם.
+      - generic [ref=e594]:
+        - generic [ref=e595]:
+          - generic: 01 / 04
+          - heading "יועצים ומומחים שמוכרים שירות יקר" [level=3] [ref=e598]:
+            - generic [ref=e600]: יועצים ומומחים שמוכרים שירות יקר
+          - paragraph [ref=e601]: לקוח שמגיע אחרי 10 פרקים שווה פי 3 מליד קר — הוא כבר מאמין לכם לפני שדיברתם.
+        - generic [ref=e602]:
+          - generic: 02 / 04
+          - heading "בעלי עסקים עם מחזור מכירות ארוך" [level=3] [ref=e605]:
+            - generic [ref=e607]: בעלי עסקים עם מחזור מכירות ארוך
+          - paragraph [ref=e608]: כל ליד קר עולה לכם זמן וכסף. פודקאסט מחמם אותו לפני שהוא מגיע אליכם.
+        - generic [ref=e609]:
+          - generic: 03 / 04
+          - heading "חברות טכנולוגיה שרוצים לבנות מותג" [level=3] [ref=e612]:
+            - generic [ref=e614]: חברות טכנולוגיה שרוצים לבנות מותג
+          - paragraph [ref=e615]: שרוצים שהשוק יכיר אותם — לא רק את השירות שהם מוכרים.
+        - generic [ref=e616]:
+          - generic: 04 / 04
+          - heading "אנשי מקצוע שהמוניטין הוא הנכס שלהם" [level=3] [ref=e619]:
+            - generic [ref=e621]: אנשי מקצוע שהמוניטין הוא הנכס שלהם
+          - paragraph [ref=e622]: עורכי דין, רואי חשבון, יועצים וכו' — שהמוניטין שלהם שווה יותר מכל פרסומת.
+      - generic [ref=e624]:
+        - generic [ref=e625]:
+          - img
+          - generic [ref=e628]:
+            - generic [ref=e629]: ✗
+            - generic [ref=e630]: לא בשבילכם
+          - paragraph [ref=e631]: אם אתם מוכרים מוצר שצריך להסביר ב־30 שניות — פודקאסט הוא לא הכלי הנכון.
+          - list [ref=e632]:
+            - listitem [ref=e633]:
+              - generic [ref=e634]: ✗
+              - generic [ref=e635]: מוצרים שמוכרים בנפח גדול ומחיר נמוך
+            - listitem [ref=e636]:
+              - generic [ref=e637]: ✗
+              - generic [ref=e638]: עסקים שצריכים תוצאות מיידיות בלבד
+            - listitem [ref=e639]:
+              - generic [ref=e640]: ✗
+              - generic [ref=e641]: קמפיינים שרצים פחות מ־48 שעות
+            - listitem [ref=e642]:
+              - generic [ref=e643]: ✗
+              - generic [ref=e644]: קהל שלא מתחבר לפורמט — רק מסרטון
+        - generic [ref=e645]:
+          - img
+          - generic [ref=e648]:
+            - generic [ref=e649]: ✓
+            - generic [ref=e650]: זה בשבילכם
+          - paragraph [ref=e651]: אם אתם מוכרים אמון, ניסיון, או ידע — ואין לכם כלי שעובד בשבילכם 24/7 בלי לשלם על כל קליק.
+          - list [ref=e652]:
+            - listitem [ref=e653]:
+              - img [ref=e655]
+              - generic [ref=e657]: מחזור מכירה ארוך שרוצים לקצר
+            - listitem [ref=e658]:
+              - img [ref=e660]
+              - generic [ref=e662]: מותג אישי שרוצים לבנות לאורך זמן
+            - listitem [ref=e663]:
+              - img [ref=e665]
+              - generic [ref=e667]: קהל יעד מוגדר שיודעים מה הוא צריך
+            - listitem [ref=e668]:
+              - img [ref=e670]
+              - generic [ref=e672]: רוצים לקוחות שמגיעים מוכנים — לא כאלה שצריך לשכנע
+          - generic [ref=e673]:
+            - paragraph [ref=e674]:
+              - text: לא בטוחים לאיזה צד אתם שייכים?
+              - strong [ref=e675]: נגיד לכם בשיחה.
+            - link "בואו נבדוק יחד →" [ref=e676] [cursor=pointer]:
+              - /url: "#cta"
+    - generic [ref=e680]:
+      - heading "אתם מדברים. אנחנו דואגים לכל השאר." [level=2] [ref=e682]:
+        - generic [ref=e683]: אתם מדברים.
+        - generic [ref=e685]: אנחנו דואגים לכל השאר.
+      - paragraph [ref=e687]: אתם לא צריכים ציוד יקר, לא צריכים לחפש עורכים, ולא צריכים לחפש צלמים ומעצבים, אנחנו בונים את כל המכונה.
+      - generic [ref=e688]:
+        - generic [ref=e689]:
+          - generic [ref=e690]: "01"
+          - generic [ref=e691]: "01"
+          - heading "צילום ותאורה מקצועית" [level=3] [ref=e692]
+          - paragraph [ref=e693]:
+            - text: צילום מקצועי עם מספר מצלמות וסאונד נקי, אפילו מתאימים את התאורה לצבעי המותג שלכם.
+            - text: ואתם יוצאים עם תוכן שנראה כמו תוכנית בנטפליקס.
+        - generic [ref=e694]:
+          - generic [ref=e695]: "02"
+          - generic [ref=e696]: "02"
+          - heading "עריכת פרקים מלאים" [level=3] [ref=e697]
+          - paragraph [ref=e698]:
+            - text: כל פרק עובר עריכה מקצועית וקפדנית - חיתוכים, מוזיקה, ניתוב זוויות ועריכת צבע וסאונד.
+            - text: פרק שתצלמו היום ימשיך להביא לקוחות גם עוד שנתיים.
+        - generic [ref=e699]:
+          - generic [ref=e700]: "03"
+          - generic [ref=e701]: "03"
+          - heading "רילסים וסרטונים קצרים" [level=3] [ref=e702]
+          - paragraph [ref=e703]:
+            - blockquote [ref=e704]:
+              - paragraph [ref=e705]: מכל פרק אנחנו נוציא את הרילסים הכי טובים ונהפוך את הפודקאסט שלכם למכונת תוכן שתמשיך להביא לכם עוקבים, חשיפה, וקהל שסומך עליכם.
+        - generic [ref=e706]:
+          - generic [ref=e707]: "04"
+          - generic [ref=e708]: "04"
+          - heading "טאמבניילים וכותרות לפלטפורמות" [level=3] [ref=e709]
+          - paragraph [ref=e710]:
+            - text: טאמבניילים וכותרות הם הפנים של הפודקאסט שלכם, זה מה שקובע אם אנשים יכנסו לצפות בפרקים.
+            - text: אנחנו נעצב ונבחר לכם טאמבניילים וכותרות מושכים שיגרמו לאנשים ללחוץ דווקא על הפרק שלכם.
+        - img [ref=e714]
+    - generic [ref=e725]:
+      - generic [ref=e726]:
+        - generic [ref=e729]: זמינים השבוע
+        - heading "בואו נראה איך הפודקאסט שלכם ייראה." [level=2] [ref=e730]
+        - paragraph [ref=e731]:
+          - text: שיחת אבחון קצרה, ללא עלות. נכיר את העסק שלכם.
+          - text: נבדוק התאמה לפודקאסט, ונראה לכם דוגמאות אמיתיות מתוך האולפן.
+      - generic [ref=e732]:
+        - generic [ref=e734]:
+          - generic [ref=e735]: שם מלא
+          - textbox "ישראל ישראלי" [ref=e736]
+        - generic [ref=e737]:
+          - generic [ref=e738]: טלפון
+          - textbox "050-0000000" [ref=e739]
+        - generic [ref=e741] [cursor=pointer]:
+          - checkbox "אני מאשר/ת שקראתי ואני מסכים/ה לתקנון האתר"
+          - img [ref=e743]
+          - generic [ref=e745]:
+            - text: אני מאשר/ת שקראתי ואני מסכים/ה
+            - button "לתקנון האתר" [ref=e746]
+        - button "קביעת שיחת אבחון ←" [ref=e747] [cursor=pointer]:
+          - text: קביעת שיחת אבחון
+          - generic [ref=e748]: ←
+        - paragraph [ref=e749]: ללא ספאם · ללא שיחות מכירה לוחצות
+    - generic [ref=e752]:
+      - heading "ככה נראים הפודקאסטים שלנו." [level=2] [ref=e755]:
+        - text: ככה נראים
+        - generic [ref=e756]: הפודקאסטים שלנו.
+      - generic [ref=e758]:
+        - button "הקודם" [ref=e759] [cursor=pointer]:
+          - img [ref=e760]
+        - button "הבא" [ref=e762] [cursor=pointer]:
+          - img [ref=e763]
+    - heading "כאן אנחנו הופכים מומחים למותגים." [level=2] [ref=e916]:
+      - text: כאן אנחנו הופכים
+      - generic [ref=e917]: מומחים למותגים.
+    - generic [ref=e985]:
+      - generic [ref=e989]: מבצע לזמן מוגבל
+      - heading "פרק ניסיון בלי התחייבות. אפס סיכון." [level=2] [ref=e991]:
+        - generic [ref=e992]: פרק ניסיון בלי התחייבות.
+        - generic [ref=e994]: אפס סיכון.
+      - paragraph [ref=e996]: לא צריך להאמין לנו על המילה — תנו לתוצאה לדבר בעצמה.
+      - generic [ref=e997]:
+        - generic [ref=e998]:
+          - generic [ref=e1001]: "01"
+          - generic [ref=e1002]: מקליטים פרק ניסיון.
+          - generic [ref=e1003]: במחיר היכרות מיוחד.
+        - generic [ref=e1004]:
+          - generic [ref=e1007]: "02"
+          - generic [ref=e1008]: אתם רואים את התוצאה.
+          - generic [ref=e1009]: פרק ערוך עם רילסים.
+        - generic [ref=e1010]:
+          - generic [ref=e1013]: "03"
+          - generic [ref=e1014]: אתם מחליטים.
+          - generic [ref=e1015]: ממשיכים או עוצרים — בחירתכם.
+      - generic [ref=e1016]:
+        - generic [ref=e1017]:
+          - img
+          - generic [ref=e1020]:
+            - generic [ref=e1021]: ✗ אם לא אהבתם
+            - generic [ref=e1022]: עוצרים. בלי שאלות מיותרות.
+            - generic [ref=e1023]: אנחנו לא מאמינים בלקוחות שנשארים כי הם חייבים.
+        - generic [ref=e1024]:
+          - img
+          - generic [ref=e1027]:
+            - generic [ref=e1028]: ✓ אם אהבתם
+            - generic [ref=e1029]: ממשיכים עם חבילה מותאמת + 25% הנחה.
+            - generic [ref=e1030]: כי סמכתם עלינו מהצעד הראשון.
+      - generic [ref=e1031]:
+        - generic "רק למצטרפים השבוע" [ref=e1032]:
+          - img [ref=e1035]
+          - generic [ref=e1037]:
+            - generic [ref=e1038]: השבוע בלבד
+            - generic [ref=e1039]: הבונוסים האלה ניתנים רק למי שמשאיר פרטים השבוע
+          - img [ref=e1040]
+        - heading "סוגרים השבוע — מקבלים גם את זה." [level=3] [ref=e1042]
+        - paragraph [ref=e1043]: 4 מדריכים דיגיטליים בחינם — שיעזרו לכם להפיק את המקסימום מהפודקאסטים שלכם.
+        - generic [ref=e1044]:
+          - generic [ref=e1045]:
+            - generic: "01"
+            - generic [ref=e1047]: בונוס 01
+            - generic [ref=e1048]: 20 רעיונות לפרקים בתחומכם
+            - generic [ref=e1049]: רשימה מותאמת אישית של 20 נושאים שמעניינים את הלקוחות שלכם — מוכן להקלטה.
+            - generic [ref=e1050]:
+              - generic [ref=e1051]:
+                - generic [ref=e1052]: שווי
+                - generic [ref=e1053]: ₪180
+              - generic [ref=e1054]: ←
+              - generic [ref=e1055]:
+                - img [ref=e1056]
+                - generic [ref=e1058]: חינם
+          - generic [ref=e1059]:
+            - generic: "02"
+            - generic [ref=e1061]: בונוס 02
+            - generic [ref=e1062]: "מדריך: איך מכינים פרק שמוכר"
+            - generic [ref=e1063]: כל מה שצריך לדעת לפני ההקלטה — שאלות, מבנה, וכיצד לגרום לאורח לדבר על מה שמעניין את הקהל שלכם.
+            - generic [ref=e1064]:
+              - generic [ref=e1065]:
+                - generic [ref=e1066]: שווי
+                - generic [ref=e1067]: ₪290
+              - generic [ref=e1068]: ←
+              - generic [ref=e1069]:
+                - img [ref=e1070]
+                - generic [ref=e1072]: חינם
+          - generic [ref=e1073]:
+            - generic: "03"
+            - generic [ref=e1075]: בונוס 03
+            - generic [ref=e1076]: "מדריך: פתיחת פודקאסט בכל הפלטפורמות"
+            - generic [ref=e1077]: Spotify, Apple, YouTube — מדריך מלא להעלאה והגדרה בכל הפלטפורמות בפעם הראשונה.
+            - generic [ref=e1078]:
+              - generic [ref=e1079]:
+                - generic [ref=e1080]: שווי
+                - generic [ref=e1081]: ₪220
+              - generic [ref=e1082]: ←
+              - generic [ref=e1083]:
+                - img [ref=e1084]
+                - generic [ref=e1086]: חינם
+          - generic [ref=e1087]:
+            - generic: "04"
+            - generic [ref=e1089]: בונוס 04
+            - generic [ref=e1090]: "מדריך: איך עובדים עם ManyChat"
+            - generic [ref=e1091]: הגדרה מלאה של אוטומציה שמביאה לידים מהפודקאסט ישירות לוואטסאפ — צעד אחר צעד.
+            - generic [ref=e1092]:
+              - generic [ref=e1093]:
+                - generic [ref=e1094]: שווי
+                - generic [ref=e1095]: ₪250
+              - generic [ref=e1096]: ←
+              - generic [ref=e1097]:
+                - img [ref=e1098]
+                - generic [ref=e1100]: חינם
+        - generic [ref=e1101]:
+          - generic [ref=e1102]: ההטבה נגמרת ברגע שהשעון מגיע לאפס.
+          - generic [ref=e1103]:
+            - generic [ref=e1104]:
+              - generic [ref=e1108]: "01"
+              - generic [ref=e1111]: שניות
+            - generic [ref=e1112]: ":"
+            - generic [ref=e1113]:
+              - generic [ref=e1117]: "08"
+              - generic [ref=e1120]: דקות
+            - generic [ref=e1121]: ":"
+            - generic [ref=e1122]:
+              - generic [ref=e1126]: "55"
+              - generic [ref=e1129]: שעות
+    - generic [ref=e1135]:
+      - generic [ref=e1136]:
+        - generic [ref=e1137]: שיחת אבחון · ללא עלות
+        - heading "רוצים לראות אם זה מתאים לכם? השאירו פרטים" [level=3] [ref=e1138]
+      - generic [ref=e1139]:
+        - textbox "שם מלא" [ref=e1140]
+        - textbox "טלפון" [ref=e1141]
+        - button "שליחה ←" [ref=e1142] [cursor=pointer]
+        - generic [ref=e1144] [cursor=pointer]:
+          - checkbox "אני מאשר/ת שקראתי ואני מסכים/ה לתקנון האתר"
+          - img [ref=e1146]
+          - generic [ref=e1148]:
+            - text: אני מאשר/ת שקראתי ואני מסכים/ה
+            - button "לתקנון האתר" [ref=e1149]
+    - generic [ref=e1153]:
+      - heading "שאלות נפוצות" [level=2] [ref=e1154]
+      - generic [ref=e1155]:
+        - generic [ref=e1156] [cursor=pointer]:
+          - generic [ref=e1157]:
+            - generic [ref=e1158]:
+              - generic [ref=e1159]: "01"
+              - generic [ref=e1160]: "שאלה #1 — לא הנחיתי פודקאסט מעולם. זה לא יתאים לי."
+            - generic [ref=e1162]: ▾
+          - paragraph [ref=e1165]: זו נקודת ההתחלה של 90% מהלקוחות שלנו. אנחנו בונים איתך פורמט שיושב בדיוק על הקול הטבעי שלך, עם מבנה ברור לכל פרק — אתה לא צריך להמציא כלום. תוך 2–3 פרקים זה יהיה לך נוח כמו לדבר בפגישת לקוח.
+        - generic [ref=e1166] [cursor=pointer]:
+          - generic [ref=e1167]:
+            - generic [ref=e1168]:
+              - generic [ref=e1169]: "02"
+              - listitem [ref=e1171]: מה קורה אם לא אהבתי את הפרק הראשון?
+            - generic [ref=e1173]: ▾
+          - paragraph [ref=e1174]: פרק ראשון יוצא תוך 3–4 שבועות מיום הצילום. הקפיצה המשמעותית בלידים מגיעה בדרך כלל בין פרק 8 ל־12 — כשהאלגוריתם מתחיל להכיר אותך, והקהל מתחיל לצפות לפרקים הבאים.
+        - generic [ref=e1175] [cursor=pointer]:
+          - generic [ref=e1176]:
+            - generic [ref=e1177]:
+              - generic [ref=e1178]: "03"
+              - generic [ref=e1179]: "שאלה #3 — כמה זמן אני צריך להקדיש לזה בכל חודש?"
+            - generic [ref=e1181]: ▾
+          - paragraph [ref=e1182]: "יום צילום אחד בחודש (4–6 פרקים בבת אחת), פלוס שעה־שעתיים לאישורים ופידבקים. בפועל: 10–12 שעות בחודש בלבד. השאר — עלינו."
+        - generic [ref=e1183] [cursor=pointer]:
+          - generic [ref=e1184]:
+            - generic [ref=e1185]:
+              - generic [ref=e1186]: "04"
+              - generic [ref=e1187]: מה אם אין לי אורחים?
+            - generic [ref=e1189]: ▾
+          - paragraph [ref=e1190]: פודקאסט לא חייב להיות עם אורחים. אנחנו בונים איתך את הפורמט הנכון — סולו, עם אורחים, פאנלים, או שילוב. אם בחרנו פורמט עם אורחים — אנחנו עוזרים גם במציאה ובהזמנה שלהם.
+        - generic [ref=e1191] [cursor=pointer]:
+          - generic [ref=e1192]:
+            - generic [ref=e1193]:
+              - generic [ref=e1194]: "05"
+              - generic [ref=e1195]: הפודקאסט הוא שלי או שלכם?
+            - generic [ref=e1197]: ▾
+          - paragraph [ref=e1198]: שלך. לגמרי. הערוץ, הקבצים הגולמיים, השם, הזכויות — הכל שלך. אנחנו השותפים שמייצרים אותו, לא הבעלים שלו.
+        - generic [ref=e1199] [cursor=pointer]:
+          - generic [ref=e1200]:
+            - generic [ref=e1201]:
+              - generic [ref=e1202]: "06"
+              - generic [ref=e1203]: "שאלה #6 — האם זה מתאים גם לעסק קטן / עצמאי?"
+            - generic [ref=e1205]: ▾
+          - paragraph [ref=e1206]: כן — בתנאי שאתה מוכר משהו עם מרווח רציני (שירותים, ייעוץ, מוצרים פרימיום). עסק שמוכר מוצר של 50 ש״ח לא יחזיר את ההשקעה. עסק שמוכר ליווי של 30,000 ש״ח — יחזיר אותה עם פרק אחד שהביא עסקה.
+        - generic [ref=e1207] [cursor=pointer]:
+          - generic [ref=e1208]:
+            - generic [ref=e1209]:
+              - generic [ref=e1210]: "07"
+              - generic [ref=e1211]: "שאלה #7 — יש סרטון לדוגמא של עבודה שלכם?"
+            - generic [ref=e1213]: ▾
+          - paragraph [ref=e1214]: בוודאי. בשיחת ההיכרות נשלח לך דוגמאות מהפקות קודמות, וגם דוגמאות של רילסים וסוגי thumbnails כדי שתבין בדיוק איך זה נראה.
+    - generic [ref=e1219]:
+      - generic [ref=e1220]:
+        - paragraph
+        - heading "עד כאן קראתם - הגיע הזמן לדבר." [level=2] [ref=e1221]
+        - paragraph [ref=e1222]: השאירו פרטים ונחזור אליכם תוך 24 שעות לשיחה קצרה, נבין אם פודקאסט מתאים לכם, ואם כן - נצא לדרך.
+        - list [ref=e1223]:
+          - listitem [ref=e1224]:
+            - generic [ref=e1225]: ✓
+            - generic [ref=e1226]: מבינים את העסק שלכם ואת קהל היעד.
+          - listitem [ref=e1227]:
+            - generic [ref=e1228]: ✓
+            - generic [ref=e1229]: בודקים אם פודקאסט מתאים לעסק שלכם.
+          - listitem [ref=e1230]:
+            - generic [ref=e1231]: ✓
+            - generic [ref=e1232]: מראים לכם תוצאות של לקוחות אמיתיים.
+        - generic [ref=e1233]:
+          - generic [ref=e1234]: מקומות מוגבלים החודש
+          - heading "3 מקומות פנויים לפודקאסטים חדשים" [level=3] [ref=e1236]
+          - paragraph [ref=e1237]:
+            - text: האולפן עובד בתפוסה כמעט מלאה, כדי להמשיך לתת את השירות הטוב ביותר
+            - text: לכל לקוח אנחנו פותחים מקום ללקוחות חדשים פעם בחודש.
+          - generic [ref=e1238]:
+            - generic [ref=e1239]:
+              - generic [ref=e1240]: ✓
+              - text: ללא התחייבות
+            - generic [ref=e1241]:
+              - generic [ref=e1242]: ✓
+              - text: שיחת אבחון 30 דק׳
+            - generic [ref=e1243]:
+              - generic [ref=e1244]: ✓
+              - text: מענה תוך 24 שעות
+      - generic [ref=e1245]:
+        - generic [ref=e1247]:
+          - generic [ref=e1248]: שיחת אבחון · ללא עלות
+          - heading "קביעת שיחה" [level=3] [ref=e1249]
+        - generic [ref=e1250]:
+          - generic [ref=e1251]:
+            - generic [ref=e1252]: שם מלא
+            - textbox "משה לוי" [ref=e1253]
+          - generic [ref=e1254]:
+            - generic [ref=e1255]: טלפון
+            - textbox "054-000-0000" [ref=e1256]
+          - generic [ref=e1258] [cursor=pointer]:
+            - checkbox "אני מאשר/ת שקראתי ואני מסכים/ה לתקנון האתר"
+            - img [ref=e1260]
+            - generic [ref=e1262]:
+              - text: אני מאשר/ת שקראתי ואני מסכים/ה
+              - button "לתקנון האתר" [ref=e1263]
+          - button "בואו נקבע שיחה ←" [ref=e1264] [cursor=pointer]
+        - generic [ref=e1265]:
+          - generic [ref=e1266]:
+            - generic [ref=e1267]:
+              - generic [ref=e1268]: ✓
+              - text: ללא התחייבות
+            - generic [ref=e1269]:
+              - generic [ref=e1270]: ✓
+              - text: 30 דקות
+            - generic [ref=e1271]:
+              - generic [ref=e1272]: ✓
+              - text: מענה תוך 24ש׳
+          - paragraph [ref=e1273]: אין שיחת מכירה לוחצת. רק שיחת אבחון אמיתית.
+    - contentinfo [ref=e1274]:
+      - generic [ref=e1275]:
+        - generic [ref=e1276]:
+          - link "מדיניות פרטיות" [ref=e1277] [cursor=pointer]:
+            - /url: privacy.html
+          - generic [ref=e1278]: ·
+          - link "תקנון האתר" [ref=e1279] [cursor=pointer]:
+            - /url: terms.html
+        - generic [ref=e1280]: © 2026 CUTS. כל הזכויות שמורות.
+  - button "פתיחת תפריט נגישות" [ref=e1281] [cursor=pointer]:
+    - img [ref=e1282]

@@ -1,0 +1,244 @@
+- generic [ref=e4]:
+  - banner [ref=e6]:
+    - generic [ref=e8]:
+      - generic [ref=e9]:
+        - button "Guide" [ref=e11] [cursor=pointer]
+        - generic [ref=e13]:
+          - link "YouTube Home" [ref=e14] [cursor=pointer]:
+            - /url: /
+          - generic [ref=e18]: IL
+        - button "Skip navigation" [ref=e22] [cursor=pointer]:
+          - generic [ref=e23]: Skip navigation
+      - button "Search" [ref=e29] [cursor=pointer]:
+        - tooltip "tooltip"
+      - generic [ref=e32]:
+        - button "Settings" [ref=e37] [cursor=pointer]
+        - link "Sign in" [ref=e41] [cursor=pointer]:
+          - /url: https://accounts.google.com/ServiceLogin?service=youtube&uilel=3&passive=true&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Ddesktop%26hl%3Den%26next%3Dhttps%253A%252F%252Fwww.youtube.com%252Fwatch%253Fv%253DbXAmsbiZwIg&hl=en&ec=65620
+          - generic [ref=e44]: Sign in
+  - main [ref=e49]:
+    - complementary [ref=e55]:
+      - generic "YouTube Video Player" [ref=e58]:
+        - button "Play" [ref=e61] [cursor=pointer]:
+          - img
+        - generic [ref=e62]:
+          - generic [ref=e63] [cursor=pointer]:
+            - slider "Seek slider" [ref=e64]
+            - generic:
+              - generic:
+                - generic:
+                  - slider "Click or scroll the panel for the precise seeking."
+          - generic [ref=e72]:
+            - generic [ref=e73]:
+              - button "Pause (k)" [ref=e74] [cursor=pointer]:
+                - img
+              - button "0 Minutes 0 Seconds of 1 Hours 19 Minutes 3 Seconds" [ref=e77] [cursor=pointer]: 0:00 / 1:19:03
+            - button [ref=e80] [cursor=pointer]:
+              - img
+    - generic [ref=e84]:
+      - generic [ref=e85]:
+        - generic [ref=e87]:
+          - heading "איך להחזיר את התשוקה לחיים, להפוך למנהיג ולנצח כל משבר | הפודקאסט של רון לנדסמן פרק 95 (4K)" [level=1] [ref=e89]
+          - generic [ref=e90]:
+            - generic [ref=e91]:
+              - generic [ref=e92]:
+                - link [ref=e93] [cursor=pointer]:
+                  - /url: /@mr.landsman
+                - generic [ref=e95]:
+                  - generic "רון לנדסמן - Ron Landsman" [ref=e99]:
+                    - link "רון לנדסמן - Ron Landsman" [ref=e100] [cursor=pointer]:
+                      - /url: /@mr.landsman
+                  - generic "12.9 thousand subscribers" [ref=e101]: 12.9K subscribers
+                - button "Join this channel" [ref=e108] [cursor=pointer]:
+                  - generic [ref=e109]: Join
+              - button "Subscribe to רון לנדסמן - Ron Landsman." [ref=e118] [cursor=pointer]:
+                - generic [ref=e119]: Subscribe
+            - generic [ref=e126]:
+              - generic [ref=e127]:
+                - generic [ref=e131]:
+                  - button "like this video along with 49 other people" [ref=e135] [cursor=pointer]:
+                    - generic [ref=e138]: "49"
+                  - button "Dislike this video" [ref=e145] [cursor=pointer]
+                - button "Share" [ref=e153] [cursor=pointer]:
+                  - generic [ref=e156]: Share
+              - button "Save to playlist" [ref=e163] [cursor=pointer]:
+                - generic [ref=e166]: Save
+              - button "More actions" [ref=e171] [cursor=pointer]
+          - generic [ref=e179] [cursor=pointer]:
+            - generic [ref=e180]:
+              - generic [ref=e182]:
+                - text: 1.5K views 12 days ago
+                - link "הפודקאסט של רון לנדסמן" [ref=e183]:
+                  - /url: /playlist?list=PLmoSQVQ4B7Ppfwm-ZGyDXNQzMquoMB5Ij
+              - tooltip "tooltip"
+            - generic [ref=e184]:
+              - generic [ref=e185]:
+                - generic [ref=e188]: בפרק הזה דיברנו על איך מחזירים את האש כשהמוטיבציה דועכת, ומה הופך איש מקצוע למנהל ומנהיג מצוין? צללנו לשיקולים בבחירת מנטור ותוספי תזונה, ונבין איך למקסם למידה ולהפוך ידע לתוצאות בשטח. שיחה
+                - generic: …
+              - button "...more" [ref=e189]
+        - text: •
+      - generic [ref=e195]:
+        - generic [ref=e197] [cursor=pointer]:
+          - link [ref=e198]:
+            - /url: /watch?v=1bv_ZoRq9_k
+            - generic [ref=e205]: 31:17
+          - generic [ref=e207]:
+            - generic [ref=e208]:
+              - heading "מה שתגידו עונה 5 | 20.05.26 31 minutes" [level=3] [ref=e209]:
+                - link "מה שתגידו עונה 5 | 20.05.26 31 minutes" [ref=e210]:
+                  - /url: /watch?v=1bv_ZoRq9_k
+                  - text: מה שתגידו עונה 5 | 20.05.26
+              - generic [ref=e212]:
+                - group [ref=e213]:
+                  - generic [ref=e214]:
+                    - text: כאן 11 - תאגיד השידור הישראלי
+                    - img [ref=e217]
+                - group [ref=e218]:
+                  - generic [ref=e219]: 21K views
+                  - generic [ref=e220]: •
+                  - generic "5 days ago" [ref=e221]
+                - group [ref=e222]:
+                  - generic [ref=e226]: New
+            - button "More actions" [ref=e229]
+        - generic [ref=e236] [cursor=pointer]:
+          - link [ref=e237]:
+            - /url: /watch?v=DEkNdpFBFr4
+            - generic [ref=e244]: 18:30
+          - generic [ref=e246]:
+            - generic [ref=e247]:
+              - 'heading "Tucker Carlson: \"Netanyahu is leading to destruction, Israel dragged us into war\" 18 minutes" [level=3] [ref=e248]':
+                - 'link "Tucker Carlson: \"Netanyahu is leading to destruction, Israel dragged us into war\" 18 minutes" [ref=e249]':
+                  - /url: /watch?v=DEkNdpFBFr4
+                  - text: "Tucker Carlson: \"Netanyahu is leading to destruction, Israel dragged us into war\""
+              - generic [ref=e251]:
+                - group [ref=e252]:
+                  - generic [ref=e253]:
+                    - text: חדשות 13
+                    - img [ref=e256]
+                - group [ref=e257]:
+                  - generic [ref=e258]: 234K views
+                  - generic [ref=e259]: •
+                  - generic "6 days ago" [ref=e260]
+                - group [ref=e261]:
+                  - generic [ref=e265]: New
+            - button "More actions" [ref=e268]
+        - generic [ref=e275] [cursor=pointer]:
+          - link [ref=e276]:
+            - /url: /watch?v=5IBbp04tfsY
+            - generic [ref=e283]: 26:53
+          - generic [ref=e285]:
+            - generic [ref=e286]:
+              - heading "Shahar Hasson - Caution, a narrow bridge ahead of you 26 minutes" [level=3] [ref=e287]:
+                - link "Shahar Hasson - Caution, a narrow bridge ahead of you 26 minutes" [ref=e288]:
+                  - /url: /watch?v=5IBbp04tfsY
+                  - text: Shahar Hasson - Caution, a narrow bridge ahead of you
+              - generic [ref=e290]:
+                - group [ref=e291]:
+                  - generic [ref=e292]:
+                    - text: קומדי בר T.V
+                    - img [ref=e295]
+                - group [ref=e296]:
+                  - generic [ref=e297]: 80K views
+                  - generic [ref=e298]: •
+                  - generic "12 days ago" [ref=e299]
+            - button "More actions" [ref=e302]
+        - generic [ref=e309] [cursor=pointer]:
+          - link [ref=e310]:
+            - /url: /watch?v=bqYiVGb6zY0
+            - generic [ref=e317]: 1:30:10
+          - generic [ref=e319]:
+            - generic [ref=e320]:
+              - heading "מי היה עמונאל מורנו | שיחה מרתקת על גדול המסתערבים ממפקדו | גיורא לוי 1 hour, 30 minutes" [level=3] [ref=e321]:
+                - link "מי היה עמונאל מורנו | שיחה מרתקת על גדול המסתערבים ממפקדו | גיורא לוי 1 hour, 30 minutes" [ref=e322]:
+                  - /url: /watch?v=bqYiVGb6zY0
+                  - text: מי היה עמונאל מורנו | שיחה מרתקת על גדול המסתערבים ממפקדו | גיורא לוי
+              - generic [ref=e324]:
+                - group [ref=e325]:
+                  - generic [ref=e326]: ישיבת לב לדעת שדרות
+                - group [ref=e327]:
+                  - generic [ref=e328]: 256K views
+                  - generic [ref=e329]: •
+                  - generic "8 months ago" [ref=e330]
+            - button "More actions" [ref=e333]
+        - generic [ref=e340] [cursor=pointer]:
+          - link [ref=e341]:
+            - /url: /watch?v=PdIQ5ckvdf4
+            - generic [ref=e348]: 6:57
+          - generic [ref=e350]:
+            - generic [ref=e351]:
+              - 'heading "\"העולם השתנה\": ההייטקיסטים שפוטרו בגלל ה-AI מדברים 6 minutes, 57 seconds" [level=3] [ref=e352]':
+                - 'link "\"העולם השתנה\": ההייטקיסטים שפוטרו בגלל ה-AI מדברים 6 minutes, 57 seconds" [ref=e353]':
+                  - /url: /watch?v=PdIQ5ckvdf4
+                  - text: "\"העולם השתנה\": ההייטקיסטים שפוטרו בגלל ה-AI מדברים"
+              - generic [ref=e355]:
+                - group [ref=e356]:
+                  - generic [ref=e357]:
+                    - text: חדשות 13
+                    - img [ref=e360]
+                - group [ref=e361]:
+                  - generic [ref=e362]: 70K views
+                  - generic [ref=e363]: •
+                  - generic "1 day ago" [ref=e364]
+                - group [ref=e365]:
+                  - generic [ref=e369]: New
+            - button "More actions" [ref=e372]
+        - generic [ref=e379] [cursor=pointer]:
+          - link [ref=e380]:
+            - /url: /watch?v=pT5nEG8W1pI
+            - generic [ref=e387]: 30:26
+          - generic [ref=e389]:
+            - generic [ref=e390]:
+              - heading "Shahar Hasson - Eurovision in Israel Next Year 30 minutes" [level=3] [ref=e391]:
+                - link "Shahar Hasson - Eurovision in Israel Next Year 30 minutes" [ref=e392]:
+                  - /url: /watch?v=pT5nEG8W1pI
+                  - text: Shahar Hasson - Eurovision in Israel Next Year
+              - generic [ref=e394]:
+                - group [ref=e395]:
+                  - generic [ref=e396]:
+                    - text: קומדי בר T.V
+                    - img [ref=e399]
+                - group [ref=e400]:
+                  - generic [ref=e401]: 113K views
+                  - generic [ref=e402]: •
+                  - generic "2 weeks ago" [ref=e403]
+            - button "More actions" [ref=e406]
+        - generic [ref=e413] [cursor=pointer]:
+          - link [ref=e414]:
+            - /url: /watch?v=63wDlzNG04E
+            - generic [ref=e421]: 1:27:50
+          - generic [ref=e423]:
+            - generic [ref=e424]:
+              - heading "הפרוטוקול לאריכות חיים, טסטסטורון ותעשיית המזון - רם שכטר | הפודקאסט של רון לנדסמן פרק 91 1 hour, 27 minutes" [level=3] [ref=e425]:
+                - link "הפרוטוקול לאריכות חיים, טסטסטורון ותעשיית המזון - רם שכטר | הפודקאסט של רון לנדסמן פרק 91 1 hour, 27 minutes" [ref=e426]:
+                  - /url: /watch?v=63wDlzNG04E
+                  - text: הפרוטוקול לאריכות חיים, טסטסטורון ותעשיית המזון - רם שכטר | הפודקאסט של רון לנדסמן פרק 91
+              - generic [ref=e428]:
+                - group [ref=e429]:
+                  - generic [ref=e430]: רון לנדסמן - Ron Landsman
+                - group [ref=e431]:
+                  - generic [ref=e432]: 2.5K views
+                  - generic [ref=e433]: •
+                  - generic "2 months ago" [ref=e434]
+            - button "More actions" [ref=e437]
+        - generic [ref=e444] [cursor=pointer]:
+          - link [ref=e445]:
+            - /url: /watch?v=9stLJMDRre4
+            - generic [ref=e452]: 13:21
+          - generic [ref=e454]:
+            - generic [ref=e455]:
+              - 'heading "אחרי 7 שנים: כך פוענחה תעלומת רצח אביתר אזרזר בבני ברק 13 minutes, 21 seconds" [level=3] [ref=e456]':
+                - 'link "אחרי 7 שנים: כך פוענחה תעלומת רצח אביתר אזרזר בבני ברק 13 minutes, 21 seconds" [ref=e457]':
+                  - /url: /watch?v=9stLJMDRre4
+                  - text: "אחרי 7 שנים: כך פוענחה תעלומת רצח אביתר אזרזר בבני ברק"
+              - generic [ref=e459]:
+                - group [ref=e460]:
+                  - generic [ref=e461]:
+                    - text: חדשות 13
+                    - img [ref=e464]
+                - group [ref=e465]:
+                  - generic [ref=e466]: 35K views
+                  - generic [ref=e467]: •
+                  - generic "21 hours ago" [ref=e468]
+                - group [ref=e469]:
+                  - generic [ref=e473]: New
+            - button "More actions" [ref=e476]
