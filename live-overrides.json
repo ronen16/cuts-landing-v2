@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "publishedAt": "2026-05-26T12:38:19.728Z",
+  "publishedAt": "2026-05-26T14:27:08.435Z",
   "overrides": {
     "sec:how-it-works>button[0]#h:d901835d": "👁 הצג",
     "sec:services>section[0]>div[0]>div[1]>div[0]>h3[0]#h:a5c90c46": "צילום ותאורה מקצועית",
@@ -88,7 +88,7 @@
     "root#h:a42044a8~0": "מדיניות פרטיות",
     "root#h:ea2c568e~0": "Cuts — מכבדת את פרטיות המשתמשים באתר. מדיניות זו מסבירה איזה מידע נאסף, כיצד נעשה בו שימוש וכיצד הוא נשמר. השימוש באתר מהווה הסכמה למדיניות זו.",
     "sec:final-cta#h:dab20478~1": "<span style=\"color: var(--accent);\" data-edit-original=\"✓\" data-edit-original-html=\"✓\" data-edit-id=\"sec:final-cta#h:00002713~8\" contenteditable=\"true\" spellcheck=\"false\">✓</span> מענה תוך 24ש׳",
-    "sec:services>section[0]>div[0]>div[1]>div[3]>p[0]>span[0]#h:18a41203": "טאמבניילי וכותרות הם הפנים של הפרקים שלכם, זה מה שקובע אם אנשים יכנסו לצפות בפרקים או לא.",
+    "sec:services>section[0]>div[0]>div[1]>div[3]>p[0]>span[0]#h:18a41203": "טאמבניילים וכותרות הם הפנים של הפודקאסט שלכם, זה מה שקובע אם אנשים יכנסו לצפות בפרקים.",
     "sec:services>section[0]>div[0]>div[1]>div[3]>p[0]>span[1]#h:771db105": "אנחנו נעצב ונבחר לכם טאמבניילים וכותרות מושכים שיגרמו לאנשים ללחוץ דווקא על הפרק שלכם.",
     "sec:who-its-for>section[0]>div[0]>div[1]>div[2]>h3[0]>span[1]>span[0]#h:57ff74d4": "חברות טכנולוגיה",
     "sec:who-its-for>section[0]>div[0]>div[1]>div[2]>h3[0]>span[1]>span[1]#h:1279f52e": "שרוצים לבנות מותג",
@@ -109,7 +109,11 @@
     "sec:services>section[0]>div[0]>p[0]#h:5115a882": "אתם לא צריכים ציוד יקר, לא צריכים לחפש עורכים, ולא צריכים לחפש צלמים ומעצבים,&nbsp;\nאנחנו בונים את כל המכונה.",
     "sec:problem>section[0]>div[1]>div[1]>div[1]>div[2]#h:02ba0b67": "2.23%",
     "sec:problem>section[0]>div[1]>div[1]>div[0]>div[2]#h:0000a760": "+25%",
-    "sec:social-proof>section[0]>div[1]>div[0]>h2[0]>span[0]#h:86096dd5": "לפני שאתם ממשיכים לקרוא"
+    "sec:social-proof>section[0]>div[1]>div[0]>h2[0]>span[0]#h:86096dd5": "לפני שאתם ממשיכים לקרוא",
+    "root>div[0]>div[0]>div[0]>nav[0]>div[0]>ul[0]>li[2]>a[0]#h:6c7d248a": "תוצאות",
+    "root>div[0]>div[0]>div[0]>nav[0]>div[0]>ul[0]>li[3]>a[0]#h:56040b2a": "שאלות",
+    "root>div[0]>div[0]>div[0]>nav[0]>div[0]>ul[0]>li[1]>a[0]#h:15370cee": "למה אנחנו",
+    "root>div[0]>div[0]>div[0]>nav[0]>div[0]>button[0]#h:572946ce": "בואו נדבר ←"
   },
   "overridesDesktop": {
     "sec:services>section[0]>div[0]>div[1]>div[2]>p[0]>blockquote[0]>p[0]#h:7f4c59a1": "מכל פרק אנחנו נוציא את הרילסים הכי טובים ונהפוך את הפודקאסט שלכם למכונת תוכן שתמשיך להביא לכם עוקבים, חשיפה, וקהל שסומך עליכם.",
@@ -133,7 +137,6 @@
     "sec:who-its-for>section[0]>div[0]>div[2]>div[0]>div[1]>ul[0]>li[3]>span[1]#h:2aa0225a": "רוצים לקוחות שמגיעים מוכנים לקנות",
     "sec:services>section[0]>div[0]>p[0]#h:5115a882": "אתם לא צריכים ציוד יקר,<br>או לחפש עורכי וידאו צלמים ומעצבים.<br>אנחנו בונים את כל השרשרת.",
     "sec:services>section[0]>div[0]>div[1]>div[2]>p[0]>blockquote[0]>p[0]#h:7f4c59a1": "מכל פרק אנחנו נוציא את הרילסים<br>הכי טובים ונהפוך את הפודקאסט שלכם למכונת תוכן שתמשיך להביא לכם עוקבים, חשיפה, וקהל שסומך עליכם.",
-    "sec:services>section[0]>div[0]>div[1]>div[3]>p[0]>span[0]#h:18a41203": "טאמבניילים וכותרות הם הפנים של הפרקים שלכם,<br>זה מה שקובע אם אנשים יכנסו לצפות בפרקים או לא.",
     "sec:studio-booking>section[0]>div[2]>div[0]>div[0]>div[0]>p[0]#h:a2d6dcae": "שיחת אבחון קצרה, ללא עלות, שבה נכיר את העסק שלכם.<br>נבדוק התאמה לפודקאסט, ונראה לכם דוגמאות אמיתיות מהאולפן.",
     "sec:mini-lead-2>section[0]>div[1]>div[0]>div[0]>h3[0]#h:c9a61bd7": "רוצים לראות אם זה מתאים לכם? <br><span style=\"color: var(--accent);\" data-edit-original=\"השאר פרטים.\" data-edit-id=\"sec:mini-lead-2&gt;section[0]&gt;div[1]&gt;div[0]&gt;div[0]&gt;h3[0]&gt;span[0]#h:e2b28f49\" contenteditable=\"true\" spellcheck=\"false\" data-edit-original-html=\"השאר פרטים.\">השאירו פרטים</span>",
     "sec:who-its-for>section[0]>div[0]>div[1]>div[3]>h3[0]>span[1]>span[1]#h:6e2c5e1c": "שהמוניטין שלהם יקר",
