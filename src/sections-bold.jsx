@@ -457,19 +457,12 @@ function orderAndFilterVideos(admin) {
   return list.filter((v) => !hidden.has(v.vimeoId));
 }
 
-// Reliable "open in new tab" for mobile — window.open with a features string
-// gets popup-blocked on iOS; a synthesized anchor click from a user gesture
-// is treated as a real link and opens (often in the YouTube/Vimeo app).
+// Open a video on mobile. Programmatic new-tab (window.open / anchor click)
+// gets popup-blocked on iOS even from a tap — so navigate the tab. A youtube/
+// vimeo URL opens the native app via universal links (leaving the site in
+// Safari), and falls back to opening the page in the browser otherwise.
 function openVideoTab(url) {
-  try {
-    const a = document.createElement("a");
-    a.href = url; a.target = "_blank"; a.rel = "noopener noreferrer";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-  } catch (e) {
-    window.location.href = url;
-  }
+  window.location.href = url;
 }
 
 function SocialProofSection({ onCTAClick, admin }) {
