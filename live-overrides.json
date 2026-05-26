@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "publishedAt": "2026-05-26T07:38:55.671Z",
+  "publishedAt": "2026-05-26T07:53:01.495Z",
   "overrides": {
     "sec:how-it-works>button[0]#h:d901835d": "👁 הצג",
     "sec:services>section[0]>div[0]>div[1]>div[0]>h3[0]#h:a5c90c46": "צילום ותאורה מקצועית",
@@ -124,14 +124,18 @@
     "sec:mini-lead-1>section[0]>div[1]>div[0]>div[0]>h3[0]#h:c9a61bd7": "רוצים לראות אם זה מתאים לכם? <br><span style=\"color: var(--accent);\" data-edit-original=\"השאר פרטים.\" data-edit-original-html=\"השאר פרטים.\" data-edit-id=\"sec:mini-lead-1&gt;section[0]&gt;div[1]&gt;div[0]&gt;div[0]&gt;h3[0]&gt;span[0]#h:e2b28f49\" contenteditable=\"true\" spellcheck=\"false\">השאירו פרטים.</span>",
     "sec:who-its-for>section[0]>div[0]>div[1]>div[0]>p[0]#h:d6064f0a": "לקוח שמגיע אחרי 10 פרקים שווה פי 3 מליד קר<br>הוא כבר מאמין לכם לפני שדיברתם.",
     "sec:who-its-for>section[0]>div[0]>div[1]>div[1]>p[0]#h:70822c80": "כל ליד קר עולה לכם זמן וכסף.<br>פודקאסט מחמם אותו לפני שהוא מגיע אליכם.",
-    "sec:who-its-for>section[0]>div[0]>div[1]>div[2]>p[0]#h:569e84c1": "שרוצים שהשוק יכיר אותם —<br>לא רק את השירות שהם מוכרים.",
+    "sec:who-its-for>section[0]>div[0]>div[1]>div[2]>p[0]#h:569e84c1": "שרוצים שהשוק יכיר אותם,<br>ולא רק את השירות שהם מוכרים.",
     "sec:who-its-for>section[0]>div[0]>div[1]>div[3]>p[0]#h:410ed0ac": "עורכי דין, רואי חשבון, יועצים וכו',<br>שהמוניטין שלהם שווה יותר מכל פרסומת.",
     "sec:who-its-for>section[0]>div[0]>div[2]>div[0]>div[1]>ul[0]>li[3]>span[1]#h:2aa0225a": "רוצים לקוחות שמגיעים מוכנים - שבאים לקנות",
     "sec:services>section[0]>div[0]>p[0]#h:5115a882": "אתם לא צריכים ציוד יקר,<br>לא צריכים לחפש עורכים,<br>ולא צריכים לחפש צלמים ומעצבים, <br>אנחנו בונים את כל המכונה.",
     "sec:services>section[0]>div[0]>div[1]>div[2]>p[0]>blockquote[0]>p[0]#h:7f4c59a1": "מכל פרק אנחנו נוציא את הרילסים<br>הכי טובים ונהפוך את הפודקאסט שלכם למכונת תוכן שתמשיך להביא לכם עוקבים, קהל, צופים לפרקים המלאים, והכי חשוב לקוחות משלמים.",
     "sec:services>section[0]>div[0]>div[1]>div[3]>p[0]>span[0]#h:18a41203": "טאמבניילים וכותרות הם הפנים של הפרקים שלכם,<br>זה מה שקובע אם אנשים יכנסו לצפות בפרקים או לא.",
     "sec:studio-booking>section[0]>div[2]>div[0]>div[0]>div[0]>p[0]#h:a2d6dcae": "שיחת אבחון קצרה, ללא עלות.<br>נכיר את העסק שלכם.<br>נבדוק התאמה לפודקאסט<br>נראה לכם דוגמאות אמיתיות מתוך האולפן.",
-    "sec:mini-lead-2>section[0]>div[1]>div[0]>div[0]>h3[0]#h:c9a61bd7": "רוצים לראות אם זה מתאים לכם? <br><span style=\"color: var(--accent);\" data-edit-original=\"השאר פרטים.\" data-edit-id=\"sec:mini-lead-2&gt;section[0]&gt;div[1]&gt;div[0]&gt;div[0]&gt;h3[0]&gt;span[0]#h:e2b28f49\" contenteditable=\"true\" spellcheck=\"false\" data-edit-original-html=\"השאר פרטים.\">השאירו פרטים</span>"
+    "sec:mini-lead-2>section[0]>div[1]>div[0]>div[0]>h3[0]#h:c9a61bd7": "רוצים לראות אם זה מתאים לכם? <br><span style=\"color: var(--accent);\" data-edit-original=\"השאר פרטים.\" data-edit-id=\"sec:mini-lead-2&gt;section[0]&gt;div[1]&gt;div[0]&gt;div[0]&gt;h3[0]&gt;span[0]#h:e2b28f49\" contenteditable=\"true\" spellcheck=\"false\" data-edit-original-html=\"השאר פרטים.\">השאירו פרטים</span>",
+    "sec:who-its-for>section[0]>div[0]>div[1]>div[3]>h3[0]>span[1]>span[1]#h:6e2c5e1c": "שהמוניטין שלהם יקר",
+    "sec:who-its-for>section[0]>div[0]>div[1]>div[3]>h3[0]>span[1]>span[0]#h:d11f11aa": "אנשי מקצוע",
+    "sec:who-its-for>section[0]>div[0]>div[2]>div[0]>div[1]>p[0]#h:9f3e2eef": "אם אתם מוכרים אמון, ניסיון, או ידע —<br><span style=\"color: var(--accent); text-shadow: rgba(255, 213, 0, 0.4) 0px 0px 24px;\" data-edit-original=\"ואין לכם כלי שעובד בשבילכם 24/7 בלי לשלם על כל קליק.\" data-edit-original-html=\"ואין לכם כלי שעובד בשבילכם 24/7 בלי לשלם על כל קליק.\" data-edit-id=\"sec:who-its-for&gt;section[0]&gt;div[0]&gt;div[2]&gt;div[0]&gt;div[1]&gt;p[0]&gt;span[0]#h:e6a631bb\" contenteditable=\"true\" spellcheck=\"false\">ואין לכם כלי שעובד בשבילכם 24/7<br>בלי לשלם על כל קליק.</span>",
+    "sec:who-its-for>section[0]>div[0]>div[2]>div[0]>div[1]>ul[0]>li[0]>span[1]#h:53a4fcfe": "מחזור מכירה ארוך שרוצים לקצר"
   },
   "sectionOrder": [
     "hero",
