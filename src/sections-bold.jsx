@@ -5676,13 +5676,10 @@ function ServicesOld({ onCTAClick }) {
             <span className="machine-port machine-port--r" />
           </div>
           <div className="machine-hub" aria-hidden="true">
-            <span className="machine-hub__sweep" />
             <span className="machine-hub__ring" />
-            <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="9" stroke="var(--accent)" strokeWidth="1.1" opacity="0.85" />
-              <circle cx="12" cy="12" r="4.6" stroke="var(--accent)" strokeWidth="1.4" fill="rgba(255,213,0,0.14)" />
-              <circle cx="12" cy="12" r="1.7" fill="var(--accent)" />
-              <circle cx="9.5" cy="9.5" r="0.9" fill="rgba(255,255,255,0.85)" />
+            <span className="machine-hub__plate" />
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="var(--accent)">
+              <path d="M9.5 6.5 L17.5 12 L9.5 17.5 Z" />
             </svg>
           </div>
         </div>
@@ -5737,23 +5734,21 @@ function ServicesOld({ onCTAClick }) {
         .machine-port--r { right: -6px; top: 50%; transform: translateY(-50%); }
         @keyframes portPulse { 0%,100% { box-shadow: 0 0 8px 1px rgba(255,213,0,0.4); } 50% { box-shadow: 0 0 18px 4px rgba(255,213,0,0.9); } }
         /* engine core */
-        .machine-hub { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);
-          width: 86px; height: 86px; border-radius: 50%; z-index: 5;
+        /* hexagonal engine chip — angular core (not a round reticle). The
+           opaque plate covers the wire intersection so there is no crosshair. */
+        .machine-hub { --hex: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+          position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);
+          width: 92px; height: 80px; z-index: 5;
           display: flex; align-items: center; justify-content: center; pointer-events: none;
-          background: radial-gradient(circle, rgba(30,27,19,0.96), rgba(8,8,8,0.97) 70%);
-          border: 1px solid rgba(255,213,0,0.42);
-          box-shadow: 0 0 22px rgba(255,213,0,0.16), inset 0 0 14px rgba(255,213,0,0.05); }
-        /* slow rotating tick-dial ring (precision-instrument feel) */
-        .machine-hub__sweep { position: absolute; inset: 6px; border-radius: 50%;
-          background: repeating-conic-gradient(from 0deg, rgba(255,213,0,0.5) 0deg 1.4deg, transparent 1.4deg 15deg);
-          -webkit-mask: radial-gradient(circle, transparent 57%, #000 60%, #000 73%, transparent 76%);
-          mask: radial-gradient(circle, transparent 57%, #000 60%, #000 73%, transparent 76%);
-          animation: hubSpin 9s linear infinite; }
-        .machine-hub__ring { position: absolute; inset: -8px; border-radius: 50%; border: 1px solid rgba(255,213,0,0.28); animation: hubPulse 3s ease-out infinite; }
-        .machine-hub::after { content: ""; position: absolute; inset: 4px; border-radius: 50%; border: 1px solid rgba(255,213,0,0.16); }
-        .machine-hub svg { position: relative; z-index: 1; filter: drop-shadow(0 0 4px rgba(255,213,0,0.6)); }
-        @keyframes hubSpin { to { transform: rotate(360deg); } }
-        @keyframes hubPulse { 0% { transform: scale(0.92); opacity: 0.55; } 100% { transform: scale(1.6); opacity: 0; } }
+          background: rgba(255,213,0,0.5);
+          clip-path: var(--hex);
+          filter: drop-shadow(0 0 16px rgba(255,213,0,0.22)); }
+        .machine-hub__plate { position: absolute; inset: 1.6px; clip-path: var(--hex);
+          background: radial-gradient(circle, rgba(32,29,20,0.98), rgba(8,8,8,0.98) 72%); }
+        .machine-hub__ring { position: absolute; inset: -7px; clip-path: var(--hex);
+          background: rgba(255,213,0,0.16); animation: hubPulse 3s ease-out infinite; }
+        .machine-hub svg { position: relative; z-index: 1; margin-left: 2px; filter: drop-shadow(0 0 5px rgba(255,213,0,0.65)); }
+        @keyframes hubPulse { 0% { transform: scale(0.9); opacity: 0.5; } 100% { transform: scale(1.5); opacity: 0; } }
         /* module frame — pure CSS, no markup change so text edits stay intact.
            One overlay does it all: top rail + corner glow + glass sheen + bevel. */
         .services-machine > div:not([class*="machine"])::before {
