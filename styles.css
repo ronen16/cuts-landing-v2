@@ -102,6 +102,8 @@ img { display: block; max-width: 100%; }
     line-height: 1.16 !important;
   }
   .socialproof-headline > span { white-space: nowrap; }
+  /* Podcast heading: "ככה נראים" on its own line on mobile (one line on desktop) */
+  .results-h-line1 { display: block; }
   /* "השורה התחתונה" pull-quote: tighten the gaps and enlarge the text. */
   .pullquote { margin-top: 28px !important; padding: 14px 6px !important; }
   .pullquote-glyph { font-size: 78px !important; margin-bottom: 0 !important; }
