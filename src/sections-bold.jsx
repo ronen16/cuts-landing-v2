@@ -761,6 +761,12 @@ function SocialProofSection({ onCTAClick, admin }) {
               boxShadow: "inset 0 1px 0 rgba(255,255,255,0.04), 0 10px 30px rgba(0,0,0,0.5), 0 8px 44px rgba(255,213,0,0.09), 0 0 80px rgba(255,213,0,0.045)"
             }}>
 
+              {/* Mobile: native full-card link — opens the video on one tap. */}
+              {stacked && hasVideo &&
+              <a href={"https://vimeo.com/" + v.vimeoId}
+                aria-label="צפייה בעדות"
+                style={{ position: "absolute", inset: 0, zIndex: 7 }} />}
+
               {isPlaying &&
               <React.Fragment>
                 <iframe
@@ -4228,6 +4234,7 @@ function Results({ admin }) {
               background: "var(--bg)", borderRadius: 20,
               border: "1px solid var(--line2)",
               overflow: "hidden",
+              position: "relative",
               color: "inherit",
               cursor: hasVideo ? "pointer" : "default",
               display: "flex", flexDirection: "column",
@@ -4241,6 +4248,12 @@ function Results({ admin }) {
               e.currentTarget.style.transform = "translateY(0)";
               e.currentTarget.style.borderColor = "var(--line2)";
             }}>
+              {/* Mobile: native full-card link — opens the video on one tap.
+                  A JS onClick gets aborted by the hover-lift on iOS. */}
+              {stacked && hasVideo &&
+              <a href={"https://www.youtube.com/watch?v=" + c.youtubeId}
+                aria-label="צפייה בפרק"
+                style={{ position: "absolute", inset: 0, zIndex: 7 }} />}
               {/* 16:9 video frame */}
               <div style={{
               position: "relative",
