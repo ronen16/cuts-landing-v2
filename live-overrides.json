@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "publishedAt": "2026-05-26T14:27:08.435Z",
+  "publishedAt": "2026-05-26T15:01:55.673Z",
   "overrides": {
     "sec:how-it-works>button[0]#h:d901835d": "👁 הצג",
     "sec:services>section[0]>div[0]>div[1]>div[0]>h3[0]#h:a5c90c46": "צילום ותאורה מקצועית",
@@ -113,7 +113,8 @@
     "root>div[0]>div[0]>div[0]>nav[0]>div[0]>ul[0]>li[2]>a[0]#h:6c7d248a": "תוצאות",
     "root>div[0]>div[0]>div[0]>nav[0]>div[0]>ul[0]>li[3]>a[0]#h:56040b2a": "שאלות",
     "root>div[0]>div[0]>div[0]>nav[0]>div[0]>ul[0]>li[1]>a[0]#h:15370cee": "למה אנחנו",
-    "root>div[0]>div[0]>div[0]>nav[0]>div[0]>button[0]#h:572946ce": "בואו נדבר ←"
+    "root>div[0]>div[0]>div[0]>nav[0]>div[0]>button[0]#h:572946ce": "בואו נדבר ←",
+    "root>div[0]>div[0]>div[0]>footer[0]>div[0]>span[0]>a[1]#h:b124e6cd": "תקנון האתר"
   },
   "overridesDesktop": {
     "sec:services>section[0]>div[0]>div[1]>div[2]>p[0]>blockquote[0]>p[0]#h:7f4c59a1": "מכל פרק אנחנו נוציא את הרילסים הכי טובים ונהפוך את הפודקאסט שלכם למכונת תוכן שתמשיך להביא לכם עוקבים, חשיפה, וקהל שסומך עליכם.",
@@ -147,7 +148,17 @@
     "sec:services>section[0]>div[0]>div[1]>div[3]>h3[0]#h:789ee55c": "טאמבניילים וכותרות",
     "sec:services>section[0]>div[0]>div[1]>div[2]>div[0]#h:00000603": "03",
     "sec:results>section[0]>div[0]>div[0]>h2[0]>span[1]#h:bf7c4e01": "הפודקאסטים אצלנו.<span aria-hidden=\"true\" style=\"position: absolute; left: 3%; right: 3%; bottom: -0.06em; height: 5px; background: linear-gradient(90deg, transparent, var(--accent) 15%, var(--accent) 85%, transparent); opacity: 0.55; border-radius: 3px; filter: blur(0.5px);\"></span>",
-    "sec:hero>section[0]>div[1]>div[0]>p[0]#h:e69b5aad": "פעם הייתם צריכים להסביר מי אתם בכל שיחת מכירה.<br>עם פודקאסט — הם כבר יודעים.<span style=\"color: var(--accent); font-weight: 700;\"></span>"
+    "sec:hero>section[0]>div[1]>div[0]>p[0]#h:e69b5aad": "פעם הייתם צריכים להסביר מי אתם בכל שיחת מכירה.<br>עם פודקאסט — הם כבר יודעים.<span style=\"color: var(--accent); font-weight: 700;\"></span>",
+    "root>div[0]>div[0]>div[0]>footer[0]>div[0]>span[0]>a[1]#h:b124e6cd": "תקנון האתר",
+    "root>div[0]>div[0]>div[0]>footer[0]>div[0]>span[0]>a[0]#h:a42044a8": "מדיניות פרטיות",
+    "sec:final-cta>section[0]>div[0]>div[0]>form[0]>div[2]>div[2]>label[0]>span[1]#h:9926632c": "אני מאשר/ת שקראתי ואני מסכים/ה <a href=\"terms.html\" style=\"color: var(--accent); text-decoration: underline; font-weight: 700;\" data-edit-original=\"לתקנון האתר\" data-edit-original-html=\"לתקנון האתר\" data-edit-id=\"sec:final-cta&gt;section[0]&gt;div[0]&gt;div[0]&gt;form[0]&gt;div[2]&gt;div[2]&gt;label[0]&gt;span[1]&gt;a[0]#h:1d2c49a9\" contenteditable=\"true\" spellcheck=\"false\">לתקנון האתר</a>",
+    "root>div[0]>div[2]>a[0]#h:d63cb673": "הצהרת נגישות",
+    "sec:final-cta>section[0]>div[0]>div[0]>form[0]>div[3]>div[0]>span[2]#h:dab20478": "<span style=\"color: var(--accent);\" data-edit-original=\"✓\" data-edit-original-html=\"✓\" data-edit-id=\"sec:final-cta&gt;section[0]&gt;div[0]&gt;div[0]&gt;form[0]&gt;div[3]&gt;div[0]&gt;span[2]&gt;span[0]#h:00002713\" contenteditable=\"true\" spellcheck=\"false\">✓</span> מענה תוך 24 שעות",
+    "sec:final-cta>section[0]>div[0]>div[0]>form[0]>div[2]>button[0]#h:59018cd1": "בואו נקבע שיחה ←",
+    "sec:final-cta>section[0]>div[0]>div[0]>div[0]>div[0]>p[0]#h:280ba64b": "האולפן עובד בתפוסה כמעט מלאה, כדי להמשיך לתת את השירות<br>הטוב ביותר לכל לקוח,<br>אנחנו פותחים מקום ללקוחות חדשים פעם בחודש.",
+    "sec:final-cta>section[0]>div[0]>div[0]>div[0]>div[0]>div[1]>span[2]#h:dab20478": "<span style=\"color: var(--accent);\" data-edit-original=\"✓\" data-edit-original-html=\"✓\" data-edit-id=\"sec:final-cta&gt;section[0]&gt;div[0]&gt;div[0]&gt;div[0]&gt;div[0]&gt;div[1]&gt;span[2]&gt;span[0]#h:00002713\" contenteditable=\"true\" spellcheck=\"false\">✓</span> מענה תוך 24 שעות",
+    "root>div[0]>div[0]>div[0]>footer[0]>div[0]>span[1]#h:b6e03c6e": "© 2026 CUTS. כל הזכויות שמורות.",
+    "sec:final-cta>section[0]>div[0]>div[0]>div[0]>div[0]>div[1]>span[0]#h:e4213b82": "<span style=\"color: var(--accent);\" data-edit-original=\"✓\" data-edit-original-html=\"✓\" data-edit-id=\"sec:final-cta&gt;section[0]&gt;div[0]&gt;div[0]&gt;div[0]&gt;div[0]&gt;div[1]&gt;span[0]&gt;span[0]#h:00002713\" contenteditable=\"true\" spellcheck=\"false\">✓</span> ללא התחייבות"
   },
   "sectionOrder": [
     "hero",
