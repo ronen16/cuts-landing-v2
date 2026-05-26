@@ -170,13 +170,13 @@ img { display: block; max-width: 100%; }
      make it near-opaque instead. */
   .topnav { background: rgba(10,10,10,0.96) !important; }
   /* The fixed, full-viewport, blurred + screen-blended, infinitely-animating
-     aura is the biggest scroll-jank source — make it a cheap static layer. */
-  .theme-bold::before {
-    animation: none !important;
-    filter: none !important;
-    mix-blend-mode: normal !important;
-    opacity: 0.5;
-  }
+     aura is the biggest scroll-jank source. A position:fixed full-screen layer
+     forces iOS off the fast-scroll path even when static — so drop it entirely
+     on phones (section-level glows keep the ambiance). */
+  .theme-bold::before { display: none !important; }
+  /* the desktop cursor-glow is a fixed, screen-blended layer — pointless on
+     touch and another fixed-layer cost. Remove it on phones. */
+  #cursor-glow { display: none !important; }
   /* Freeze purely-decorative (aria-hidden) glow/pulse loops AND drop their
      blur — large blurred layers are the most expensive thing a phone GPU
      paints. Marquees keep moving (their animation lives on the row, which is
