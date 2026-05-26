@@ -1914,11 +1914,14 @@ function Guarantee({ onCTAClick }) {
         }
         @container (max-width: 640px) {
           .week-only-banner {
-            padding: 14px 20px;
-            gap: 10px;
+            padding: 14px 18px;
+            gap: 12px;
+            border-radius: 24px;
+            max-width: 340px;
           }
+          .week-only-banner__dot { display: none; } /* declutter on mobile */
           .week-only-banner__pill { font-size: 14px; padding: 5px 14px; }
-          .week-only-banner__bolt { width: 22px; height: 22px; }
+          .week-only-banner__bolt { width: 20px; height: 20px; }
           .week-only-banner__sep { display: none; }
           .week-only-banner__sub {
             display: block;
