@@ -3994,7 +3994,7 @@ function Results({ admin }) {
               position: "relative",
               display: "inline-block"
             }}>
-              הפודקאסטים אצלנו.
+              הפודקאסטים שלנו.
               <span aria-hidden="true" style={{
                 position: "absolute", left: "3%", right: "3%", bottom: "-0.06em",
                 height: 5,
