@@ -3793,9 +3793,10 @@ function GuestStrip({ admin }) {
           .guest-marquee-row--tall > div { width: 105px !important; }
           .guest-marquee-row--wide > div { width: 255px !important; }
           .guest-marquee-row--wide { animation-duration: 15s !important; }
-          .guest-section { padding-top: 52px !important; padding-bottom: 44px !important; border-top-color: transparent !important; }
-          /* Drop the divider line at the seam with the section above (Results)
-             so the guest strip blends into the background on mobile. */
+          /* Blend the seam with the section above (Results): start the guest
+             section at Results' card tone and fade to the page bg so there's no
+             hard line OR tone step. Bottom already meets the next (bg) section. */
+          .guest-section { padding-top: 52px !important; padding-bottom: 44px !important; border-top-color: transparent !important; margin-top: -2px !important; background: linear-gradient(var(--card), var(--bg) 190px) !important; }
           #results { border-bottom-color: transparent !important; }
           .guest-heading-wrap { margin-bottom: 34px !important; }
         }
