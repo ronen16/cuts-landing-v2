@@ -965,7 +965,8 @@ function SocialProofSection({ onCTAClick, admin }) {
         }
         .vid-carousel.is-stacked .testimonial-video-scroller > [data-vid-card] {
           flex: none !important;
-          width: 100% !important;
+          width: 84% !important;
+          margin-inline: auto !important;
         }
         .vid-carousel.is-stacked .vid-nav-prev,
         .vid-carousel.is-stacked .vid-nav-next,
