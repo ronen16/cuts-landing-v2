@@ -457,6 +457,21 @@ function orderAndFilterVideos(admin) {
   return list.filter((v) => !hidden.has(v.vimeoId));
 }
 
+// Reliable "open in new tab" for mobile — window.open with a features string
+// gets popup-blocked on iOS; a synthesized anchor click from a user gesture
+// is treated as a real link and opens (often in the YouTube/Vimeo app).
+function openVideoTab(url) {
+  try {
+    const a = document.createElement("a");
+    a.href = url; a.target = "_blank"; a.rel = "noopener noreferrer";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  } catch (e) {
+    window.location.href = url;
+  }
+}
+
 function SocialProofSection({ onCTAClick, admin }) {
   const videos = React.useMemo(
     () => orderAndFilterVideos(admin),
@@ -736,7 +751,7 @@ function SocialProofSection({ onCTAClick, admin }) {
             onClick={() => {
               if (!hasVideo) return;
               // Mobile: open the real Vimeo page (inline embeds are flaky on iOS).
-              if (stacked) { window.open("https://vimeo.com/" + v.vimeoId, "_blank", "noopener"); }
+              if (stacked) { openVideoTab("https://vimeo.com/" + v.vimeoId); }
               else { setPlayingIdx(i); setLoadedIdx(null); }
             }}
             style={{
@@ -4211,7 +4226,7 @@ function Results({ admin }) {
               if (!hasVideo) return;
               // Inline cross-site embeds are unreliable on mobile (iOS autoplay
               // / tracking prevention) — open the real video instead.
-              if (stacked) { window.open("https://www.youtube.com/watch?v=" + c.youtubeId, "_blank", "noopener"); }
+              if (stacked) { openVideoTab("https://www.youtube.com/watch?v=" + c.youtubeId); }
               else { setPlayingIdx(i); }
             }}
             style={{
