@@ -5787,6 +5787,8 @@ function ServicesOld({ onCTAClick }) {
         @container (max-width: 600px) {
           .machine-wire--h, .machine-hub, .machine-port--l, .machine-port--r, .machine-board { display: none !important; }
           .services-machine { gap: 40px !important; grid-auto-rows: auto !important; }
+          /* push the spine's end nodes further off the top/bottom cards */
+          .machine-wires { inset: -26px 0 !important; }
         }
       `}</style>
     </section>);
