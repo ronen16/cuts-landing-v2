@@ -5690,8 +5690,12 @@ function ServicesOld({ onCTAClick }) {
 
       <style>{`
         .services-machine { position: relative; isolation: isolate; }
-        /* keep the real cards above the wire layer (no DOM/markup change) */
-        .services-machine > div:not([class*="machine"]) { z-index: 1; }
+        /* keep the real cards above the wire layer (no DOM/markup change) +
+           give each module a dimensional, lit-panel look */
+        .services-machine > div:not([class*="machine"]) {
+          z-index: 1;
+          background: linear-gradient(168deg, #1b1b19 0%, #111110 46%, #0b0b0a 100%) !important;
+        }
         .machine-wires { position: absolute; inset: -8px 0; z-index: 0; pointer-events: none; }
         .machine-board {
           position: absolute; inset: 0;
@@ -5747,20 +5751,27 @@ function ServicesOld({ onCTAClick }) {
         @keyframes hubSpin { to { transform: rotate(360deg); } }
         @keyframes hubPulse { 0% { transform: scale(0.9); opacity: 0.8; } 100% { transform: scale(1.7); opacity: 0; } }
         @keyframes hubGlow { 0%,100% { opacity: 0.85; } 50% { opacity: 1; } }
-        /* module accents — pure CSS, no markup change so text edits stay intact */
+        /* module frame — pure CSS, no markup change so text edits stay intact.
+           One overlay does it all: top rail + corner glow + glass sheen + bevel. */
         .services-machine > div:not([class*="machine"])::before {
-          content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-          background: linear-gradient(90deg, transparent, rgba(255,213,0,0.6), transparent);
-          background-size: 200% 100%; opacity: 0.5; z-index: 3; pointer-events: none;
-          animation: railShimmer 3.5s linear infinite;
+          content: ""; position: absolute; inset: 0; border-radius: 20px; z-index: 0; pointer-events: none;
+          background:
+            linear-gradient(90deg, transparent, rgba(255,213,0,0.6), transparent) top center / 100% 3px no-repeat,
+            radial-gradient(130% 90% at 88% -12%, rgba(255,213,0,0.13), transparent 56%),
+            linear-gradient(158deg, rgba(255,255,255,0.06), rgba(255,255,255,0) 40%);
+          box-shadow:
+            inset 0 1px 0 rgba(255,255,255,0.09),
+            inset 0 0 0 1px rgba(255,255,255,0.025),
+            inset 0 -34px 56px -34px rgba(0,0,0,0.55);
+          opacity: 0.9; transition: opacity .35s ease;
         }
         .services-machine > div:not([class*="machine"]):hover::before { opacity: 1; }
+        /* status LED */
         .services-machine > div:not([class*="machine"])::after {
-          content: ""; position: absolute; top: 14px; left: 14px; width: 7px; height: 7px; border-radius: 50%;
-          background: var(--accent); box-shadow: 0 0 8px var(--accent); z-index: 3; pointer-events: none;
-          animation: ledBlink 1.8s ease-in-out infinite;
+          content: ""; position: absolute; top: 16px; left: 16px; width: 7px; height: 7px; border-radius: 50%;
+          background: var(--accent); box-shadow: 0 0 9px 1px rgba(255,213,0,0.85); z-index: 4; pointer-events: none;
+          animation: ledBlink 1.9s ease-in-out infinite;
         }
-        @keyframes railShimmer { to { background-position: 200% 0; } }
         @keyframes ledBlink { 0%,100% { opacity: 1; } 50% { opacity: 0.25; } }
         /* Mobile: collapse the cross + core into a single flowing vertical spine */
         @container (max-width: 600px) {
