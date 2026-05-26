@@ -3249,6 +3249,9 @@ function MiniLeadStripe({ form }) {
         @container (max-width: 720px) {
           .mini-lead-row { flex-direction: column; align-items: stretch !important; gap: 16px !important; }
           .mini-lead-row > div:first-child { text-align: center; }
+          /* bigger heading + eyebrow on mobile */
+          .mini-lead-row h3 { font-size: 28px !important; line-height: 1.2 !important; }
+          .mini-lead-row .mono { font-size: 13px !important; }
           /* In column flow the children's "flex: 1 1 280/520px" becomes a huge
              HEIGHT — reset to content height so there's no dead space. */
           .mini-lead-row > * { flex: 0 0 auto !important; }
