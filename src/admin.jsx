@@ -916,7 +916,11 @@ function applyOverridesToDOM(overrides) {
     el.setAttribute("data-edit-id", id);
     if (Object.prototype.hasOwnProperty.call(overrides, id)) {
       const desired = overrides[id];
-      if (el.innerHTML !== desired) el.innerHTML = desired;
+      // Ignore blank overrides — they'd wipe the element's real content, which
+      // is almost always an accident from an empty edit. Leave the original.
+      const visible = String(desired == null ? "" : desired)
+        .replace(/<[^>]*>/g, "").replace(/&nbsp;/g, "").trim();
+      if (visible !== "" && el.innerHTML !== desired) el.innerHTML = desired;
     }
     // Do NOT auto-restore non-overridden elements during normal renders —
     // that would clobber in-progress edits. Reset is handled separately via
