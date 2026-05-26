@@ -3399,9 +3399,9 @@ function FinalCTA({ form, onCTAClick }) {
   return (
     <section id="cta" style={{ padding: "56px 0" }}>
       <div className="wrap" style={{ maxWidth: 1000 }}>
-        <div className="cq-stack" style={{ display: "grid", gridTemplateColumns: "1.1fr 1fr", gap: 40, alignItems: "stretch" }}>
+        <div className="cq-stack cta-grid" style={{ display: "grid", gridTemplateColumns: "1.1fr 1fr", gap: 40, alignItems: "stretch" }}>
           {/* Left — recap */}
-          <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: 32 }}>
+          <div className="cta-recap" style={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: 32 }}>
             <p className="mono" style={{ fontSize: 14, opacity: 0.7, margin: 0, letterSpacing: "0.06em" }}>
 
             </p>
@@ -3436,7 +3436,7 @@ function FinalCTA({ form, onCTAClick }) {
             </ul>
 
             {submitted ? null :
-            <div style={{
+            <div className="cta-availability" style={{
               marginTop: 8,
               position: "relative",
               padding: "28px 32px",
@@ -3617,6 +3617,15 @@ function FinalCTA({ form, onCTAClick }) {
         @keyframes ctaPulse {
           0%, 100% { box-shadow: 0 0 0 0 rgba(255,213,0,0.5); transform: scale(1); }
           50%      { box-shadow: 0 0 0 6px rgba(255,213,0,0); transform: scale(1.15); }
+        }
+        @container (max-width: 600px) {
+          /* flatten the recap column into the grid so the availability card can
+             be reordered below the form (CSS only — no DOM/text change) */
+          .cta-recap { display: contents !important; }
+          .cta-availability { order: 2; margin-top: 0 !important; padding: 18px 20px !important; }
+          .cta-availability h3 { font-size: 20px !important; line-height: 1.25 !important; }
+          .cta-availability > p { font-size: 13px !important; margin-bottom: 16px !important; }
+          .cta-availability > div:last-child { gap: 12px !important; padding-top: 14px !important; font-size: 12px !important; flex-wrap: wrap; }
         }
       `}</style>
     </section>);
