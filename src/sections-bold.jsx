@@ -5600,7 +5600,7 @@ function ServicesOld({ onCTAClick }) {
           אנחנו בונים את כל המכונה.
         </p>
 
-        <div className="cq-stack" style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 20 }}>
+        <div className="cq-stack services-machine" style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 20, position: "relative" }}>
           {SERVICES.map((s, i) => {
             const span = s.highlight ? 6 : 3;
             return (
@@ -5661,9 +5661,112 @@ function ServicesOld({ onCTAClick }) {
               </ServiceCard>);
 
           })}
+
+          {/* Production engine — appended LAST and pure-decorative so it never
+              shifts the cards' DOM position (that would break saved text edits).
+              Wires/board/ports sit BEHIND the cards (visible only in the gaps);
+              the core hub floats above. */}
+          <div className="machine-wires" aria-hidden="true">
+            <div className="machine-board" />
+            <div className="machine-wire machine-wire--h"><span className="machine-wire__pulse" /></div>
+            <div className="machine-wire machine-wire--v"><span className="machine-wire__pulse" /></div>
+            <span className="machine-port machine-port--t" />
+            <span className="machine-port machine-port--b" />
+            <span className="machine-port machine-port--l" />
+            <span className="machine-port machine-port--r" />
+          </div>
+          <div className="machine-hub" aria-hidden="true">
+            <span className="machine-hub__sweep" />
+            <span className="machine-hub__ring" />
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round">
+              <rect x="7.5" y="7.5" width="9" height="9" rx="2.4" fill="rgba(255,213,0,0.16)" />
+              <circle cx="12" cy="12" r="1.8" fill="var(--accent)" stroke="none" />
+              <path d="M12 3.2v3M12 17.8v3M3.2 12h3M17.8 12h3" />
+            </svg>
+          </div>
         </div>
 
       </div>
+
+      <style>{`
+        .services-machine { position: relative; isolation: isolate; }
+        /* keep the real cards above the wire layer (no DOM/markup change) */
+        .services-machine > div:not([class*="machine"]) { z-index: 1; }
+        .machine-wires { position: absolute; inset: -8px 0; z-index: 0; pointer-events: none; }
+        .machine-board {
+          position: absolute; inset: 0;
+          background-image: radial-gradient(rgba(255,213,0,0.12) 1px, transparent 1.6px);
+          background-size: 24px 24px;
+          -webkit-mask: radial-gradient(ellipse 62% 60% at 50% 50%, #000, transparent 82%);
+          mask: radial-gradient(ellipse 62% 60% at 50% 50%, #000, transparent 82%);
+          opacity: 0.5;
+        }
+        .machine-wire { position: absolute; overflow: hidden; border-radius: 3px; }
+        .machine-wire--v { left: 50%; top: 0; bottom: 0; width: 3px; transform: translateX(-50%);
+          background: linear-gradient(180deg, rgba(255,213,0,0.04), rgba(255,213,0,0.24) 12%, rgba(255,213,0,0.24) 88%, rgba(255,213,0,0.04)); }
+        .machine-wire--h { top: 50%; left: 0; right: 0; height: 3px; transform: translateY(-50%);
+          background: linear-gradient(90deg, rgba(255,213,0,0.04), rgba(255,213,0,0.24) 12%, rgba(255,213,0,0.24) 88%, rgba(255,213,0,0.04)); }
+        /* marching "current" dashes */
+        .machine-wire::before { content: ""; position: absolute; inset: 0; opacity: 0.4; }
+        .machine-wire--v::before { background: repeating-linear-gradient(180deg, var(--accent) 0 4px, transparent 4px 12px); animation: dashV 0.55s linear infinite; }
+        .machine-wire--h::before { background: repeating-linear-gradient(90deg, var(--accent) 0 4px, transparent 4px 12px); animation: dashH 0.55s linear infinite; }
+        @keyframes dashV { to { background-position: 0 12px; } }
+        @keyframes dashH { to { background-position: 12px 0; } }
+        /* bright comet surge radiating along the bus */
+        .machine-wire__pulse { position: absolute; }
+        .machine-wire--v .machine-wire__pulse { left: -2px; right: -2px; height: 64px; top: 0;
+          background: linear-gradient(180deg, transparent, rgba(255,255,255,0.5), var(--accent), rgba(255,255,255,0.5), transparent);
+          box-shadow: 0 0 16px 2px rgba(255,213,0,0.7); animation: cometV 2.6s linear infinite; }
+        .machine-wire--h .machine-wire__pulse { top: -2px; bottom: -2px; width: 64px; left: 0;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), var(--accent), rgba(255,255,255,0.5), transparent);
+          box-shadow: 0 0 16px 2px rgba(255,213,0,0.7); animation: cometH 3.1s linear infinite; }
+        @keyframes cometV { 0% { top: -16%; } 100% { top: 100%; } }
+        @keyframes cometH { 0% { left: -16%; } 100% { left: 100%; } }
+        /* glowing edge terminals where the bus meets the board */
+        .machine-port { position: absolute; width: 12px; height: 12px; border-radius: 50%;
+          background: radial-gradient(circle, #fff, var(--accent) 55%, rgba(255,213,0,0.15));
+          box-shadow: 0 0 14px 2px rgba(255,213,0,0.6); animation: portPulse 2s ease-in-out infinite; }
+        .machine-port--t { top: -6px; left: 50%; transform: translateX(-50%); }
+        .machine-port--b { bottom: -6px; left: 50%; transform: translateX(-50%); }
+        .machine-port--l { left: -6px; top: 50%; transform: translateY(-50%); }
+        .machine-port--r { right: -6px; top: 50%; transform: translateY(-50%); }
+        @keyframes portPulse { 0%,100% { box-shadow: 0 0 8px 1px rgba(255,213,0,0.4); } 50% { box-shadow: 0 0 18px 4px rgba(255,213,0,0.9); } }
+        /* engine core */
+        .machine-hub { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);
+          width: 96px; height: 96px; border-radius: 50%; z-index: 5;
+          display: flex; align-items: center; justify-content: center; pointer-events: none;
+          background: radial-gradient(circle, rgba(255,213,0,0.18), rgba(10,10,10,0.96) 70%);
+          border: 1.5px solid rgba(255,213,0,0.55);
+          box-shadow: 0 0 40px rgba(255,213,0,0.3), inset 0 0 20px rgba(255,213,0,0.12); }
+        .machine-hub__sweep { position: absolute; inset: 2px; border-radius: 50%;
+          background: conic-gradient(from 0deg, transparent 0 68%, rgba(255,213,0,0.6) 86%, transparent 100%);
+          animation: hubSpin 3s linear infinite; }
+        .machine-hub__ring { position: absolute; inset: -9px; border-radius: 50%; border: 1px solid rgba(255,213,0,0.35); animation: hubPulse 2.6s ease-out infinite; }
+        .machine-hub::after { content: ""; position: absolute; inset: -9px; border-radius: 50%; border: 1px solid rgba(255,213,0,0.22); animation: hubPulse 2.6s ease-out infinite 1.3s; }
+        .machine-hub svg { position: relative; z-index: 1; filter: drop-shadow(0 0 6px rgba(255,213,0,0.85)); animation: hubGlow 2.2s ease-in-out infinite; }
+        @keyframes hubSpin { to { transform: rotate(360deg); } }
+        @keyframes hubPulse { 0% { transform: scale(0.9); opacity: 0.8; } 100% { transform: scale(1.7); opacity: 0; } }
+        @keyframes hubGlow { 0%,100% { opacity: 0.85; } 50% { opacity: 1; } }
+        /* module accents — pure CSS, no markup change so text edits stay intact */
+        .services-machine > div:not([class*="machine"])::before {
+          content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+          background: linear-gradient(90deg, transparent, rgba(255,213,0,0.6), transparent);
+          background-size: 200% 100%; opacity: 0.5; z-index: 3; pointer-events: none;
+          animation: railShimmer 3.5s linear infinite;
+        }
+        .services-machine > div:not([class*="machine"]):hover::before { opacity: 1; }
+        .services-machine > div:not([class*="machine"])::after {
+          content: ""; position: absolute; top: 14px; left: 14px; width: 7px; height: 7px; border-radius: 50%;
+          background: var(--accent); box-shadow: 0 0 8px var(--accent); z-index: 3; pointer-events: none;
+          animation: ledBlink 1.8s ease-in-out infinite;
+        }
+        @keyframes railShimmer { to { background-position: 200% 0; } }
+        @keyframes ledBlink { 0%,100% { opacity: 1; } 50% { opacity: 0.25; } }
+        /* Mobile: collapse the cross + core into a single flowing vertical spine */
+        @container (max-width: 600px) {
+          .machine-wire--h, .machine-hub, .machine-port--l, .machine-port--r { display: none !important; }
+        }
+      `}</style>
     </section>);
 
 }
