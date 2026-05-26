@@ -5687,7 +5687,7 @@ function ServicesOld({ onCTAClick }) {
       </div>
 
       <style>{`
-        .services-machine { position: relative; isolation: isolate; }
+        .services-machine { position: relative; isolation: isolate; gap: 36px !important; }
         /* keep the real cards above the wire layer (no DOM/markup change) +
            give each module a dimensional, lit-panel look */
         .services-machine > div:not([class*="machine"]) {
