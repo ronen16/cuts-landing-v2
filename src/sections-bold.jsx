@@ -5678,10 +5678,11 @@ function ServicesOld({ onCTAClick }) {
           <div className="machine-hub" aria-hidden="true">
             <span className="machine-hub__sweep" />
             <span className="machine-hub__ring" />
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round">
-              <rect x="7.5" y="7.5" width="9" height="9" rx="2.4" fill="rgba(255,213,0,0.16)" />
-              <circle cx="12" cy="12" r="1.8" fill="var(--accent)" stroke="none" />
-              <path d="M12 3.2v3M12 17.8v3M3.2 12h3M17.8 12h3" />
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="9" stroke="var(--accent)" strokeWidth="1.1" opacity="0.85" />
+              <circle cx="12" cy="12" r="4.6" stroke="var(--accent)" strokeWidth="1.4" fill="rgba(255,213,0,0.14)" />
+              <circle cx="12" cy="12" r="1.7" fill="var(--accent)" />
+              <circle cx="9.5" cy="9.5" r="0.9" fill="rgba(255,255,255,0.85)" />
             </svg>
           </div>
         </div>
@@ -5737,20 +5738,22 @@ function ServicesOld({ onCTAClick }) {
         @keyframes portPulse { 0%,100% { box-shadow: 0 0 8px 1px rgba(255,213,0,0.4); } 50% { box-shadow: 0 0 18px 4px rgba(255,213,0,0.9); } }
         /* engine core */
         .machine-hub { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);
-          width: 96px; height: 96px; border-radius: 50%; z-index: 5;
+          width: 86px; height: 86px; border-radius: 50%; z-index: 5;
           display: flex; align-items: center; justify-content: center; pointer-events: none;
-          background: radial-gradient(circle, rgba(255,213,0,0.18), rgba(10,10,10,0.96) 70%);
-          border: 1.5px solid rgba(255,213,0,0.55);
-          box-shadow: 0 0 40px rgba(255,213,0,0.3), inset 0 0 20px rgba(255,213,0,0.12); }
-        .machine-hub__sweep { position: absolute; inset: 2px; border-radius: 50%;
-          background: conic-gradient(from 0deg, transparent 0 68%, rgba(255,213,0,0.6) 86%, transparent 100%);
-          animation: hubSpin 3s linear infinite; }
-        .machine-hub__ring { position: absolute; inset: -9px; border-radius: 50%; border: 1px solid rgba(255,213,0,0.35); animation: hubPulse 2.6s ease-out infinite; }
-        .machine-hub::after { content: ""; position: absolute; inset: -9px; border-radius: 50%; border: 1px solid rgba(255,213,0,0.22); animation: hubPulse 2.6s ease-out infinite 1.3s; }
-        .machine-hub svg { position: relative; z-index: 1; filter: drop-shadow(0 0 6px rgba(255,213,0,0.85)); animation: hubGlow 2.2s ease-in-out infinite; }
+          background: radial-gradient(circle, rgba(30,27,19,0.96), rgba(8,8,8,0.97) 70%);
+          border: 1px solid rgba(255,213,0,0.42);
+          box-shadow: 0 0 22px rgba(255,213,0,0.16), inset 0 0 14px rgba(255,213,0,0.05); }
+        /* slow rotating tick-dial ring (precision-instrument feel) */
+        .machine-hub__sweep { position: absolute; inset: 6px; border-radius: 50%;
+          background: repeating-conic-gradient(from 0deg, rgba(255,213,0,0.5) 0deg 1.4deg, transparent 1.4deg 15deg);
+          -webkit-mask: radial-gradient(circle, transparent 57%, #000 60%, #000 73%, transparent 76%);
+          mask: radial-gradient(circle, transparent 57%, #000 60%, #000 73%, transparent 76%);
+          animation: hubSpin 9s linear infinite; }
+        .machine-hub__ring { position: absolute; inset: -8px; border-radius: 50%; border: 1px solid rgba(255,213,0,0.28); animation: hubPulse 3s ease-out infinite; }
+        .machine-hub::after { content: ""; position: absolute; inset: 4px; border-radius: 50%; border: 1px solid rgba(255,213,0,0.16); }
+        .machine-hub svg { position: relative; z-index: 1; filter: drop-shadow(0 0 4px rgba(255,213,0,0.6)); }
         @keyframes hubSpin { to { transform: rotate(360deg); } }
-        @keyframes hubPulse { 0% { transform: scale(0.9); opacity: 0.8; } 100% { transform: scale(1.7); opacity: 0; } }
-        @keyframes hubGlow { 0%,100% { opacity: 0.85; } 50% { opacity: 1; } }
+        @keyframes hubPulse { 0% { transform: scale(0.92); opacity: 0.55; } 100% { transform: scale(1.6); opacity: 0; } }
         /* module frame — pure CSS, no markup change so text edits stay intact.
            One overlay does it all: top rail + corner glow + glass sheen + bevel. */
         .services-machine > div:not([class*="machine"])::before {
