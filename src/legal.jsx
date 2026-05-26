@@ -116,6 +116,13 @@ function LegalModal() {
     };
   }, []);
 
+  React.useEffect(() => {
+    if (!doc) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden"; // stop the page behind from scrolling/jumping
+    return () => { document.body.style.overflow = prev; };
+  }, [doc]);
+
   if (!doc) return null;
   const d = LEGAL_DOCS[doc];
 

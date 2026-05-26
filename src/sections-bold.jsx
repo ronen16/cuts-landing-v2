@@ -2769,12 +2769,12 @@ function ConsentCheckbox({ form }) {
       </span>
       <span>
         אני מאשר/ת שקראתי ואני מסכים/ה{" "}
-        <a
-          href="terms.html"
+        <button
+          type="button"
           onClick={(e) => { e.preventDefault(); e.stopPropagation(); if (window.openLegal) window.openLegal("terms"); }}
-          style={{ color: "var(--accent)", textDecoration: "underline", fontWeight: 700 }}>
+          style={{ color: "var(--accent)", textDecoration: "underline", fontWeight: 700, background: "none", border: "none", padding: 0, font: "inherit", cursor: "pointer" }}>
           לתקנון האתר
-        </a>
+        </button>
       </span>
     </label>
   );
