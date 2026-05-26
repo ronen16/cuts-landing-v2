@@ -3788,17 +3788,17 @@ function GuestStrip({ admin }) {
         }
         .guest-marquee-row:hover { animation-play-state: paused; }
         @container (max-width: 768px) {
-          /* Size each row independently so the 16:9 row isn't crushed to a
-             sliver. Tall (9:16) ~ 150px wide, wide (16:9) ~ 232px → balanced
-             heights and prominent faces on phones. */
-          .guest-marquee-row--tall > div { width: 150px !important; }
-          .guest-marquee-row--wide > div { width: 232px !important; }
+          /* Tall (9:16) row stays compact so more faces scroll past; wide
+             (16:9) row is large enough to show ~one image at a time that
+             rotates. */
+          .guest-marquee-row--tall > div { width: 105px !important; }
+          .guest-marquee-row--wide > div { width: 340px !important; }
           .guest-section { padding-top: 52px !important; padding-bottom: 44px !important; }
           .guest-heading-wrap { margin-bottom: 34px !important; }
         }
         @container (max-width: 420px) {
-          .guest-marquee-row--tall > div { width: 132px !important; }
-          .guest-marquee-row--wide > div { width: 208px !important; }
+          .guest-marquee-row--tall > div { width: 92px !important; }
+          .guest-marquee-row--wide > div { width: 320px !important; }
         }
       `}</style>
     </section>);
