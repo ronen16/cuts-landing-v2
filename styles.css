@@ -182,6 +182,10 @@ img { display: block; max-width: 100%; }
      paints. Marquees keep moving (their animation lives on the row, which is
      not aria-hidden). */
   [aria-hidden="true"] { animation: none !important; filter: none !important; }
+  /* Scroll-reveal slides elements up 30px as they enter — on a long phone
+     scroll that reads as the page "jumping". Keep a gentle fade, drop the
+     positional move (and any leftover offset) so scrolling stays steady. */
+  .reveal-init { transform: none !important; transition: opacity .5s ease !important; }
 }
 
 /* ===== EDITORIAL ===== */
