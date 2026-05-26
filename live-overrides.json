@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "publishedAt": "2026-05-26T11:28:24.026Z",
+  "publishedAt": "2026-05-26T12:29:46.238Z",
   "overrides": {
     "sec:how-it-works>button[0]#h:d901835d": "👁 הצג",
     "sec:services>section[0]>div[0]>div[1]>div[0]>h3[0]#h:a5c90c46": "צילום ותאורה מקצועית",
@@ -133,7 +133,7 @@
     "sec:services>section[0]>div[0]>p[0]#h:5115a882": "אתם לא צריכים ציוד יקר,<br>או לחפש עורכי וידאו צלמים ומעצבים.<br>אנחנו בונים את כל השרשרת.",
     "sec:services>section[0]>div[0]>div[1]>div[2]>p[0]>blockquote[0]>p[0]#h:7f4c59a1": "מכל פרק אנחנו נוציא את הרילסים<br>הכי טובים ונהפוך את הפודקאסט שלכם למכונת תוכן שתמשיך להביא לכם עוקבים, חשיפה, וקהל שסומך עליכם.",
     "sec:services>section[0]>div[0]>div[1]>div[3]>p[0]>span[0]#h:18a41203": "טאמבניילים וכותרות הם הפנים של הפרקים שלכם,<br>זה מה שקובע אם אנשים יכנסו לצפות בפרקים או לא.",
-    "sec:studio-booking>section[0]>div[2]>div[0]>div[0]>div[0]>p[0]#h:a2d6dcae": "שיחת אבחון קצרה, ללא עלות.<br>נכיר את העסק שלכם.<br>נבדוק התאמה לפודקאסט<br>נראה לכם דוגמאות אמיתיות מתוך האולפן.",
+    "sec:studio-booking>section[0]>div[2]>div[0]>div[0]>div[0]>p[0]#h:a2d6dcae": "שיחת אבחון קצרה, ללא עלות, שבה נכיר את העסק שלכם.<br>נבדוק התאמה לפודקאסט, ונראה לכם דוגמאות אמיתיות מהאולפן.",
     "sec:mini-lead-2>section[0]>div[1]>div[0]>div[0]>h3[0]#h:c9a61bd7": "רוצים לראות אם זה מתאים לכם? <br><span style=\"color: var(--accent);\" data-edit-original=\"השאר פרטים.\" data-edit-id=\"sec:mini-lead-2&gt;section[0]&gt;div[1]&gt;div[0]&gt;div[0]&gt;h3[0]&gt;span[0]#h:e2b28f49\" contenteditable=\"true\" spellcheck=\"false\" data-edit-original-html=\"השאר פרטים.\">השאירו פרטים</span>",
     "sec:who-its-for>section[0]>div[0]>div[1]>div[3]>h3[0]>span[1]>span[1]#h:6e2c5e1c": "שהמוניטין שלהם יקר",
     "sec:who-its-for>section[0]>div[0]>div[1]>div[3]>h3[0]>span[1]>span[0]#h:d11f11aa": "אנשי מקצוע",
