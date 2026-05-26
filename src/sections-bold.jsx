@@ -2795,19 +2795,19 @@ function StudioBookingLead({ form }) {
           boxShadow: "0 30px 80px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,213,0,0.08)"
         }}>
           {/* corner brackets */}
-          <span aria-hidden="true" style={{
+          <span aria-hidden="true" className="studio-corner" style={{
             position: "absolute", top: 18, right: 18, width: 22, height: 22,
             borderTop: "2px solid var(--accent)", borderRight: "2px solid var(--accent)"
           }} />
-          <span aria-hidden="true" style={{
+          <span aria-hidden="true" className="studio-corner" style={{
             position: "absolute", top: 18, left: 18, width: 22, height: 22,
             borderTop: "2px solid var(--accent)", borderLeft: "2px solid var(--accent)"
           }} />
-          <span aria-hidden="true" style={{
+          <span aria-hidden="true" className="studio-corner" style={{
             position: "absolute", bottom: 18, right: 18, width: 22, height: 22,
             borderBottom: "2px solid var(--accent)", borderRight: "2px solid var(--accent)"
           }} />
-          <span aria-hidden="true" style={{
+          <span aria-hidden="true" className="studio-corner" style={{
             position: "absolute", bottom: 18, left: 18, width: 22, height: 22,
             borderBottom: "2px solid var(--accent)", borderLeft: "2px solid var(--accent)"
           }} />
@@ -3042,6 +3042,8 @@ function StudioBookingLead({ form }) {
         @container (max-width: 600px) {
           .studio-section { padding: 34px 0 !important; }
           .studio-card { padding: 20px 14px !important; border-radius: 18px !important; }
+          /* viewfinder corner brackets clip awkwardly on the narrow card — hide on mobile */
+          .studio-corner { display: none !important; }
           .studio-booking-grid { gap: 18px !important; }
           .studio-chip { margin-bottom: 12px !important; }
           .studio-pitch-title { margin: 0 0 8px !important; }
