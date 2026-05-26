@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "publishedAt": "2026-05-26T12:35:47.766Z",
+  "publishedAt": "2026-05-26T12:38:19.728Z",
   "overrides": {
     "sec:how-it-works>button[0]#h:d901835d": "👁 הצג",
     "sec:services>section[0]>div[0]>div[1]>div[0]>h3[0]#h:a5c90c46": "צילום ותאורה מקצועית",
@@ -143,7 +143,8 @@
     "sec:services>section[0]>div[0]>div[0]>h2[0]>span[1]>span[0]#h:50ed6a4a": "אנחנו דואגים לכל השאר.<span aria-hidden=\"true\" style=\"position: absolute; left: 3%; right: 3%; bottom: -0.06em; height: 5px; background: linear-gradient(90deg, transparent, var(--accent) 15%, var(--accent) 85%, transparent); opacity: 0.55; border-radius: 3px; filter: blur(0.5px);\"></span>",
     "sec:services>section[0]>div[0]>div[1]>div[3]>h3[0]#h:789ee55c": "טאמבניילים וכותרות",
     "sec:services>section[0]>div[0]>div[1]>div[2]>div[0]#h:00000603": "03",
-    "sec:results>section[0]>div[0]>div[0]>h2[0]>span[1]#h:bf7c4e01": "הפודקאסטים אצלנו.<span aria-hidden=\"true\" style=\"position: absolute; left: 3%; right: 3%; bottom: -0.06em; height: 5px; background: linear-gradient(90deg, transparent, var(--accent) 15%, var(--accent) 85%, transparent); opacity: 0.55; border-radius: 3px; filter: blur(0.5px);\"></span>"
+    "sec:results>section[0]>div[0]>div[0]>h2[0]>span[1]#h:bf7c4e01": "הפודקאסטים אצלנו.<span aria-hidden=\"true\" style=\"position: absolute; left: 3%; right: 3%; bottom: -0.06em; height: 5px; background: linear-gradient(90deg, transparent, var(--accent) 15%, var(--accent) 85%, transparent); opacity: 0.55; border-radius: 3px; filter: blur(0.5px);\"></span>",
+    "sec:hero>section[0]>div[1]>div[0]>p[0]#h:e69b5aad": "פעם הייתם צריכים להסביר מי אתם בכל שיחת מכירה.<br>עם פודקאסט — הם כבר יודעים.<span style=\"color: var(--accent); font-weight: 700;\"></span>"
   },
   "sectionOrder": [
     "hero",
