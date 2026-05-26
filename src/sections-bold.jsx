@@ -3908,14 +3908,19 @@ function Results({ admin }) {
   const [cardW, setCardW] = React.useState(0);
   const [idx, setIdx] = React.useState(N);
   const [withAnim, setWithAnim] = React.useState(true);
+  // On a narrow canvas the episodes stack vertically (one after another)
+  // instead of the horizontal arrow carousel.
+  const [stacked, setStacked] = React.useState(false);
   const idxRef = React.useRef(N);
   React.useEffect(() => { idxRef.current = idx; }, [idx]);
   const step = cardW + GAP;
+  const renderList = stacked ? cases : loopItems;
 
   const measure = React.useCallback(() => {
     const vp = viewportRef.current;
     if (!vp) return;
     const w = vp.clientWidth;
+    setStacked(w > 0 && w <= 600);
     // Cards per view scales with the carousel's own width — so it responds to
     // the .site-canvas mobile frame (and real phones) just like @container.
     const pv = w < 560 ? 1 : w < 900 ? 2 : 3;
@@ -4004,8 +4009,9 @@ function Results({ admin }) {
       </div>
 
       {/* Carousel — full-bleed wrapper for arrows */}
-      <div style={{ position: "relative", maxWidth: 1280, marginInline: "auto", paddingInline: 80 }}>
+      <div style={{ position: "relative", maxWidth: 1280, marginInline: "auto", paddingInline: stacked ? 16 : 80 }}>
         {/* Prev arrow (right in RTL) — identical to testimonials */}
+        {!stacked &&
         <button
           type="button"
           onClick={(e) => {
@@ -4033,8 +4039,10 @@ function Results({ admin }) {
             <polyline points="9 18 15 12 9 6" />
           </svg>
         </button>
+        }
 
         {/* Next arrow (left in RTL) — identical to testimonials */}
+        {!stacked &&
         <button
           type="button"
           onClick={(e) => {
@@ -4062,13 +4070,16 @@ function Results({ admin }) {
             <polyline points="15 18 9 12 15 6" />
           </svg>
         </button>
+        }
 
         <div
           ref={viewportRef}
-          style={{ overflow: "hidden", paddingBlock: 10 }}>
+          style={{ overflow: stacked ? "visible" : "hidden", paddingBlock: 10 }}>
           <div
             onTransitionEnd={onTrackTransitionEnd}
-            style={{
+            style={stacked ? {
+              display: "flex", flexDirection: "column", gap: 18, direction: "ltr"
+            } : {
               display: "flex", gap: GAP,
               direction: "ltr",
               transform: `translateX(${-idx * step}px)`,
@@ -4078,7 +4089,7 @@ function Results({ admin }) {
               willChange: "transform"
             }}>
 
-          {loopItems.map((c, i) => {
+          {renderList.map((c, i) => {
           const hasVideo = Boolean(c.youtubeId);
           const isPlaying = playingIdx === i;
           return (
@@ -4087,7 +4098,8 @@ function Results({ admin }) {
             data-case-card
             onClick={() => { if (hasVideo) setPlayingIdx(i); }}
             style={{
-              flex: `0 0 ${cardW}px`,
+              flex: stacked ? "0 0 auto" : `0 0 ${cardW}px`,
+              width: stacked ? "100%" : undefined,
               background: "var(--bg)", borderRadius: 20,
               border: "1px solid var(--line2)",
               overflow: "hidden",
