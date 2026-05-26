@@ -2309,6 +2309,21 @@ function Guarantee({ onCTAClick }) {
           .bonus-total__compare { gap: 16px; }
           .bonus-total__arrow { display: none; }
         }
+        /* Mobile redesign: cleaner stacked bonus card — struck price centered
+           with the FREE badge as a full-width claim button below it. */
+        @container (max-width: 600px) {
+          .bonus-card { padding: 22px 20px 20px; gap: 10px; }
+          .bonus-card__value-row {
+            flex-direction: column; align-items: stretch; gap: 12px;
+            margin-top: 4px; padding-top: 16px;
+          }
+          .bonus-card__value-arrow { display: none; }
+          .bonus-card__value-old { justify-content: center; }
+          .bonus-card__value-new {
+            width: 100%; justify-content: center; padding: 13px; font-size: 17px;
+            box-shadow: 0 8px 24px -6px rgba(255,213,0,0.5);
+          }
+        }
       `}</style>
 
       <div className="wrap" style={{ position: "relative", zIndex: 1 }}>
