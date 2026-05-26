@@ -5774,6 +5774,9 @@ function ServicesOld({ onCTAClick }) {
           opacity: 0.9; transition: opacity .35s ease;
         }
         .services-machine > div:not([class*="machine"]):hover::before { opacity: 1; }
+        /* strip stray inline backgrounds from rich-text edits (showed as a black
+           box/stroke around the copy) so text sits cleanly on the panel */
+        .services-machine > div:not([class*="machine"]) span { background-color: transparent !important; }
         /* status LED */
         .services-machine > div:not([class*="machine"])::after {
           content: ""; position: absolute; top: 16px; left: 16px; width: 7px; height: 7px; border-radius: 50%;
