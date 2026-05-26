@@ -5739,15 +5739,24 @@ function ServicesOld({ onCTAClick }) {
         .machine-hub { --hex: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
           position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);
           width: 92px; height: 80px; z-index: 5;
-          display: flex; align-items: center; justify-content: center; pointer-events: none;
+          display: flex; align-items: center; justify-content: center; pointer-events: auto;
           background: rgba(255,213,0,0.5);
           clip-path: var(--hex);
-          filter: drop-shadow(0 0 16px rgba(255,213,0,0.22)); }
+          filter: drop-shadow(0 0 16px rgba(255,213,0,0.22));
+          transition: transform .4s cubic-bezier(.2,.8,.2,1), filter .4s ease; }
         .machine-hub__plate { position: absolute; inset: 1.6px; clip-path: var(--hex);
-          background: radial-gradient(circle, rgba(32,29,20,0.98), rgba(8,8,8,0.98) 72%); }
+          background: radial-gradient(circle, rgba(32,29,20,0.98), rgba(8,8,8,0.98) 72%);
+          transition: background .35s ease; }
         .machine-hub__ring { position: absolute; inset: -7px; clip-path: var(--hex);
           background: rgba(255,213,0,0.16); animation: hubPulse 3s ease-out infinite; }
-        .machine-hub svg { position: relative; z-index: 1; filter: drop-shadow(0 0 6px rgba(255,213,0,0.7)); }
+        .machine-hub svg { position: relative; z-index: 1; filter: drop-shadow(0 0 6px rgba(255,213,0,0.7));
+          transition: transform .4s cubic-bezier(.34,1.56,.64,1), filter .3s ease; }
+        /* hover power-up */
+        .machine-hub:hover { transform: translate(-50%,-50%) scale(1.16);
+          filter: drop-shadow(0 0 30px rgba(255,213,0,0.6)); }
+        .machine-hub:hover .machine-hub__plate { background: radial-gradient(circle, rgba(58,51,28,0.98), rgba(12,11,8,0.98) 72%); }
+        .machine-hub:hover .machine-hub__ring { animation-duration: 1.1s; background: rgba(255,213,0,0.28); }
+        .machine-hub:hover svg { transform: scale(1.22); filter: drop-shadow(0 0 12px rgba(255,213,0,0.95)); }
         @keyframes hubPulse { 0% { transform: scale(0.9); opacity: 0.5; } 100% { transform: scale(1.5); opacity: 0; } }
         /* module frame — pure CSS, no markup change so text edits stay intact.
            One overlay does it all: top rail + corner glow + glass sheen + bevel. */
