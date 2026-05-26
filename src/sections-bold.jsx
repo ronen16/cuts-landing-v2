@@ -5687,7 +5687,8 @@ function ServicesOld({ onCTAClick }) {
       </div>
 
       <style>{`
-        .services-machine { position: relative; isolation: isolate; gap: 36px !important; }
+        .services-machine { position: relative; isolation: isolate; gap: 36px !important;
+          grid-auto-rows: 1fr; } /* equal-height rows → 50% = exact row-gap center for the hub */
         /* keep the real cards above the wire layer (no DOM/markup change) +
            give each module a dimensional, lit-panel look */
         .services-machine > div:not([class*="machine"]) {
@@ -5785,7 +5786,7 @@ function ServicesOld({ onCTAClick }) {
            open up the gaps so the connector isn't cramped against the cards. */
         @container (max-width: 600px) {
           .machine-wire--h, .machine-hub, .machine-port--l, .machine-port--r, .machine-board { display: none !important; }
-          .services-machine { gap: 40px !important; }
+          .services-machine { gap: 40px !important; grid-auto-rows: auto !important; }
         }
       `}</style>
     </section>);
