@@ -5780,9 +5780,12 @@ function ServicesOld({ onCTAClick }) {
           animation: ledBlink 1.9s ease-in-out infinite;
         }
         @keyframes ledBlink { 0%,100% { opacity: 1; } 50% { opacity: 0.25; } }
-        /* Mobile: collapse the cross + core into a single flowing vertical spine */
+        /* Mobile: collapse the cross + core into a single flowing vertical spine.
+           Hide the PCB dot-grid (its rows hug the cards in the narrow gaps) and
+           open up the gaps so the connector isn't cramped against the cards. */
         @container (max-width: 600px) {
-          .machine-wire--h, .machine-hub, .machine-port--l, .machine-port--r { display: none !important; }
+          .machine-wire--h, .machine-hub, .machine-port--l, .machine-port--r, .machine-board { display: none !important; }
+          .services-machine { gap: 40px !important; }
         }
       `}</style>
     </section>);
