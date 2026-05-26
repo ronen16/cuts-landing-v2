@@ -1483,7 +1483,15 @@ function AdminGuestsModal({ admin }) {
     sync([...items, { src: driveUrlToImage(url.trim()), scale: 1, offsetX: 0, offsetY: 0 }]);
   };
   const setField = (i, key, val) => {
-    const n = items.slice(); n[i] = { ...n[i], [key]: val }; sync(n);
+    const n = items.slice();
+    let item = { ...n[i], [key]: val };
+    // Clamp so the image always covers the tile (no black edges). row 1 = 9:16
+    // portrait tile; row 2 = 16:9. Re-clamps offsets whenever scale changes too.
+    if (window.__cutsClampGuestTransform) {
+      const ct = window.__cutsClampGuestTransform(item.scale, item.offsetX, item.offsetY, row === 1);
+      item = { ...item, scale: ct.scale, offsetX: ct.offsetX, offsetY: ct.offsetY };
+    }
+    n[i] = item; sync(n);
   };
   const resetTransform = (i) => {
     const n = items.slice(); n[i] = { ...n[i], scale: 1, offsetX: 0, offsetY: 0 }; sync(n);
@@ -1666,7 +1674,7 @@ function AdminGuestsModal({ admin }) {
 
                 {/* editable number fields — type values directly */}
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                  <NumField label="גודל"   value={g.scale}   min={0.5}  max={3}    step={0.05} suffix="x" onChange={(v) => setField(idx, "scale",   v)} />
+                  <NumField label="גודל"   value={g.scale}   min={1}    max={3}    step={0.05} suffix="x" onChange={(v) => setField(idx, "scale",   v)} />
                   <NumField label="הזזה X" value={g.offsetX} min={-100} max={100}  step={1}    suffix="%" onChange={(v) => setField(idx, "offsetX", v)} />
                   <NumField label="הזזה Y" value={g.offsetY} min={-100} max={100}  step={1}    suffix="%" onChange={(v) => setField(idx, "offsetY", v)} />
                 </div>

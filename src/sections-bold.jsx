@@ -3593,9 +3593,26 @@ const DEFAULT_GUESTS_ROW1 = [
   { src: "assets/guests/guest-06.jpg", scale: 1, offsetX: 0, offsetY: 0 },
 ];
 const DEFAULT_GUESTS_ROW2 = [];
+
+// Keep a guest image's transform within the bounds that still fully COVER the
+// tile — so panning/zooming can never expose the tile's dark background
+// ("black edges"). objectFit:cover already fills at scale 1; a portrait tile
+// (9:16) fed a 16:9 source has huge horizontal slack but ZERO vertical slack at
+// scale 1, so vertical panning needs zoom. Scale is floored at 1 (shrinking
+// below cover is what creates edges).
+function clampGuestTransform(scale, offsetX, offsetY, portrait) {
+  const s = Math.max(1, Math.min(3, Number(scale) || 1));
+  const coverX = portrait ? (256 / 81) : 1; // 16:9 in 9:16 ≈ 3.16× horizontal overflow
+  const maxTx = 50 * (coverX * s - 1);
+  const maxTy = 50 * (s - 1);
+  const clamp = (v, m) => Math.max(-m, Math.min(m, Number(v) || 0));
+  return { scale: s, offsetX: clamp(offsetX, maxTx), offsetY: clamp(offsetY, maxTy) };
+}
+
 if (typeof window !== "undefined") {
   window.__cutsGuestsRow1 = DEFAULT_GUESTS_ROW1;
   window.__cutsGuestsRow2 = DEFAULT_GUESTS_ROW2;
+  window.__cutsClampGuestTransform = clampGuestTransform;
 }
 
 function orderAndFilterGuestsRow1(admin) {
@@ -3688,6 +3705,7 @@ function GuestStrip({ admin }) {
                 {[...Array(3)].flatMap((_, dup) =>
                   padded.map((item, i) => {
                     const n = row.offset + (i + 1);
+                    const ct = item ? clampGuestTransform(item.scale, item.offsetX, item.offsetY, row.aspect === "9 / 16") : null;
                     return (
                       <div
                         key={`${rowIdx}-${dup}-${i}`}
@@ -3714,7 +3732,7 @@ function GuestStrip({ admin }) {
                               position: "absolute", inset: 0,
                               width: "100%", height: "100%",
                               objectFit: "cover", objectPosition: "center",
-                              transform: `translate(${item.offsetX || 0}%, ${item.offsetY || 0}%) scale(${item.scale || 1})`,
+                              transform: `translate(${ct.offsetX}%, ${ct.offsetY}%) scale(${ct.scale})`,
                               transformOrigin: "center",
                               zIndex: 1,
                               pointerEvents: "none",
