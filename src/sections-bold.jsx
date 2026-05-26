@@ -3687,7 +3687,7 @@ function orderAndFilterGuestsRow2(admin) {
 
 function GuestStrip({ admin }) {
   return (
-    <section style={{
+    <section className="guest-section" style={{
       padding: "76px 0 64px",
       position: "relative", overflow: "hidden",
       background: "var(--bg)",
@@ -3701,7 +3701,7 @@ function GuestStrip({ admin }) {
         pointerEvents: "none", filter: "blur(40px)"
       }} />
 
-      <div className="wrap" style={{ position: "relative", zIndex: 2, marginBottom: 56 }}>
+      <div className="wrap guest-heading-wrap" style={{ position: "relative", zIndex: 2, marginBottom: 56 }}>
         <div style={{ textAlign: "center", maxWidth: 1100, marginLeft: "auto", marginRight: "auto" }}>
           <h2 className="display" style={{
             fontSize: "clamp(40px, 6cqw, 84px)",
@@ -3729,7 +3729,7 @@ function GuestStrip({ admin }) {
         </div>
       </div>
 
-      <div style={{ position: "relative", display: "flex", flexDirection: "column", gap: 14, direction: "ltr", overflow: "hidden" }}>
+      <div id="guest-marquee" style={{ position: "relative", display: "flex", flexDirection: "column", gap: 14, direction: "ltr", overflow: "hidden" }}>
         <div aria-hidden="true" style={{ position: "absolute", top: 0, bottom: 0, right: 0, width: 220, zIndex: 3, pointerEvents: "none", background: "linear-gradient(to left, var(--bg), transparent)" }} />
         <div aria-hidden="true" style={{ position: "absolute", top: 0, bottom: 0, left: 0, width: 220, zIndex: 3, pointerEvents: "none", background: "linear-gradient(to right, var(--bg), transparent)" }} />
 
@@ -3751,7 +3751,7 @@ function GuestStrip({ admin }) {
               : Array.from({ length: row.fillTo }, () => null); // null = placeholder
             const padded = items.length < 3 ? [...items, ...items, ...items] : items;
             return (
-              <div key={rowIdx} className="guest-marquee-row" style={{
+              <div key={rowIdx} className={"guest-marquee-row " + (row.aspect === "9 / 16" ? "guest-marquee-row--tall" : "guest-marquee-row--wide")} style={{
                 direction: "ltr",
                 display: "flex",
                 animation: `marquee-${row.dir} ${row.duration}s linear infinite`,
@@ -3788,7 +3788,17 @@ function GuestStrip({ admin }) {
         }
         .guest-marquee-row:hover { animation-play-state: paused; }
         @container (max-width: 768px) {
-          .guest-marquee-row > div { width: 110px !important; }
+          /* Size each row independently so the 16:9 row isn't crushed to a
+             sliver. Tall (9:16) ~ 150px wide, wide (16:9) ~ 232px → balanced
+             heights and prominent faces on phones. */
+          .guest-marquee-row--tall > div { width: 150px !important; }
+          .guest-marquee-row--wide > div { width: 232px !important; }
+          .guest-section { padding-top: 52px !important; padding-bottom: 44px !important; }
+          .guest-heading-wrap { margin-bottom: 34px !important; }
+        }
+        @container (max-width: 420px) {
+          .guest-marquee-row--tall > div { width: 132px !important; }
+          .guest-marquee-row--wide > div { width: 208px !important; }
         }
       `}</style>
     </section>);
