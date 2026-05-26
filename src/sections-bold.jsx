@@ -3594,21 +3594,25 @@ const DEFAULT_GUESTS_ROW1 = [
 ];
 const DEFAULT_GUESTS_ROW2 = [];
 
-// Keep a guest image's transform within bounds that still fully COVER the tile,
-// so panning/zooming can never expose the tile's dark background ("black edge").
-// The <img> is objectFit:cover and CLIPPED to its element box (= the tile at
-// rest); a CSS transform moves that clipped box. So the only travel that stays
-// covered is the scale overflow — 50*(s-1) — in BOTH axes, independent of the
-// source aspect (the cover overflow is clipped, it grants no panning room).
-// Scale floors at 1 (below cover would leave gaps). SAFETY trims the last sliver
-// so subpixel rounding + the tile's 1px border can't reveal a hairline.
-const GUEST_PAN_SAFETY = 1.5; // percent
+// Guest framing uses object-position (NOT transform:translate) to pan, plus
+// transform:scale to zoom. object-position pans WITHIN the objectFit:cover
+// overflow, so the image always fully covers the tile — black edges are
+// impossible at any offset. offsetX/offsetY are deltas from center, mapped to
+// object-position `${50+off}%`, clamped to ±50 so the position stays in 0–100%.
+// Scale floors at 1 (cover); below it would leave gaps.
 function clampGuestTransform(scale, offsetX, offsetY) {
   const s = Math.max(1, Math.min(3, Number(scale) || 1));
-  const max = Math.max(0, 50 * (s - 1) - GUEST_PAN_SAFETY);
-  const clamp = (v) => Math.max(-max, Math.min(max, Number(v) || 0));
+  const clamp = (v) => Math.max(-50, Math.min(50, Number(v) || 0));
   return { scale: s, offsetX: clamp(offsetX), offsetY: clamp(offsetY) };
 }
+
+function guestObjectPosition(offsetX, offsetY) {
+  const px = Math.max(0, Math.min(100, 50 + (Number(offsetX) || 0)));
+  const py = Math.max(0, Math.min(100, 50 + (Number(offsetY) || 0)));
+  return `${px}% ${py}%`;
+}
+
+if (typeof window !== "undefined") window.__cutsGuestObjectPosition = guestObjectPosition;
 
 function GuestTile({ item, n, aspectStr, dup, width }) {
   const hasImg = !!(item && item.src);
@@ -3635,8 +3639,9 @@ function GuestTile({ item, n, aspectStr, dup, width }) {
           style={{
             position: "absolute", inset: 0,
             width: "100%", height: "100%",
-            objectFit: "cover", objectPosition: "center",
-            transform: `translate(${ct.offsetX}%, ${ct.offsetY}%) scale(${ct.scale})`,
+            objectFit: "cover",
+            objectPosition: guestObjectPosition(ct.offsetX, ct.offsetY),
+            transform: `scale(${ct.scale})`,
             transformOrigin: "center",
             zIndex: 1,
             pointerEvents: "none",

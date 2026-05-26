@@ -1635,13 +1635,14 @@ function AdminGuestsModal({ admin }) {
                   ⋮⋮ {idx + 1}
                 </span>
 
-                {/* 16:9 preview of the full source image, with a 9:16 viewport
-                    overlay (yellow) showing the portion that will appear on the site.
-                    The image transform matches the site exactly; the viewport stays put. */}
+                {/* Preview is the EXACT site tile (9:16 for row 1, 16:9 for row 2)
+                    with the same object-position + scale — so what you frame here
+                    is exactly what appears live, with no black edges ever. */}
                 <div className="admin-guest-row__preview" style={{
                   borderRadius: 10, overflow: "hidden",
                   border: "1px solid rgba(255,255,255,0.15)",
                   background: "rgba(0,0,0,0.4)", position: "relative",
+                  ...(row === 1 ? { width: 124, aspectRatio: "9 / 16" } : {}),
                 }}>
                   {g.src && (
                     <img
@@ -1649,35 +1650,24 @@ function AdminGuestsModal({ admin }) {
                       style={{
                         position: "absolute", inset: 0,
                         width: "100%", height: "100%",
-                        objectFit: "cover", objectPosition: "center",
-                        transform: `translate(${g.offsetX || 0}%, ${g.offsetY || 0}%) scale(${g.scale || 1})`,
+                        objectFit: "cover",
+                        objectPosition:
+                          `${Math.max(0, Math.min(100, 50 + (g.offsetX || 0)))}% ` +
+                          `${Math.max(0, Math.min(100, 50 + (g.offsetY || 0)))}%`,
+                        transform: `scale(${g.scale || 1})`,
                         transformOrigin: "center",
                         opacity: isHidden ? 0.35 : 1,
                         pointerEvents: "none",
                       }}
                     />
                   )}
-                  {/* Row 1 only: 9:16 visible-on-site window. 9/16 ÷ 16/9 ≈ 31.64% of
-                      the 16:9 preview's width — same ratio objectFit:cover produces on
-                      the live page. Row 2 fills the tile completely so no overlay. */}
-                  {row === 1 && (
-                    <div style={{
-                      position: "absolute", top: 0, bottom: 0,
-                      left: "50%", transform: "translateX(-50%)",
-                      width: "31.64%",
-                      border: "2px solid var(--accent)",
-                      boxShadow: "0 0 0 9999px rgba(0,0,0,0.45)",
-                      pointerEvents: "none",
-                      boxSizing: "border-box",
-                    }} />
-                  )}
                 </div>
 
                 {/* editable number fields — type values directly */}
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                   <NumField label="גודל"   value={g.scale}   min={1}    max={3}    step={0.05} suffix="x" onChange={(v) => setField(idx, "scale",   v)} />
-                  <NumField label="הזזה X" value={g.offsetX} min={-100} max={100}  step={1}    suffix="%" onChange={(v) => setField(idx, "offsetX", v)} />
-                  <NumField label="הזזה Y" value={g.offsetY} min={-100} max={100}  step={1}    suffix="%" onChange={(v) => setField(idx, "offsetY", v)} />
+                  <NumField label="הזזה X" value={g.offsetX} min={-50}  max={50}   step={1}    suffix="%" onChange={(v) => setField(idx, "offsetX", v)} />
+                  <NumField label="הזזה Y" value={g.offsetY} min={-50}  max={50}   step={1}    suffix="%" onChange={(v) => setField(idx, "offsetY", v)} />
                 </div>
 
                 {/* action buttons — vertical column on the side */}
