@@ -3123,6 +3123,7 @@ function MiniLeadStripe({ form }) {
             {/* Right: inline form */}
             <form
             onSubmit={(e) => {e.preventDefault();submit();}}
+            className="mini-lead-form"
             style={{
               display: "flex", gap: 10,
               flex: "1 1 520px", minWidth: 0,
@@ -3204,8 +3205,12 @@ function MiniLeadStripe({ form }) {
 
       <style>{`
         @container (max-width: 720px) {
-          .mini-lead-row { flex-direction: column; align-items: stretch !important; }
+          .mini-lead-row { flex-direction: column; align-items: stretch !important; gap: 16px !important; }
           .mini-lead-row > div:first-child { text-align: center; }
+          /* Stack the form fields full-width at normal height (no odd wrapping) */
+          .mini-lead-form { flex-direction: column !important; flex-wrap: nowrap !important; gap: 12px !important; }
+          .mini-lead-form > input,
+          .mini-lead-form > button { flex: 0 0 auto !important; width: 100% !important; }
         }
       `}</style>
     </section>);
