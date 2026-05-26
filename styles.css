@@ -68,10 +68,8 @@ img { display: block; max-width: 100%; }
 .wrap { max-width: 1280px; margin: 0 auto; padding: 0 32px; }
 @container (max-width: 600px) {
   .wrap { padding: 0 18px; }
-  /* Mobile nav: drop the link list (no room beside logo+CTA), tighten bar */
-  .topnav-links { display: none !important; }
-  .topnav-row { height: 60px !important; }
-  .topnav-cta { padding: 8px 14px !important; font-size: 14px !important; }
+  /* Mobile: remove the top nav entirely */
+  .topnav { display: none !important; }
   /* Hero viewfinder eyebrow: shrink + drop secondary bits so it fits the phone */
   .hero-eyebrow { padding: 16px 22px !important; margin-bottom: 26px !important; }
   .hero-eyebrow-row { gap: 12px !important; }
