@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "publishedAt": "2026-05-25T10:46:55.947Z",
+  "publishedAt": "2026-05-26T07:38:55.671Z",
   "overrides": {
     "sec:how-it-works>button[0]#h:d901835d": "👁 הצג",
     "sec:services>section[0]>div[0]>div[1]>div[0]>h3[0]#h:a5c90c46": "צילום ותאורה מקצועית",
@@ -283,5 +283,12 @@
       "offsetY": 0
     }
   ],
-  "hiddenGuestsRow2": []
+  "hiddenGuestsRow2": [],
+  "layerDesktop": {},
+  "layerMobile": {
+    "hiddenVideos": [
+      "1190079907",
+      "1190079801"
+    ]
+  }
 }
