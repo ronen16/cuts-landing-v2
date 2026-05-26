@@ -1511,6 +1511,26 @@ function Guarantee({ onCTAClick }) {
           font-size: clamp(13px, 1.05cqw, 14px);
           opacity: 0.62; line-height: 1.5;
         }
+        /* Mobile: turn each step into a compact horizontal row —
+           a big number on the right, title + subtitle stacked beside it. */
+        @container (max-width: 600px) {
+          .guarantee-step {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            grid-template-areas: "num title" "num sub";
+            align-items: center;
+            column-gap: 18px; row-gap: 2px;
+            padding: 18px 22px;
+            text-align: right;
+          }
+          .guarantee-step__num {
+            grid-area: num; align-self: center;
+            font-size: 44px; letter-spacing: 0; margin: 0; line-height: 1;
+            font-weight: 900; opacity: 0.92;
+          }
+          .guarantee-step__title { grid-area: title; margin-bottom: 0; font-size: 19px; }
+          .guarantee-step__sub { grid-area: sub; font-size: 13.5px; }
+        }
 
         /* === Reassurance outcome cards (mirrors the verdict-card pattern) === */
         .guarantee-row {
