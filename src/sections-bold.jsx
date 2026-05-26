@@ -5625,7 +5625,7 @@ function ServicesOld({ onCTAClick }) {
                   {s.n}
                 </div>
                 <h3 className="display" style={{
-                  fontSize: 28,
+                  fontSize: "clamp(30px, 3cqw, 38px)",
                   margin: "0 0 14px", fontWeight: 900,
                   position: "relative", zIndex: 2, textAlign: "center"
 
@@ -5678,8 +5678,8 @@ function ServicesOld({ onCTAClick }) {
           <div className="machine-hub" aria-hidden="true">
             <span className="machine-hub__ring" />
             <span className="machine-hub__plate" />
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="var(--accent)">
-              <path d="M9.5 6.5 L17.5 12 L9.5 17.5 Z" />
+            <svg width="42" height="42" viewBox="0 0 24 24" fill="var(--accent)">
+              <path d="M8 5 L20 12 L8 19 Z" />
             </svg>
           </div>
         </div>
@@ -5747,7 +5747,7 @@ function ServicesOld({ onCTAClick }) {
           background: radial-gradient(circle, rgba(32,29,20,0.98), rgba(8,8,8,0.98) 72%); }
         .machine-hub__ring { position: absolute; inset: -7px; clip-path: var(--hex);
           background: rgba(255,213,0,0.16); animation: hubPulse 3s ease-out infinite; }
-        .machine-hub svg { position: relative; z-index: 1; margin-left: 2px; filter: drop-shadow(0 0 5px rgba(255,213,0,0.65)); }
+        .machine-hub svg { position: relative; z-index: 1; filter: drop-shadow(0 0 6px rgba(255,213,0,0.7)); }
         @keyframes hubPulse { 0% { transform: scale(0.9); opacity: 0.5; } 100% { transform: scale(1.5); opacity: 0; } }
         /* module frame — pure CSS, no markup change so text edits stay intact.
            One overlay does it all: top rail + corner glow + glass sheen + bevel. */
