@@ -3793,7 +3793,7 @@ function GuestStrip({ admin }) {
           .guest-marquee-row--tall > div { width: 105px !important; }
           .guest-marquee-row--wide > div { width: 255px !important; }
           .guest-marquee-row--wide { animation-duration: 15s !important; }
-          .guest-section { padding-top: 52px !important; padding-bottom: 44px !important; }
+          .guest-section { padding-top: 52px !important; padding-bottom: 44px !important; border-top-color: transparent !important; }
           .guest-heading-wrap { margin-bottom: 34px !important; }
         }
         @container (max-width: 420px) {
