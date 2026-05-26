@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "publishedAt": "2026-05-26T12:29:46.238Z",
+  "publishedAt": "2026-05-26T12:35:47.766Z",
   "overrides": {
     "sec:how-it-works>button[0]#h:d901835d": "👁 הצג",
     "sec:services>section[0]>div[0]>div[1]>div[0]>h3[0]#h:a5c90c46": "צילום ותאורה מקצועית",
@@ -108,7 +108,8 @@
     "sec:services>section[0]>div[0]>div[0]>h2[0]>span[1]>span[0]#h:50ed6a4a": "אנחנו דואגים לכל השאר.<span aria-hidden=\"true\" style=\"position: absolute; left: 3%; right: 3%; bottom: -0.06em; height: 5px; background: linear-gradient(90deg, transparent, var(--accent) 15%, var(--accent) 85%, transparent); opacity: 0.55; border-radius: 3px; filter: blur(0.5px);\"></span>",
     "sec:services>section[0]>div[0]>p[0]#h:5115a882": "אתם לא צריכים ציוד יקר, לא צריכים לחפש עורכים, ולא צריכים לחפש צלמים ומעצבים,&nbsp;\nאנחנו בונים את כל המכונה.",
     "sec:problem>section[0]>div[1]>div[1]>div[1]>div[2]#h:02ba0b67": "2.23%",
-    "sec:problem>section[0]>div[1]>div[1]>div[0]>div[2]#h:0000a760": "+25%"
+    "sec:problem>section[0]>div[1]>div[1]>div[0]>div[2]#h:0000a760": "+25%",
+    "sec:social-proof>section[0]>div[1]>div[0]>h2[0]>span[0]#h:86096dd5": "לפני שאתם ממשיכים לקרוא"
   },
   "overridesDesktop": {
     "sec:services>section[0]>div[0]>div[1]>div[2]>p[0]>blockquote[0]>p[0]#h:7f4c59a1": "מכל פרק אנחנו נוציא את הרילסים הכי טובים ונהפוך את הפודקאסט שלכם למכונת תוכן שתמשיך להביא לכם עוקבים, חשיפה, וקהל שסומך עליכם.",
@@ -146,11 +147,11 @@
   },
   "sectionOrder": [
     "hero",
+    "social-proof",
+    "mini-lead-1",
     "problem",
     "solution",
     "inline-lead-1",
-    "social-proof",
-    "mini-lead-1",
     "who-its-for",
     "how-it-works",
     "services",
