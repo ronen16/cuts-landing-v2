@@ -3872,9 +3872,9 @@ function GuestStrip({ admin }) {
           /* Tall (9:16) row stays compact so more faces scroll past; wide
              (16:9) row shows ~one image at a time. Both run faster on mobile. */
           .guest-marquee-row--tall > div { width: 165px !important; }
-          .guest-marquee-row--wide > div { width: 340px !important; }
+          .guest-marquee-row--wide > div { width: 400px !important; }
           .guest-marquee-row--tall { animation-duration: 15s !important; }
-          .guest-marquee-row--wide { animation-duration: 11s !important; }
+          .guest-marquee-row--wide { animation-duration: 8s !important; }
           /* Blend the seam with the section above (Results): start the guest
              section at Results' card tone and fade to the page bg so there's no
              hard line OR tone step. Bottom already meets the next (bg) section. */
@@ -3884,7 +3884,7 @@ function GuestStrip({ admin }) {
         }
         @container (max-width: 420px) {
           .guest-marquee-row--tall > div { width: 150px !important; }
-          .guest-marquee-row--wide > div { width: 320px !important; }
+          .guest-marquee-row--wide > div { width: 360px !important; }
         }
       `}</style>
     </section>);
