@@ -3878,7 +3878,7 @@ function GuestStrip({ admin }) {
           /* Blend the seam with the section above (Results): start the guest
              section at Results' card tone and fade to the page bg so there's no
              hard line OR tone step. Bottom already meets the next (bg) section. */
-          .guest-section { padding-top: 52px !important; padding-bottom: 44px !important; border-top-color: transparent !important; margin-top: -2px !important; background: linear-gradient(var(--card), var(--bg) 190px) !important; }
+          .guest-section { padding-top: 52px !important; padding-bottom: 44px !important; border-top-color: transparent !important; margin-top: -2px !important; background: linear-gradient(var(--card), var(--card) calc(100% - 200px), var(--bg)) !important; }
           #results { border-bottom-color: transparent !important; }
           .guest-heading-wrap { margin-bottom: 34px !important; }
         }
