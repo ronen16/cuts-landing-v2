@@ -876,6 +876,10 @@ function isLeafTextElement(el) {
   // Anything inside an <svg> is decorative graphics, not editable text.
   if (el.closest("svg")) return false;
   if (el.closest(".admin-button, .admin-toolbar, .admin-modal-backdrop, .admin-modal, .tweaks-panel")) return false;
+  // Legal docs (terms / privacy / accessibility) are the single source of truth
+  // in legal.jsx. Never let them be captured as editable or overridden — a stale
+  // override would otherwise shadow the canonical text on every publish.
+  if (el.closest(".legal-backdrop, .legal-modal")) return false;
   if (el.getAttribute("aria-hidden") === "true") return false;
   if (el.getAttribute("contenteditable") === "false") return false;
   // Must have at least one DIRECT text-node child with non-whitespace content.
