@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "publishedAt": "2026-05-27T12:55:09.664Z",
+  "publishedAt": "2026-05-27T14:25:17.186Z",
   "overrides": {
     "sec:how-it-works>button[0]#h:d901835d": "👁 הצג",
     "sec:services>section[0]>div[0]>div[1]>div[0]>h3[0]#h:a5c90c46": "צילום ותאורה מקצועית",
@@ -48,6 +48,7 @@
     "sec:results>section[0]>div[1]>button[0]#h:00002192": "→",
     "root>div[0]>div[0]>footer[0]>div[0]>span[0]>a[1]#h:b124e6cd": "תקנון האתר",
     "root>div[0]>div[0]>footer[0]>div[0]>span[0]>a[0]#h:a42044a8": "מדיניות פרטיות",
+    "sec:final-cta>section[0]>div[0]>div[0]>form[0]>div[2]>div[2]>label[0]>span[1]>a[0]#h:1d2c49a9": "לתקנון האתר",
     "sec:hero>section[0]>div[1]>div[0]>div[1]>h1[0]>span[0]#h:e82d681d": "הליד הבא שלכם מגיע לפגישה",
     "sec:problem>section[0]>div[1]>div[2]>div[1]>p[0]#h:c8b4a98f": "אנחנו יודעים שאתם מרגישים את זה עכשיו -&nbsp;<strong style=\"color: rgb(255, 255, 255); font-weight: 800;\" data-edit-original=\"מחירי הלידים מזנקים, אחוזי ההמרה צונחים.\" data-edit-original-html=\"מחירי הלידים מזנקים, אחוזי ההמרה צונחים.\" data-edit-id=\"sec:problem&gt;section[0]&gt;div[1]&gt;div[2]&gt;div[1]&gt;p[0]&gt;strong[0]#h:4b2021dd\" contenteditable=\"true\" spellcheck=\"false\">מחירי הלידים מזנקים, אחוזי ההמרה צונחים.</strong><br>הקהל שלכם גולל הלאה לפני שהם בכלל יודעים מי אתם.<br>זה לא מצב זמני, מחירי הלידים עולים כל שנה - <strong style=\"color: rgb(255, 255, 255); font-weight: 800;\" data-edit-original=\"ואין סיבה שזה יעצור.\" data-edit-original-html=\"ואין סיבה שזה יעצור.\" data-edit-id=\"sec:problem&gt;section[0]&gt;div[1]&gt;div[2]&gt;div[1]&gt;p[0]&gt;strong[1]#h:c16fc89d\" contenteditable=\"true\" spellcheck=\"false\">ואין סיבה שזה יעצור.</strong><br>כל עוד אתם משלמים על תשומת לב - <strong style=\"color: rgb(255, 255, 255); font-weight: 800;\" data-edit-original=\"מישהו אחר יכול להציע יותר ולקחת אותה מכם.\" data-edit-original-html=\"מישהו אחר יכול להציע יותר ולקחת אותה מכם.\" data-edit-id=\"sec:problem&gt;section[0]&gt;div[1]&gt;div[2]&gt;div[1]&gt;p[0]&gt;strong[2]#h:8e6d849c\" contenteditable=\"true\" spellcheck=\"false\">מישהו אחר יכול להציע יותר ולקחת אותה מכם.</strong><br>",
     "sec:who-its-for>section[0]>div[0]>div[2]>div[0]>div[1]>div[1]>p[0]#h:07f11b5d": "לא בטוחים לאיזה צד אתם שייכים?<br><strong style=\"color: rgb(255, 255, 255); font-weight: 800;\" data-edit-original=\"נגיד לכם בשיחה — בלי לחץ.\" data-edit-original-html=\"נגיד לכם בשיחה — בלי לחץ.\" data-edit-id=\"sec:who-its-for&gt;section[0]&gt;div[0]&gt;div[2]&gt;div[0]&gt;div[1]&gt;div[1]&gt;p[0]&gt;strong[0]#h:8bce50da\" contenteditable=\"true\" spellcheck=\"false\">נגיד לכם בשיחה.</strong>",
@@ -113,11 +114,19 @@
     "root>div[0]>div[0]>div[0]>nav[0]>div[0]>ul[0]>li[3]>a[0]#h:56040b2a": "שאלות",
     "root>div[0]>div[0]>div[0]>nav[0]>div[0]>ul[0]>li[1]>a[0]#h:15370cee": "למה אנחנו",
     "root>div[0]>div[0]>div[0]>nav[0]>div[0]>button[0]#h:572946ce": "בואו נדבר ←",
-    "root>div[0]>div[0]>div[0]>footer[0]>div[0]>span[0]>a[1]#h:b124e6cd": "תקנון האתר"
+    "root>div[0]>div[0]>div[0]>footer[0]>div[0]>span[0]>a[1]#h:b124e6cd": "תקנון האתר",
+    "sec:mini-lead-2>section[0]>div[1]>div[0]>form[0]>div[0]>label[0]>span[1]>button[0]#h:1d2c49a9": "לתקנון האתר",
+    "sec:final-cta>section[0]>div[0]>div[0]>form[0]>div[2]>div[2]>label[0]>span[1]>button[0]#h:1d2c49a9": "לתקנון האתר",
+    "root>div[0]>div[0]>div[0]>footer[0]>div[0]>span[0]>a[0]#h:a42044a8": "מדיניות פרטיות",
+    "root>div[0]>div[2]>div[0]>div[1]>p[0]#h:15d69889": "עודכן לאחרונה: מאי 2026",
+    "root>div[0]>div[2]>div[0]>div[1]>div[0]>h3[0]#h:1b25639c": "מחויבות לנגישות",
+    "sec:guarantee>section[0]>div[2]>div[4]>div[2]>div[1]>div[1]#h:e3246da1": "מדריך: איך מכינים פרק שמוכר"
   },
   "overridesDesktop": {
     "sec:services>section[0]>div[0]>div[1]>div[2]>p[0]>blockquote[0]>p[0]#h:7f4c59a1": "מכל פרק אנחנו נוציא את הרילסים הכי טובים ונהפוך את הפודקאסט שלכם למכונת תוכן שתמשיך להביא לכם עוקבים, חשיפה, וקהל שסומך עליכם.",
-    "sec:results>section[0]>div[0]>div[0]>h2[0]>span[1]#h:bf7c4e01": "הפודקאסטים אצלנו.<span aria-hidden=\"true\" style=\"position: absolute; left: 3%; right: 3%; bottom: -0.06em; height: 5px; background: linear-gradient(90deg, transparent, var(--accent) 15%, var(--accent) 85%, transparent); opacity: 0.55; border-radius: 3px; filter: blur(0.5px);\"></span>"
+    "sec:results>section[0]>div[0]>div[0]>h2[0]>span[1]#h:bf7c4e01": "הפודקאסטים אצלנו.<span aria-hidden=\"true\" style=\"position: absolute; left: 3%; right: 3%; bottom: -0.06em; height: 5px; background: linear-gradient(90deg, transparent, var(--accent) 15%, var(--accent) 85%, transparent); opacity: 0.55; border-radius: 3px; filter: blur(0.5px);\"></span>",
+    "root>div[0]>div[0]>div[0]>footer[0]>div[0]>span[0]>a[0]#h:a42044a8": "מדיניות פרטיות",
+    "sec:final-cta>section[0]>div[0]>div[0]>form[0]>div[2]>div[2]>label[0]>span[1]#h:9926632c": "אני מאשר/ת שקראתי ואני מסכים/ה <button type=\"button\" style=\"color: var(--accent); text-decoration: underline; font: inherit; background: none; border: none; padding: 0px; cursor: pointer;\" data-edit-original=\"לתקנון האתר\" data-edit-original-html=\"לתקנון האתר\" data-edit-id=\"sec:final-cta&gt;section[0]&gt;div[0]&gt;div[0]&gt;form[0]&gt;div[2]&gt;div[2]&gt;label[0]&gt;span[1]&gt;button[0]#h:1d2c49a9\" contenteditable=\"true\" spellcheck=\"false\">לתקנון האתר</button>"
   },
   "overridesMobile": {
     "sec:problem>section[0]>div[1]>div[2]>div[1]>p[0]#h:c8b4a98f": "אנחנו יודעים שאתם מרגישים את זה עכשיו.<br><strong style=\"color: rgb(255, 255, 255); font-weight: 800;\" data-edit-original=\"מחירי הלידים מזנקים, אחוזי ההמרה צונחים.\" data-edit-original-html=\"מחירי הלידים מזנקים, אחוזי ההמרה צונחים.\" data-edit-id=\"sec:problem&gt;section[0]&gt;div[1]&gt;div[2]&gt;div[1]&gt;p[0]&gt;strong[0]#h:4b2021dd\" contenteditable=\"true\" spellcheck=\"false\">מחירי הלידים מזנקים, אחוזי ההמרה צונחים.</strong><br>הקהל שלכם גולל הלאה לפני שהם<br>בכלל יודעים מי אתם.<br>זה לא מצב זמני, מחירי הלידים עולים כל שנה'<br><strong style=\"color: rgb(255, 255, 255); font-weight: 800;\" data-edit-original=\"ואין סיבה שזה יעצור.\" data-edit-original-html=\"ואין סיבה שזה יעצור.\" data-edit-id=\"sec:problem&gt;section[0]&gt;div[1]&gt;div[2]&gt;div[1]&gt;p[0]&gt;strong[1]#h:c16fc89d\" contenteditable=\"true\" spellcheck=\"false\">ואין סיבה שזה יעצור.</strong><br>כל עוד אתם משלמים על תשומת לב,<br><strong style=\"color: rgb(255, 255, 255); font-weight: 800;\" data-edit-original=\"מישהו אחר יכול להציע יותר ולקחת אותה מכם.\" data-edit-original-html=\"מישהו אחר יכול להציע יותר ולקחת אותה מכם.\" data-edit-id=\"sec:problem&gt;section[0]&gt;div[1]&gt;div[2]&gt;div[1]&gt;p[0]&gt;strong[2]#h:8e6d849c\" contenteditable=\"true\" spellcheck=\"false\">מישהו אחר יכול להציע יותר ולקחת אותה מכם.</strong><br>",
@@ -148,15 +157,14 @@
     "sec:services>section[0]>div[0]>div[1]>div[2]>div[0]#h:00000603": "03",
     "sec:results>section[0]>div[0]>div[0]>h2[0]>span[1]#h:bf7c4e01": "הפודקאסטים אצלנו.<span aria-hidden=\"true\" style=\"position: absolute; left: 3%; right: 3%; bottom: -0.06em; height: 5px; background: linear-gradient(90deg, transparent, var(--accent) 15%, var(--accent) 85%, transparent); opacity: 0.55; border-radius: 3px; filter: blur(0.5px);\"></span>",
     "sec:hero>section[0]>div[1]>div[0]>p[0]#h:e69b5aad": "פעם הייתם צריכים להסביר מי אתם בכל שיחת מכירה.<br>עם פודקאסט — הם כבר יודעים.<span style=\"color: var(--accent); font-weight: 700;\"></span>",
-    "root>div[0]>div[0]>div[0]>footer[0]>div[0]>span[0]>a[1]#h:b124e6cd": "תקנון האתר",
-    "root>div[0]>div[0]>div[0]>footer[0]>div[0]>span[0]>a[0]#h:a42044a8": "מדיניות פרטיות",
-    "root>div[0]>div[2]>a[0]#h:d63cb673": "הצהרת נגישות",
+    "sec:final-cta>section[0]>div[0]>div[0]>form[0]>div[2]>div[2]>label[0]>span[1]#h:9926632c": "אני מאשר/ת שקראתי ואני מסכים/ה <a href=\"terms.html\" style=\"color: var(--accent); text-decoration: underline; font-weight: 700;\" data-edit-original=\"לתקנון האתר\" data-edit-original-html=\"לתקנון האתר\" data-edit-id=\"sec:final-cta&gt;section[0]&gt;div[0]&gt;div[0]&gt;form[0]&gt;div[2]&gt;div[2]&gt;label[0]&gt;span[1]&gt;a[0]#h:1d2c49a9\" contenteditable=\"true\" spellcheck=\"false\">לתקנון האתר</a>",
     "sec:final-cta>section[0]>div[0]>div[0]>form[0]>div[3]>div[0]>span[2]#h:dab20478": "<span style=\"color: var(--accent);\" data-edit-original=\"✓\" data-edit-original-html=\"✓\" data-edit-id=\"sec:final-cta&gt;section[0]&gt;div[0]&gt;div[0]&gt;form[0]&gt;div[3]&gt;div[0]&gt;span[2]&gt;span[0]#h:00002713\" contenteditable=\"true\" spellcheck=\"false\">✓</span> מענה תוך 24 שעות",
     "sec:final-cta>section[0]>div[0]>div[0]>form[0]>div[2]>button[0]#h:59018cd1": "בואו נקבע שיחה ←",
     "sec:final-cta>section[0]>div[0]>div[0]>div[0]>div[0]>p[0]#h:280ba64b": "האולפן עובד בתפוסה כמעט מלאה, כדי להמשיך לתת את השירות<br>הטוב ביותר לכל לקוח,<br>אנחנו פותחים מקום ללקוחות חדשים פעם בחודש.",
     "sec:final-cta>section[0]>div[0]>div[0]>div[0]>div[0]>div[1]>span[2]#h:dab20478": "<span style=\"color: var(--accent);\" data-edit-original=\"✓\" data-edit-original-html=\"✓\" data-edit-id=\"sec:final-cta&gt;section[0]&gt;div[0]&gt;div[0]&gt;div[0]&gt;div[0]&gt;div[1]&gt;span[2]&gt;span[0]#h:00002713\" contenteditable=\"true\" spellcheck=\"false\">✓</span> מענה תוך 24 שעות",
     "root>div[0]>div[0]>div[0]>footer[0]>div[0]>span[1]#h:b6e03c6e": "© 2026 CUTS. כל הזכויות שמורות.",
-    "sec:final-cta>section[0]>div[0]>div[0]>div[0]>div[0]>div[1]>span[0]#h:e4213b82": "<span style=\"color: var(--accent);\" data-edit-original=\"✓\" data-edit-original-html=\"✓\" data-edit-id=\"sec:final-cta&gt;section[0]&gt;div[0]&gt;div[0]&gt;div[0]&gt;div[0]&gt;div[1]&gt;span[0]&gt;span[0]#h:00002713\" contenteditable=\"true\" spellcheck=\"false\">✓</span> ללא התחייבות"
+    "sec:final-cta>section[0]>div[0]>div[0]>div[0]>div[0]>div[1]>span[0]#h:e4213b82": "<span style=\"color: var(--accent);\" data-edit-original=\"✓\" data-edit-original-html=\"✓\" data-edit-id=\"sec:final-cta&gt;section[0]&gt;div[0]&gt;div[0]&gt;div[0]&gt;div[0]&gt;div[1]&gt;span[0]&gt;span[0]#h:00002713\" contenteditable=\"true\" spellcheck=\"false\">✓</span> ללא התחייבות",
+    "sec:final-cta>section[0]>div[0]>div[0]>form[0]>div[2]>div[2]>label[0]>span[1]>a[0]#h:1d2c49a9": "לתקנון האתר"
   },
   "sectionOrder": [
     "hero",
