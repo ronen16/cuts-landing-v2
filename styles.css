@@ -876,20 +876,30 @@ body.admin-dragging-sections .section-hide-toggle { display: inline-flex; }
   aspect-ratio: 16 / 9;
 }
 @media (max-width: 720px) {
+  /* Single clean vertical stack so nothing overlaps: handle, preview, the
+     number fields, then the action buttons in a horizontal row. */
   .admin-guest-row {
-    grid-template-columns: 32px minmax(0, 1fr) auto;
+    grid-template-columns: 1fr;
     grid-template-areas:
-      "handle preview buttons"
-      "handle fields  buttons";
+      "handle"
+      "preview"
+      "fields"
+      "buttons";
+    row-gap: 14px;
+    justify-items: stretch;
   }
-  .admin-guest-row > :nth-child(1) { grid-area: handle; }
-  .admin-guest-row > :nth-child(2) { grid-area: preview; justify-self: stretch; }
+  .admin-guest-row > :nth-child(1) { grid-area: handle; justify-self: start; }
+  .admin-guest-row > :nth-child(2) { grid-area: preview; justify-self: center; }
   .admin-guest-row > :nth-child(3) { grid-area: fields; }
-  .admin-guest-row > :nth-child(4) { grid-area: buttons; }
-  .admin-guest-row__preview {
-    width: 100%;
-    max-width: 100%;
+  .admin-guest-row > :nth-child(4) {
+    grid-area: buttons;
+    flex-direction: row !important;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px !important;
   }
+  .admin-guest-row > :nth-child(4) .admin-videos__btn { width: 44px; height: 40px; }
+  .admin-guest-row__preview { width: 100%; max-width: 240px; }
 }
 
 /* ===== Accessibility widget ===== */
