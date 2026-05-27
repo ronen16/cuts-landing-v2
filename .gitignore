@@ -17,3 +17,5 @@ build/
 *.db
 .vscode/
 .idea/
+
+.playwright-mcp/
