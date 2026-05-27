@@ -457,14 +457,6 @@ function orderAndFilterVideos(admin) {
   return list.filter((v) => !hidden.has(v.vimeoId));
 }
 
-// Open a video on mobile. Programmatic new-tab (window.open / anchor click)
-// gets popup-blocked on iOS even from a tap — so navigate the tab. A youtube/
-// vimeo URL opens the native app via universal links (leaving the site in
-// Safari), and falls back to opening the page in the browser otherwise.
-function openVideoTab(url) {
-  window.location.href = url;
-}
-
 function SocialProofSection({ onCTAClick, admin }) {
   const videos = React.useMemo(
     () => orderAndFilterVideos(admin),
@@ -741,12 +733,7 @@ function SocialProofSection({ onCTAClick, admin }) {
             key={i}
             data-vid-card="true"
             className="vid-card"
-            onClick={() => {
-              if (!hasVideo) return;
-              // Mobile: open the real Vimeo page (inline embeds are flaky on iOS).
-              if (stacked) { openVideoTab("https://vimeo.com/" + v.vimeoId); }
-              else { setPlayingIdx(i); setLoadedIdx(null); }
-            }}
+            onClick={() => { if (hasVideo) { setPlayingIdx(i); setLoadedIdx(null); } }}
             style={{
               flex: "0 0 calc((100% - 60px) / 4)",
               aspectRatio: "9 / 16",
@@ -760,12 +747,6 @@ function SocialProofSection({ onCTAClick, admin }) {
               border: "1px solid var(--line2)",
               boxShadow: "inset 0 1px 0 rgba(255,255,255,0.04), 0 10px 30px rgba(0,0,0,0.5), 0 8px 44px rgba(255,213,0,0.09), 0 0 80px rgba(255,213,0,0.045)"
             }}>
-
-              {/* Mobile: native full-card link — opens the video on one tap. */}
-              {stacked && hasVideo &&
-              <a href={"https://vimeo.com/" + v.vimeoId}
-                aria-label="צפייה בעדות"
-                style={{ position: "absolute", inset: 0, zIndex: 7 }} />}
 
               {isPlaying &&
               <React.Fragment>
@@ -4227,13 +4208,7 @@ function Results({ admin }) {
           <div
             key={i}
             data-case-card
-            onClick={() => {
-              if (!hasVideo) return;
-              // Inline cross-site embeds are unreliable on mobile (iOS autoplay
-              // / tracking prevention) — open the real video instead.
-              if (stacked) { openVideoTab("https://www.youtube.com/watch?v=" + c.youtubeId); }
-              else { setPlayingIdx(i); }
-            }}
+            onClick={() => { if (hasVideo) setPlayingIdx(i); }}
             style={{
               flex: stacked ? "0 0 auto" : `0 0 ${cardW}px`,
               width: stacked ? "100%" : undefined,
@@ -4246,12 +4221,6 @@ function Results({ admin }) {
               display: "flex", flexDirection: "column",
               transition: "transform 0.25s ease, border-color 0.25s ease"
             }}>
-              {/* Mobile: native full-card link — opens the video on one tap.
-                  A JS onClick gets aborted by the hover-lift on iOS. */}
-              {stacked && hasVideo &&
-              <a href={"https://www.youtube.com/watch?v=" + c.youtubeId}
-                aria-label="צפייה בפרק"
-                style={{ position: "absolute", inset: 0, zIndex: 7 }} />}
               {/* 16:9 video frame */}
               <div style={{
               position: "relative",
