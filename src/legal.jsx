@@ -171,3 +171,25 @@ window.openLegal = function (which) {
   window.dispatchEvent(new CustomEvent("cuts-legal", { detail: which }));
 };
 window.LegalModal = LegalModal;
+
+// Global safety net: open the in-page modal for ANY link to the legal pages —
+// including anchors injected by saved rich-text edits (overrides) that lost
+// their onClick handler. Without this, an edited "תקנון האתר" link just tries
+// to navigate to terms.html instead of opening the modal.
+if (typeof document !== "undefined" && !window.__cutsLegalLinkGuard) {
+  window.__cutsLegalLinkGuard = true;
+  const LEGAL_PAGE_MAP = { "terms.html": "terms", "privacy.html": "privacy", "accessibility.html": "accessibility" };
+  document.addEventListener("click", (e) => {
+    const a = e.target && e.target.closest && e.target.closest("a[href]");
+    if (!a) return;
+    const href = a.getAttribute("href") || "";
+    for (const page in LEGAL_PAGE_MAP) {
+      if (href.indexOf(page) >= 0) {
+        e.preventDefault();
+        e.stopPropagation();
+        window.openLegal(LEGAL_PAGE_MAP[page]);
+        return;
+      }
+    }
+  }, true);
+}
