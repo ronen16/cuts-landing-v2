@@ -3693,6 +3693,16 @@ if (typeof window !== "undefined") window.__cutsGuestObjectPosition = guestObjec
 function GuestTile({ item, n, aspectStr, dup, width }) {
   const hasImg = !!(item && item.src);
   const ct = hasImg ? clampGuestTransform(item.scale, item.offsetX, item.offsetY) : null;
+  // Row 1 (portrait 9:16, wide source) pans within the cover overflow via
+  // object-position (no black edges). Row 2 (16:9 tile, 16:9 source) has no
+  // cover overflow, so panning must move the image with translate.
+  const portrait = aspectStr === "9 / 16";
+  const imgObjectPosition = !ct ? "center" : (portrait ? guestObjectPosition(ct.offsetX, ct.offsetY) : "center");
+  const imgTransform = !ct
+    ? "scale(1) translateZ(0)"
+    : (portrait
+        ? `scale(${ct.scale}) translateZ(0)`
+        : `translate(${ct.offsetX}%, ${ct.offsetY}%) scale(${ct.scale}) translateZ(0)`);
   return (
     <div
       aria-hidden={dup > 0 ? "true" : undefined}
@@ -3716,8 +3726,8 @@ function GuestTile({ item, n, aspectStr, dup, width }) {
             position: "absolute", inset: 0,
             width: "100%", height: "100%",
             objectFit: "cover",
-            objectPosition: guestObjectPosition(ct.offsetX, ct.offsetY),
-            transform: `scale(${ct.scale}) translateZ(0)`,
+            objectPosition: imgObjectPosition,
+            transform: imgTransform,
             transformOrigin: "center",
             backfaceVisibility: "hidden",
             WebkitBackfaceVisibility: "hidden",
