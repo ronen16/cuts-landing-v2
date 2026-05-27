@@ -5648,7 +5648,7 @@ function ServicesAIStats() {
 
 function ServicesOld({ onCTAClick }) {
   return (
-    <section style={{ padding: "76px 0 52px", background: "var(--card)", borderTop: "1px solid var(--line2)", borderBottom: "1px solid var(--line2)" }}>
+    <section id="why" style={{ padding: "76px 0 52px", background: "var(--card)", borderTop: "1px solid var(--line2)", borderBottom: "1px solid var(--line2)" }}>
       <div className="wrap">
         <div style={{ textAlign: "center", marginBottom: 24, maxWidth: 1100, marginLeft: "auto", marginRight: "auto" }}>
           <h2 className="display" style={{
@@ -6941,7 +6941,7 @@ function WhyUsOld() {
   };
 
   return (
-    <section id="why" style={{ padding: "76px 0" }}>
+    <section style={{ padding: "76px 0" }}>
       <div className="wrap">
         <h2 className="display" style={{ fontSize: "clamp(38px, 6cqw, 84px)", margin: "0 0 64px", maxWidth: 1100 }}>
           אנחנו לא חברת הפקה.<br />
