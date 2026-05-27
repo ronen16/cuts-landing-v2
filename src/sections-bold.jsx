@@ -457,6 +457,21 @@ function orderAndFilterVideos(admin) {
   return list.filter((v) => !hidden.has(v.vimeoId));
 }
 
+// Touch activation: iOS delays/absorbs the first click on hover-styled cards
+// (needs several taps). pointerup fires on the first touch with no delay — we
+// activate there for touch and keep onClick for mouse. A small move = a scroll,
+// not a tap, so we ignore it.
+let _cardTapStart = null;
+function onCardPointerDown(e) {
+  if (e.pointerType !== "mouse") _cardTapStart = [e.clientX, e.clientY];
+}
+function isTapRelease(e) {
+  if (e.pointerType === "mouse" || !_cardTapStart) return false;
+  const moved = Math.abs(e.clientX - _cardTapStart[0]) > 12 || Math.abs(e.clientY - _cardTapStart[1]) > 12;
+  _cardTapStart = null;
+  return !moved;
+}
+
 function SocialProofSection({ onCTAClick, admin }) {
   const videos = React.useMemo(
     () => orderAndFilterVideos(admin),
@@ -733,6 +748,8 @@ function SocialProofSection({ onCTAClick, admin }) {
             key={i}
             data-vid-card="true"
             className="vid-card"
+            onPointerDown={onCardPointerDown}
+            onPointerUp={(e) => { if (hasVideo && isTapRelease(e)) { setPlayingIdx(i); setLoadedIdx(null); } }}
             onClick={() => { if (hasVideo) { setPlayingIdx(i); setLoadedIdx(null); } }}
             style={{
               flex: "0 0 calc((100% - 60px) / 4)",
@@ -4208,6 +4225,8 @@ function Results({ admin }) {
           <div
             key={i}
             data-case-card
+            onPointerDown={onCardPointerDown}
+            onPointerUp={(e) => { if (hasVideo && isTapRelease(e)) setPlayingIdx(i); }}
             onClick={() => { if (hasVideo) setPlayingIdx(i); }}
             style={{
               flex: stacked ? "0 0 auto" : `0 0 ${cardW}px`,
