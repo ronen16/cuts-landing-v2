@@ -171,3 +171,18 @@ window.openLegal = function (which) {
   window.dispatchEvent(new CustomEvent("cuts-legal", { detail: which }));
 };
 window.LegalModal = LegalModal;
+
+// Delegated, attribute-keyed opener. The inline React onClick on legal links is
+// fragile here: the override-apply scan re-serializes parent spans via innerHTML,
+// which strips React's synthetic handlers from nested buttons. A single
+// document-level listener keyed on [data-legal-open] survives that, since the
+// DOM attribute persists through innerHTML round-trips.
+if (!window.__cutsLegalDelegated) {
+  window.__cutsLegalDelegated = true;
+  document.addEventListener("click", function (e) {
+    const trigger = e.target.closest && e.target.closest("[data-legal-open]");
+    if (!trigger) return;
+    e.preventDefault();
+    window.openLegal(trigger.getAttribute("data-legal-open"));
+  });
+}

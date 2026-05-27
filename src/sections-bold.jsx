@@ -2794,6 +2794,7 @@ function ConsentCheckbox({ form }) {
         אני מאשר/ת שקראתי ואני מסכים/ה{" "}
         <button
           type="button"
+          data-legal-open="terms"
           onClick={(e) => { e.preventDefault(); e.stopPropagation(); if (window.openLegal) window.openLegal("terms"); }}
           style={{ color: "var(--accent)", textDecoration: "underline", fontWeight: 700, background: "none", border: "none", padding: 0, font: "inherit", cursor: "pointer" }}>
           לתקנון האתר
