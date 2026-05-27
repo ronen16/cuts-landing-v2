@@ -2749,58 +2749,63 @@ function ConsentCheckbox({ form }) {
   const checked = !!form.consent;
   const err = form.errors && form.errors.consent;
   return (
-    <label
+    <div
       style={{
-        display: "flex", alignItems: "center", gap: 11,
-        cursor: "pointer", textAlign: "right",
-        fontSize: 13.5, lineHeight: 1.5,
-        color: err ? "#ff8a8a" : "rgba(255,255,255,0.78)",
-        userSelect: "none"
+        display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap",
+        textAlign: "right", fontSize: 13.5, lineHeight: 1.5,
+        color: err ? "#ff8a8a" : "rgba(255,255,255,0.78)"
       }}>
-      <input
-        type="checkbox"
-        checked={checked}
-        onChange={(e) => form.setConsent(e.target.checked)}
+      {/* Link kept OUTSIDE the label: iOS Safari mis-routes taps on interactive
+          elements nested inside a <label>, sending them to the wrapped control
+          instead of the button. */}
+      <label
         style={{
-          position: "absolute", opacity: 0, width: 0, height: 0,
-          pointerEvents: "none"
-        }} />
-      <span
-        aria-hidden="true"
-        style={{
-          flex: "0 0 20px", width: 20, height: 20,
-          borderRadius: 6,
-          display: "flex", alignItems: "center", justifyContent: "center",
-          background: checked ? "var(--accent)" : "rgba(255,255,255,0.04)",
-          border: checked
-            ? "1.5px solid var(--accent)"
-            : `1.5px solid ${err ? "rgba(255,120,120,0.6)" : "rgba(255,255,255,0.22)"}`,
-          boxShadow: checked ? "0 0 0 4px rgba(255,213,0,0.14)" : "none",
-          transition: "background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease"
+          display: "flex", alignItems: "center", gap: 11,
+          cursor: "pointer", margin: 0, userSelect: "none"
         }}>
-        <svg
-          width="12" height="12" viewBox="0 0 24 24" fill="none"
-          stroke="#0A0A0A" strokeWidth="3.5"
-          strokeLinecap="round" strokeLinejoin="round"
+        <input
+          type="checkbox"
+          checked={checked}
+          onChange={(e) => form.setConsent(e.target.checked)}
           style={{
-            opacity: checked ? 1 : 0,
-            transform: checked ? "scale(1)" : "scale(0.5)",
-            transition: "opacity 0.15s ease, transform 0.15s ease"
+            position: "absolute", opacity: 0, width: 0, height: 0,
+            pointerEvents: "none"
+          }} />
+        <span
+          aria-hidden="true"
+          style={{
+            flex: "0 0 20px", width: 20, height: 20,
+            borderRadius: 6,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            background: checked ? "var(--accent)" : "rgba(255,255,255,0.04)",
+            border: checked
+              ? "1.5px solid var(--accent)"
+              : `1.5px solid ${err ? "rgba(255,120,120,0.6)" : "rgba(255,255,255,0.22)"}`,
+            boxShadow: checked ? "0 0 0 4px rgba(255,213,0,0.14)" : "none",
+            transition: "background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease"
           }}>
-          <path d="M5 12.5 L10 17.5 L19 6.5" />
-        </svg>
-      </span>
-      <span>
-        אני מאשר/ת שקראתי ואני מסכים/ה{" "}
-        <button
-          type="button"
-          data-legal-open="terms"
-          onClick={(e) => { e.preventDefault(); e.stopPropagation(); if (window.openLegal) window.openLegal("terms"); }}
-          style={{ color: "var(--accent)", textDecoration: "underline", fontWeight: 700, background: "none", border: "none", padding: 0, font: "inherit", cursor: "pointer" }}>
-          לתקנון האתר
-        </button>
-      </span>
-    </label>
+          <svg
+            width="12" height="12" viewBox="0 0 24 24" fill="none"
+            stroke="#0A0A0A" strokeWidth="3.5"
+            strokeLinecap="round" strokeLinejoin="round"
+            style={{
+              opacity: checked ? 1 : 0,
+              transform: checked ? "scale(1)" : "scale(0.5)",
+              transition: "opacity 0.15s ease, transform 0.15s ease"
+            }}>
+            <path d="M5 12.5 L10 17.5 L19 6.5" />
+          </svg>
+        </span>
+        <span>אני מאשר/ת שקראתי ואני מסכים/ה</span>
+      </label>
+      <button
+        type="button"
+        data-legal-open="terms"
+        onClick={(e) => { e.preventDefault(); if (window.openLegal) window.openLegal("terms"); }}
+        style={{ color: "var(--accent)", textDecoration: "underline", fontWeight: 700, background: "none", border: "none", padding: 0, font: "inherit", cursor: "pointer" }}>
+        לתקנון האתר
+      </button>
+    </div>
   );
 }
 

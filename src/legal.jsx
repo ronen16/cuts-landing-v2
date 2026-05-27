@@ -184,5 +184,5 @@ if (!window.__cutsLegalDelegated) {
     if (!trigger) return;
     e.preventDefault();
     window.openLegal(trigger.getAttribute("data-legal-open"));
-  });
+  }, true);
 }
