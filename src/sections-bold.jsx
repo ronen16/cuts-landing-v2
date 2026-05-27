@@ -3871,8 +3871,8 @@ function GuestStrip({ admin }) {
         @container (max-width: 768px) {
           /* Tall (9:16) row stays compact so more faces scroll past; wide
              (16:9) row shows ~one image at a time. Both run faster on mobile. */
-          .guest-marquee-row--tall > div { width: 105px !important; }
-          .guest-marquee-row--wide > div { width: 255px !important; }
+          .guest-marquee-row--tall > div { width: 165px !important; }
+          .guest-marquee-row--wide > div { width: 340px !important; }
           .guest-marquee-row--tall { animation-duration: 15s !important; }
           .guest-marquee-row--wide { animation-duration: 11s !important; }
           /* Blend the seam with the section above (Results): start the guest
@@ -3883,8 +3883,8 @@ function GuestStrip({ admin }) {
           .guest-heading-wrap { margin-bottom: 34px !important; }
         }
         @container (max-width: 420px) {
-          .guest-marquee-row--tall > div { width: 92px !important; }
-          .guest-marquee-row--wide > div { width: 240px !important; }
+          .guest-marquee-row--tall > div { width: 150px !important; }
+          .guest-marquee-row--wide > div { width: 320px !important; }
         }
       `}</style>
     </section>);
