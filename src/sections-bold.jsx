@@ -768,7 +768,7 @@ function SocialProofSection({ onCTAClick, admin }) {
               {isPlaying &&
               <React.Fragment>
                 <iframe
-                  src={`https://player.vimeo.com/video/${v.vimeoId}?autoplay=1&muted=0&playsinline=1&title=0&byline=0&portrait=0&dnt=1`}
+                  src={`https://player.vimeo.com/video/${v.vimeoId}?autoplay=1&muted=${stacked ? 1 : 0}&playsinline=1&title=0&byline=0&portrait=0&dnt=1`}
                   title={v.name}
                   allow="autoplay; fullscreen; picture-in-picture"
                   allowFullScreen
@@ -4248,7 +4248,7 @@ function Results({ admin }) {
             }}>
                 {isPlaying ?
                 <iframe
-                  src={`https://www.youtube-nocookie.com/embed/${c.youtubeId}?autoplay=1&playsinline=1&rel=0`}
+                  src={`https://www.youtube-nocookie.com/embed/${c.youtubeId}?autoplay=1&mute=${stacked ? 1 : 0}&playsinline=1&rel=0`}
                   title={c.title}
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
