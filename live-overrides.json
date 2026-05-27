@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "publishedAt": "2026-05-26T15:01:55.673Z",
+  "publishedAt": "2026-05-27T12:55:09.664Z",
   "overrides": {
     "sec:how-it-works>button[0]#h:d901835d": "👁 הצג",
     "sec:services>section[0]>div[0]>div[1]>div[0]>h3[0]#h:a5c90c46": "צילום ותאורה מקצועית",
@@ -421,6 +421,44 @@
       {
         "youtubeId": "3lKjAMaAue8",
         "title": ""
+      }
+    ],
+    "guestsRow2Items": [
+      {
+        "src": "https://drive.google.com/thumbnail?id=1LhFSaBSVyFnIl5em2Nw9fw2OTgzy7Xnt&sz=w1600",
+        "scale": 1.15,
+        "offsetX": 6,
+        "offsetY": 0
+      },
+      {
+        "src": "https://drive.google.com/thumbnail?id=16JfK1uvZlU7JQvkuJoPI2ETck2zwCycf&sz=w1600",
+        "scale": 1.25,
+        "offsetX": -3,
+        "offsetY": 4
+      },
+      {
+        "src": "https://drive.google.com/thumbnail?id=1QvzbjMLDzOYJjsj8p7B2e7zj7FU33pn6&sz=w1600",
+        "scale": 1.15,
+        "offsetX": -5,
+        "offsetY": 0
+      },
+      {
+        "src": "https://drive.google.com/thumbnail?id=1t2TB0kgqTabSD2oFi3VL0vNl-0F58Aky&sz=w1600",
+        "scale": 1.15,
+        "offsetX": 0,
+        "offsetY": 0
+      },
+      {
+        "src": "https://drive.google.com/thumbnail?id=1Fih1F6Z8R4Sib9SpViWPhunGAz9CM6Sx&sz=w1600",
+        "scale": 1.05,
+        "offsetX": -1,
+        "offsetY": 2
+      },
+      {
+        "src": "https://drive.google.com/thumbnail?id=1kyPmjJzZIsZV-bgNxejCujoyD-1WZ99Y&sz=w1600",
+        "scale": 1.25,
+        "offsetX": 1,
+        "offsetY": 8
       }
     ]
   }
