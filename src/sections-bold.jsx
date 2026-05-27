@@ -1198,7 +1198,7 @@ function Differentiators({ onCTAClick }) {
 function HowItWorks({ onCTAClick }) {
   const steps = [1, 2, 3];
   return (
-    <section id="how" style={{ padding: "76px 0", background: "var(--card)", borderTop: "1px solid var(--line2)", borderBottom: "1px solid var(--line2)" }}>
+    <section style={{ padding: "76px 0", background: "var(--card)", borderTop: "1px solid var(--line2)", borderBottom: "1px solid var(--line2)" }}>
       <div className="wrap">
         <h2 className="display" style={{
           fontSize: "clamp(36px, 5cqw, 56px)",
@@ -1368,7 +1368,7 @@ function Guarantee({ onCTAClick }) {
   }, []);
 
   return (
-    <section ref={sectionRef} style={{ padding: "96px 0", position: "relative", overflow: "hidden" }}>
+    <section id="how" ref={sectionRef} style={{ padding: "96px 0", position: "relative", overflow: "hidden" }}>
       {/* Animated glow */}
       <div aria-hidden="true" style={{
         position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)",
@@ -5957,7 +5957,7 @@ function HowItWorksInteractive() {
   const progress = shown / (STEPS.length - 1) * 100;
 
   return (
-    <section id="how" style={{ padding: "56px 0 76px" }}>
+    <section style={{ padding: "56px 0 76px" }}>
       <div className="wrap">
         <div style={{ textAlign: "center", marginBottom: 64, maxWidth: 1000, marginLeft: "auto", marginRight: "auto" }}>
           <h2 className="display" style={{
