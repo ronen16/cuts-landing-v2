@@ -3874,7 +3874,7 @@ function GuestStrip({ admin }) {
           .guest-marquee-row--tall > div { width: 165px !important; }
           .guest-marquee-row--wide > div { width: 400px !important; }
           .guest-marquee-row--tall { animation-duration: 15s !important; }
-          .guest-marquee-row--wide { animation-duration: 8s !important; }
+          .guest-marquee-row--wide { animation-duration: 10.5s !important; }
           /* Blend the seam with the section above (Results): start the guest
              section at Results' card tone and fade to the page bg so there's no
              hard line OR tone step. Bottom already meets the next (bg) section. */
