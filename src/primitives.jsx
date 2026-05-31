@@ -302,18 +302,19 @@ function scrollToId(id) {
 // ghost click. The move-guard skips taps that were actually scrolls, so a
 // finger that lifts off a button after scrolling never fires it.
 function tapHandlers(fn) {
-  let sx = 0, sy = 0, moved = false;
+  // Store the touch start point on the DOM node — NOT in a closure. Components
+  // like Hero re-render on a timer (waveform tick), which would recreate the
+  // closure mid-tap and reset the start point, making the move-guard misfire.
+  // The DOM node survives re-renders, so the start point stays correct.
   return {
     onTouchStart: (e) => {
       const t = e.touches && e.touches[0];
-      if (t) { sx = t.clientX; sy = t.clientY; moved = false; }
-    },
-    onTouchMove: (e) => {
-      const t = e.touches && e.touches[0];
-      if (t && (Math.abs(t.clientX - sx) > 10 || Math.abs(t.clientY - sy) > 10)) moved = true;
+      if (t) e.currentTarget.__tapStart = { x: t.clientX, y: t.clientY };
     },
     onTouchEnd: (e) => {
-      if (moved) return;
+      const start = e.currentTarget.__tapStart;
+      const t = e.changedTouches && e.changedTouches[0];
+      if (start && t && (Math.abs(t.clientX - start.x) > 10 || Math.abs(t.clientY - start.y) > 10)) return;
       if (e.cancelable) e.preventDefault();
       fn(e);
     },
