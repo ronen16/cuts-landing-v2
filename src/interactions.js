@@ -2,35 +2,70 @@
 // Non-invasive — injects overlays and upgrades existing elements via event listeners.
 
 (function () {
-  // --- 2. Cursor glow ---
-  const cursor = document.createElement("div");
-  cursor.id = "cursor-glow";
-  Object.assign(cursor.style, {
-    position: "fixed", top: "0", left: "0",
-    width: "360px", height: "360px", borderRadius: "50%",
-    background: "radial-gradient(circle, rgba(255,213,0,0.14), rgba(255,213,0,0) 70%)",
-    pointerEvents: "none", zIndex: "1",
-    transform: "translate(-50%, -50%)",
-    transition: "opacity .4s ease",
-    opacity: "0", mixBlendMode: "screen",
-  });
-  document.body.appendChild(cursor);
+  // --- 1. FastClick for iOS (Safari + Chrome = WKWebView) ---
+  // iOS's touch-to-click synthesis is unreliable: the first tap often
+  // triggers :hover/mouseenter instead of click, or the click is delayed
+  // or swallowed entirely.  This intercepts touchend on buttons and fires
+  // btn.click() immediately, bypassing the entire native click pipeline.
+  // Same proven technique as FastClick.js — no double-fire risk because
+  // preventDefault() on touchend cancels the native click chain.
+  if ("ontouchstart" in window) {
+    var _tapTarget = null, _tapXY = null;
+    document.addEventListener("touchstart", function (e) {
+      var btn = e.target.closest && e.target.closest(
+        "button, .btn, a[href], [type='submit'], [data-legal-open], summary"
+      );
+      if (btn) {
+        _tapTarget = btn;
+        _tapXY = [e.touches[0].clientX, e.touches[0].clientY];
+      }
+    }, { passive: true });
 
-  let cx = 0, cy = 0, tx = 0, ty = 0;
-  window.addEventListener("mousemove", (e) => {
-    tx = e.clientX; ty = e.clientY;
-    cursor.style.opacity = "1";
-  });
-  window.addEventListener("mouseleave", () => cursor.style.opacity = "0");
-
-  function loop() {
-    cx += (tx - cx) * 0.18;
-    cy += (ty - cy) * 0.18;
-    cursor.style.left = cx + "px";
-    cursor.style.top = cy + "px";
-    requestAnimationFrame(loop);
+    document.addEventListener("touchend", function (e) {
+      if (!_tapTarget || !_tapXY) return;
+      var t = e.changedTouches[0];
+      var moved = Math.abs(t.clientX - _tapXY[0]) > 10 ||
+                  Math.abs(t.clientY - _tapXY[1]) > 10;
+      var btn = _tapTarget;
+      _tapTarget = null;
+      _tapXY = null;
+      if (moved) return; // was a scroll gesture, not a tap
+      e.preventDefault();  // cancel native delayed click chain
+      btn.focus();         // show :focus styles
+      btn.click();         // fire click synchronously
+    }, { passive: false });
   }
-  loop();
+
+  // --- 2. Cursor glow (desktop only — no mouse on mobile) ---
+  if (!("ontouchstart" in window)) {
+    const cursor = document.createElement("div");
+    cursor.id = "cursor-glow";
+    Object.assign(cursor.style, {
+      position: "fixed", top: "0", left: "0",
+      width: "360px", height: "360px", borderRadius: "50%",
+      background: "radial-gradient(circle, rgba(255,213,0,0.14), rgba(255,213,0,0) 70%)",
+      pointerEvents: "none", zIndex: "1",
+      transform: "translate(-50%, -50%)",
+      transition: "opacity .4s ease",
+      opacity: "0", mixBlendMode: "screen",
+    });
+    document.body.appendChild(cursor);
+
+    let cx = 0, cy = 0, tx = 0, ty = 0;
+    window.addEventListener("mousemove", (e) => {
+      tx = e.clientX; ty = e.clientY;
+      cursor.style.opacity = "1";
+    });
+    window.addEventListener("mouseleave", () => cursor.style.opacity = "0");
+
+    (function loop() {
+      cx += (tx - cx) * 0.18;
+      cy += (ty - cy) * 0.18;
+      cursor.style.left = cx + "px";
+      cursor.style.top = cy + "px";
+      requestAnimationFrame(loop);
+    })();
+  }
 
 
   // --- 4. Reveal on scroll ---
