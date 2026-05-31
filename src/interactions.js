@@ -163,4 +163,72 @@
     try { window.scrollTo({ top: top, behavior: "smooth" }); }
     catch (_) { window.scrollTo(0, top); }
   }, false);
+
+  // --- 9. On-screen tap diagnostic (only with ?diag=1) ---
+  // Captures the real iOS touch->click sequence and prints it on the page so we
+  // can see WHY a tap doesn't register, without a desktop console.
+  if (/[?&]diag=1/.test(location.search)) {
+    var panel = document.createElement("div");
+    Object.assign(panel.style, {
+      position: "fixed", top: "0", left: "0", right: "0",
+      maxHeight: "42vh", overflow: "auto", zIndex: "2147483647",
+      background: "rgba(0,0,0,0.88)", color: "#fff", pointerEvents: "none",
+      font: "11px/1.35 monospace", padding: "8px 10px", direction: "ltr",
+      whiteSpace: "pre-wrap", borderBottom: "2px solid #FFD500",
+    });
+    document.body.appendChild(panel);
+    var lines = [];
+    function log(s, color) {
+      lines.unshift("<div style='color:" + (color || "#9fe") + "'>" + s + "</div>");
+      if (lines.length > 14) lines.pop();
+      panel.innerHTML = lines.join("");
+    }
+    function desc(el) {
+      if (!el) return "null";
+      var c = (el.className && el.className.baseVal != null) ? el.className.baseVal : (el.className || "");
+      return el.tagName.toLowerCase() + (c ? "." + String(c).trim().split(/\s+/).slice(0, 2).join(".") : "");
+    }
+    function nearestBtn(el) { return el && el.closest ? el.closest(".btn, .btn-primary, button") : null; }
+    log("DIAG ready — tap a yellow button", "#FFD500");
+
+    var pending = null;
+    document.addEventListener("touchstart", function (e) {
+      var t = e.touches[0]; if (!t) return;
+      var startTarget = e.target;
+      var atPoint = document.elementFromPoint(t.clientX, t.clientY);
+      var btn = nearestBtn(startTarget) || nearestBtn(atPoint);
+      if (!btn) return; // only care about taps on/near buttons
+      var topEl = document.elementFromPoint(t.clientX, t.clientY);
+      var overlay = topEl && !btn.contains(topEl) && topEl !== btn && !(btn.contains(topEl));
+      pending = { t0: Date.now(), btn: btn, startY: window.scrollY, clicked: false,
+        startDesc: desc(startTarget), topDesc: desc(topEl), overlay: overlay };
+      log("TOUCH on " + desc(btn) + " | topEl=" + desc(topEl) +
+          (overlay ? "  ⚠OVERLAY-INTERCEPT" : ""), overlay ? "#ff6" : "#9fe");
+    }, { passive: true, capture: true });
+
+    document.addEventListener("click", function (e) {
+      var btn = nearestBtn(e.target);
+      if (!btn) return;
+      if (pending && pending.btn === btn) pending.clicked = true;
+      var moved = window.scrollY - (pending ? pending.startY : window.scrollY);
+      log("CLICK ✓ fired on " + desc(btn) + " (dt=" +
+          (pending ? Date.now() - pending.t0 : "?") + "ms, scroll∆=" + moved + ")", "#7f7");
+    }, true);
+
+    // After each tap, report if NO click followed (swallowed) + diagnose why.
+    document.addEventListener("touchend", function () {
+      var p = pending; if (!p) return;
+      setTimeout(function () {
+        if (!p.clicked) {
+          var stillThere = p.btn.isConnected;
+          var moved = window.scrollY - p.startY;
+          log("CLICK ✗ SWALLOWED on " + desc(p.btn) +
+              " | btnStillInDOM=" + stillThere +
+              " | scroll∆=" + moved +
+              (p.overlay ? " | hadOverlay" : ""), "#f88");
+        }
+        if (pending === p) pending = null;
+      }, 450);
+    }, { passive: true, capture: true });
+  }
 })();
