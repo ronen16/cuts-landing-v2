@@ -201,6 +201,7 @@
       var topEl = document.elementFromPoint(t.clientX, t.clientY);
       var overlay = topEl && !btn.contains(topEl) && topEl !== btn && !(btn.contains(topEl));
       pending = { t0: Date.now(), btn: btn, startY: window.scrollY, clicked: false,
+        startHref: location.href,
         startDesc: desc(startTarget), topDesc: desc(topEl), overlay: overlay };
       log("TOUCH on " + desc(btn) + " | topEl=" + desc(topEl) +
           (overlay ? "  ⚠OVERLAY-INTERCEPT" : ""), overlay ? "#ff6" : "#9fe");
@@ -215,20 +216,26 @@
           (pending ? Date.now() - pending.t0 : "?") + "ms, scroll∆=" + moved + ")", "#7f7");
     }, true);
 
-    // After each tap, report if NO click followed (swallowed) + diagnose why.
+    // After each tap, report whether the ACTION happened. The app now acts on
+    // touchend (React onTouchEnd) and preventDefault()s the click, so "no click"
+    // is EXPECTED on success — judge by real effect (scroll moved / form submitted
+    // / url changed), not by whether a click fired.
     document.addEventListener("touchend", function () {
       var p = pending; if (!p) return;
+      var sameNode = p.btn.isConnected; // false => DOM was torn down mid-tap
       setTimeout(function () {
-        if (!p.clicked) {
-          var stillThere = p.btn.isConnected;
-          var moved = window.scrollY - p.startY;
-          log("CLICK ✗ SWALLOWED on " + desc(p.btn) +
-              " | btnStillInDOM=" + stillThere +
-              " | scroll∆=" + moved +
-              (p.overlay ? " | hadOverlay" : ""), "#f88");
-        }
+        var moved = window.scrollY - p.startY;
+        var errs = document.querySelectorAll('[class*="err"]').length;
+        var acted = p.clicked || Math.abs(moved) > 4 || errs > 0 ||
+                    location.href !== p.startHref;
+        log((acted ? "ACTED ✓" : "NO-OP ✗") + " on " + desc(p.btn) +
+            " | btnStillInDOM=" + sameNode +
+            " | scroll∆=" + moved +
+            " | errs=" + errs +
+            (p.overlay ? " | ⚠hadOverlay" : ""),
+            acted ? "#7f7" : "#f88");
         if (pending === p) pending = null;
-      }, 450);
+      }, 500);
     }, { passive: true, capture: true });
   }
 })();

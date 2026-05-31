@@ -917,7 +917,12 @@ function applyOverrideContent(el, desired) {
   const isPlainText = !/[<&]/.test(String(desired));
   if (isPlainText) {
     const elementChildren = el.children.length; // element nodes only (not text)
-    if (elementChildren === 0) {
+    // Buttons must NEVER be torn down by innerHTML — iOS WebKit cancels the tap's
+    // synthesized click if the button's nodes are destroyed between touchstart and
+    // touchend. Even when a button has element children (e.g. a decorative arrow
+    // <span>), edit only its direct text node in place and leave the children alone.
+    const isInteractive = el.tagName === "BUTTON" || el.tagName === "A" || el.closest("button, a");
+    if (elementChildren === 0 || isInteractive) {
       if (el.textContent === desired) return; // already correct → no DOM mutation
       const textNodes = Array.from(el.childNodes).filter((n) => n.nodeType === 3);
       if (textNodes.length === 0) {

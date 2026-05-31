@@ -3071,20 +3071,10 @@ function StudioBookingLead({ form }) {
                   cursor: "pointer",
                   marginTop: 8,
                   boxShadow: "0 8px 24px rgba(255,213,0,0.3)",
-                  transition: "transform 0.2s ease, box-shadow 0.2s ease",
+                  transition: "box-shadow 0.2s ease",
                   display: "flex", alignItems: "center", justifyContent: "center", gap: 10
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "translateY(-2px)";
-                  e.currentTarget.style.boxShadow = "0 12px 32px rgba(255,213,0,0.4)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "translateY(0)";
-                  e.currentTarget.style.boxShadow = "0 8px 24px rgba(255,213,0,0.3)";
                 }}>
-                
-                  קביעת שיחת אבחון
-                  <span style={{ fontSize: 18 }}>←</span>
+                קביעת שיחת אבחון ←
                 </button>
 
                 {/* footer note */}
