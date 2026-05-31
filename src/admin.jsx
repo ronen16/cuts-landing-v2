@@ -960,7 +960,14 @@ function applyOverridesToDOM(overrides) {
     }
     const id = computeEditId(el);
     if (!id) continue;
-    el.setAttribute("data-edit-id", id);
+    // Only write when the value actually changes. setAttribute always emits a
+    // MutationObserver record even when the value is identical — and because this
+    // runs ~20x/sec (the observer re-fires on the Hero waveform's ticks), an
+    // unconditional write floods the page with attribute mutations. On iOS that
+    // storm cancels the native focus on form inputs/checkbox mid-tap (the "tap
+    // 3x to focus a field" bug). The text overrides below are already guarded;
+    // this is the last unconditional writer.
+    if (el.getAttribute("data-edit-id") !== id) el.setAttribute("data-edit-id", id);
     if (Object.prototype.hasOwnProperty.call(overrides, id)) {
       const desired = overrides[id];
       // Ignore blank overrides — they'd wipe the element's real content, which
