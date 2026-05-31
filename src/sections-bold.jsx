@@ -2953,7 +2953,7 @@ function StudioBookingLead({ form }) {
               </div>
 
               {/* LEFT side (in RTL = second) — form */}
-              <form onSubmit={(e) => {e.preventDefault();submit();}}
+              <form onSubmit={submit}
             className="studio-form"
             style={{
               background: "var(--bg)",
@@ -3193,7 +3193,7 @@ function MiniLeadStripe({ form }) {
 
             {/* Right: inline form */}
             <form
-            onSubmit={(e) => {e.preventDefault();submit();}}
+            onSubmit={submit}
             className="mini-lead-form"
             style={{
               display: "flex", gap: 10,
