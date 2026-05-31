@@ -920,9 +920,11 @@ function SocialProofSection({ onCTAClick, admin }) {
           transition: transform 0.2s cubic-bezier(0.2,0.8,0.2,1),
                       box-shadow 0.2s ease, background 0.2s ease;
         }
-        .vid-nav-btn:hover {
-          transform: translateY(-50%) scale(1.12);
-          box-shadow: 0 12px 30px rgba(255,213,0,0.5);
+        @media (hover: hover) {
+          .vid-nav-btn:hover {
+            transform: translateY(-50%) scale(1.12);
+            box-shadow: 0 12px 30px rgba(255,213,0,0.5);
+          }
         }
         .vid-nav-btn:active {
           transform: translateY(-50%) scale(0.84);

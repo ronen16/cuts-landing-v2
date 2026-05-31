@@ -261,7 +261,12 @@ img { display: block; max-width: 100%; }
   transform-origin: center center;
   will-change: transform;
 }
-.btn:hover { transform: scale(1.04); }
+/* Gate the hover-lift behind a real hover device. On iOS the first tap would
+   otherwise trigger the :hover transform instead of the click, so CTA/form
+   buttons needed several taps to fire. */
+@media (hover: hover) {
+  .btn:hover { transform: scale(1.04); }
+}
 .btn-primary { background: var(--accent); color: #0A0A0A; }
 .btn-ghost { border: 1.5px solid currentColor; }
 
@@ -912,7 +917,7 @@ body.admin-dragging-sections .section-hide-toggle { display: inline-flex; }
   cursor: pointer; border: none;
   transition: transform 0.2s ease;
 }
-.a11y-fab:hover { transform: scale(1.06); }
+@media (hover: hover) { .a11y-fab:hover { transform: scale(1.06); } }
 .a11y-fab:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
 .a11y-panel {
   position: fixed; left: 20px; bottom: 86px; z-index: 99999;
