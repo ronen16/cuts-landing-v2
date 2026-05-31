@@ -9,6 +9,31 @@
   // btn.click() immediately, bypassing the entire native click pipeline.
   // Same proven technique as FastClick.js — no double-fire risk because
   // preventDefault() on touchend cancels the native click chain.
+  // TEMP diagnostic badge — shows version + tap feedback. REMOVE after debug.
+  var _dbg = document.createElement("div");
+  _dbg.id = "tap-dbg";
+  _dbg.textContent = "v6";
+  Object.assign(_dbg.style, {
+    position: "fixed", bottom: "80px", right: "12px", zIndex: "999999",
+    background: "#222", color: "#FFD500", padding: "6px 14px",
+    borderRadius: "20px", fontSize: "13px", fontWeight: "700",
+    fontFamily: "monospace", pointerEvents: "none", opacity: "0.85",
+    transition: "background 0.2s, color 0.2s",
+  });
+  document.body.appendChild(_dbg);
+
+  function _dbgFlash(txt) {
+    _dbg.textContent = txt;
+    _dbg.style.background = "#00c853";
+    _dbg.style.color = "#fff";
+    clearTimeout(_dbg._t);
+    _dbg._t = setTimeout(function () {
+      _dbg.textContent = "v6";
+      _dbg.style.background = "#222";
+      _dbg.style.color = "#FFD500";
+    }, 1500);
+  }
+
   if ("ontouchstart" in window) {
     var _tapTarget = null, _tapXY = null;
     document.addEventListener("touchstart", function (e) {
@@ -29,10 +54,11 @@
       var btn = _tapTarget;
       _tapTarget = null;
       _tapXY = null;
-      if (moved) return; // was a scroll gesture, not a tap
-      e.preventDefault();  // cancel native delayed click chain
-      btn.focus();         // show :focus styles
-      btn.click();         // fire click synchronously
+      if (moved) return;
+      e.preventDefault();
+      btn.focus();
+      btn.click();
+      _dbgFlash("TAP ✓ " + (btn.textContent || "").trim().slice(0, 12));
     }, { passive: false });
   }
 
