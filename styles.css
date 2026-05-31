@@ -260,7 +260,11 @@ img { display: block; max-width: 100%; }
   white-space: nowrap;
   transform-origin: center center;
   will-change: transform;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(255,213,0,0.15);
 }
+/* Ensure all form/interactive buttons get the iOS tap fix too */
+button, [type="submit"] { touch-action: manipulation; }
 /* Gate the hover-lift behind a real hover device. On iOS the first tap would
    otherwise trigger the :hover transform instead of the click, so CTA/form
    buttons needed several taps to fire. */

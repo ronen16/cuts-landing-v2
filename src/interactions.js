@@ -65,21 +65,13 @@
   }
 
   // --- 5. Gentle hover grow on primary CTAs ---
-  function setupMagnetic() {
-    const btns = document.querySelectorAll(".btn-primary, .btn.btn-primary");
-    btns.forEach(btn => {
-      if (btn.dataset.ctaGrow) return;
-      btn.dataset.ctaGrow = "1";
-      btn.style.transition = "transform .25s ease";
-      btn.style.transformOrigin = "center center";
-      btn.addEventListener("mouseenter", () => {
-        btn.style.transform = "scale(1.04)";
-      });
-      btn.addEventListener("mouseleave", () => {
-        btn.style.transform = "scale(1)";
-      });
-    });
-  }
+  // Hover grow is now handled entirely by CSS:
+  //   @media (hover: hover) { .btn:hover { transform: scale(1.04); } }
+  // The old JS version added mouseenter/mouseleave listeners that set
+  // inline transform on EVERY .btn-primary — including on mobile, where
+  // iOS fires mouseenter on the first tap, scaling the button mid-tap
+  // and swallowing the click event.  Removed to fix the iOS multi-tap bug.
+  function setupMagnetic() {}
 
   // --- 6. Tilt on step / testimonial cards ---
   function setupTilt() {
