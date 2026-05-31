@@ -28,7 +28,7 @@ function CTAButton({ onCTAClick, label = "הפעולה המרכזית שצריך
       borderRadius: 10,
       ...style
     }}>
-      {label} ←
+      <span style={{ pointerEvents: "none" }}>{label} ←</span>
     </button>);
 
 }
@@ -349,7 +349,7 @@ function Hero({ onCTAClick }) {
             display: "flex", justifyContent: "center",
             marginBottom: 28
           }}>
-            <CTAButton onCTAClick={onCTAClick} label="בוא נדבר על הפודקאסט שלך" />
+            <CTAButton onCTAClick={onCTAClick} label="אני רוצה להפוך למותג" />
           </div>
 
           <p style={{
@@ -3404,7 +3404,7 @@ function InlineLeadForm({ form }) {
               marginTop: 6, justifyContent: "center", padding: "18px",
               fontSize: 16, borderRadius: 10
             }}>
-                בוא נקבע שיחה ←
+                <span style={{ pointerEvents: "none" }}>בואו נקבע שיחה ←</span>
               </button>
               <p className="mono" style={{
               fontSize: 11, opacity: 0.5, margin: "2px 0 0",
@@ -3603,7 +3603,7 @@ function FinalCTA({ form, onCTAClick }) {
                 marginTop: 4, justifyContent: "center", padding: "20px",
                 fontSize: 17, borderRadius: 12, fontWeight: 800
               }}>
-                  בוא נקבע שיחה ←
+                  <span style={{ pointerEvents: "none" }}>בואו נקבע שיחה ←</span>
                 </button>
               </div>
 

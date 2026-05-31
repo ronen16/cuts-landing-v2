@@ -368,7 +368,7 @@ function TopNav({ variant, onCTAClick }) {
           )}
         </ul>
         <button className="btn btn-primary topnav-cta" onClick={onCTAClick} style={{ padding: "10px 18px", transform: "scale(1)", fontSize: "16px" }}>
-          בוא נדבר ←
+          <span style={{ pointerEvents: "none" }}>בואו נדבר ←</span>
         </button>
       </div>
     </nav>);
