@@ -902,6 +902,44 @@ window.__cutsGetEditableElements = getAllEditableElements;
 
 // ---------- apply overrides to DOM ----------
 
+// Apply an override to an element WITHOUT tearing down its DOM subtree when the
+// value is plain text. iOS WebKit cancels the synthesized click after touchend
+// if the tapped element's nodes are destroyed in the meantime — and `innerHTML =`
+// always destroys + recreates children. Because React re-renders revert the text
+// back to the JSX value, the old code rewrote innerHTML on every observer tick,
+// racing every tap (the "tap 3x fast to make the button work" bug).
+//
+// Here we instead edit the existing text node in place (nodeValue), which keeps
+// every node alive, and short-circuit when the text is already correct so a
+// settled page never mutates again. innerHTML is only used as a fallback for
+// genuine HTML overrides on non-interactive elements.
+function applyOverrideContent(el, desired) {
+  const isPlainText = !/[<&]/.test(String(desired));
+  if (isPlainText) {
+    const elementChildren = el.children.length; // element nodes only (not text)
+    if (elementChildren === 0) {
+      if (el.textContent === desired) return; // already correct → no DOM mutation
+      const textNodes = Array.from(el.childNodes).filter((n) => n.nodeType === 3);
+      if (textNodes.length === 0) {
+        el.appendChild(document.createTextNode(desired));
+      } else {
+        textNodes[0].nodeValue = desired; // edit in place — node survives the tap
+        for (let i = 1; i < textNodes.length; i++) textNodes[i].nodeValue = "";
+      }
+      el.__ovDesired = desired;
+      return;
+    }
+  }
+  // Fallback: real HTML or mixed text+element content. Keep the cached guard so
+  // we don't rewrite on every tick, accepting that interactive children here are
+  // rare (e.g. the accessibility widget rows, not the page's CTA / form buttons).
+  if (el.__ovDesired !== desired || el.__ovApplied !== el.innerHTML) {
+    el.innerHTML = desired;
+    el.__ovDesired = desired;
+    el.__ovApplied = el.innerHTML; // store the normalized read-back
+  }
+}
+
 function applyOverridesToDOM(overrides) {
   if (!overrides) overrides = {};
   const elements = getAllEditableElements();
@@ -925,18 +963,7 @@ function applyOverridesToDOM(overrides) {
       const visible = String(desired == null ? "" : desired)
         .replace(/<[^>]*>/g, "").replace(/&nbsp;/g, "").trim();
       if (visible !== "") {
-        // The browser re-serializes innerHTML on read (drops invalid props,
-        // reorders attrs, re-encodes entities), so `el.innerHTML !== desired`
-        // is ALWAYS true and would rewrite on every MutationObserver tick — an
-        // infinite 50ms DOM-rewrite storm that destroys iOS click targets
-        // between touchend and the synthesized click. Cache the browser-
-        // normalized result and only re-apply when React genuinely reset the
-        // DOM or the override value changed.
-        if (el.__ovDesired !== desired || el.__ovApplied !== el.innerHTML) {
-          el.innerHTML = desired;
-          el.__ovDesired = desired;
-          el.__ovApplied = el.innerHTML; // store the normalized read-back
-        }
+        applyOverrideContent(el, desired);
       }
     }
     // Do NOT auto-restore non-overridden elements during normal renders —
