@@ -59,6 +59,11 @@
       const cs = getComputedStyle(el);
       if (cs.position === "fixed" || cs.position === "sticky") return;
       if (el.closest("nav")) return;
+      // Skip buttons and elements containing buttons/forms — the reveal
+      // opacity:0 + transform:translateY breaks iOS hit-testing on interactive
+      // children, making buttons unresponsive until the transition completes.
+      if (el.matches("button, a, input, select, textarea, form, [type='submit'], .btn")) return;
+      if (el.querySelector("button, a[href], input, form, [type='submit'], .btn")) return;
       el.classList.add("reveal-init");
       io.observe(el);
     });
