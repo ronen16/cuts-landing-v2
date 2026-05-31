@@ -920,7 +920,7 @@ function SocialProofSection({ onCTAClick, admin }) {
           transition: transform 0.2s cubic-bezier(0.2,0.8,0.2,1),
                       box-shadow 0.2s ease, background 0.2s ease;
         }
-        @media (hover: hover) {
+        @media (hover: hover) and (pointer: fine) {
           .vid-nav-btn:hover {
             transform: translateY(-50%) scale(1.12);
             box-shadow: 0 12px 30px rgba(255,213,0,0.5);
@@ -951,7 +951,7 @@ function SocialProofSection({ onCTAClick, admin }) {
         /* Hover lifts/scales ONLY on real-hover (desktop). On touch they fire on
            the first tap, MOVE the card, and iOS aborts the tap — the animation
            shows but nothing opens. @media(hover:hover) keeps them off touch. */
-        @media (hover: hover) {
+        @media (hover: hover) and (pointer: fine) {
           .vid-card:hover {
             transform: translateY(-5px);
             box-shadow: inset 0 1px 0 rgba(255,255,255,0.05),

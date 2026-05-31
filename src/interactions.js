@@ -145,4 +145,22 @@
   } else {
     init();
   }
+
+  // --- 8. Delegated CTA tap handler (iOS backup) ---
+  // React's synthetic onClick may not fire reliably on iOS WKWebView when
+  // the override system rewrites innerHTML of parent elements (disconnects
+  // React fibers). This native delegated handler catches clicks on CTA
+  // buttons that live OUTSIDE forms and scrolls to #cta directly.
+  document.addEventListener("click", function (e) {
+    var btn = e.target.closest && e.target.closest(".btn-primary");
+    if (!btn) return;
+    // Form submit buttons are handled by native <form> submission — skip them.
+    if (btn.closest("form")) return;
+    var target = document.querySelector("#cta");
+    if (!target) return;
+    var top = target.getBoundingClientRect().top + window.scrollY - 80;
+    // Try smooth scroll first; fall back to instant if the browser chokes.
+    try { window.scrollTo({ top: top, behavior: "smooth" }); }
+    catch (_) { window.scrollTo(0, top); }
+  }, false);
 })();
