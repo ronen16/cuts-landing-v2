@@ -237,5 +237,42 @@
         if (pending === p) pending = null;
       }, 500);
     }, { passive: true, capture: true });
+
+    // Universal tap tracker for NON-button controls (inputs, checkbox label,
+    // links). These rely on native focus/click — which iOS cancels if the DOM
+    // near the control is torn down mid-tap. A transient MutationObserver over
+    // the tap window records exactly that, and we report whether focus landed.
+    document.addEventListener("touchstart", function (e) {
+      var t = e.touches[0]; if (!t) return;
+      var el = document.elementFromPoint(t.clientX, t.clientY) || e.target;
+      var ctl = el && el.closest ? el.closest("input, textarea, select, label, a[href]") : null;
+      if (!ctl) return;
+      if (ctl.closest(".btn, .btn-primary, button")) return; // buttons covered above
+      var watch = ctl.closest("form, section, .wrap") || document.body;
+      var muts = 0, sample = "";
+      var mo = new MutationObserver(function (recs) {
+        for (var i = 0; i < recs.length; i++) {
+          var r = recs[i];
+          if (!watch.contains(r.target)) continue;
+          muts++;
+          if (!sample) sample = (r.type === "childList"
+            ? ("childList -" + r.removedNodes.length + " +" + r.addedNodes.length)
+            : r.type) + " @" + desc(r.target);
+        }
+      });
+      mo.observe(watch, { childList: true, subtree: true, characterData: true, attributes: true });
+      var startActive = document.activeElement;
+      log("TAP-CTL " + desc(ctl), "#9cf");
+      setTimeout(function () {
+        mo.disconnect();
+        var ae = document.activeElement;
+        var focused = ae && ae !== document.body && ae !== startActive;
+        log((focused ? "FOCUS ✓" : "NO-FOCUS ✗") + " " + desc(ctl) +
+            " | active=" + desc(ae) +
+            " | ctlInDOM=" + ctl.isConnected +
+            " | muts=" + muts + (sample ? " first[" + sample + "]" : ""),
+            focused ? "#7f7" : "#f88");
+      }, 700);
+    }, { passive: true, capture: true });
   }
 })();
