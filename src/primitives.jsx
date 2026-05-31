@@ -295,6 +295,31 @@ function scrollToId(id) {
   if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 80, behavior: "smooth" });
 }
 
+// iOS Safari cancels the synthesized click when the tapped button's DOM is
+// replaced (by our content-override script / React) between touchstart and
+// touchend — the "tap 3x fast" bug. touchend fires BEFORE that cancellation,
+// so we run the action there and preventDefault to stop the (now redundant)
+// ghost click. The move-guard skips taps that were actually scrolls, so a
+// finger that lifts off a button after scrolling never fires it.
+function tapHandlers(fn) {
+  let sx = 0, sy = 0, moved = false;
+  return {
+    onTouchStart: (e) => {
+      const t = e.touches && e.touches[0];
+      if (t) { sx = t.clientX; sy = t.clientY; moved = false; }
+    },
+    onTouchMove: (e) => {
+      const t = e.touches && e.touches[0];
+      if (t && (Math.abs(t.clientX - sx) > 10 || Math.abs(t.clientY - sy) > 10)) moved = true;
+    },
+    onTouchEnd: (e) => {
+      if (moved) return;
+      if (e.cancelable) e.preventDefault();
+      fn(e);
+    },
+  };
+}
+
 function Waveform({ count = 28, color }) {
   const bars = Array.from({ length: count });
   return (
@@ -367,8 +392,8 @@ function TopNav({ variant, onCTAClick }) {
             </li>
           )}
         </ul>
-        <button className="btn btn-primary topnav-cta" onClick={onCTAClick} style={{ padding: "10px 18px", transform: "scale(1)", fontSize: "16px" }}>
-          <span style={{ pointerEvents: "none" }}>בואו נדבר ←</span>
+        <button className="btn btn-primary topnav-cta" onClick={onCTAClick} {...tapHandlers(onCTAClick)} style={{ padding: "10px 18px", transform: "scale(1)", fontSize: "16px" }}>
+          בוא נדבר ←
         </button>
       </div>
     </nav>);

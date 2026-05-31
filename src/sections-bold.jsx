@@ -21,14 +21,14 @@
 
 function CTAButton({ onCTAClick, label = "הפעולה המרכזית שצריך לבצע", style }) {
   return (
-    <button className="btn btn-primary" onClick={onCTAClick} style={{
+    <button className="btn btn-primary" onClick={onCTAClick} {...tapHandlers(onCTAClick)} style={{
       padding: "22px 44px",
       fontSize: 18,
       fontWeight: 700,
       borderRadius: 10,
       ...style
     }}>
-      <span style={{ pointerEvents: "none" }}>{label} ←</span>
+      {label} ←
     </button>);
 
 }
@@ -349,7 +349,7 @@ function Hero({ onCTAClick }) {
             display: "flex", justifyContent: "center",
             marginBottom: 28
           }}>
-            <CTAButton onCTAClick={onCTAClick} label="אני רוצה להפוך למותג" />
+            <CTAButton onCTAClick={onCTAClick} label="בוא נדבר על הפודקאסט שלך" />
           </div>
 
           <p style={{
@@ -3057,6 +3057,7 @@ function StudioBookingLead({ form }) {
                 {/* Submit */}
                 <button
                 type="submit"
+                {...tapHandlers(submit)}
                 style={{
                   width: "100%",
                   padding: "18px 24px",
@@ -3245,6 +3246,7 @@ function MiniLeadStripe({ form }) {
             
               <button
               type="submit"
+              {...tapHandlers(submit)}
               style={{
                 padding: "14px 28px",
                 background: "var(--accent)",
@@ -3400,11 +3402,11 @@ function InlineLeadForm({ form }) {
                 <span className="err" style={{ display: "block", marginTop: 6 }}>{errors.consent}</span>
                 }
               </div>
-              <button type="submit" className="btn btn-primary" style={{
+              <button type="submit" className="btn btn-primary" {...tapHandlers(submit)} style={{
               marginTop: 6, justifyContent: "center", padding: "18px",
               fontSize: 16, borderRadius: 10
             }}>
-                <span style={{ pointerEvents: "none" }}>בואו נקבע שיחה ←</span>
+                בוא נקבע שיחה ←
               </button>
               <p className="mono" style={{
               fontSize: 11, opacity: 0.5, margin: "2px 0 0",
@@ -3599,11 +3601,11 @@ function FinalCTA({ form, onCTAClick }) {
                   <span className="err" style={{ display: "block", marginTop: 6 }}>{errors.consent}</span>
                   }
                 </div>
-                <button type="submit" className="btn btn-primary" style={{
+                <button type="submit" className="btn btn-primary" {...tapHandlers(submit)} style={{
                 marginTop: 4, justifyContent: "center", padding: "20px",
                 fontSize: 17, borderRadius: 12, fontWeight: 800
               }}>
-                  <span style={{ pointerEvents: "none" }}>בואו נקבע שיחה ←</span>
+                  בוא נקבע שיחה ←
                 </button>
               </div>
 
