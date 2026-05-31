@@ -256,21 +256,27 @@ img { display: block; max-width: 100%; }
   display: inline-flex; align-items: center; gap: 10px;
   padding: 16px 28px; border-radius: 999px;
   font-weight: 700; font-size: 16px;
-  transition: transform .25s ease, background .2s ease, color .2s ease;
+  transition: background .2s ease, color .2s ease;
   white-space: nowrap;
-  transform-origin: center center;
-  will-change: transform;
+  cursor: pointer;
   touch-action: manipulation;
   -webkit-tap-highlight-color: rgba(255,213,0,0.15);
 }
 /* Ensure all form/interactive buttons get the iOS tap fix too */
-button, [type="submit"] { touch-action: manipulation; }
-/* Gate the hover-lift behind a real hover device. On iOS the first tap would
-   otherwise trigger the :hover transform instead of the click, so CTA/form
-   buttons needed several taps to fire. */
+button, [type="submit"] { touch-action: manipulation; cursor: pointer; }
+/* Hover-lift and transform compositing ONLY on devices with a real pointer.
+   On iOS WebKit (Safari AND Chrome), will-change:transform creates a
+   composited layer whose hit-testing is unreliable for touch, and
+   transition:transform causes the button to move during a tap. */
 @media (hover: hover) {
+  .btn {
+    transition: transform .25s ease, background .2s ease, color .2s ease;
+    transform-origin: center center;
+    will-change: transform;
+  }
   .btn:hover { transform: scale(1.04); }
 }
+.btn:active { opacity: 0.85; }
 .btn-primary { background: var(--accent); color: #0A0A0A; }
 .btn-ghost { border: 1.5px solid currentColor; }
 

@@ -3257,11 +3257,8 @@ function MiniLeadStripe({ form }) {
                 cursor: "pointer",
                 whiteSpace: "nowrap",
                 boxShadow: "0 6px 20px rgba(255,213,0,0.25)",
-                transition: "transform 0.2s ease"
-              }}
-              onMouseEnter={(e) => {e.currentTarget.style.transform = "translateY(-1px)";}}
-              onMouseLeave={(e) => {e.currentTarget.style.transform = "translateY(0)";}}>
-              
+              }}>
+
                 שליחה ←
               </button>
 
@@ -6674,10 +6671,7 @@ function InteractiveVerdictOld() {
               color: "#0A0A0A", textDecoration: "none",
               fontWeight: 800, fontSize: 14,
               boxShadow: "0 0 24px rgba(255,213,0,0.35)",
-              transition: "transform 0.2s ease, box-shadow 0.25s ease"
-            }}
-            onMouseEnter={(e) => {e.currentTarget.style.transform = "translateY(-1px)";e.currentTarget.style.boxShadow = "0 0 32px rgba(255,213,0,0.55)";}}
-            onMouseLeave={(e) => {e.currentTarget.style.transform = "translateY(0)";e.currentTarget.style.boxShadow = "0 0 24px rgba(255,213,0,0.35)";}}>
+            }}>
               בואו נבדוק יחד →
             </a>
           </div>
