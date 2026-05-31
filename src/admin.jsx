@@ -924,7 +924,20 @@ function applyOverridesToDOM(overrides) {
       // is almost always an accident from an empty edit. Leave the original.
       const visible = String(desired == null ? "" : desired)
         .replace(/<[^>]*>/g, "").replace(/&nbsp;/g, "").trim();
-      if (visible !== "" && el.innerHTML !== desired) el.innerHTML = desired;
+      if (visible !== "") {
+        // The browser re-serializes innerHTML on read (drops invalid props,
+        // reorders attrs, re-encodes entities), so `el.innerHTML !== desired`
+        // is ALWAYS true and would rewrite on every MutationObserver tick — an
+        // infinite 50ms DOM-rewrite storm that destroys iOS click targets
+        // between touchend and the synthesized click. Cache the browser-
+        // normalized result and only re-apply when React genuinely reset the
+        // DOM or the override value changed.
+        if (el.__ovDesired !== desired || el.__ovApplied !== el.innerHTML) {
+          el.innerHTML = desired;
+          el.__ovDesired = desired;
+          el.__ovApplied = el.innerHTML; // store the normalized read-back
+        }
+      }
     }
     // Do NOT auto-restore non-overridden elements during normal renders —
     // that would clobber in-progress edits. Reset is handled separately via
