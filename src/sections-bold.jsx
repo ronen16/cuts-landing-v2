@@ -3971,7 +3971,7 @@ function GuestBottomLine() {
           <span style={{
             position: "relative",
             display: "inline-block",
-            color: "rgba(255,255,255,0.62)",
+            color: "rgba(255,255,255,0.95)",
             fontWeight: 800
           }}>
             לרדוף אחרי כל ליד
@@ -3992,7 +3992,7 @@ function GuestBottomLine() {
         </AnimatedLine>
         <br />
         <AnimatedLine inView={inView} delay={420}>
-          <span style={{ color: "rgba(255,255,255,0.72)", fontWeight: 700 }}>
+          <span style={{ color: "rgba(255,255,255,0.95)", fontWeight: 700 }}>
             לשרוף תקציב על מודעות, להתחרות על מחיר, ולקוות שיזכרו אתכם.
           </span>
         </AnimatedLine>
@@ -4038,20 +4038,34 @@ function GuestBottomLine() {
         transition: "opacity 0.7s ease 1.35s, transform 0.7s ease 1.35s"
       }}>
         <span style={{
-          fontSize: "clamp(15px, 1.5cqw, 19px)",
-          fontWeight: 700,
-          color: "rgba(255,255,255,0.78)",
-          lineHeight: 1.5
+          position: "relative",
+          display: "inline-block",
+          fontSize: "clamp(16px, 1.7cqw, 22px)",
+          fontWeight: 800,
+          color: "var(--accent)",
+          lineHeight: 1.5,
+          textShadow: "0 0 24px rgba(255,213,0,0.4)"
         }}>
           וכדי שתתחילו לבנות אותו כמו שצריך — הכנו לכם הצעה שלא חוזרת
-          {" "}
           <span aria-hidden="true" style={{
-            display: "inline-block",
-            color: "var(--accent)",
-            transform: "translateY(2px)",
-            animation: "bounceDown 1.6s ease-in-out infinite"
-          }}>↓</span>
+            position: "absolute",
+            left: 0, right: 0, bottom: "-0.18em",
+            height: 3,
+            background: "linear-gradient(90deg, transparent, var(--accent) 10%, var(--accent) 90%, transparent)",
+            transformOrigin: "right",
+            transform: inView ? "scaleX(1)" : "scaleX(0)",
+            transition: "transform 0.9s cubic-bezier(0.2,0.8,0.2,1) 1.5s",
+            borderRadius: 2,
+            boxShadow: "0 0 12px rgba(255,213,0,0.6)"
+          }} />
         </span>
+        {" "}
+        <span aria-hidden="true" style={{
+          display: "inline-block",
+          color: "var(--accent)",
+          transform: "translateY(2px)",
+          animation: "bounceDown 1.6s ease-in-out infinite"
+        }}>↓</span>
       </div>
 
       <style>{`
