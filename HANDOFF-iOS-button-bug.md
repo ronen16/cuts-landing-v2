@@ -1,3 +1,69 @@
+> # ✅ RESOLVED — 2026-06-01
+> The investigation below (everything from "## 1. The symptom" onward) is the
+> ORIGINAL handoff written while the bug was still open. The real root cause was
+> finally found and fixed. **Read this resolution block first.** Keep the rest as
+> the diagnostic trail. If the 3-tap bug ever returns, this section tells you
+> exactly what to check and how to fix it.
+>
+> ## What the bug actually was (plain English)
+> When an admin edits page text, the browser marks each text node as editable by
+> adding `contenteditable="true"` / `spellcheck="false"` / `data-edit-*` attributes
+> to the child `<span>`s. The save path (`persistEditToStorage`, `onBlur`) captured
+> `el.innerHTML` **verbatim — with those editing attributes baked in** — and they
+> got published into `live-overrides.json`. (27 of the published values were poisoned.)
+>
+> On the **live customer site** (no admin, `editingText=false`) this created a
+> ~300×/sec toggle storm next to the lead form:
+> 1. `applyOverrideContent` writes the saved HTML via `el.innerHTML = desired`,
+>    **re-injecting `contenteditable` through innerHTML** (so it never goes through
+>    `setAttribute` — that's why it was invisible to earlier inspection).
+> 2. `attachInlineEditing.refresh()` runs with `editing=false`, sees the stray
+>    `contenteditable`, and strips it via `removeAttribute` (~300×/sec).
+> 3. The innerHTML guard (`__ovApplied !== el.innerHTML`) now sees a changed
+>    innerHTML → re-applies → re-injects. Infinite toggle war.
+>
+> iOS WebKit cancels a tap's native focus/click when the DOM **near** the touched
+> control churns during the tap window. The storm sat right next to the form's
+> name/phone inputs and consent checkbox → single taps were swallowed → "tap 3×".
+> (Desktop is immune; this is an iOS-specific focus-cancel behavior.)
+>
+> Earlier hypotheses A/B/C (overlay intercept, React event delegation, id-hash
+> thrash) were all wrong. The CTA/submit **buttons** were a *separate, earlier*
+> sub-bug already fixed via `tapHandlers()` (act on `touchend` + `preventDefault`).
+> This block is specifically the **inputs + checkbox** failure.
+>
+> ## The fix (3 layers — commits `161d3c0`, on `cuts-landing-v2` main)
+> 1. **Sanitize on apply** — `stripEditingAttrs(desired)` at the top of
+>    `applyOverrideContent` (admin.jsx). Strips `contenteditable | spellcheck |
+>    data-edit-id | data-edit-original | data-edit-original-html | data-move-id`
+>    from any override HTML before it touches the DOM. **This alone fixes the live
+>    site even with already-poisoned published data** (the storm has nothing to toggle).
+> 2. **Sanitize on save** — same `stripEditingAttrs(...)` wrapped around the
+>    `el.innerHTML` capture in `persistEditToStorage` and `onBlur` (admin.jsx).
+>    Prevents new poisoning from future edits.
+> 3. **Cleaned the published data** — ran the same strip over `live-overrides.json`
+>    (27 values → 0 `contenteditable`) and republished.
+>
+> ## How to detect a recurrence
+> - Quick data check (no device needed):
+>   `curl -s -H 'Accept: application/vnd.github.raw' "https://api.github.com/repos/ronen16/cuts-landing-v2/contents/live-overrides.json?ref=main" | grep -c contenteditable`
+>   → must be **0**. Anything >0 means the poison is back in published data.
+> - On a real iPhone: open `https://www.cuts.co.il/?diag=1`, tap a form field.
+>   A healthy tap shows `FOCUS ✓ input | muts=1` (the lone `attr:style @input` is the
+>   focus ring). A recurrence shows `NO-FOCUS ✗` with a high `muts` count and
+>   `attr:contenteditable @span` dominating. (The `CE-TRACE` write-tracer that pinned
+>   `~300× DEL @admin` was removed in `cac9175` after the fix — re-add from git
+>   history if you need to name the writer again.)
+>
+> ## How to re-fix if it recurs
+> The sanitize-on-apply in `applyOverrideContent` should make recurrence impossible
+> for the live site. If poison reappears in `live-overrides.json` it means a NEW save
+> path captured `innerHTML` without `stripEditingAttrs` — find that writer and wrap it.
+> Then re-clean the JSON: fetch it, regex-strip the six attributes from every string
+> value, republish.
+>
+> ---
+>
 # iOS "tap 3× fast" button bug — full handoff for another AI
 
 You are an expert in iOS Safari/WebKit + React 18. Below is a complete, self-contained
