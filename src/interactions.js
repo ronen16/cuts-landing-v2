@@ -249,15 +249,18 @@
       if (!ctl) return;
       if (ctl.closest(".btn, .btn-primary, button")) return; // buttons covered above
       var watch = ctl.closest("form, section, .wrap") || document.body;
-      var muts = 0, sample = "";
+      var muts = 0, tally = {};
       var mo = new MutationObserver(function (recs) {
         for (var i = 0; i < recs.length; i++) {
           var r = recs[i];
           if (!watch.contains(r.target)) continue;
           muts++;
-          if (!sample) sample = (r.type === "childList"
-            ? ("childList -" + r.removedNodes.length + " +" + r.addedNodes.length)
-            : r.type) + " @" + desc(r.target);
+          var key = r.type === "attributes"
+            ? ("attr:" + r.attributeName + " @" + desc(r.target))
+            : r.type === "characterData"
+              ? ("text @" + desc(r.target.parentNode))
+              : ("child -" + r.removedNodes.length + "+" + r.addedNodes.length + " @" + desc(r.target));
+          tally[key] = (tally[key] || 0) + 1;
         }
       });
       mo.observe(watch, { childList: true, subtree: true, characterData: true, attributes: true });
@@ -267,10 +270,10 @@
         mo.disconnect();
         var ae = document.activeElement;
         var focused = ae && ae !== document.body && ae !== startActive;
+        var top = Object.keys(tally).sort(function (a, b) { return tally[b] - tally[a]; })[0];
         log((focused ? "FOCUS ✓" : "NO-FOCUS ✗") + " " + desc(ctl) +
             " | active=" + desc(ae) +
-            " | ctlInDOM=" + ctl.isConnected +
-            " | muts=" + muts + (sample ? " first[" + sample + "]" : ""),
+            " | muts=" + muts + (top ? " TOP[" + tally[top] + "x " + top + "]" : ""),
             focused ? "#7f7" : "#f88");
       }, 700);
     }, { passive: true, capture: true });
