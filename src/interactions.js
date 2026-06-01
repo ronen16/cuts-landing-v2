@@ -249,7 +249,7 @@
       if (!ctl) return;
       if (ctl.closest(".btn, .btn-primary, button")) return; // buttons covered above
       var watch = ctl.closest("form, section, .wrap") || document.body;
-      var muts = 0, tally = {};
+      var muts = 0, tally = {}, ceDetail = "";
       var mo = new MutationObserver(function (recs) {
         for (var i = 0; i < recs.length; i++) {
           var r = recs[i];
@@ -261,19 +261,27 @@
               ? ("text @" + desc(r.target.parentNode))
               : ("child -" + r.removedNodes.length + "+" + r.addedNodes.length + " @" + desc(r.target));
           tally[key] = (tally[key] || 0) + 1;
+          if (!ceDetail && r.type === "attributes" && r.attributeName === "contenteditable") {
+            var now = r.target.getAttribute("contenteditable");
+            ceDetail = "old=" + JSON.stringify(r.oldValue) + " new=" + JSON.stringify(now) +
+              " id=" + (r.target.getAttribute("data-edit-id") || "?").slice(0, 8);
+          }
         }
       });
-      mo.observe(watch, { childList: true, subtree: true, characterData: true, attributes: true });
+      mo.observe(watch, { childList: true, subtree: true, characterData: true,
+        attributes: true, attributeOldValue: true });
       var startActive = document.activeElement;
-      log("TAP-CTL " + desc(ctl), "#9cf");
+      var editMode = !!document.querySelector("#root [contenteditable='true']") ||
+        document.body.classList.contains("admin-editing-text");
+      log("TAP-CTL " + desc(ctl) + (editMode ? " [EDIT-MODE ON]" : ""), "#9cf");
       setTimeout(function () {
         mo.disconnect();
         var ae = document.activeElement;
         var focused = ae && ae !== document.body && ae !== startActive;
         var top = Object.keys(tally).sort(function (a, b) { return tally[b] - tally[a]; })[0];
         log((focused ? "FOCUS ✓" : "NO-FOCUS ✗") + " " + desc(ctl) +
-            " | active=" + desc(ae) +
-            " | muts=" + muts + (top ? " TOP[" + tally[top] + "x " + top + "]" : ""),
+            " | muts=" + muts + (top ? " TOP[" + tally[top] + "x " + top + "]" : "") +
+            (ceDetail ? " | CE:" + ceDetail : ""),
             focused ? "#7f7" : "#f88");
       }, 700);
     }, { passive: true, capture: true });
