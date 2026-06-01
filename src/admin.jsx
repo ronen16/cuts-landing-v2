@@ -913,7 +913,25 @@ window.__cutsGetEditableElements = getAllEditableElements;
 // every node alive, and short-circuit when the text is already correct so a
 // settled page never mutates again. innerHTML is only used as a fallback for
 // genuine HTML overrides on non-interactive elements.
+// Strip inline-editing artifacts from a saved override HTML string. While the
+// admin edits text, child spans carry contenteditable/spellcheck/data-edit-*
+// attributes; persistEditToStorage captured el.innerHTML verbatim, so these
+// leaked into the published overrides. On the live site, applyOverrideContent
+// re-injects them via innerHTML (bypassing setAttribute), then refresh() rips
+// contenteditable back off ~300x/sec — a toggle storm that cancels native input
+// focus on iOS (the "tap 3x to focus a field" bug). Removing them on both save
+// and apply ends the storm even for already-poisoned published data.
+function stripEditingAttrs(html) {
+  if (typeof html !== "string" || html.indexOf("=") === -1) return html;
+  return html.replace(
+    /\s+(?:contenteditable|spellcheck|data-edit-id|data-edit-original|data-edit-original-html|data-move-id)="[^"]*"/gi,
+    ""
+  );
+}
+window.__cutsStripEditingAttrs = stripEditingAttrs;
+
 function applyOverrideContent(el, desired) {
+  desired = stripEditingAttrs(desired);
   const isPlainText = !/[<&]/.test(String(desired));
   if (isPlainText) {
     const elementChildren = el.children.length; // element nodes only (not text)
@@ -2148,7 +2166,7 @@ function attachInlineEditing(rootEl, editing, onChange) {
   const persistEditToStorage = (el) => {
     if (!el || !el.hasAttribute || !el.hasAttribute("data-edit-id")) return;
     const id = el.getAttribute("data-edit-id");
-    const newHtml = (el.innerHTML || "").replace(/(?:&nbsp;|\s)+$/g, "");
+    const newHtml = stripEditingAttrs((el.innerHTML || "").replace(/(?:&nbsp;|\s)+$/g, ""));
     try {
       const cur = JSON.parse(localStorage.getItem(ADMIN_STORAGE_KEY) || "{}");
       // Route the in-progress edit to the layer for the active edit mode, so a
@@ -2178,7 +2196,7 @@ function attachInlineEditing(rootEl, editing, onChange) {
     if (!el || !el.hasAttribute || !el.hasAttribute("data-edit-id")) return;
     persistEditToStorage(el);
     const id = el.getAttribute("data-edit-id");
-    const newHtml = (el.innerHTML || "").replace(/(?:&nbsp;|\s)+$/g, "");
+    const newHtml = stripEditingAttrs((el.innerHTML || "").replace(/(?:&nbsp;|\s)+$/g, ""));
     onChange(id, newHtml);
   };
 
