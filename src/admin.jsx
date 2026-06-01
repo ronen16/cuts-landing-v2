@@ -2209,12 +2209,16 @@ function attachInlineEditing(rootEl, editing, onChange) {
       if (el.getAttribute("data-edit-id") !== id) {
         el.setAttribute("data-edit-id", id);
       }
+      // Write only on a real state change. Like data-edit-id above, an
+      // unconditional setAttribute re-fires a MutationObserver record every
+      // tick (~12x/sec via the Hero waveform) even when the value is identical,
+      // which storms iOS into cancelling native focus on the form inputs.
       if (editing) {
-        el.setAttribute("contenteditable", "true");
-        el.setAttribute("spellcheck", "false");
+        if (el.getAttribute("contenteditable") !== "true") el.setAttribute("contenteditable", "true");
+        if (el.getAttribute("spellcheck") !== "false") el.setAttribute("spellcheck", "false");
       } else {
-        el.removeAttribute("contenteditable");
-        el.removeAttribute("spellcheck");
+        if (el.hasAttribute("contenteditable")) el.removeAttribute("contenteditable");
+        if (el.hasAttribute("spellcheck")) el.removeAttribute("spellcheck");
       }
     }
   }
