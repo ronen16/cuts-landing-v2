@@ -3917,7 +3917,7 @@ function GuestBottomLine() {
   }, []);
 
   return (
-    <div ref={ref} className="pullquote gbl-wrap" style={{
+    <div ref={ref} className="pullquote" style={{
       marginTop: 64,
       position: "relative",
       padding: "8px 24px 0",
@@ -3956,7 +3956,7 @@ function GuestBottomLine() {
       </div>
 
       {/* Quote */}
-      <p className="display gbl-quote" style={{
+      <p className="display" style={{
         position: "relative",
         fontSize: "clamp(23px, 3cqw, 42px)",
         lineHeight: 1.18,
@@ -3979,11 +3979,11 @@ function GuestBottomLine() {
         </AnimatedLine>
         <br />
         <AnimatedLine inView={inView} delay={780}>
-          <span className="gbl-nowrap">שמסביר מי אתם ולמה דווקא אתם — גם כשאתם ישנים.</span>
+          שמסביר מי אתם ולמה דווקא אתם — גם כשאתם ישנים.
         </AnimatedLine>
         <br />
         <AnimatedLine inView={inView} delay={980}>
-          <span className="gbl-nowrap" style={{
+          <span style={{
             position: "relative",
             display: "inline-block",
             color: "var(--accent)",
@@ -4005,17 +4005,6 @@ function GuestBottomLine() {
           </span>
         </AnimatedLine>
       </p>
-
-      <style>{`
-        .gbl-nowrap { white-space: nowrap; }
-        @container (max-width: 600px) {
-          .gbl-quote { font-size: 15px !important; line-height: 1.45 !important; }
-          .gbl-wrap { padding-left: 12px !important; padding-right: 12px !important; }
-        }
-        @container (max-width: 400px) {
-          .gbl-quote { font-size: 13px !important; }
-        }
-      `}</style>
     </div>);
 
 }
