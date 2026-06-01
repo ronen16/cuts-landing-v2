@@ -3967,34 +3967,11 @@ function GuestBottomLine() {
         textWrap: "balance"
       }}>
         <AnimatedLine inView={inView} delay={250}>
-          אפשר להמשיך&nbsp;
-          <span style={{
-            position: "relative",
-            display: "inline-block",
-            color: "rgba(255,255,255,0.95)",
-            fontWeight: 800
-          }}>
-            לרדוף אחרי כל ליד
-            <span aria-hidden="true" style={{
-              position: "absolute",
-              left: "-3%", right: "-3%",
-              top: "52%",
-              height: 5,
-              background: "linear-gradient(90deg, transparent, #ff3b3b 12%, #ff3b3b 88%, transparent)",
-              transform: inView ? "scaleX(1)" : "scaleX(0)",
-              transformOrigin: "right",
-              transition: "transform 0.9s cubic-bezier(0.2,0.8,0.2,1) 0.7s",
-              borderRadius: 3,
-              opacity: 0.9,
-              boxShadow: "0 0 14px rgba(255,59,59,0.55)"
-            }} />
-          </span> —
+          אפשר להמשיך לרדוף אחרי כל ליד —
         </AnimatedLine>
         <br />
         <AnimatedLine inView={inView} delay={420}>
-          <span style={{ color: "rgba(255,255,255,0.95)", fontWeight: 700 }}>
-            לשרוף תקציב על מודעות, להתחרות על מחיר, ולקוות שיזכרו אתכם.
-          </span>
+          לשרוף תקציב על מודעות, להתחרות על מחיר, ולקוות שיזכרו אתכם.
         </AnimatedLine>
         <br />
         <AnimatedLine inView={inView} delay={620}>
