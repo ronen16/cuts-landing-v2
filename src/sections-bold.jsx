@@ -3864,6 +3864,8 @@ function GuestStrip({ admin }) {
         })()}
       </div>
 
+      <GuestBottomLine />
+
       <style>{`
         @keyframes marquee-rtl { from { transform: translateX(-33.3333%); } to { transform: translateX(0); } }
         @keyframes marquee-ltr { from { transform: translateX(0); } to { transform: translateX(-33.3333%); } }
@@ -3895,6 +3897,125 @@ function GuestStrip({ admin }) {
         }
       `}</style>
     </section>);
+
+}
+
+// Bottom-line banner shown right after the guest marquee (mobile + desktop —
+// one responsive DOM via clamp() sizing). Mirrors ClosingPullQuote's styling.
+function GuestBottomLine() {
+  const ref = React.useRef(null);
+  const [inView, setInView] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!ref.current) return;
+    const io = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) { setInView(true); io.disconnect(); } },
+      { threshold: 0.35 }
+    );
+    io.observe(ref.current);
+    return () => io.disconnect();
+  }, []);
+
+  return (
+    <div ref={ref} className="pullquote" style={{
+      marginTop: 64,
+      position: "relative",
+      padding: "8px 24px 0",
+      textAlign: "center",
+      maxWidth: 1100,
+      marginLeft: "auto",
+      marginRight: "auto"
+    }}>
+      {/* Eyebrow */}
+      <div style={{
+        position: "relative",
+        display: "inline-flex", alignItems: "center", gap: 10,
+        marginBottom: 18,
+        opacity: inView ? 1 : 0,
+        transform: inView ? "translateY(0)" : "translateY(8px)",
+        transition: "opacity 0.6s ease 0.1s, transform 0.6s ease 0.1s"
+      }}>
+        <span style={{
+          display: "inline-block",
+          width: inView ? 32 : 0, height: 1.5,
+          background: "var(--accent)",
+          transition: "width 0.7s cubic-bezier(0.2,0.8,0.2,1) 0.35s"
+        }} />
+        <span className="mono" style={{
+          fontSize: 14, fontWeight: 800,
+          letterSpacing: "0.24em",
+          color: "var(--accent)",
+          textShadow: "0 0 14px rgba(255,213,0,0.45)"
+        }}>המשמעות בשבילכם</span>
+        <span style={{
+          display: "inline-block",
+          width: inView ? 32 : 0, height: 1.5,
+          background: "var(--accent)",
+          transition: "width 0.7s cubic-bezier(0.2,0.8,0.2,1) 0.35s"
+        }} />
+      </div>
+
+      {/* Quote */}
+      <p className="display" style={{
+        position: "relative",
+        fontSize: "clamp(28px, 3.6cqw, 52px)",
+        lineHeight: 1.05,
+        margin: 0,
+        fontWeight: 800,
+        letterSpacing: "-0.015em",
+        color: "rgba(255,255,255,0.95)",
+        textWrap: "balance"
+      }}>
+        <AnimatedLine inView={inView} delay={250}>
+          מותג חזק לא נמדד ב
+          <span style={{
+            position: "relative",
+            display: "inline-block",
+            color: "rgba(255,255,255,0.95)",
+            fontWeight: 800
+          }}>
+            כמה אתם רודפים
+            <span aria-hidden="true" style={{
+              position: "absolute",
+              left: "-3%", right: "-3%",
+              top: "52%",
+              height: 5,
+              background: "linear-gradient(90deg, transparent, #ff3b3b 12%, #ff3b3b 88%, transparent)",
+              transform: inView ? "scaleX(1)" : "scaleX(0)",
+              transformOrigin: "right",
+              transition: "transform 0.9s cubic-bezier(0.2,0.8,0.2,1) 0.7s",
+              borderRadius: 3,
+              opacity: 0.9,
+              boxShadow: "0 0 14px rgba(255,59,59,0.55)"
+            }} />
+          </span>,
+        </AnimatedLine>
+        <br />
+        <AnimatedLine inView={inView} delay={450}>
+          אלא ב
+          <span style={{
+            position: "relative",
+            color: "var(--accent)",
+            fontWeight: 900,
+            whiteSpace: "nowrap",
+            textShadow: "0 0 30px rgba(255,213,0,0.45)"
+          }}>
+            כמה לקוחות מגיעים אליכם לבד
+            <span aria-hidden="true" style={{
+              position: "absolute",
+              left: 0, right: 0, bottom: "-0.08em",
+              height: 4,
+              background: "linear-gradient(90deg, transparent, var(--accent) 10%, var(--accent) 90%, transparent)",
+              transformOrigin: "right",
+              transform: inView ? "scaleX(1)" : "scaleX(0)",
+              transition: "transform 0.9s cubic-bezier(0.2,0.8,0.2,1) 0.95s",
+              borderRadius: 2,
+              boxShadow: "0 0 12px rgba(255,213,0,0.6)"
+            }} />
+          </span>.
+        </AnimatedLine>
+      </p>
+    </div>);
 
 }
 
