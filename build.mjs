@@ -22,7 +22,61 @@ async function copy(src, dest) {
   await fs.copyFile(src, dest);
 }
 
+// ---------------------------------------------------------------------------
+// REGRESSION GUARD — do not remove. See HANDOFF-iOS-button-bug.md (RESOLVED).
+//
+// The iOS "tap 3× to focus a field" bug was caused by inline-editing attributes
+// (contenteditable / data-edit-* / spellcheck) leaking into the published
+// content and re-injecting ~300×/sec next to the lead form, which made WebKit
+// cancel the tap. Two things keep it fixed, and BOTH must stay true or the
+// storm comes back. This guard fails the build (→ blocks the Vercel deploy) if
+// either is broken — so no future change can silently re-break the form taps.
+// ---------------------------------------------------------------------------
+const EDIT_ATTR_RE = /\b(?:contenteditable|spellcheck|data-edit-id|data-edit-original|data-edit-original-html|data-move-id)=/i;
+
+async function guard() {
+  const fail = (msg) => {
+    throw new Error(
+      "\n🛑 BUILD BLOCKED — input/checkbox tap-storm safeguard tripped.\n" +
+      msg +
+      "\n   See HANDOFF-iOS-button-bug.md (✅ RESOLVED block) before changing anything.\n"
+    );
+  };
+
+  // 1. The sanitizer must exist and be wired into BOTH the apply path and the
+  //    save paths. stripEditingAttrs strips editing junk from override HTML.
+  const admin = await fs.readFile("src/admin.jsx", "utf8");
+  if (!/function\s+stripEditingAttrs\s*\(/.test(admin)) {
+    fail("   • stripEditingAttrs() is gone from src/admin.jsx.");
+  }
+  if (!/desired\s*=\s*stripEditingAttrs\(desired\)/.test(admin)) {
+    fail("   • applyOverrideContent no longer sanitizes on apply (the line\n" +
+         "     `desired = stripEditingAttrs(desired)` was removed).");
+  }
+  const wiredCalls = (admin.match(/stripEditingAttrs\(/g) || []).length;
+  if (wiredCalls < 3) {
+    fail("   • stripEditingAttrs is called only " + wiredCalls + "× — expected ≥3\n" +
+         "     (apply + persistEditToStorage + onBlur). A save path lost its sanitize.");
+  }
+
+  // 2. The published overrides must contain NO inline-editing attributes.
+  //    If they do, an edit was saved/published without sanitizing.
+  try {
+    const live = await fs.readFile("live-overrides.json", "utf8");
+    if (EDIT_ATTR_RE.test(live)) {
+      const hit = (live.match(EDIT_ATTR_RE) || [""])[0];
+      fail("   • live-overrides.json contains editing junk (" + hit + "). Re-clean it:\n" +
+           "     strip the six edit attributes from every string value, then republish.");
+    }
+  } catch (e) {
+    if (e.code !== "ENOENT") throw e; // missing file is fine; poisoned file is not
+  }
+
+  console.log("✓ tap-storm safeguard OK (sanitizer wired, published data clean)");
+}
+
 async function run() {
+  await guard();
   await fs.rm(DIST, { recursive: true, force: true });
   await fs.mkdir(path.join(DIST, "src"), { recursive: true });
   await fs.mkdir(path.join(DIST, "assets", "fonts"), { recursive: true });
