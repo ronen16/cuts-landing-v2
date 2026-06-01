@@ -191,6 +191,48 @@
     function nearestBtn(el) { return el && el.closest ? el.closest(".btn, .btn-primary, button") : null; }
     log("DIAG ready — tap a yellow button", "#FFD500");
 
+    // --- contenteditable write-tracer ---
+    // Nothing in our code removes contenteditable while editing=true, yet the
+    // device shows old=true→null removals 12x/sec. Monkeypatch the two DOM
+    // mutators to capture the real call stack and tally who sets vs. removes it.
+    var ceTally = {}; // "SET <frame>" / "DEL <frame>" -> count
+    function appFrame() {
+      var st = (new Error()).stack || "";
+      var rows = st.split("\n");
+      for (var i = 2; i < rows.length; i++) {
+        var m = rows[i].match(/(admin|app|sections-bold|primitives|interactions)\.js\??[^:]*:(\d+)/);
+        if (m) return m[1] + ":" + m[2];
+      }
+      return "native?";
+    }
+    var _set = Element.prototype.setAttribute;
+    var _rem = Element.prototype.removeAttribute;
+    Element.prototype.setAttribute = function (n, v) {
+      if (n === "contenteditable") {
+        var k = "SET=" + v + " @" + appFrame();
+        ceTally[k] = (ceTally[k] || 0) + 1;
+      }
+      return _set.apply(this, arguments);
+    };
+    Element.prototype.removeAttribute = function (n) {
+      if (n === "contenteditable") {
+        var k = "DEL @" + appFrame();
+        ceTally[k] = (ceTally[k] || 0) + 1;
+      }
+      return _rem.apply(this, arguments);
+    };
+    setInterval(function () {
+      var keys = Object.keys(ceTally);
+      if (!keys.length) return;
+      keys.sort(function (a, b) { return ceTally[b] - ceTally[a]; });
+      var et = (typeof window.__cutsEditingText !== "undefined")
+        ? String(window.__cutsEditingText) : "?";
+      log("CE-TRACE editingText=" + et + " | " +
+          keys.slice(0, 3).map(function (k) { return ceTally[k] + "× " + k; }).join("  ||  "),
+          "#fd9");
+      ceTally = {};
+    }, 1000);
+
     var pending = null;
     document.addEventListener("touchstart", function (e) {
       var t = e.touches[0]; if (!t) return;

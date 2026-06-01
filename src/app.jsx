@@ -152,6 +152,7 @@ function App() {
     cls.toggle("admin-editing-text", admin.editingText);
     cls.toggle("admin-dragging-sections", admin.draggingSections);
     cls.toggle("admin-moving-elements", admin.movingElements);
+    window.__cutsEditingText = admin.editingText;
   }, [admin.editingText, admin.draggingSections, admin.movingElements]);
 
   // Stable identity — otherwise BoldVariation's DEFAULT_SECTIONS useMemo
