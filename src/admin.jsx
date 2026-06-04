@@ -550,9 +550,11 @@ function useAdminMode() {
   // made just before clicking Publish need to be included).
   const publishToLive = React.useCallback(async () => {
     const current = loadAdminState();
-    const liveOverrides = current.overrides || {};
-    const liveOverridesDesktop = current.overridesDesktop || {};
-    const liveOverridesMobile = current.overridesMobile || {};
+    // Sanitize at the publish boundary: even if a save path let editing junk
+    // into localStorage, it must never reach the published file.
+    const liveOverrides = deepStripEditingAttrs(current.overrides || {});
+    const liveOverridesDesktop = deepStripEditingAttrs(current.overridesDesktop || {});
+    const liveOverridesMobile = deepStripEditingAttrs(current.overridesMobile || {});
     const liveSectionOrder = current.sectionOrder;
     const liveElementOffsets = current.elementOffsets || {};
     const liveElementOffsetsDesktop = current.elementOffsetsDesktop || {};
@@ -929,6 +931,21 @@ function stripEditingAttrs(html) {
   );
 }
 window.__cutsStripEditingAttrs = stripEditingAttrs;
+
+// Deep-sanitize every string in a nested structure (override maps hold HTML
+// keyed by selector). Used as a last line of defense at the publish boundary so
+// a poisoned value in localStorage can never reach live-overrides.json — which
+// would trip the build guard and block the deploy.
+function deepStripEditingAttrs(value) {
+  if (typeof value === "string") return stripEditingAttrs(value);
+  if (Array.isArray(value)) return value.map(deepStripEditingAttrs);
+  if (value && typeof value === "object") {
+    const out = {};
+    for (const k in value) out[k] = deepStripEditingAttrs(value[k]);
+    return out;
+  }
+  return value;
+}
 
 function applyOverrideContent(el, desired) {
   desired = stripEditingAttrs(desired);
