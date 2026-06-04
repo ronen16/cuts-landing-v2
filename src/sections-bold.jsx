@@ -2753,8 +2753,8 @@ function ConsentCheckbox({ form }) {
   return (
     <div
       style={{
-        display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap",
-        textAlign: "right", fontSize: 13.5, lineHeight: 1.5,
+        display: "flex", alignItems: "center", justifyContent: "center", gap: 6, flexWrap: "wrap",
+        textAlign: "center", fontSize: 13.5, lineHeight: 1.5,
         color: err ? "#ff8a8a" : "rgba(255,255,255,0.78)"
       }}>
       {/* Link kept OUTSIDE the label: iOS Safari mis-routes taps on interactive
