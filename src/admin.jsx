@@ -1240,6 +1240,7 @@ function AdminVideosModal({ admin }) {
   const sync = (next) => { setItems(next); admin.updateVideoItems(next); };
   const setId = (i, val) => { const n = items.slice(); n[i] = { ...n[i], vimeoId: parseVimeoId(val) }; sync(n); };
   const setName = (i, val) => { const n = items.slice(); n[i] = { ...n[i], name: val }; sync(n); };
+  const setRole = (i, val) => { const n = items.slice(); n[i] = { ...n[i], role: val }; sync(n); };
   const move = (i, dir) => {
     const t = i + dir; if (t < 0 || t >= items.length) return;
     const n = items.slice(); const tmp = n[i]; n[i] = n[t]; n[t] = tmp; sync(n);
@@ -1277,6 +1278,11 @@ function AdminVideosModal({ admin }) {
                     value={v.name}
                     placeholder="שם הלקוח (אופציונלי)"
                     onChange={(e) => setName(idx, e.target.value)} />
+                  <input
+                    style={{ ...inputStyle, direction: "rtl", textAlign: "right", opacity: 0.85 }}
+                    value={v.role || ""}
+                    placeholder="תפקיד / שורה שנייה (אופציונלי)"
+                    onChange={(e) => setRole(idx, e.target.value)} />
                 </div>
                 <div className="admin-videos__actions">
                   <button type="button" className="admin-videos__btn" disabled={idx === 0} title="הזז למעלה" onClick={() => move(idx, -1)}>↑</button>
