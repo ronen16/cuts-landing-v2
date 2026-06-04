@@ -245,7 +245,7 @@ function useForm() {
     setErrors(errs);
     setTouched({ name: true, phone: true, email: true, consent: true });
     if (Object.keys(errs).length === 0) {
-      setSubmitted(true);
+      // No inline confirmation — redirect straight to the thank-you page below.
       // Fire-and-forget POST to our own Vercel Function — creates the Monday
       // item directly via the Monday GraphQL API. Replaced the Make webhook
       // (Make's column encoder kept rejecting the payload). `keepalive: true`
