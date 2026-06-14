@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "publishedAt": "2026-06-07T11:08:59.134Z",
+  "publishedAt": "2026-06-14T17:04:28.844Z",
   "overrides": {
     "sec:how-it-works>button[0]#h:d901835d": "👁 הצג",
     "sec:services>section[0]>div[0]>div[1]>div[0]>h3[0]#h:a5c90c46": "צילום ותאורה מקצועית",
@@ -294,6 +294,10 @@
   ],
   "podcastItems": [
     {
+      "youtubeId": "gR_5bzC9-Io",
+      "title": ""
+    },
+    {
       "youtubeId": "MpOyFwCPAII",
       "title": ""
     },
@@ -315,10 +319,6 @@
     },
     {
       "youtubeId": "0GpVEOmDd2o",
-      "title": ""
-    },
-    {
-      "youtubeId": "V-kwXkPtP0k",
       "title": ""
     },
     {
@@ -471,40 +471,6 @@
       "yS0Zlpwmr3M",
       "MpOyFwCPAII",
       "V-kwXkPtP0k"
-    ],
-    "podcastItems": [
-      {
-        "youtubeId": "bXAmsbiZwIg",
-        "title": ""
-      },
-      {
-        "youtubeId": "NIFt8sRNvJA",
-        "title": ""
-      },
-      {
-        "youtubeId": "MpOyFwCPAII",
-        "title": ""
-      },
-      {
-        "youtubeId": "L-RHzPEthCM",
-        "title": ""
-      },
-      {
-        "youtubeId": "ZdbeRPiUJFo",
-        "title": ""
-      },
-      {
-        "youtubeId": "0GpVEOmDd2o",
-        "title": ""
-      },
-      {
-        "youtubeId": "V-kwXkPtP0k",
-        "title": ""
-      },
-      {
-        "youtubeId": "3lKjAMaAue8",
-        "title": ""
-      }
     ]
   }
 }
