@@ -482,32 +482,42 @@ function SocialProofSection({ onCTAClick, admin }) {
   const [playingIdx, setPlayingIdx] = React.useState(null);
   const [loadedIdx, setLoadedIdx] = React.useState(null);
 
-  // טאמבנייל לכל סרטון — נטען דרך Vimeo oEmbed (JSON קטן, בלי iframe)
+  // טאמבנייל לכל סרטון — נטען דרך Vimeo oEmbed (JSON קטן, בלי iframe).
+  // Vimeo's oEmbed endpoint rate-limits parallel bursts, so firing every
+  // request at once dropped some thumbnails (worse on flaky mobile networks).
+  // Fetch with limited concurrency + retry, and commit each thumb as soon as
+  // it resolves so one slow/failed request can't hide the rest.
   const [thumbs, setThumbs] = React.useState({});
+  const idKey = videos.map((v) => v.vimeoId).filter(Boolean).join(",");
   React.useEffect(() => {
-    const ids = Array.from(new Set(videos.map((v) => v.vimeoId).filter(Boolean)));
+    const ids = Array.from(new Set(idKey.split(",").filter(Boolean)));
     let cancelled = false;
-    Promise.all(
-      ids.map(async (id) => {
-        try {
-          const res = await fetch(
-            `https://vimeo.com/api/oembed.json?url=https://vimeo.com/${id}&width=640`
-          );
-          if (!res.ok) return null;
-          const data = await res.json();
-          return data && data.thumbnail_url ? [id, data.thumbnail_url] : null;
-        } catch {
-          return null;
-        }
-      })
-    ).then((pairs) => {
-      if (cancelled) return;
-      const next = {};
-      pairs.forEach((p) => { if (p) next[p[0]] = p[1]; });
-      setThumbs(next);
-    });
+
+    const fetchThumb = async (id, attempt = 0) => {
+      try {
+        const res = await fetch(
+          `https://vimeo.com/api/oembed.json?url=https://vimeo.com/${id}&width=640`
+        );
+        if (!res.ok) throw new Error("status " + res.status);
+        const data = await res.json();
+        if (cancelled || !data || !data.thumbnail_url) return;
+        setThumbs((prev) => (prev[id] ? prev : { ...prev, [id]: data.thumbnail_url }));
+      } catch {
+        if (cancelled || attempt >= 3) return;
+        await new Promise((r) => setTimeout(r, 400 * (attempt + 1)));
+        return fetchThumb(id, attempt + 1);
+      }
+    };
+
+    const CONCURRENCY = 3;
+    let cursor = 0;
+    const worker = async () => {
+      while (!cancelled && cursor < ids.length) await fetchThumb(ids[cursor++]);
+    };
+    Promise.all(Array.from({ length: Math.min(CONCURRENCY, ids.length) }, worker));
+
     return () => { cancelled = true; };
-  }, []);
+  }, [idKey]);
 
 
 
