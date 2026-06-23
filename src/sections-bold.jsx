@@ -3432,7 +3432,7 @@ function FinalCTA({ form, onCTAClick }) {
       background: "radial-gradient(640px 640px at 6% -8%, rgba(255,213,0,0.08), transparent 60%), radial-gradient(560px 560px at 98% 108%, rgba(255,213,0,0.04), transparent 62%)"
     }}>
       <div className="wrap" style={{ maxWidth: 1000 }}>
-        <div className="cq-stack cta-grid" style={{ display: "grid", gridTemplateColumns: "1.1fr 1fr", gap: 48, alignItems: "stretch" }}>
+        <div className="cq-stack cta-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1.06fr", gap: 56, alignItems: "stretch" }}>
           {/* Left — recap */}
           <div className="cta-recap" style={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: 32 }}>
             <p className="mono" style={{ fontSize: 14, opacity: 0.7, margin: 0, letterSpacing: "0.06em" }}>
@@ -3440,8 +3440,8 @@ function FinalCTA({ form, onCTAClick }) {
             </p>
 
             <h2 className="display" style={{
-              fontSize: "clamp(28px, 3.6cqw, 42px)",
-              margin: 0, fontWeight: 800, lineHeight: 1.1
+              fontSize: "clamp(30px, 3.9cqw, 46px)",
+              margin: 0, fontWeight: 900, lineHeight: 1.08, letterSpacing: "-0.015em"
             }}>
               סיכום אחרון —{" "}
               <span style={{ color: "var(--accent)" }}>
@@ -3454,16 +3454,17 @@ function FinalCTA({ form, onCTAClick }) {
               זו ההזדמנות האחרונה שלכם לתפוס את תשומת לבם.
             </p>
 
-            <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 10 }}>
+            <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 16 }}>
               {["הצעת ערך #1", "הצעת ערך #2", "הצעת ערך #3"].map((v) =>
               <li key={v} style={{ display: "flex", alignItems: "center", gap: 14 }}>
                   <span style={{
-                  width: 24, height: 24, borderRadius: "50%",
-                  background: "var(--accent)", color: "#0A0A0A",
+                  width: 26, height: 26, borderRadius: "50%",
+                  background: "linear-gradient(140deg, #FFE874, var(--accent))", color: "#0A0A0A",
                   display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: 13, fontWeight: 900, flexShrink: 0
+                  fontSize: 13, fontWeight: 900, flexShrink: 0,
+                  boxShadow: "0 0 0 4px rgba(255,213,0,0.12), 0 4px 12px -2px rgba(255,213,0,0.4)"
                 }}>✓</span>
-                  <span style={{ fontSize: 18, opacity: 0.9 }}>{v}</span>
+                  <span style={{ fontSize: 17, opacity: 0.92, fontWeight: 500 }}>{v}</span>
                 </li>
               )}
             </ul>
@@ -3472,11 +3473,11 @@ function FinalCTA({ form, onCTAClick }) {
             <div className="cta-availability" style={{
               marginTop: 8,
               position: "relative",
-              padding: "30px 34px",
-              borderRadius: 20,
-              background: "radial-gradient(120% 130% at 100% 0%, rgba(255,213,0,0.16) 0%, transparent 55%), linear-gradient(135deg, rgba(255,213,0,0.06) 0%, rgba(255,213,0,0.015) 100%)",
-              border: "1px solid rgba(255,213,0,0.28)",
-              boxShadow: "0 24px 60px -28px rgba(255,213,0,0.22), inset 0 1px 0 rgba(255,255,255,0.06)",
+              padding: "26px 30px",
+              borderRadius: 16,
+              background: "linear-gradient(135deg, rgba(255,213,0,0.08) 0%, rgba(255,255,255,0.015) 100%)",
+              border: "1px solid rgba(255,213,0,0.22)",
+              boxShadow: "inset -3px 0 0 0 var(--accent), 0 22px 55px -30px rgba(0,0,0,0.55)",
               overflow: "hidden"
             }}>
               <div style={{
@@ -3547,19 +3548,19 @@ function FinalCTA({ form, onCTAClick }) {
             </div> :
 
           <form onSubmit={submit} style={{
-            background: "radial-gradient(125% 80% at 50% 0%, rgba(255,213,0,0.07) 0%, transparent 46%), linear-gradient(180deg, #181818 0%, #0E0E0E 100%)",
-            border: "1px solid rgba(255,213,0,0.14)",
+            background: "linear-gradient(180deg, #1C1C20 0%, #131316 100%)",
+            border: "1px solid rgba(255,255,255,0.09)",
             borderRadius: 24, padding: 0,
             display: "flex", flexDirection: "column",
             alignSelf: "stretch",
             position: "relative",
             overflow: "hidden",
-            boxShadow: "0 36px 90px -34px rgba(0,0,0,0.72), 0 -2px 70px -22px rgba(255,213,0,0.16), inset 0 1px 0 rgba(255,255,255,0.03)"
+            boxShadow: "0 44px 110px -44px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,255,255,0.06)"
           }}>
               {/* Top yellow accent strip */}
               <div aria-hidden="true" style={{
-              height: 4,
-              background: "linear-gradient(90deg, transparent, var(--accent), transparent)"
+              height: 5,
+              background: "linear-gradient(90deg, var(--accent), #FFE873 50%, var(--accent))"
             }} />
 
               {/* Header */}
@@ -3607,7 +3608,8 @@ function FinalCTA({ form, onCTAClick }) {
                 </div>
                 <button type="submit" className="btn btn-primary" {...tapHandlers(submit)} style={{
                 marginTop: 4, justifyContent: "center", padding: "20px",
-                fontSize: 17, borderRadius: 12, fontWeight: 800
+                fontSize: 17, borderRadius: 14, fontWeight: 800, letterSpacing: "0.01em",
+                boxShadow: "0 16px 36px -12px rgba(255,213,0,0.55)"
               }}>
                   בוא נקבע שיחה ←
                 </button>
