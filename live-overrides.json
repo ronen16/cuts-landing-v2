@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "publishedAt": "2026-06-14T17:04:28.844Z",
+  "publishedAt": "2026-06-23T14:49:14.257Z",
   "overrides": {
     "sec:how-it-works>button[0]#h:d901835d": "👁 הצג",
     "sec:services>section[0]>div[0]>div[1]>div[0]>h3[0]#h:a5c90c46": "צילום ותאורה מקצועית",
@@ -141,7 +141,8 @@
     "sec:faq>section[0]>div[0]>div[0]>div[0]>div[0]>div[0]>span[1]#h:a78dcb18": "איפה האולפן נמצא?",
     "sec:faq>section[0]>div[0]>h2[0]#h:4e5b00e0": "שאלות <span style=\"color: var(--accent);\">נפוצות</span>",
     "sec:faq>section[0]>div[0]>div[0]>div[0]>div[1]>div[0]>p[0]#h:f5485250": "זו נקודת ההתחלה של 90% מהלקוחות שלנו. אנחנו בונים איתך פורמט שיושב בדיוק על הקול הטבעי שלך, עם מבנה ברור לכל פרק — אתה לא צריך להמציא כלום. תוך 2–3 פרקים זה יהיה לך נוח כמו לדבר בפגישת לקוח.",
-    "sec:faq>section[0]>div[0]>div[0]>div[0]>div[0]>div[0]>span[0]#h:00000601": "01"
+    "sec:faq>section[0]>div[0]>div[0]>div[0]>div[0]>div[0]>span[0]#h:00000601": "01",
+    "sec:hero>section[0]>div[1]>div[0]>p[0]#h:e69b5aad": "פעם הייתם צריכים להסביר מי אתם בכל שיחת מכירה, עם פודקאסט — הם כבר יודעים.<span style=\"color: var(--accent); font-weight: 700;\"></span>"
   },
   "overridesDesktop": {
     "sec:services>section[0]>div[0]>div[1]>div[2]>p[0]>blockquote[0]>p[0]#h:7f4c59a1": "מכל פרק אנחנו נוציא את הרילסים הכי טובים ונהפוך את הפודקאסט שלכם למכונת תוכן שתמשיך להביא לכם עוקבים, חשיפה, וקהל שסומך עליכם.",
@@ -176,7 +177,6 @@
     "sec:services>section[0]>div[0]>div[1]>div[3]>h3[0]#h:789ee55c": "טאמבניילים וכותרות",
     "sec:services>section[0]>div[0]>div[1]>div[2]>div[0]#h:00000603": "03",
     "sec:results>section[0]>div[0]>div[0]>h2[0]>span[1]#h:bf7c4e01": "הפודקאסטים אצלנו.<span aria-hidden=\"true\" style=\"position: absolute; left: 3%; right: 3%; bottom: -0.06em; height: 5px; background: linear-gradient(90deg, transparent, var(--accent) 15%, var(--accent) 85%, transparent); opacity: 0.55; border-radius: 3px; filter: blur(0.5px);\"></span>",
-    "sec:hero>section[0]>div[1]>div[0]>p[0]#h:e69b5aad": "פעם הייתם צריכים להסביר מי אתם בכל שיחת מכירה.<br>עם פודקאסט — הם כבר יודעים.<span style=\"color: var(--accent); font-weight: 700;\"></span>",
     "sec:final-cta>section[0]>div[0]>div[0]>form[0]>div[2]>div[2]>label[0]>span[1]#h:9926632c": "אני מאשר/ת שקראתי ואני מסכים/ה <a href=\"terms.html\" style=\"color: var(--accent); text-decoration: underline; font-weight: 700;\">לתקנון האתר</a>",
     "sec:final-cta>section[0]>div[0]>div[0]>form[0]>div[3]>div[0]>span[2]#h:dab20478": "<span style=\"color: var(--accent);\">✓</span> מענה תוך 24 שעות",
     "sec:final-cta>section[0]>div[0]>div[0]>div[0]>div[0]>p[0]#h:280ba64b": "האולפן עובד בתפוסה כמעט מלאה, כדי להמשיך לתת את השירות<br>הטוב ביותר לכל לקוח,<br>אנחנו פותחים מקום ללקוחות חדשים פעם בחודש.",
@@ -248,9 +248,9 @@
       "role": "מנחה פודקאסט \"מהצד השני״"
     },
     {
-      "vimeoId": "1108139897",
-      "name": "מור פאר",
-      "role": "מנחה פודקאסט ״הבחירה״"
+      "vimeoId": "1203861978",
+      "name": "דקל עמור",
+      "role": "יוצרת תוכן"
     },
     {
       "vimeoId": "1190079851",
