@@ -3427,9 +3427,22 @@ function InlineLeadForm({ form }) {
 function FinalCTA({ form, onCTAClick }) {
   const { values, setField, errors, touched, blur, submit, submitted } = form;
   return (
-    <section id="cta" style={{ padding: "56px 0" }}>
-      <div className="wrap" style={{ maxWidth: 1000 }}>
-        <div className="cq-stack cta-grid" style={{ display: "grid", gridTemplateColumns: "1.1fr 1fr", gap: 40, alignItems: "stretch" }}>
+    <section id="cta" style={{ padding: "76px 0", position: "relative", overflow: "hidden" }}>
+      {/* ambient depth — warm glow behind the form, soft counter-glow opposite */}
+      <div aria-hidden="true" style={{
+        position: "absolute", top: "-12%", left: "-6%",
+        width: 640, height: 640,
+        background: "radial-gradient(circle, rgba(255,213,0,0.09), transparent 62%)",
+        filter: "blur(55px)", pointerEvents: "none", zIndex: 0
+      }} />
+      <div aria-hidden="true" style={{
+        position: "absolute", bottom: "-18%", right: "-8%",
+        width: 540, height: 540,
+        background: "radial-gradient(circle, rgba(255,213,0,0.045), transparent 65%)",
+        filter: "blur(65px)", pointerEvents: "none", zIndex: 0
+      }} />
+      <div className="wrap" style={{ maxWidth: 1000, position: "relative", zIndex: 1 }}>
+        <div className="cq-stack cta-grid" style={{ display: "grid", gridTemplateColumns: "1.1fr 1fr", gap: 48, alignItems: "stretch" }}>
           {/* Left — recap */}
           <div className="cta-recap" style={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: 32 }}>
             <p className="mono" style={{ fontSize: 14, opacity: 0.7, margin: 0, letterSpacing: "0.06em" }}>
@@ -3469,10 +3482,11 @@ function FinalCTA({ form, onCTAClick }) {
             <div className="cta-availability" style={{
               marginTop: 8,
               position: "relative",
-              padding: "28px 32px",
-              borderRadius: 18,
-              background: "linear-gradient(135deg, rgba(255,213,0,0.08) 0%, rgba(255,213,0,0.02) 100%)",
-              border: "1px solid rgba(255,213,0,0.2)",
+              padding: "30px 34px",
+              borderRadius: 20,
+              background: "radial-gradient(120% 130% at 100% 0%, rgba(255,213,0,0.16) 0%, transparent 55%), linear-gradient(135deg, rgba(255,213,0,0.06) 0%, rgba(255,213,0,0.015) 100%)",
+              border: "1px solid rgba(255,213,0,0.28)",
+              boxShadow: "0 24px 60px -28px rgba(255,213,0,0.22), inset 0 1px 0 rgba(255,255,255,0.06)",
               overflow: "hidden"
             }}>
               <div style={{
@@ -3543,14 +3557,14 @@ function FinalCTA({ form, onCTAClick }) {
             </div> :
 
           <form onSubmit={submit} style={{
-            background: "linear-gradient(180deg, #161616 0%, #0F0F0F 100%)",
-            border: "1px solid var(--line2)",
+            background: "radial-gradient(125% 80% at 50% 0%, rgba(255,213,0,0.07) 0%, transparent 46%), linear-gradient(180deg, #181818 0%, #0E0E0E 100%)",
+            border: "1px solid rgba(255,213,0,0.14)",
             borderRadius: 24, padding: 0,
             display: "flex", flexDirection: "column",
             alignSelf: "stretch",
             position: "relative",
             overflow: "hidden",
-            boxShadow: "0 30px 80px -30px rgba(0,0,0,0.6)"
+            boxShadow: "0 36px 90px -34px rgba(0,0,0,0.72), 0 -2px 70px -22px rgba(255,213,0,0.16), inset 0 1px 0 rgba(255,255,255,0.03)"
           }}>
               {/* Top yellow accent strip */}
               <div aria-hidden="true" style={{
