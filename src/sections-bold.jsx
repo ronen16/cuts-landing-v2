@@ -3464,6 +3464,66 @@ function FinalCTA({ form, onCTAClick }) {
                 </li>
               )}
             </ul>
+
+            {submitted ? null :
+            <div className="cta-availability" style={{
+              marginTop: 8,
+              position: "relative",
+              padding: "28px 32px",
+              borderRadius: 18,
+              background: "linear-gradient(135deg, rgba(255,213,0,0.08) 0%, rgba(255,213,0,0.02) 100%)",
+              border: "1px solid rgba(255,213,0,0.2)",
+              overflow: "hidden"
+            }}>
+              <div style={{
+                display: "inline-flex", alignItems: "center", gap: 8,
+                fontSize: 11, fontWeight: 700,
+                letterSpacing: "0.18em",
+                color: "var(--accent)",
+                marginBottom: 14,
+                textTransform: "uppercase"
+              }}>
+                <span style={{
+                  width: 6, height: 6, borderRadius: "50%",
+                  background: "var(--accent)",
+                  boxShadow: "0 0 0 4px rgba(255,213,0,0.2)",
+                  animation: "ctaPulse 2s ease-in-out infinite"
+                }}></span>
+                מקומות מוגבלים החודש
+              </div>
+
+              <h3 className="display" style={{
+                fontSize: 26, fontWeight: 800, margin: "0 0 8px",
+                lineHeight: 1.2, letterSpacing: "-0.01em"
+              }}>
+                3 מקומות פנויים לפודקאסטים חדשים
+              </h3>
+
+              <p style={{
+                fontSize: 15, lineHeight: 1.55,
+                opacity: 0.7, margin: "0 0 22px"
+              }}>
+                האולפן עובד בתפוסה מלאה. אנחנו פותחים סלוטים חדשים פעם ברבעון —
+                ההזדמנות הבאה: ינואר 2025.
+              </p>
+
+              <div style={{
+                display: "flex", alignItems: "center", gap: 16,
+                marginTop: 4, paddingTop: 18,
+                borderTop: "1px solid rgba(255,255,255,0.08)",
+                fontSize: 13, opacity: 0.55, fontWeight: 500
+              }}>
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                  <span style={{ color: "var(--accent)" }}>✓</span> ללא התחייבות
+                </span>
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                  <span style={{ color: "var(--accent)" }}>✓</span> שיחת אבחון 30 דק׳
+                </span>
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+                  <span style={{ color: "var(--accent)" }}>✓</span> מענה תוך 24ש׳
+                </span>
+              </div>
+            </div>}
           </div>
 
           {/* Right — form (replaces image per CTA functionality) */}
