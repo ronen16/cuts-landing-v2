@@ -3427,11 +3427,14 @@ function InlineLeadForm({ form }) {
 function FinalCTA({ form, onCTAClick }) {
   const { values, setField, errors, touched, blur, submit, submitted } = form;
   return (
-    <section id="cta" style={{ padding: "56px 0" }}>
+    <section id="cta" style={{
+      padding: "96px 0",
+      background: "radial-gradient(900px 620px at 50% 42%, rgba(255,213,0,0.06), transparent 62%)"
+    }}>
       <div className="wrap" style={{ maxWidth: 1000 }}>
-        <div className="cq-stack cta-grid" style={{ display: "grid", gridTemplateColumns: "1.1fr 1fr", gap: 40, alignItems: "stretch" }}>
+        <div className="cq-stack cta-grid" style={{ display: "grid", gridTemplateColumns: "minmax(0, 560px)", justifyContent: "center", gap: 40, alignItems: "stretch" }}>
           {/* Left — recap */}
-          <div className="cta-recap" style={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: 32 }}>
+          <div className="cta-recap" style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", textAlign: "center", gap: 24 }}>
             <p className="mono" style={{ fontSize: 14, opacity: 0.7, margin: 0, letterSpacing: "0.06em" }}>
 
             </p>
@@ -3446,14 +3449,14 @@ function FinalCTA({ form, onCTAClick }) {
               </span>
             </h2>
 
-            <p style={{ fontSize: 18, lineHeight: 1.65, opacity: 0.8, margin: 0 }}>
+            <p style={{ fontSize: 17, lineHeight: 1.65, opacity: 0.72, margin: "0 auto", maxWidth: 470 }}>
               נסחו את הסיבה האחת המרכזית לכך שאנשים יפנו אליך ויצרו קשר עם החברה למתן שירות או מוצר.
               זו ההזדמנות האחרונה שלכם לתפוס את תשומת לבם.
             </p>
 
-            <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 10 }}>
+            <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 13, alignItems: "center" }}>
               {["הצעת ערך #1", "הצעת ערך #2", "הצעת ערך #3"].map((v) =>
-              <li key={v} style={{ display: "flex", alignItems: "center", gap: 14 }}>
+              <li key={v} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12 }}>
                   <span style={{
                   width: 24, height: 24, borderRadius: "50%",
                   background: "var(--accent)", color: "#0A0A0A",
@@ -3483,14 +3486,14 @@ function FinalCTA({ form, onCTAClick }) {
             </div> :
 
           <form onSubmit={submit} style={{
-            background: "linear-gradient(180deg, #161616 0%, #0F0F0F 100%)",
-            border: "1px solid var(--line2)",
-            borderRadius: 24, padding: 0,
+            background: "linear-gradient(180deg, #1A1A1D 0%, #121214 100%)",
+            border: "1px solid rgba(255,255,255,0.1)",
+            borderRadius: 22, padding: 0,
             display: "flex", flexDirection: "column",
             alignSelf: "stretch",
             position: "relative",
             overflow: "hidden",
-            boxShadow: "0 30px 80px -30px rgba(0,0,0,0.6)"
+            boxShadow: "0 40px 90px -40px rgba(0,0,0,0.8)"
           }}>
               {/* Top yellow accent strip */}
               <div aria-hidden="true" style={{
