@@ -670,7 +670,9 @@ function useAdminMode() {
     } catch (err) {
       const msg = String(err.message || err);
       if (msg.startsWith("auth-")) {
-        window.dispatchEvent(new CustomEvent("cuts-publish-need-settings"));
+        window.dispatchEvent(new CustomEvent("cuts-publish-need-settings", {
+          detail: { reason: "auth", status: msg.replace("auth-", "") }
+        }));
         return { snapshot, published: false, reason: "auth" };
       }
       console.error("[cuts-admin] publish failed:", err);
@@ -1811,10 +1813,12 @@ function AdminPublishSettingsModal() {
   const [open, setOpen] = React.useState(false);
   const [settings, setSettings] = React.useState(() => loadPublishSettings());
   const [savedToast, setSavedToast] = React.useState(false);
+  const [authError, setAuthError] = React.useState(null);
 
   React.useEffect(() => {
-    const onOpen = () => {
+    const onOpen = (e) => {
       setSettings(loadPublishSettings());
+      setAuthError(e && e.detail && e.detail.reason === "auth" ? e.detail.status : null);
       setOpen(true);
     };
     window.addEventListener("cuts-publish-need-settings", onOpen);
@@ -1823,7 +1827,10 @@ function AdminPublishSettingsModal() {
 
   if (!open) return null;
 
-  const update = (k, v) => setSettings((s) => ({ ...s, [k]: v }));
+  const update = (k, v) => {
+    if (k === "token") setAuthError(null);
+    setSettings((s) => ({ ...s, [k]: v }));
+  };
 
   const save = () => {
     savePublishSettings(settings);
@@ -1845,6 +1852,15 @@ function AdminPublishSettingsModal() {
       React.createElement("h3", { className: "admin-modal__title" }, "הגדרות פרסום ללייב"),
       React.createElement("p", { className: "admin-modal__hint" },
         "הגדר פעם אחת. הכפתור 'העלאה ללייב' יעשה commit ישיר ל־GitHub והאתר הלייב יעדכן עצמו אוטומטית."
+      ),
+      authError && React.createElement("div", {
+        style: {
+          margin: "0 0 14px", padding: "11px 14px", borderRadius: 10,
+          background: "rgba(255,90,90,0.12)", border: "1px solid rgba(255,90,90,0.45)",
+          color: "#ffb3b3", fontSize: 13, lineHeight: 1.5,
+        }
+      },
+        `הפרסום נדחה (שגיאת ${authError}) — הטוקן פג תוקף או חסר לו הרשאת Contents: Read and write על הריפו. צור טוקן חדש בקישור למעלה, הדבק אותו כאן ושמור.`
       ),
       React.createElement("div", { className: "admin-field" },
         React.createElement("label", { className: "admin-field__label" }, "GitHub User / Org"),
