@@ -3427,9 +3427,9 @@ function InlineLeadForm({ form }) {
 function FinalCTA({ form, onCTAClick }) {
   const { values, setField, errors, touched, blur, submit, submitted } = form;
   return (
-    <section id="cta" style={{ padding: "56px 0" }}>
+    <section id="cta" style={{ padding: "88px 0", background: "linear-gradient(180deg, #151517 0%, #101012 100%)" }}>
       <div className="wrap" style={{ maxWidth: 1000 }}>
-        <div className="cq-stack cta-grid" style={{ display: "grid", gridTemplateColumns: "1.1fr 1fr", gap: 40, alignItems: "stretch" }}>
+        <div className="cq-stack cta-grid" style={{ display: "grid", gridTemplateColumns: "1.1fr 1fr", gap: 52, alignItems: "stretch" }}>
           {/* Left — recap */}
           <div className="cta-recap" style={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: 32 }}>
             <p className="mono" style={{ fontSize: 14, opacity: 0.7, margin: 0, letterSpacing: "0.06em" }}>
@@ -3469,10 +3469,10 @@ function FinalCTA({ form, onCTAClick }) {
             <div className="cta-availability" style={{
               marginTop: 8,
               position: "relative",
-              padding: "28px 32px",
-              borderRadius: 18,
-              background: "linear-gradient(135deg, rgba(255,213,0,0.08) 0%, rgba(255,213,0,0.02) 100%)",
-              border: "1px solid rgba(255,213,0,0.2)",
+              padding: "26px 30px",
+              borderRadius: 16,
+              background: "rgba(255,255,255,0.03)",
+              border: "1px solid rgba(255,255,255,0.09)",
               overflow: "hidden"
             }}>
               <div style={{
@@ -3543,14 +3543,14 @@ function FinalCTA({ form, onCTAClick }) {
             </div> :
 
           <form onSubmit={submit} style={{
-            background: "linear-gradient(180deg, #161616 0%, #0F0F0F 100%)",
-            border: "1px solid var(--line2)",
-            borderRadius: 24, padding: 0,
+            background: "#1B1B1E",
+            border: "1px solid rgba(255,255,255,0.1)",
+            borderRadius: 20, padding: 0,
             display: "flex", flexDirection: "column",
             alignSelf: "stretch",
             position: "relative",
             overflow: "hidden",
-            boxShadow: "0 30px 80px -30px rgba(0,0,0,0.6)"
+            boxShadow: "0 20px 50px -30px rgba(0,0,0,0.5)"
           }}>
               {/* Top yellow accent strip */}
               <div aria-hidden="true" style={{
