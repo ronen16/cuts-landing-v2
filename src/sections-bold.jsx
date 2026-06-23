@@ -3427,21 +3427,11 @@ function InlineLeadForm({ form }) {
 function FinalCTA({ form, onCTAClick }) {
   const { values, setField, errors, touched, blur, submit, submitted } = form;
   return (
-    <section id="cta" style={{ padding: "76px 0", position: "relative", overflow: "hidden" }}>
-      {/* ambient depth — warm glow behind the form, soft counter-glow opposite */}
-      <div aria-hidden="true" style={{
-        position: "absolute", top: "-12%", left: "-6%",
-        width: 640, height: 640,
-        background: "radial-gradient(circle, rgba(255,213,0,0.09), transparent 62%)",
-        filter: "blur(55px)", pointerEvents: "none", zIndex: 0
-      }} />
-      <div aria-hidden="true" style={{
-        position: "absolute", bottom: "-18%", right: "-8%",
-        width: 540, height: 540,
-        background: "radial-gradient(circle, rgba(255,213,0,0.045), transparent 65%)",
-        filter: "blur(65px)", pointerEvents: "none", zIndex: 0
-      }} />
-      <div className="wrap" style={{ maxWidth: 1000, position: "relative", zIndex: 1 }}>
+    <section id="cta" style={{
+      padding: "76px 0", position: "relative", overflow: "hidden",
+      background: "radial-gradient(640px 640px at 6% -8%, rgba(255,213,0,0.08), transparent 60%), radial-gradient(560px 560px at 98% 108%, rgba(255,213,0,0.04), transparent 62%)"
+    }}>
+      <div className="wrap" style={{ maxWidth: 1000 }}>
         <div className="cq-stack cta-grid" style={{ display: "grid", gridTemplateColumns: "1.1fr 1fr", gap: 48, alignItems: "stretch" }}>
           {/* Left — recap */}
           <div className="cta-recap" style={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: 32 }}>
