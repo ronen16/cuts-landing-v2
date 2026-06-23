@@ -3427,9 +3427,9 @@ function InlineLeadForm({ form }) {
 function FinalCTA({ form, onCTAClick }) {
   const { values, setField, errors, touched, blur, submit, submitted } = form;
   return (
-    <section id="cta" style={{ padding: "88px 0", background: "linear-gradient(180deg, #151517 0%, #101012 100%)" }}>
+    <section id="cta" style={{ padding: "56px 0" }}>
       <div className="wrap" style={{ maxWidth: 1000 }}>
-        <div className="cq-stack cta-grid" style={{ display: "grid", gridTemplateColumns: "1.1fr 1fr", gap: 52, alignItems: "stretch" }}>
+        <div className="cq-stack cta-grid" style={{ display: "grid", gridTemplateColumns: "1.1fr 1fr", gap: 40, alignItems: "stretch" }}>
           {/* Left — recap */}
           <div className="cta-recap" style={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: 32 }}>
             <p className="mono" style={{ fontSize: 14, opacity: 0.7, margin: 0, letterSpacing: "0.06em" }}>
@@ -3464,66 +3464,6 @@ function FinalCTA({ form, onCTAClick }) {
                 </li>
               )}
             </ul>
-
-            {submitted ? null :
-            <div className="cta-availability" style={{
-              marginTop: 8,
-              position: "relative",
-              padding: "26px 30px",
-              borderRadius: 16,
-              background: "rgba(255,255,255,0.03)",
-              border: "1px solid rgba(255,255,255,0.09)",
-              overflow: "hidden"
-            }}>
-              <div style={{
-                display: "inline-flex", alignItems: "center", gap: 8,
-                fontSize: 11, fontWeight: 700,
-                letterSpacing: "0.18em",
-                color: "var(--accent)",
-                marginBottom: 14,
-                textTransform: "uppercase"
-              }}>
-                <span style={{
-                  width: 6, height: 6, borderRadius: "50%",
-                  background: "var(--accent)",
-                  boxShadow: "0 0 0 4px rgba(255,213,0,0.2)",
-                  animation: "ctaPulse 2s ease-in-out infinite"
-                }}></span>
-                מקומות מוגבלים החודש
-              </div>
-
-              <h3 className="display" style={{
-                fontSize: 26, fontWeight: 800, margin: "0 0 8px",
-                lineHeight: 1.2, letterSpacing: "-0.01em"
-              }}>
-                3 מקומות פנויים לפודקאסטים חדשים
-              </h3>
-
-              <p style={{
-                fontSize: 15, lineHeight: 1.55,
-                opacity: 0.7, margin: "0 0 22px"
-              }}>
-                האולפן עובד בתפוסה מלאה. אנחנו פותחים סלוטים חדשים פעם ברבעון —
-                ההזדמנות הבאה: ינואר 2025.
-              </p>
-
-              <div style={{
-                display: "flex", alignItems: "center", gap: 16,
-                marginTop: 4, paddingTop: 18,
-                borderTop: "1px solid rgba(255,255,255,0.08)",
-                fontSize: 13, opacity: 0.55, fontWeight: 500
-              }}>
-                <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-                  <span style={{ color: "var(--accent)" }}>✓</span> ללא התחייבות
-                </span>
-                <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-                  <span style={{ color: "var(--accent)" }}>✓</span> שיחת אבחון 30 דק׳
-                </span>
-                <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-                  <span style={{ color: "var(--accent)" }}>✓</span> מענה תוך 24ש׳
-                </span>
-              </div>
-            </div>}
           </div>
 
           {/* Right — form (replaces image per CTA functionality) */}
@@ -3543,14 +3483,14 @@ function FinalCTA({ form, onCTAClick }) {
             </div> :
 
           <form onSubmit={submit} style={{
-            background: "#1B1B1E",
-            border: "1px solid rgba(255,255,255,0.1)",
-            borderRadius: 20, padding: 0,
+            background: "linear-gradient(180deg, #161616 0%, #0F0F0F 100%)",
+            border: "1px solid var(--line2)",
+            borderRadius: 24, padding: 0,
             display: "flex", flexDirection: "column",
             alignSelf: "stretch",
             position: "relative",
             overflow: "hidden",
-            boxShadow: "0 20px 50px -30px rgba(0,0,0,0.5)"
+            boxShadow: "0 30px 80px -30px rgba(0,0,0,0.6)"
           }}>
               {/* Top yellow accent strip */}
               <div aria-hidden="true" style={{
