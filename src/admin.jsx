@@ -8,7 +8,7 @@ const PUBLISH_SETTINGS_KEY = "cuts_publish_settings_v1";
 // It picks BOTH the preview width and which layer edits write to. Kept in its
 // own key so it never leaks into published content.
 const EDIT_MODE_KEY = "cuts_edit_mode_v1";
-const ADMIN_PASSWORD_HASH = "86e2b4e7068dff297e717358659f5e2ef4376e37019d3427bc68339869b9e224";
+const ADMIN_PASSWORD_HASH = "6ea411c181381f6143fd531421dd81a1828e716096f0ec32a607e1e1e385907d";
 const LOGO_CLICK_WINDOW_MS = 10000;
 const LOGO_CLICK_THRESHOLD = 5;
 const DEFAULT_PUBLISH_SETTINGS = {
