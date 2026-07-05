@@ -163,7 +163,7 @@ function Hero({ onCTAClick }) {
 
 
             <h1 className="display" style={{
-              fontSize: "clamp(30px, 4.2cqw, 68px)",
+              fontSize: "clamp(34px, 4.9cqw, 82px)",
               margin: 0,
               fontWeight: 900,
               lineHeight: 1.05,
@@ -245,7 +245,7 @@ function Hero({ onCTAClick }) {
 
           {/* HERO SHOWREEL — lazy Vimeo facade (nothing streams until play) */}
           <div style={{
-            width: "min(760px, 100%)",
+            width: "min(880px, 100%)",
             margin: "0 auto 40px",
             borderRadius: 16,
             overflow: "hidden",
