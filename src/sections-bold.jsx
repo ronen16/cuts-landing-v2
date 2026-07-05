@@ -272,12 +272,6 @@ function Hero({ onCTAClick }) {
               borderBottom: "1px solid rgba(0,0,0,0.18)",
               boxShadow: "inset 0 1px 0 rgba(255,255,255,0.4)"
             }}>
-              <span aria-hidden="true" style={{
-                width: 9, height: 9, borderRadius: "50%",
-                background: "#141414",
-                boxShadow: "0 0 0 4px rgba(20,20,20,0.18)",
-                animation: "heroRec 1.4s ease-in-out infinite"
-              }} />
               <span style={{
                 fontWeight: 900,
                 fontSize: "clamp(15px, 1.4cqw, 19px)",
