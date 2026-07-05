@@ -152,9 +152,15 @@ function Hero({ onCTAClick }) {
               width: 1, height: 14, background: "rgba(255,213,0,0.35)"
             }} />
             <span className="mono" style={{
-              fontWeight: 600, letterSpacing: "0.18em",
-              color: "rgba(255,213,0,0.85)", fontSize: "16px"
-            }}>שחם 8, פתח תקווה</span>
+              fontWeight: 600, letterSpacing: "0.06em",
+              color: "rgba(255,213,0,0.85)", fontSize: "15px"
+            }}>
+              רק לבעלי עסקים שעושים 30,000 ש״ח ומעלה בחודש
+              <span aria-hidden="true" style={{
+                marginInlineStart: 4, color: "var(--accent)",
+                fontSize: "0.85em", verticalAlign: "super"
+              }}>*</span>
+            </span>
           </div>
 
           {/* HEADLINE — refined cinematic */}
