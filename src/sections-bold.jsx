@@ -91,6 +91,10 @@ function VisualPlaceholder({ label = "תמונה או ויזואל שמחזק א
 
 // ---------- 02 · HERO ----------
 
+// Hero showreel video. Paste the Vimeo numeric ID here (e.g. "123456789")
+// once the clip is ready — empty string keeps the placeholder panel.
+const HERO_VIMEO_ID = "";
+
 function Hero({ onCTAClick }) {
   const [tick, setTick] = React.useState(0);
   React.useEffect(() => {
@@ -102,6 +106,10 @@ function Hero({ onCTAClick }) {
   const bars = React.useMemo(() => Array.from({ length: 64 }, (_, i) => i), []);
   // 140 bars for full-width waveform
   const wideBars = React.useMemo(() => Array.from({ length: 140 }, (_, i) => i), []);
+
+  // Hero showreel — lazy Vimeo facade. Set HERO_VIMEO_ID once the clip is ready;
+  // until then a placeholder panel renders and nothing streams.
+  const [heroVideoPlaying, setHeroVideoPlaying] = React.useState(false);
 
   return (
     <section style={{
@@ -239,6 +247,77 @@ function Hero({ onCTAClick }) {
             
             <span style={{ color: "var(--accent)", fontWeight: 700 }}></span>
           </p>
+
+          {/* HERO SHOWREEL — lazy Vimeo facade (nothing streams until play) */}
+          <div style={{
+            position: "relative",
+            width: "min(760px, 100%)",
+            margin: "0 auto 40px",
+            aspectRatio: "16 / 9",
+            borderRadius: 16,
+            overflow: "hidden",
+            border: "1px solid rgba(255,213,0,0.35)",
+            background: "radial-gradient(ellipse at center, rgba(255,213,0,0.08), rgba(0,0,0,0.55) 72%)",
+            boxShadow: "0 24px 80px rgba(0,0,0,0.5), 0 0 50px rgba(255,213,0,0.12)"
+          }}>
+            {/* corner brackets — viewfinder */}
+            {[
+            { top: 14, right: 14, brT: 3, brR: 3 },
+            { top: 14, left: 14, brT: 3, brL: 3 },
+            { bottom: 14, right: 14, brB: 3, brR: 3 },
+            { bottom: 14, left: 14, brB: 3, brL: 3 }].
+            map((p, i) =>
+            <span key={i} aria-hidden="true" style={{
+              position: "absolute", zIndex: 3,
+              top: p.top, right: p.right, bottom: p.bottom, left: p.left,
+              width: 26, height: 26,
+              borderTop: p.brT ? "3px solid var(--accent)" : "none",
+              borderRight: p.brR ? "3px solid var(--accent)" : "none",
+              borderBottom: p.brB ? "3px solid var(--accent)" : "none",
+              borderLeft: p.brL ? "3px solid var(--accent)" : "none",
+              filter: "drop-shadow(0 0 8px rgba(255,213,0,0.75))",
+              pointerEvents: "none"
+            }} />
+            )}
+
+            {HERO_VIMEO_ID && heroVideoPlaying ?
+            <iframe
+              src={`https://player.vimeo.com/video/${HERO_VIMEO_ID}?autoplay=1&title=0&byline=0&portrait=0`}
+              title="Cuts showreel"
+              allow="autoplay; fullscreen; picture-in-picture"
+              allowFullScreen
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }} /> :
+
+            <button
+              type="button"
+              onClick={() => HERO_VIMEO_ID && setHeroVideoPlaying(true)}
+              aria-label={HERO_VIMEO_ID ? "נגן סרטון" : "סרטון בקרוב"}
+              style={{
+                position: "absolute", inset: 0,
+                display: "flex", flexDirection: "column",
+                alignItems: "center", justifyContent: "center", gap: 16,
+                background: "transparent", border: "none",
+                cursor: HERO_VIMEO_ID ? "pointer" : "default",
+                color: "var(--accent)"
+              }}>
+              <span style={{
+                width: 78, height: 78, borderRadius: "50%",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                background: "rgba(255,213,0,0.14)",
+                border: "2px solid var(--accent)",
+                boxShadow: "0 0 30px rgba(255,213,0,0.35)"
+              }}>
+                <svg width="30" height="34" viewBox="0 0 30 34" fill="none" aria-hidden="true">
+                  <path d="M4 3.5 26 17 4 30.5V3.5Z" fill="var(--accent)" />
+                </svg>
+              </span>
+              <span className="mono" style={{
+                fontSize: 13, fontWeight: 800, letterSpacing: "0.24em",
+                opacity: 0.85
+              }}>{HERO_VIMEO_ID ? "צפו בסרטון" : "סרטון בקרוב"}</span>
+            </button>
+            }
+          </div>
 
           {/* CTA — centered */}
           <div style={{
