@@ -140,26 +140,15 @@ function Hero({ onCTAClick }) {
             borderRadius: 999,
             marginBottom: 36
           }}>
-            <span style={{
-              display: "inline-flex", alignItems: "center", gap: 8
-            }}>
-              <span className="mono" style={{
-                fontSize: 11, fontWeight: 700, letterSpacing: "0.22em",
-                color: "var(--accent)"
-              }}>LIVE</span>
-            </span>
-            <span style={{
-              width: 1, height: 14, background: "rgba(255,213,0,0.35)"
-            }} />
             <span className="mono" style={{
               fontWeight: 600, letterSpacing: "0.06em",
               color: "rgba(255,213,0,0.85)", fontSize: "15px"
             }}>
-              רק לבעלי עסקים שעושים 30,000 ש״ח ומעלה בחודש
               <span aria-hidden="true" style={{
-                marginInlineStart: 4, color: "var(--accent)",
+                marginInlineEnd: 4, color: "var(--accent)",
                 fontSize: "0.85em", verticalAlign: "super"
               }}>*</span>
+              רק לבעלי עסקים שעושים 30,000 ש״ח ומעלה בחודש
             </span>
           </div>
 
