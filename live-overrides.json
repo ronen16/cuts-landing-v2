@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "publishedAt": "2026-06-23T14:49:14.257Z",
+  "publishedAt": "2026-07-05T16:35:50.951Z",
   "overrides": {
     "sec:how-it-works>button[0]#h:d901835d": "👁 הצג",
     "sec:services>section[0]>div[0]>div[1]>div[0]>h3[0]#h:a5c90c46": "צילום ותאורה מקצועית",
@@ -142,7 +142,8 @@
     "sec:faq>section[0]>div[0]>h2[0]#h:4e5b00e0": "שאלות <span style=\"color: var(--accent);\">נפוצות</span>",
     "sec:faq>section[0]>div[0]>div[0]>div[0]>div[1]>div[0]>p[0]#h:f5485250": "זו נקודת ההתחלה של 90% מהלקוחות שלנו. אנחנו בונים איתך פורמט שיושב בדיוק על הקול הטבעי שלך, עם מבנה ברור לכל פרק — אתה לא צריך להמציא כלום. תוך 2–3 פרקים זה יהיה לך נוח כמו לדבר בפגישת לקוח.",
     "sec:faq>section[0]>div[0]>div[0]>div[0]>div[0]>div[0]>span[0]#h:00000601": "01",
-    "sec:hero>section[0]>div[1]>div[0]>p[0]#h:e69b5aad": "פעם הייתם צריכים להסביר מי אתם בכל שיחת מכירה, עם פודקאסט — הם כבר יודעים.<span style=\"color: var(--accent); font-weight: 700;\"></span>"
+    "sec:hero>section[0]>div[1]>div[0]>p[0]#h:e69b5aad": "פעם הייתם צריכים להסביר מי אתם בכל שיחת מכירה, עם פודקאסט — הם כבר יודעים.<span style=\"color: var(--accent); font-weight: 700;\"></span>",
+    "sec:social-proof>section[0]>div[1]>div[0]>h2[0]>span[1]>span[0]#h:31e29896": "זה מה שהלקוחות שלנו מספרים.<span aria-hidden=\"true\" style=\"position: absolute; left: 3%; right: 3%; bottom: -0.06em; height: 5px; background: linear-gradient(90deg, transparent, var(--accent) 15%, var(--accent) 85%, transparent); opacity: 0.55; border-radius: 3px; filter: blur(0.5px);\"></span>"
   },
   "overridesDesktop": {
     "sec:services>section[0]>div[0]>div[1]>div[2]>p[0]>blockquote[0]>p[0]#h:7f4c59a1": "מכל פרק אנחנו נוציא את הרילסים הכי טובים ונהפוך את הפודקאסט שלכם למכונת תוכן שתמשיך להביא לכם עוקבים, חשיפה, וקהל שסומך עליכם.",
@@ -248,14 +249,19 @@
       "role": "מנחה פודקאסט \"מהצד השני״"
     },
     {
-      "vimeoId": "1203861978",
-      "name": "דקל עמור",
-      "role": "יוצרת תוכן"
+      "vimeoId": "1190079774",
+      "name": "רון לנדסמן",
+      "role": "מנחה ״הפודקאסט של לנדסמן״"
     },
     {
       "vimeoId": "1190079851",
       "name": "רם יצחק שדה",
       "role": "מנחה פודקאסט ״מדברים מכירות״"
+    },
+    {
+      "vimeoId": "1203861978",
+      "name": "דקל עמור",
+      "role": "יוצרת תוכן"
     },
     {
       "vimeoId": "1190079801",
@@ -271,11 +277,6 @@
       "vimeoId": "1198422643",
       "name": "יעל פרנק",
       "role": "מנחת ״סופר פודקאסט״"
-    },
-    {
-      "vimeoId": "1190079774",
-      "name": "רון לנדסמן",
-      "role": "מנחה ״הפודקאסט של לנדסמן״"
     }
   ],
   "podcastOrder": [
