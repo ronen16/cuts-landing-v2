@@ -256,16 +256,33 @@ function Hero({ onCTAClick }) {
 
           {/* HERO SHOWREEL — lazy Vimeo facade (nothing streams until play) */}
           <div style={{
-            position: "relative",
             width: "min(760px, 100%)",
             margin: "0 auto 40px",
-            aspectRatio: "16 / 9",
             borderRadius: 16,
             overflow: "hidden",
             border: "1px solid rgba(255,213,0,0.35)",
-            background: "radial-gradient(ellipse at center, rgba(255,213,0,0.08), rgba(0,0,0,0.55) 72%)",
             boxShadow: "0 24px 80px rgba(0,0,0,0.5), 0 0 50px rgba(255,213,0,0.12)"
           }}>
+            {/* banner ribbon */}
+            <div style={{
+              display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
+              padding: "12px 16px",
+              background: "var(--accent)",
+              color: "#111",
+              fontWeight: 900,
+              fontSize: "clamp(15px, 1.4cqw, 19px)",
+              letterSpacing: "0.01em"
+            }}>
+              <span>צפו עכשיו בסרטון!</span>
+              <span aria-hidden="true">🔊</span>
+            </div>
+
+            {/* video panel */}
+            <div style={{
+              position: "relative",
+              aspectRatio: "16 / 9",
+              background: "radial-gradient(ellipse at center, rgba(255,213,0,0.08), rgba(0,0,0,0.55) 72%)"
+            }}>
             {/* corner brackets — viewfinder */}
             {[
             { top: 14, right: 14, brT: 3, brR: 3 },
@@ -323,6 +340,7 @@ function Hero({ onCTAClick }) {
               }}>{HERO_VIMEO_ID ? "צפו בסרטון" : "סרטון בקרוב"}</span>
             </button>
             }
+            </div>
           </div>
 
           {/* CTA — centered */}
