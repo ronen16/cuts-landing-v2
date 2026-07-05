@@ -168,7 +168,7 @@ function Hero({ onCTAClick }) {
 
 
             <h1 className="display" style={{
-              fontSize: "clamp(44px, 6.6cqw, 112px)",
+              fontSize: "clamp(30px, 4.2cqw, 68px)",
               margin: 0,
               fontWeight: 900,
               lineHeight: 1.05,
