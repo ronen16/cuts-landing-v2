@@ -3,7 +3,19 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "cleanUrls": true,
+  "rewrites": [
+    { "source": "/a", "destination": "/index.html" },
+    { "source": "/b", "destination": "/index.html" },
+    { "source": "/c", "destination": "/index.html" },
+    { "source": "/d", "destination": "/index.html" }
+  ],
   "headers": [
+    {
+      "source": "/(a|b|c|d)",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate, max-age=0" }
+      ]
+    },
     {
       "source": "/assets/(.*)",
       "headers": [

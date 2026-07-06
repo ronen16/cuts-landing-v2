@@ -96,11 +96,14 @@ export default async function handler(req, res) {
   // included when the frontend captured real attribution from the URL —
   // otherwise they stay empty in Monday so it's visually clear the lead
   // didn't come from a tracked campaign.
+  // The source label carries the A/B variant (a/b/c/d → "דף נחיתה A/B/C/D") so
+  // leads can be filtered/counted per landing variant right on the board.
+  const variant = String(body.ab_variant || "a").toUpperCase();
   const columnValues = {
     [COL.platform]: String(body.platform || "אורגני"),
     [COL.phone]:    { phone: normalizePhone(phoneRaw), countryShortName: "IL" },
     [COL.date]:     nowInJerusalem(),
-    [COL.source]:   { label: "דף נחיתה" },
+    [COL.source]:   { label: `דף נחיתה ${variant}` },
   };
   const adName       = String(body.adName       || "").trim();
   const adsetName    = String(body.adsetName    || "").trim();

@@ -32,6 +32,9 @@ function App() {
     let cancelled = false;
     (async () => {
       const settings = window.__cutsLoadPublishSettings();
+      if (window.__cutsGetVariant && window.__cutsVariantPath) {
+        settings.path = window.__cutsVariantPath(window.__cutsGetVariant());
+      }
       const data = await window.__cutsFetchLiveOverrides(settings);
       if (!cancelled && data) setLiveOverrides(data);
     })();

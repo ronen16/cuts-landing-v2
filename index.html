@@ -2,6 +2,10 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="utf-8" />
+<!-- Variant pages (/a /b /c /d) are served from index.html via Vercel rewrites;
+     a root base keeps every relative asset (styles.css, src/*.js, assets/*)
+     resolving from "/" instead of "/b/…". -->
+<base href="/" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Cuts — אולפן פודקאסטים בפתח תקווה</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">

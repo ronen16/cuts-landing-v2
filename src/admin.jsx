@@ -103,12 +103,19 @@ function loadAdminState() {
 }
 
 function loadPublishSettings() {
+  // The publish/read path always follows the variant in the URL, so editing on
+  // /b reads and writes live-overrides-b.json. It overrides any stored path so a
+  // stale localStorage value can never point a variant at the wrong file.
+  const variantPath =
+    typeof window !== "undefined" && window.__cutsGetVariant && window.__cutsVariantPath
+      ? window.__cutsVariantPath(window.__cutsGetVariant())
+      : DEFAULT_PUBLISH_SETTINGS.path;
   try {
     const raw = localStorage.getItem(PUBLISH_SETTINGS_KEY);
-    if (!raw) return { ...DEFAULT_PUBLISH_SETTINGS };
-    return { ...DEFAULT_PUBLISH_SETTINGS, ...JSON.parse(raw) };
+    const stored = raw ? JSON.parse(raw) : {};
+    return { ...DEFAULT_PUBLISH_SETTINGS, ...stored, path: variantPath };
   } catch (e) {
-    return { ...DEFAULT_PUBLISH_SETTINGS };
+    return { ...DEFAULT_PUBLISH_SETTINGS, path: variantPath };
   }
 }
 
@@ -1953,7 +1960,19 @@ function AdminPanel({ admin }) {
     )
   );
 
+  const activeVariant = (window.__cutsGetVariant && window.__cutsGetVariant()) || "a";
   const toolbar = open && React.createElement("div", { className: "admin-toolbar", dir: "rtl" },
+    React.createElement("div", { className: "admin-toolbar__modelabel" }, "עורך גרסה:"),
+    ...["a", "b", "c", "d"].map((v) =>
+      React.createElement(ToolbarRow, {
+        key: `variant-${v}`,
+        icon: v.toUpperCase(),
+        label: `גרסה ${v.toUpperCase()}`,
+        active: activeVariant === v,
+        onClick: () => { if (activeVariant !== v) window.location.assign("/" + v); }
+      })
+    ),
+    React.createElement("div", { className: "admin-toolbar__sep" }),
     React.createElement(ToolbarRow, {
       icon: "✏️",
       label: "עריכת טקסט",

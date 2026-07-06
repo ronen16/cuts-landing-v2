@@ -30,6 +30,26 @@ const LOGO_SRC = (typeof window !== "undefined" && window.__resources && window.
   } catch (_) {}
 })();
 
+// A/B variant is decided by the URL path: /a /b /c /d (root "/" = the "a"
+// control). Each variant loads its own live-overrides file so the same deploy
+// serves four independently-edited pages. No randomness — the URL is the truth.
+const AB_VARIANTS = ["a", "b", "c", "d"];
+
+function getVariant() {
+  if (typeof window === "undefined") return "a";
+  const m = window.location.pathname.match(/^\/([abcd])(?:\/|$)/);
+  return m ? m[1] : "a";
+}
+
+function variantOverridePath(v) {
+  return v === "a" ? "live-overrides.json" : `live-overrides-${v}.json`;
+}
+
+if (typeof window !== "undefined") {
+  window.__cutsGetVariant = getVariant;
+  window.__cutsVariantPath = variantOverridePath;
+}
+
 // Read whatever we captured (if anything).
 function getAttribution() {
   if (typeof window === "undefined" || !window.sessionStorage) return null;
@@ -267,6 +287,7 @@ function useForm() {
           platform:     platformFromAttribution(attr),
           dateCreated:  new Date().toISOString(),
           source:       "cuts.co.il-landing",
+          ab_variant:   getVariant(),
           // Full attribution snapshot for traceability / future analytics.
           attribution:  attr || null,
         };
