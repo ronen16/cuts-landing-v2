@@ -411,6 +411,9 @@ function Hero({ onCTAClick }) {
                 position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover"
               }} />
               }
+              {HERO_VIDEO_POSTER && !heroVideoPlaying &&
+              <span aria-hidden="true" className="hero-poster-shine" />
+              }
               {HERO_VIDEO_POSTER && !HERO_POSTER_BAKED &&
               <React.Fragment>
                 {/* vignette — draw the eye to the presenter */}
