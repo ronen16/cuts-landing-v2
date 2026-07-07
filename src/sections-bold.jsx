@@ -95,6 +95,10 @@ function VisualPlaceholder({ label = "תמונה או ויזואל שמחזק א
 // in the Vimeo URL:  https://vimeo.com/123456789  →  "123456789".
 // Empty string keeps the placeholder panel.
 const HERO_VIMEO_ID = "1207742478";
+// Privacy hash for unlisted videos. From the Vimeo Embed code the src looks like
+// player.vimeo.com/video/ID?h=XXXXXXXX — paste that XXXXXXXX here. Public videos
+// leave this empty.
+const HERO_VIMEO_HASH = "";
 
 // Per-variant hero headline (white lead line + accent highlight line). Only
 // variants listed here get the clean variant headline; the rest fall back to
@@ -371,7 +375,7 @@ function Hero({ onCTAClick }) {
 
             {HERO_VIMEO_ID && heroVideoPlaying ?
             <iframe
-              src={`https://player.vimeo.com/video/${HERO_VIMEO_ID}?autoplay=1&title=0&byline=0&portrait=0`}
+              src={`https://player.vimeo.com/video/${HERO_VIMEO_ID}?autoplay=1&title=0&byline=0&portrait=0${HERO_VIMEO_HASH ? `&h=${HERO_VIMEO_HASH}` : ""}`}
               title="Cuts showreel"
               allow="autoplay; fullscreen; picture-in-picture"
               allowFullScreen
