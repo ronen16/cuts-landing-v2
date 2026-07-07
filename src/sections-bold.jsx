@@ -102,6 +102,9 @@ const HERO_VIMEO_HASH = "";
 // Custom thumbnail poster (a clean still of the presenter, no baked-in text).
 // When set, the facade becomes a real thumbnail: image + big "צפו בסרטון" +
 // play button. Empty falls back to the plain accent panel.
+// RESTORE POINT: the current thumbnail design (purple still + overlay) is saved
+// at git tag `thumbnail-v1`. To go back:  git checkout thumbnail-v1 -- \
+//   src/sections-bold.jsx styles.css build.mjs assets/hero-video-poster.jpg
 const HERO_VIDEO_POSTER = "assets/hero-video-poster.jpg";
 
 // Per-variant hero headline (white lead line + accent highlight line). Only
