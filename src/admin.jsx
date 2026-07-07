@@ -672,6 +672,20 @@ function useAdminMode() {
         layerDesktop: liveLayerDesktop,
         layerMobile: liveLayerMobile,
       };
+      // "Save to all variants" mode: push the same payload to every variant's
+      // overrides file so shared content edits land on all 4 pages at once.
+      // (Per-variant headlines live in code, not overrides, so they're safe.)
+      let editAll = false;
+      try { editAll = localStorage.getItem("cuts_edit_all_v1") === "1"; } catch (_) {}
+      if (editAll) {
+        const paths = ["live-overrides.json", "live-overrides-b.json", "live-overrides-c.json", "live-overrides-d.json"];
+        let firstCommit = null;
+        for (const p of paths) {
+          const c = await pushToGitHub({ ...settings, path: p }, payload);
+          if (!firstCommit) firstCommit = c;
+        }
+        return { snapshot, published: true, all: true, commitUrl: firstCommit && firstCommit.commit && firstCommit.commit.html_url };
+      }
       const commit = await pushToGitHub(settings, payload);
       return { snapshot, published: true, commitUrl: commit.commit && commit.commit.html_url };
     } catch (err) {
@@ -1940,8 +1954,17 @@ window.AdminPublishSettingsModal = AdminPublishSettingsModal;
 
 // ---------- AdminPanel UI ----------
 
+const EDIT_ALL_KEY = "cuts_edit_all_v1";
+
 function AdminPanel({ admin }) {
   const [open, setOpen] = React.useState(false);
+  const [editAll, setEditAll] = React.useState(() => {
+    try { return localStorage.getItem(EDIT_ALL_KEY) === "1"; } catch (_) { return false; }
+  });
+  const setEditAllPersist = React.useCallback((on) => {
+    try { localStorage.setItem(EDIT_ALL_KEY, on ? "1" : "0"); } catch (_) {}
+    setEditAll(on);
+  }, []);
 
   if (!admin.unlocked) return null;
 
@@ -1962,23 +1985,40 @@ function AdminPanel({ admin }) {
 
   const activeVariant = (window.__cutsGetVariant && window.__cutsGetVariant()) || "a";
   const toolbar = open && React.createElement("div", { className: "admin-toolbar", dir: "rtl" },
-    React.createElement("div", { className: "admin-toolbar__modelabel" }, "עורך גרסה:"),
+    React.createElement("div", { className: "admin-toolbar__modelabel" },
+      editAll ? "עורך: כל הגרסאות" : "עורך גרסה:"),
     React.createElement("div", { style: { display: "flex", gap: 6, padding: "0 6px 2px" } },
-      ...["a", "b", "c", "d"].map((v) =>
-        React.createElement("button", {
+      ...["a", "b", "c", "d"].map((v) => {
+        const isCurrent = activeVariant === v;
+        const filled = !editAll && isCurrent;
+        return React.createElement("button", {
           key: `variant-${v}`,
-          onClick: () => { if (activeVariant !== v) window.location.assign("/" + v); },
+          onClick: () => {
+            setEditAllPersist(false);
+            if (!isCurrent) window.location.assign("/" + v);
+          },
           style: {
             flex: 1, appearance: "none", cursor: "pointer",
-            border: activeVariant === v ? "1px solid var(--accent)" : "1px solid rgba(255,255,255,0.15)",
-            background: activeVariant === v ? "var(--accent)" : "transparent",
-            color: activeVariant === v ? "#0A0A0A" : "rgba(255,255,255,0.8)",
-            fontWeight: activeVariant === v ? 800 : 600,
+            border: (filled || (editAll && isCurrent)) ? "1px solid var(--accent)" : "1px solid rgba(255,255,255,0.15)",
+            background: filled ? "var(--accent)" : "transparent",
+            color: filled ? "#0A0A0A" : "rgba(255,255,255,0.8)",
+            fontWeight: filled ? 800 : 600,
             borderRadius: 8, padding: "6px 0", fontSize: 13, fontFamily: "inherit"
           }
-        }, v.toUpperCase())
-      )
+        }, v.toUpperCase());
+      })
     ),
+    React.createElement("button", {
+      onClick: () => setEditAllPersist(!editAll),
+      style: {
+        margin: "2px 6px 0", appearance: "none", cursor: "pointer",
+        border: editAll ? "1px solid var(--accent)" : "1px solid rgba(255,255,255,0.15)",
+        background: editAll ? "var(--accent)" : "transparent",
+        color: editAll ? "#0A0A0A" : "rgba(255,255,255,0.8)",
+        fontWeight: editAll ? 800 : 600,
+        borderRadius: 8, padding: "7px 0", fontSize: 13, fontFamily: "inherit"
+      }
+    }, editAll ? "✓ שומר לכל הגרסאות" : "שמור לכל הגרסאות"),
     React.createElement("div", { className: "admin-toolbar__sep" }),
     React.createElement(ToolbarRow, {
       icon: "✏️",
