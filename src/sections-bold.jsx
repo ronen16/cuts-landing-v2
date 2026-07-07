@@ -100,8 +100,8 @@ const HERO_VIMEO_ID = "";
 // the original multi-line headline so untouched variants stay identical.
 const HERO_HEADLINES = {
   a: {
-    white: "הלקוחות הכי טובים שלך,",
-    accent: "מכירים אותך וסומכים עלייך עוד לפני שדיברתם",
+    lines: ["הלקוחות הכי טובים שלך", "מכירים אותך וסומכים עלייך"],
+    accent: "עוד לפני שדיברתם",
   },
 };
 
@@ -186,7 +186,9 @@ function Hero({ onCTAClick }) {
             }}>
               {HERO_HEADLINES[heroVariant] ? (
               <React.Fragment>
-                <span style={{ display: "block", marginBottom: 10 }}>{HERO_HEADLINES[heroVariant].white}</span>
+                {HERO_HEADLINES[heroVariant].lines.map((line, i) =>
+                  <span key={i} style={{ display: "block", marginBottom: 10 }}>{line}</span>
+                )}
                 <span style={{ display: "block" }}>
                   <span style={{
                     color: "var(--accent)",
