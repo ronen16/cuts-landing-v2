@@ -102,10 +102,13 @@ const HERO_VIMEO_HASH = "";
 // Custom thumbnail poster (a clean still of the presenter, no baked-in text).
 // When set, the facade becomes a real thumbnail: image + big "צפו בסרטון" +
 // play button. Empty falls back to the plain accent panel.
-// RESTORE POINT: the current thumbnail design (purple still + overlay) is saved
-// at git tag `thumbnail-v1`. To go back:  git checkout thumbnail-v1 -- \
+// RESTORE POINT: the previous thumbnail design (purple still + HTML overlay) is
+// saved at git tag `thumbnail-v1`. To go back:  git checkout thumbnail-v1 -- \
 //   src/sections-bold.jsx styles.css build.mjs assets/hero-video-poster.jpg
 const HERO_VIDEO_POSTER = "assets/hero-video-poster.jpg";
+// True when the poster already has the title + play button baked into the image.
+// Baked posters render clean (no HTML text/play/gradient/banner/corners on top).
+const HERO_POSTER_BAKED = true;
 
 // Per-variant hero headline (white lead line + accent highlight line). Only
 // variants listed here get the clean variant headline; the rest fall back to
@@ -338,8 +341,8 @@ function Hero({ onCTAClick }) {
             border: "1px solid rgba(255,213,0,0.35)",
             boxShadow: "0 24px 80px rgba(0,0,0,0.5), 0 0 50px rgba(255,213,0,0.12)"
           }}>
-            {/* banner ribbon — hidden once the video is playing */}
-            {!heroVideoPlaying &&
+            {/* banner ribbon — hidden while playing, and when the poster is baked */}
+            {!heroVideoPlaying && !(HERO_VIDEO_POSTER && HERO_POSTER_BAKED) &&
             <div style={{
               display: "flex", alignItems: "center", justifyContent: "center", gap: 12,
               padding: "13px 20px",
@@ -362,8 +365,8 @@ function Hero({ onCTAClick }) {
               aspectRatio: "16 / 9",
               background: "radial-gradient(ellipse at center, rgba(255,213,0,0.08), rgba(0,0,0,0.55) 72%)"
             }}>
-            {/* corner brackets — viewfinder (hidden once the video is playing) */}
-            {!heroVideoPlaying && [
+            {/* corner brackets — viewfinder (hidden while playing / baked poster) */}
+            {!heroVideoPlaying && !(HERO_VIDEO_POSTER && HERO_POSTER_BAKED) && [
             { top: 14, right: 14, brT: 3, brR: 3 },
             { top: 14, left: 14, brT: 3, brL: 3 },
             { bottom: 14, right: 14, brB: 3, brR: 3 },
@@ -406,7 +409,7 @@ function Hero({ onCTAClick }) {
                 position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover"
               }} />
               }
-              {HERO_VIDEO_POSTER &&
+              {HERO_VIDEO_POSTER && !HERO_POSTER_BAKED &&
               <React.Fragment>
                 {/* vignette — draw the eye to the presenter */}
                 <span aria-hidden="true" style={{
@@ -427,6 +430,7 @@ function Hero({ onCTAClick }) {
                 }} />
               </React.Fragment>
               }
+              {!HERO_POSTER_BAKED &&
               <span style={{
                 position: "absolute", inset: 0,
                 display: "flex", alignItems: "center", justifyContent: "center"
@@ -447,7 +451,8 @@ function Hero({ onCTAClick }) {
                   </svg>
                 </span>
               </span>
-              {HERO_VIDEO_POSTER ?
+              }
+              {!HERO_POSTER_BAKED && (HERO_VIDEO_POSTER ?
               <span className="display" style={{
                 position: "absolute", left: 0, right: 0, bottom: "7%",
                 textAlign: "center", color: "#fff", fontWeight: 900,
@@ -460,7 +465,7 @@ function Hero({ onCTAClick }) {
                 position: "absolute", left: 0, right: 0, bottom: "13%",
                 textAlign: "center",
                 fontSize: 13, fontWeight: 800, letterSpacing: "0.24em", opacity: 0.85
-              }}>{HERO_VIMEO_ID ? "צפו בסרטון" : "סרטון בקרוב"}</span>
+              }}>{HERO_VIMEO_ID ? "צפו בסרטון" : "סרטון בקרוב"}</span>)
               }
             </button>
             }
