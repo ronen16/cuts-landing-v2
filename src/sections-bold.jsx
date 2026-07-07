@@ -405,7 +405,9 @@ function Hero({ onCTAClick }) {
                 color: "var(--accent)"
               }}>
               {HERO_VIDEO_POSTER &&
-              <img src={HERO_VIDEO_POSTER} alt="" className="hero-poster-img" style={{
+              <img src={HERO_VIDEO_POSTER} alt=""
+                className={HERO_POSTER_BAKED ? "hero-poster-img hero-poster-img--baked" : "hero-poster-img"}
+                style={{
                 position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover"
               }} />
               }
