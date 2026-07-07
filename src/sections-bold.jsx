@@ -102,7 +102,7 @@ const HERO_VIMEO_HASH = "";
 // Custom thumbnail poster (a clean still of the presenter, no baked-in text).
 // When set, the facade becomes a real thumbnail: image + big "צפו בסרטון" +
 // play button. Empty falls back to the plain accent panel.
-const HERO_VIDEO_POSTER = "";
+const HERO_VIDEO_POSTER = "assets/hero-video-poster.jpg";
 
 // Per-variant hero headline (white lead line + accent highlight line). Only
 // variants listed here get the clean variant headline; the rest fall back to

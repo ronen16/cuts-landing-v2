@@ -112,6 +112,7 @@ async function run() {
 
   // 3. Only the assets actually used (skip ~4.8MB of unused PNGs).
   await copy("assets/cuts-logo.png", path.join(DIST, "assets", "cuts-logo.png"));
+  try { await copy("assets/hero-video-poster.jpg", path.join(DIST, "assets", "hero-video-poster.jpg")); } catch (_) {}
   for (const w of ["Light", "Regular", "Bold", "Black"]) {
     await copy(
       `assets/fonts/FbTypograph2-${w}.otf`,
