@@ -1,5 +1,23 @@
 // Main app: BOLD variation only + tweaks integration
 
+// Floating size control shown when a headline (or any element) is clicked in
+// move mode. Scales the element's font-size live and persists via elementOffsets.
+function ScaleControl({ scale, onScale, onClose }) {
+  const pct = Math.round(scale * 100);
+  const clamp = (v) => Math.min(3, Math.max(0.4, v));
+  const step = (factor) => onScale(Math.round(clamp(scale * factor) * 100) / 100);
+  return (
+    <div className="scale-control" dir="rtl">
+      <span className="scale-control__label">גודל</span>
+      <button type="button" className="scale-control__btn" onClick={() => step(1 / 1.08)} aria-label="הקטן">−</button>
+      <span className="scale-control__val">{pct}%</span>
+      <button type="button" className="scale-control__btn" onClick={() => step(1.08)} aria-label="הגדל">+</button>
+      <button type="button" className="scale-control__reset" onClick={() => onScale(1)}>איפוס</button>
+      <button type="button" className="scale-control__close" onClick={onClose} aria-label="סגור">✕</button>
+    </div>
+  );
+}
+
 function App() {
   const [tweaks, setTweaks] = React.useState(window.TWEAK_DEFAULTS);
   const [tweaksOpen, setTweaksOpen] = React.useState(false);
@@ -118,12 +136,18 @@ function App() {
     return window.__cutsAttachInlineEditing(rootEl, admin.editingText, admin.updateOverride);
   }, [admin.editingText, admin.updateOverride]);
 
-  // Wire element-move dragging
+  // Wire element-move dragging. A click without a drag selects the element for
+  // scaling (the floating size control below acts on it).
+  const [scaleTarget, setScaleTarget] = React.useState(null);
   React.useEffect(() => {
     if (!window.__cutsAttachMoveListeners) return;
     const rootEl = document.getElementById("root");
-    return window.__cutsAttachMoveListeners(rootEl, admin.movingElements, admin.updateElementOffset);
+    return window.__cutsAttachMoveListeners(
+      rootEl, admin.movingElements, admin.updateElementOffset,
+      (id) => setScaleTarget({ id })
+    );
   }, [admin.movingElements, admin.updateElementOffset]);
+  React.useEffect(() => { if (!admin.movingElements) setScaleTarget(null); }, [admin.movingElements]);
 
   // Apply saved element offsets to the DOM on render (live + local).
   const mergedOffsets = React.useMemo(() => {
@@ -247,6 +271,13 @@ function App() {
         <Variant onCTAClick={onCTAClick} form={form} admin={effectiveAdmin} />
       </div>
       <TweaksPanel open={tweaksOpen} tweaks={tweaks} setTweaks={setTweaks} />
+      {admin.movingElements && scaleTarget &&
+        <ScaleControl
+          scale={(effOffsets[scaleTarget.id] && effOffsets[scaleTarget.id].s) || 1}
+          onScale={(s) => admin.updateElementScale(scaleTarget.id, s)}
+          onClose={() => setScaleTarget(null)}
+        />
+      }
       {AdminPanel && <AdminPanel admin={admin} />}
       {AdminPasswordModal && <AdminPasswordModal />}
       {AdminVersionsModal && <AdminVersionsModal admin={admin} />}

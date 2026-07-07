@@ -520,18 +520,27 @@ function useAdminMode() {
     setLayeredField("sectionOrder", order);
   }, [setLayeredField]);
 
-  const updateElementOffset = React.useCallback((id, x, y) => {
+  // Merge a partial patch ({x,y} for a move, {s} for a scale) into an element's
+  // offset entry in the layer that matches the current edit mode, preserving the
+  // fields the patch doesn't touch (so moving keeps the scale and vice-versa).
+  const patchElementEntry = React.useCallback((id, patch) => {
     const mode = editModeRef.current;
+    const merge = (prev) => {
+      const cur = prev[id] || { x: 0, y: 0 };
+      return { ...prev, [id]: { ...cur, ...patch } };
+    };
     if (mode === "mobile") {
-      setElementOffsetsMobile((prev) => ({ ...prev, [id]: { x, y } }));
+      setElementOffsetsMobile(merge);
     } else if (mode === "desktop") {
-      setElementOffsetsDesktop((prev) => ({ ...prev, [id]: { x, y } }));
+      setElementOffsetsDesktop(merge);
     } else {
-      setElementOffsets((prev) => ({ ...prev, [id]: { x, y } }));
+      setElementOffsets(merge);
       setElementOffsetsDesktop((prev) => { if (!(id in prev)) return prev; const n = { ...prev }; delete n[id]; return n; });
       setElementOffsetsMobile((prev) => { if (!(id in prev)) return prev; const n = { ...prev }; delete n[id]; return n; });
     }
   }, []);
+  const updateElementOffset = React.useCallback((id, x, y) => patchElementEntry(id, { x, y }), [patchElementEntry]);
+  const updateElementScale = React.useCallback((id, s) => patchElementEntry(id, { s }), [patchElementEntry]);
 
   const toggleSectionHidden = React.useCallback((id) => toggleLayeredHidden("hiddenSections", id), [toggleLayeredHidden]);
 
@@ -821,6 +830,7 @@ function useAdminMode() {
     updateOverride,
     updateSectionOrder,
     updateElementOffset,
+    updateElementScale,
     toggleSectionHidden,
     updateVideoOrder,
     toggleVideoHidden,
@@ -2034,7 +2044,7 @@ function AdminPanel({ admin }) {
     }),
     React.createElement(ToolbarRow, {
       icon: "✋",
-      label: "הזזת אלמנטים",
+      label: "הזזה + גודל (קליק=גודל)",
       active: admin.movingElements,
       onClick: () => admin.setMovingElements(!admin.movingElements)
     }),
@@ -2373,26 +2383,47 @@ window.__cutsAttachInlineEditing = attachInlineEditing;
 
 // ---------- Move-any-element drag ----------
 
+// Original font-size per element, captured before the first scale is applied so
+// we can build calc(base * scale) responsively and restore on reset. Kept in a
+// WeakMap (not a DOM attribute) so nothing leaks into published overrides.
+const baseFontMap = new WeakMap();
+
+function restoreBaseFont(el) {
+  if (baseFontMap.has(el)) {
+    el.style.fontSize = baseFontMap.get(el);
+    baseFontMap.delete(el);
+  }
+}
+
 function applyElementOffsets(offsets) {
   if (!offsets) return;
   const root = document.getElementById("root");
   if (!root) return;
-  // First, clear stale transforms from elements that no longer have an offset
+  // First, clear stale transforms/scale from elements that no longer have an offset
   root.querySelectorAll("[data-move-id]").forEach((el) => {
     const id = el.getAttribute("data-move-id");
     if (!offsets[id]) {
       el.style.transform = "";
       el.style.willChange = "";
+      restoreBaseFont(el);
     }
   });
-  // Then, apply current offsets
-  for (const [id, { x, y }] of Object.entries(offsets)) {
-    // Try to find the element by path
+  // Then, apply current offsets (position + font scale)
+  for (const [id, off] of Object.entries(offsets)) {
     const el = findElementByPath(id);
     if (!el) continue;
+    const x = (off && off.x) || 0;
+    const y = (off && off.y) || 0;
+    const s = (off && off.s) || 1;
     el.setAttribute("data-move-id", id);
     el.style.transform = `translate(${x}px, ${y}px)`;
     el.style.willChange = "transform";
+    if (s !== 1) {
+      if (!baseFontMap.has(el)) baseFontMap.set(el, el.style.fontSize || getComputedStyle(el).fontSize);
+      el.style.fontSize = `calc(${baseFontMap.get(el)} * ${s})`;
+    } else {
+      restoreBaseFont(el);
+    }
   }
 }
 
@@ -2446,26 +2477,27 @@ window.__cutsClearAllTransforms = clearAllTransforms;
 let moveDragState = null;
 
 function isInsideAdminUI(el) {
-  return !!(el && el.closest && el.closest(".admin-button, .admin-toolbar, .admin-modal, .admin-modal-backdrop, .tweaks-panel"));
+  return !!(el && el.closest && el.closest(".admin-button, .admin-toolbar, .admin-modal, .admin-modal-backdrop, .tweaks-panel, .scale-control"));
 }
 
 function pickMoveTarget(start) {
   // Walk up from the click target until we find an element inside #root.
-  // Skip text-leaf spans (those are for text editing); prefer block-level
-  // ancestors when the user clicks directly on text.
   const root = document.getElementById("root");
   if (!root || !root.contains(start)) return null;
+  // Clicking anywhere inside a heading/paragraph selects that whole block as a
+  // single unit — so moving/scaling a headline affects the entire headline (and
+  // scaling reads its responsive clamp font-size as the base, not a fixed px).
+  const block = start.closest && start.closest("h1, h2, h3, h4, p");
+  if (block && root.contains(block)) return block;
   let el = start;
-  // If the target is a leaf text element (h1>span, etc.), use its parent
-  // unless the user clicked a button/anchor directly (those are usually
-  // standalone moveable units).
+  // Otherwise, if the target is a leaf text span, step up to its parent.
   if (el.tagName === "SPAN" || el.tagName === "STRONG" || el.tagName === "EM") {
     el = el.parentElement || el;
   }
   return el;
 }
 
-function attachMoveListeners(rootEl, moving, onCommit) {
+function attachMoveListeners(rootEl, moving, onCommit, onSelect) {
   if (!rootEl) return () => {};
   const cleanup = [];
 
@@ -2530,8 +2562,14 @@ function attachMoveListeners(rootEl, moving, onCommit) {
     const finalY = latestY != null ? latestY : startY;
     el.classList.remove("admin-moving");
     document.body.classList.remove("admin-moving-active");
+    const wasDrag = latestX != null || latestY != null;
     moveDragState = null;
-    onCommit(id, finalX, finalY);
+    if (wasDrag) {
+      onCommit(id, finalX, finalY);
+    } else if (onSelect) {
+      // A click without a drag selects the element for scaling.
+      onSelect(id, el);
+    }
     e.preventDefault();
   }
 
