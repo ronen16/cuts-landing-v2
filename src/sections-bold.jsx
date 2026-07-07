@@ -100,8 +100,10 @@ const HERO_VIMEO_ID = "";
 // the original multi-line headline so untouched variants stay identical.
 const HERO_HEADLINES = {
   a: {
-    lines: ["הלקוחות הכי טובים שלך יכירו ויסמכו עלייך"],
-    accent: "עוד לפני שדיברתם",
+    lines: [
+      "הלקוחות הכי טובים שלכם",
+      { text: "יסמכו עלייך ", accent: "עוד לפני שיחת המכירה" },
+    ],
   },
 };
 
@@ -186,25 +188,31 @@ function Hero({ onCTAClick }) {
             }}>
               {HERO_HEADLINES[heroVariant] ? (
               <React.Fragment>
-                {HERO_HEADLINES[heroVariant].lines.map((line, i) =>
-                  <span key={i} style={{ display: "block", marginBottom: 10 }}>{line}</span>
-                )}
-                <span style={{ display: "block" }}>
-                  <span style={{
-                    color: "var(--accent)",
-                    position: "relative", display: "inline-block",
-                    paddingInline: "0.18em",
-                    textShadow: "0 0 40px rgba(255,213,0,0.45)"
-                  }}>
-                    {HERO_HEADLINES[heroVariant].accent}
-                    <span aria-hidden="true" style={{
-                      position: "absolute", left: "2%", right: "2%", bottom: "-0.08em",
-                      height: 5,
-                      background: "linear-gradient(90deg, transparent, var(--accent) 15%, var(--accent) 85%, transparent)",
-                      opacity: 0.5, borderRadius: 3, filter: "blur(0.5px)"
-                    }} />
-                  </span>
-                </span>
+                {HERO_HEADLINES[heroVariant].lines.map((line, i) => {
+                  const isObj = line && typeof line === "object";
+                  const last = i === HERO_HEADLINES[heroVariant].lines.length - 1;
+                  return (
+                    <span key={i} style={{ display: "block", marginBottom: last ? 0 : 10 }}>
+                      {isObj ? line.text : line}
+                      {isObj &&
+                        <span style={{
+                          color: "var(--accent)",
+                          position: "relative", display: "inline-block",
+                          paddingInline: "0.18em",
+                          textShadow: "0 0 40px rgba(255,213,0,0.45)"
+                        }}>
+                          {line.accent}
+                          <span aria-hidden="true" style={{
+                            position: "absolute", left: "2%", right: "2%", bottom: "-0.08em",
+                            height: 5,
+                            background: "linear-gradient(90deg, transparent, var(--accent) 15%, var(--accent) 85%, transparent)",
+                            opacity: 0.5, borderRadius: 3, filter: "blur(0.5px)"
+                          }} />
+                        </span>
+                      }
+                    </span>
+                  );
+                })}
               </React.Fragment>
               ) : (
               <React.Fragment>
