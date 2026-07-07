@@ -435,6 +435,10 @@ details.faq .answer { padding-top: 14px; color: var(--fg); opacity: 0.75; line-h
 .hero-poster-btn:hover .hero-poster-img { transform: scale(1.05); }
 /* Baked posters are already color-graded in the image — render true colors. */
 .hero-poster-img--baked { filter: none; }
+/* Unified section-headline size across the whole page — every section <h2>
+   matches the "ממומן" section. The hero is an <h1>, so it keeps its own size. */
+h2.display { font-size: clamp(40px, 6.4cqw, 92px) !important; }
+
 /* Mobile hero headline: as large as fits one line, tight line spacing. */
 @media (max-width: 600px) {
   .hero-h1 { font-size: min(32px, 8vw) !important; line-height: 1.08 !important; }
