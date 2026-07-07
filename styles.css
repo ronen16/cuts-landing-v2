@@ -427,6 +427,13 @@ details.faq .answer { padding-top: 14px; color: var(--fg); opacity: 0.75; line-h
 }
 .admin-button:active { transform: translateY(-50%) scale(0.97); }
 
+.hero-poster-img {
+  filter: saturate(1.2) contrast(1.08) brightness(1.02);
+  transition: transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+  will-change: transform;
+}
+.hero-poster-btn:hover .hero-poster-img { transform: scale(1.05); }
+
 .admin-toolbar {
   position: fixed;
   right: 88px;

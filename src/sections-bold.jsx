@@ -387,24 +387,40 @@ function Hero({ onCTAClick }) {
 
             <button
               type="button"
+              className="hero-poster-btn"
               onClick={() => HERO_VIMEO_ID && setHeroVideoPlaying(true)}
               aria-label={HERO_VIMEO_ID ? "נגן סרטון" : "סרטון בקרוב"}
               style={{
                 position: "absolute", inset: 0, padding: 0,
-                background: "transparent", border: "none",
+                background: "transparent", border: "none", overflow: "hidden",
                 cursor: HERO_VIMEO_ID ? "pointer" : "default",
                 color: "var(--accent)"
               }}>
               {HERO_VIDEO_POSTER &&
-              <img src={HERO_VIDEO_POSTER} alt="" style={{
+              <img src={HERO_VIDEO_POSTER} alt="" className="hero-poster-img" style={{
                 position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover"
               }} />
               }
               {HERO_VIDEO_POSTER &&
-              <span aria-hidden="true" style={{
-                position: "absolute", inset: 0,
-                background: "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.12) 44%, rgba(0,0,0,0.4) 100%)"
-              }} />
+              <React.Fragment>
+                {/* vignette — draw the eye to the presenter */}
+                <span aria-hidden="true" style={{
+                  position: "absolute", inset: 0,
+                  background: "radial-gradient(ellipse 78% 72% at 50% 40%, transparent 38%, rgba(0,0,0,0.55) 100%)"
+                }} />
+                {/* brand accent glow behind the play button */}
+                <span aria-hidden="true" style={{
+                  position: "absolute", left: "50%", top: "50%", transform: "translate(-50%,-50%)",
+                  width: "44%", aspectRatio: "1 / 1", borderRadius: "50%",
+                  background: "radial-gradient(circle, rgba(255,213,0,0.3), transparent 66%)",
+                  filter: "blur(8px)", pointerEvents: "none"
+                }} />
+                {/* cinematic top + bottom gradient for text legibility */}
+                <span aria-hidden="true" style={{
+                  position: "absolute", inset: 0,
+                  background: "linear-gradient(to top, rgba(0,0,0,0.93) 0%, rgba(0,0,0,0.3) 30%, rgba(0,0,0,0.02) 56%, rgba(0,0,0,0.5) 100%)"
+                }} />
+              </React.Fragment>
               }
               <span style={{
                 position: "absolute", inset: 0,
