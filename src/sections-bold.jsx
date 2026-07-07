@@ -166,21 +166,31 @@ function Hero({ onCTAClick }) {
         <div style={{ maxWidth: 1180, margin: "0 auto", textAlign: "center" }}>
           {/* EYEBROW — live REC studio location */}
           <div style={{
-            display: "inline-flex", flexDirection: "column", alignItems: "center", gap: 3,
-            padding: "10px 22px",
-            background: "rgba(255,213,0,0.06)",
-            border: "1px solid rgba(255,213,0,0.3)",
-            borderRadius: 16,
+            display: "inline-flex", flexDirection: "column", alignItems: "center", gap: 7,
+            padding: "12px 28px",
+            background: "rgba(255,213,0,0.04)",
+            border: "1px solid rgba(255,213,0,0.16)",
+            borderRadius: 14,
             marginBottom: 36,
             textAlign: "center"
           }}>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 12 }}>
+              <span aria-hidden="true" style={{
+                width: 20, height: 1,
+                background: "linear-gradient(to right, transparent, rgba(255,213,0,0.55))"
+              }} />
+              <span className="mono" style={{
+                fontWeight: 700, letterSpacing: "0.08em",
+                color: "var(--accent)", fontSize: "14.5px", whiteSpace: "nowrap"
+              }}>אולפן הפודקאסטים החזק במדינה</span>
+              <span aria-hidden="true" style={{
+                width: 20, height: 1,
+                background: "linear-gradient(to left, transparent, rgba(255,213,0,0.55))"
+              }} />
+            </span>
             <span className="mono" style={{
-              fontWeight: 800, letterSpacing: "0.04em",
-              color: "var(--accent)", fontSize: "16px"
-            }}>אולפן הפודקאסטים החזק במדינה</span>
-            <span className="mono" style={{
-              fontWeight: 600, letterSpacing: "0.06em",
-              color: "rgba(255,213,0,0.85)", fontSize: "14px"
+              fontWeight: 500, letterSpacing: "0.03em",
+              color: "rgba(255,255,255,0.5)", fontSize: "12.5px"
             }}>רק לבעלי עסקים שעושים 30,000 ש״ח ומעלה בחודש</span>
           </div>
 
