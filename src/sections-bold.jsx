@@ -105,6 +105,12 @@ const HERO_HEADLINES = {
       { text: "יסמכו עליכם ", accent: "עוד לפני שיחת המכירה" },
     ],
   },
+  b: {
+    lines: [
+      "שמעתם פעם את המשפט:",
+      { text: "", accent: "״וואלה מרגש אותי לדבר איתך?״" },
+    ],
+  },
 };
 
 function Hero({ onCTAClick }) {
