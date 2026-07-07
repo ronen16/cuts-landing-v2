@@ -166,23 +166,22 @@ function Hero({ onCTAClick }) {
         <div style={{ maxWidth: 1180, margin: "0 auto", textAlign: "center" }}>
           {/* EYEBROW — live REC studio location */}
           <div style={{
-            display: "inline-flex", alignItems: "center", gap: 14,
-            padding: "10px 18px",
+            display: "inline-flex", flexDirection: "column", alignItems: "center", gap: 3,
+            padding: "10px 22px",
             background: "rgba(255,213,0,0.06)",
             border: "1px solid rgba(255,213,0,0.3)",
-            borderRadius: 999,
-            marginBottom: 36
+            borderRadius: 16,
+            marginBottom: 36,
+            textAlign: "center"
           }}>
             <span className="mono" style={{
+              fontWeight: 800, letterSpacing: "0.04em",
+              color: "var(--accent)", fontSize: "16px"
+            }}>אולפן הפודקאסטים החזק במדינה</span>
+            <span className="mono" style={{
               fontWeight: 600, letterSpacing: "0.06em",
-              color: "rgba(255,213,0,0.85)", fontSize: "15px"
-            }}>
-              <span aria-hidden="true" style={{
-                marginInlineEnd: 4, color: "var(--accent)",
-                fontSize: "0.85em", verticalAlign: "super"
-              }}>*</span>
-              רק לבעלי עסקים שעושים 30,000 ש״ח ומעלה בחודש
-            </span>
+              color: "rgba(255,213,0,0.85)", fontSize: "14px"
+            }}>רק לבעלי עסקים שעושים 30,000 ש״ח ומעלה בחודש</span>
           </div>
 
           {/* HEADLINE — refined cinematic */}
