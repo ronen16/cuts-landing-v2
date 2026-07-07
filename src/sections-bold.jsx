@@ -335,7 +335,8 @@ function Hero({ onCTAClick }) {
             border: "1px solid rgba(255,213,0,0.35)",
             boxShadow: "0 24px 80px rgba(0,0,0,0.5), 0 0 50px rgba(255,213,0,0.12)"
           }}>
-            {/* banner ribbon */}
+            {/* banner ribbon — hidden once the video is playing */}
+            {!heroVideoPlaying &&
             <div style={{
               display: "flex", alignItems: "center", justifyContent: "center", gap: 12,
               padding: "13px 20px",
@@ -350,6 +351,7 @@ function Hero({ onCTAClick }) {
                 letterSpacing: "0.02em"
               }}>צפו עכשיו בסרטון!</span>
             </div>
+            }
 
             {/* video panel */}
             <div style={{
@@ -357,8 +359,8 @@ function Hero({ onCTAClick }) {
               aspectRatio: "16 / 9",
               background: "radial-gradient(ellipse at center, rgba(255,213,0,0.08), rgba(0,0,0,0.55) 72%)"
             }}>
-            {/* corner brackets — viewfinder */}
-            {[
+            {/* corner brackets — viewfinder (hidden once the video is playing) */}
+            {!heroVideoPlaying && [
             { top: 14, right: 14, brT: 3, brR: 3 },
             { top: 14, left: 14, brT: 3, brL: 3 },
             { bottom: 14, right: 14, brB: 3, brR: 3 },
