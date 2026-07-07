@@ -94,7 +94,7 @@ function VisualPlaceholder({ label = "תמונה או ויזואל שמחזק א
 // Hero showreel Vimeo video. Paste the numeric ID here once ready — the number
 // in the Vimeo URL:  https://vimeo.com/123456789  →  "123456789".
 // Empty string keeps the placeholder panel.
-const HERO_VIMEO_ID = "";
+const HERO_VIMEO_ID = "1207742478";
 
 // Per-variant hero headline (white lead line + accent highlight line). Only
 // variants listed here get the clean variant headline; the rest fall back to
