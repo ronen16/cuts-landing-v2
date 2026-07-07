@@ -435,24 +435,6 @@ details.faq .answer { padding-top: 14px; color: var(--fg); opacity: 0.75; line-h
 .hero-poster-btn:hover .hero-poster-img { transform: scale(1.05); }
 /* Baked posters are already color-graded in the image — render true colors. */
 .hero-poster-img--baked { filter: none; }
-/* Subtle shine sweep across the thumbnail every few seconds. */
-.hero-poster-shine {
-  position: absolute;
-  top: -20%; bottom: -20%; left: 0; width: 45%;
-  background: linear-gradient(100deg, transparent 35%, rgba(255,255,255,0.22) 50%, transparent 65%);
-  transform: translateX(-130%) skewX(-12deg);
-  animation: heroShine 5.5s ease-in-out infinite;
-  pointer-events: none;
-  z-index: 2;
-}
-@keyframes heroShine {
-  0% { transform: translateX(-130%) skewX(-12deg); }
-  16%, 100% { transform: translateX(320%) skewX(-12deg); }
-}
-.hero-poster-btn:hover .hero-poster-shine { animation-play-state: paused; }
-@media (prefers-reduced-motion: reduce) {
-  .hero-poster-shine { animation: none; opacity: 0; }
-}
 
 .admin-toolbar {
   position: fixed;
