@@ -433,6 +433,8 @@ details.faq .answer { padding-top: 14px; color: var(--fg); opacity: 0.75; line-h
   top: 50%;
   transform: translateY(-50%);
   width: 220px;
+  max-height: 92vh;
+  overflow-y: auto;
   background: #0F0F0F;
   border: 1px solid rgba(255,213,0,0.35);
   border-radius: 14px;
@@ -453,7 +455,7 @@ details.faq .answer { padding-top: 14px; color: var(--fg); opacity: 0.75; line-h
   font: inherit;
   font-size: 14px;
   text-align: start;
-  padding: 9px 12px;
+  padding: 7px 12px;
   border-radius: 10px;
   cursor: pointer;
   display: flex;

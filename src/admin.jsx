@@ -1963,14 +1963,21 @@ function AdminPanel({ admin }) {
   const activeVariant = (window.__cutsGetVariant && window.__cutsGetVariant()) || "a";
   const toolbar = open && React.createElement("div", { className: "admin-toolbar", dir: "rtl" },
     React.createElement("div", { className: "admin-toolbar__modelabel" }, "עורך גרסה:"),
-    ...["a", "b", "c", "d"].map((v) =>
-      React.createElement(ToolbarRow, {
-        key: `variant-${v}`,
-        icon: v.toUpperCase(),
-        label: `גרסה ${v.toUpperCase()}`,
-        active: activeVariant === v,
-        onClick: () => { if (activeVariant !== v) window.location.assign("/" + v); }
-      })
+    React.createElement("div", { style: { display: "flex", gap: 6, padding: "0 6px 2px" } },
+      ...["a", "b", "c", "d"].map((v) =>
+        React.createElement("button", {
+          key: `variant-${v}`,
+          onClick: () => { if (activeVariant !== v) window.location.assign("/" + v); },
+          style: {
+            flex: 1, appearance: "none", cursor: "pointer",
+            border: activeVariant === v ? "1px solid var(--accent)" : "1px solid rgba(255,255,255,0.15)",
+            background: activeVariant === v ? "var(--accent)" : "transparent",
+            color: activeVariant === v ? "#0A0A0A" : "rgba(255,255,255,0.8)",
+            fontWeight: activeVariant === v ? 800 : 600,
+            borderRadius: 8, padding: "6px 0", fontSize: 13, fontFamily: "inherit"
+          }
+        }, v.toUpperCase())
+      )
     ),
     React.createElement("div", { className: "admin-toolbar__sep" }),
     React.createElement(ToolbarRow, {
