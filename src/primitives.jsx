@@ -34,11 +34,13 @@ const LOGO_SRC = (typeof window !== "undefined" && window.__resources && window.
 // control). Each variant loads its own live-overrides file so the same deploy
 // serves four independently-edited pages. No randomness — the URL is the truth.
 const AB_VARIANTS = ["a", "b", "c", "d"];
+// The main domain (root "/" and any non-variant path) renders this variant.
+const DEFAULT_VARIANT = "c";
 
 function getVariant() {
-  if (typeof window === "undefined") return "a";
+  if (typeof window === "undefined") return DEFAULT_VARIANT;
   const m = window.location.pathname.match(/^\/([abcd])(?:\/|$)/);
-  return m ? m[1] : "a";
+  return m ? m[1] : DEFAULT_VARIANT;
 }
 
 function variantOverridePath(v) {
