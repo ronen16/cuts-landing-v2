@@ -99,6 +99,10 @@ const HERO_VIMEO_ID = "1207742478";
 // player.vimeo.com/video/ID?h=XXXXXXXX — paste that XXXXXXXX here. Public videos
 // leave this empty.
 const HERO_VIMEO_HASH = "";
+// Custom thumbnail poster (a clean still of the presenter, no baked-in text).
+// When set, the facade becomes a real thumbnail: image + big "צפו בסרטון" +
+// play button. Empty falls back to the plain accent panel.
+const HERO_VIDEO_POSTER = "";
 
 // Per-variant hero headline (white lead line + accent highlight line). Only
 // variants listed here get the clean variant headline; the rest fall back to
@@ -386,32 +390,57 @@ function Hero({ onCTAClick }) {
               onClick={() => HERO_VIMEO_ID && setHeroVideoPlaying(true)}
               aria-label={HERO_VIMEO_ID ? "נגן סרטון" : "סרטון בקרוב"}
               style={{
-                position: "absolute", inset: 0,
-                display: "flex", flexDirection: "column",
-                alignItems: "center", justifyContent: "center", gap: 16,
+                position: "absolute", inset: 0, padding: 0,
                 background: "transparent", border: "none",
                 cursor: HERO_VIMEO_ID ? "pointer" : "default",
                 color: "var(--accent)"
               }}>
+              {HERO_VIDEO_POSTER &&
+              <img src={HERO_VIDEO_POSTER} alt="" style={{
+                position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover"
+              }} />
+              }
+              {HERO_VIDEO_POSTER &&
+              <span aria-hidden="true" style={{
+                position: "absolute", inset: 0,
+                background: "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.12) 44%, rgba(0,0,0,0.4) 100%)"
+              }} />
+              }
               <span style={{
-                position: "relative",
-                width: 62, height: 62, borderRadius: "50%",
-                background: "var(--accent)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                boxShadow: "0 10px 30px rgba(255,213,0,0.45)"
+                position: "absolute", inset: 0,
+                display: "flex", alignItems: "center", justifyContent: "center"
               }}>
-                <span aria-hidden="true" style={{
-                  position: "absolute", inset: -9, borderRadius: "50%",
-                  border: "1.5px solid rgba(255,213,0,0.5)"
-                }} />
-                <svg width="22" height="22" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                  <path d="M6 4 L16 10 L6 16 Z" fill="#0A0A0A" />
-                </svg>
+                <span style={{
+                  position: "relative",
+                  width: 62, height: 62, borderRadius: "50%",
+                  background: "var(--accent)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  boxShadow: "0 10px 30px rgba(255,213,0,0.45)"
+                }}>
+                  <span aria-hidden="true" style={{
+                    position: "absolute", inset: -9, borderRadius: "50%",
+                    border: "1.5px solid rgba(255,213,0,0.5)"
+                  }} />
+                  <svg width="22" height="22" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                    <path d="M6 4 L16 10 L6 16 Z" fill="#0A0A0A" />
+                  </svg>
+                </span>
               </span>
+              {HERO_VIDEO_POSTER ?
+              <span className="display" style={{
+                position: "absolute", left: 0, right: 0, bottom: "7%",
+                textAlign: "center", color: "#fff", fontWeight: 900,
+                fontSize: "clamp(26px, 5.4cqw, 56px)", letterSpacing: "-0.01em",
+                textShadow: "0 3px 22px rgba(0,0,0,0.9), 0 1px 3px rgba(0,0,0,0.95)",
+                padding: "0 16px"
+              }}>{HERO_VIMEO_ID ? "צפו בסרטון!" : "סרטון בקרוב"}</span>
+              :
               <span className="mono" style={{
-                fontSize: 13, fontWeight: 800, letterSpacing: "0.24em",
-                opacity: 0.85
+                position: "absolute", left: 0, right: 0, bottom: "13%",
+                textAlign: "center",
+                fontSize: 13, fontWeight: 800, letterSpacing: "0.24em", opacity: 0.85
               }}>{HERO_VIMEO_ID ? "צפו בסרטון" : "סרטון בקרוב"}</span>
+              }
             </button>
             }
             </div>
