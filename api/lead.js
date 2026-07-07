@@ -96,14 +96,18 @@ export default async function handler(req, res) {
   // included when the frontend captured real attribution from the URL —
   // otherwise they stay empty in Monday so it's visually clear the lead
   // didn't come from a tracked campaign.
-  // The source label carries the A/B variant (a/b/c/d → "דף נחיתה A/B/C/D") so
-  // leads can be filtered/counted per landing variant right on the board.
-  const variant = String(body.ab_variant || "a").toUpperCase();
+  // Source ("מקור הגעה"): a Meta-campaign click (fbclid / a facebook|instagram
+  // utm_source) reads "מטא"; everything else is organic and reads "דף נחיתה".
+  // The landing variant (a/b/c/d) is catalogued via the campaign's adset UTM,
+  // not here, so the source label stays clean.
+  const attr = body.attribution || {};
+  const utmSource = String(attr.utm_source || "").toLowerCase();
+  const isMeta = !!(attr.fbclid || /facebook|fb|instagram|ig|meta/.test(utmSource));
   const columnValues = {
     [COL.platform]: String(body.platform || "אורגני"),
     [COL.phone]:    { phone: normalizePhone(phoneRaw), countryShortName: "IL" },
     [COL.date]:     nowInJerusalem(),
-    [COL.source]:   { label: `דף נחיתה ${variant}` },
+    [COL.source]:   { label: isMeta ? "מטא" : "דף נחיתה" },
   };
   const adName       = String(body.adName       || "").trim();
   const adsetName    = String(body.adsetName    || "").trim();
