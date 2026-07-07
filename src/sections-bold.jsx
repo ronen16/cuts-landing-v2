@@ -111,6 +111,12 @@ const HERO_HEADLINES = {
       { text: "", accent: "״וואלה מרגש אותי לדבר איתך?״" },
     ],
   },
+  c: {
+    lines: [
+      "איך להגדיל את העסק שלכם",
+      { text: "", accent: "בעזרת נכס אמון שעובד בשבילכם 24/7?" },
+    ],
+  },
 };
 
 function Hero({ onCTAClick }) {
