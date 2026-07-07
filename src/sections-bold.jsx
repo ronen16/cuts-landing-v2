@@ -95,6 +95,16 @@ function VisualPlaceholder({ label = "תמונה או ויזואל שמחזק א
 // once the clip is ready — empty string keeps the placeholder panel.
 const HERO_VIMEO_ID = "";
 
+// Per-variant hero headline (white lead line + accent highlight line). Only
+// variants listed here get the clean variant headline; the rest fall back to
+// the original multi-line headline so untouched variants stay identical.
+const HERO_HEADLINES = {
+  a: {
+    white: "הלקוחות הכי טובים שלך,",
+    accent: "מכירים אותך וסומכים עלייך עוד לפני שדיברתם",
+  },
+};
+
 function Hero({ onCTAClick }) {
   const [tick, setTick] = React.useState(0);
   React.useEffect(() => {
@@ -110,6 +120,9 @@ function Hero({ onCTAClick }) {
   // Hero showreel — lazy Vimeo facade. Set HERO_VIMEO_ID once the clip is ready;
   // until then a placeholder panel renders and nothing streams.
   const [heroVideoPlaying, setHeroVideoPlaying] = React.useState(false);
+
+  const heroVariant = (typeof window !== "undefined" && window.__cutsGetVariant)
+    ? window.__cutsGetVariant() : "a";
 
   return (
     <section style={{
@@ -171,6 +184,28 @@ function Hero({ onCTAClick }) {
               textWrap: "balance",
               position: "relative", zIndex: 2
             }}>
+              {HERO_HEADLINES[heroVariant] ? (
+              <React.Fragment>
+                <span style={{ display: "block", marginBottom: 10 }}>{HERO_HEADLINES[heroVariant].white}</span>
+                <span style={{ display: "block" }}>
+                  <span style={{
+                    color: "var(--accent)",
+                    position: "relative", display: "inline-block",
+                    paddingInline: "0.18em",
+                    textShadow: "0 0 40px rgba(255,213,0,0.45)"
+                  }}>
+                    {HERO_HEADLINES[heroVariant].accent}
+                    <span aria-hidden="true" style={{
+                      position: "absolute", left: "2%", right: "2%", bottom: "-0.08em",
+                      height: 5,
+                      background: "linear-gradient(90deg, transparent, var(--accent) 15%, var(--accent) 85%, transparent)",
+                      opacity: 0.5, borderRadius: 3, filter: "blur(0.5px)"
+                    }} />
+                  </span>
+                </span>
+              </React.Fragment>
+              ) : (
+              <React.Fragment>
               {/* Line 1 */}
               <span style={{ display: "block", marginBottom: 10 }}>הליד הבא שלכם מגיע לפגישה
 
@@ -228,6 +263,8 @@ function Hero({ onCTAClick }) {
                   }} />
                 </span>
               </span>
+              </React.Fragment>
+              )}
             </h1>
 
           </div>
