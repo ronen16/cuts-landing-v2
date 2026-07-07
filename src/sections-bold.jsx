@@ -375,7 +375,7 @@ function Hero({ onCTAClick }) {
 
             {HERO_VIMEO_ID && heroVideoPlaying ?
             <iframe
-              src={`https://player.vimeo.com/video/${HERO_VIMEO_ID}?autoplay=1&title=0&byline=0&portrait=0${HERO_VIMEO_HASH ? `&h=${HERO_VIMEO_HASH}` : ""}`}
+              src={`https://player.vimeo.com/video/${HERO_VIMEO_ID}?autoplay=1&title=0&byline=0&portrait=0&badge=0&autopause=0&app_id=58479${HERO_VIMEO_HASH ? `&h=${HERO_VIMEO_HASH}` : ""}`}
               title="Cuts showreel"
               allow="autoplay; fullscreen; picture-in-picture"
               allowFullScreen
