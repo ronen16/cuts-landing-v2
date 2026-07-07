@@ -100,7 +100,7 @@ const HERO_VIMEO_ID = "";
 // the original multi-line headline so untouched variants stay identical.
 const HERO_HEADLINES = {
   a: {
-    lines: ["הלקוחות הכי טובים שלך", "יכירו ויסמכו עלייך"],
+    lines: ["הלקוחות הכי טובים שלך יכירו ויסמכו עלייך"],
     accent: "עוד לפני שדיברתם",
   },
 };
