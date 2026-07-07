@@ -91,10 +91,10 @@ function VisualPlaceholder({ label = "תמונה או ויזואל שמחזק א
 
 // ---------- 02 · HERO ----------
 
-// Hero showreel YouTube video. Paste the video ID here once ready — the part
-// after "v=" or "youtu.be/":  https://youtu.be/ABC123  →  "ABC123".
+// Hero showreel Vimeo video. Paste the numeric ID here once ready — the number
+// in the Vimeo URL:  https://vimeo.com/123456789  →  "123456789".
 // Empty string keeps the placeholder panel.
-const HERO_YOUTUBE_ID = "sKJ_KDV-vTg";
+const HERO_VIMEO_ID = "";
 
 // Per-variant hero headline (white lead line + accent highlight line). Only
 // variants listed here get the clean variant headline; the rest fall back to
@@ -138,8 +138,8 @@ function Hero({ onCTAClick }) {
   // 140 bars for full-width waveform
   const wideBars = React.useMemo(() => Array.from({ length: 140 }, (_, i) => i), []);
 
-  // Hero showreel — lazy YouTube facade. Set HERO_YOUTUBE_ID once the clip is
-  // ready; until then a placeholder panel renders and nothing streams.
+  // Hero showreel — lazy Vimeo facade. Set HERO_VIMEO_ID once the clip is ready;
+  // until then a placeholder panel renders and nothing streams.
   const [heroVideoPlaying, setHeroVideoPlaying] = React.useState(false);
 
   const heroVariant = (typeof window !== "undefined" && window.__cutsGetVariant)
@@ -369,27 +369,24 @@ function Hero({ onCTAClick }) {
             }} />
             )}
 
-            {HERO_YOUTUBE_ID && heroVideoPlaying ?
+            {HERO_VIMEO_ID && heroVideoPlaying ?
             <iframe
-              src={`https://www.youtube-nocookie.com/embed/${HERO_YOUTUBE_ID}?autoplay=1&rel=0&modestbranding=1`}
+              src={`https://player.vimeo.com/video/${HERO_VIMEO_ID}?autoplay=1&title=0&byline=0&portrait=0`}
               title="Cuts showreel"
-              allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
+              allow="autoplay; fullscreen; picture-in-picture"
               allowFullScreen
               style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: "none" }} /> :
 
             <button
               type="button"
-              onClick={() => HERO_YOUTUBE_ID && setHeroVideoPlaying(true)}
-              aria-label={HERO_YOUTUBE_ID ? "נגן סרטון" : "סרטון בקרוב"}
+              onClick={() => HERO_VIMEO_ID && setHeroVideoPlaying(true)}
+              aria-label={HERO_VIMEO_ID ? "נגן סרטון" : "סרטון בקרוב"}
               style={{
                 position: "absolute", inset: 0,
                 display: "flex", flexDirection: "column",
                 alignItems: "center", justifyContent: "center", gap: 16,
-                background: HERO_YOUTUBE_ID
-                  ? `center / cover no-repeat url(https://i.ytimg.com/vi/${HERO_YOUTUBE_ID}/maxresdefault.jpg)`
-                  : "transparent",
-                border: "none",
-                cursor: HERO_YOUTUBE_ID ? "pointer" : "default",
+                background: "transparent", border: "none",
+                cursor: HERO_VIMEO_ID ? "pointer" : "default",
                 color: "var(--accent)"
               }}>
               <span style={{
@@ -397,8 +394,7 @@ function Hero({ onCTAClick }) {
                 display: "flex", alignItems: "center", justifyContent: "center",
                 background: "rgba(255,213,0,0.14)",
                 border: "2px solid var(--accent)",
-                boxShadow: "0 0 30px rgba(255,213,0,0.35)",
-                backdropFilter: "blur(2px)"
+                boxShadow: "0 0 30px rgba(255,213,0,0.35)"
               }}>
                 <svg width="30" height="34" viewBox="0 0 30 34" fill="none" aria-hidden="true">
                   <path d="M4 3.5 26 17 4 30.5V3.5Z" fill="var(--accent)" />
@@ -406,9 +402,8 @@ function Hero({ onCTAClick }) {
               </span>
               <span className="mono" style={{
                 fontSize: 13, fontWeight: 800, letterSpacing: "0.24em",
-                opacity: 0.85,
-                textShadow: HERO_YOUTUBE_ID ? "0 2px 12px rgba(0,0,0,0.8)" : "none"
-              }}>{HERO_YOUTUBE_ID ? "צפו בסרטון" : "סרטון בקרוב"}</span>
+                opacity: 0.85
+              }}>{HERO_VIMEO_ID ? "צפו בסרטון" : "סרטון בקרוב"}</span>
             </button>
             }
             </div>
