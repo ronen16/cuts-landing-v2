@@ -189,8 +189,8 @@ function Hero({ onCTAClick }) {
               }} />
             </span>
             <span className="mono" style={{
-              fontWeight: 500, letterSpacing: "0.03em",
-              color: "rgba(255,255,255,0.5)", fontSize: "12.5px"
+              fontWeight: 600, letterSpacing: "0.03em",
+              color: "rgba(255,255,255,0.92)", fontSize: "15px"
             }}>רק לבעלי עסקים שעושים 30,000 ש״ח ומעלה בחודש</span>
           </div>
 
