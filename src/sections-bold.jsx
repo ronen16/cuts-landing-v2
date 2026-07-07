@@ -117,6 +117,12 @@ const HERO_HEADLINES = {
       { text: "", accent: "בעזרת נכס אמון שעובד בשבילכם 24/7?" },
     ],
   },
+  d: {
+    lines: [
+      "הגיע הזמן להפסיק",
+      { text: "", accent: "למכור את עצמכם בכל שיחת מכירה" },
+    ],
+  },
 };
 
 function Hero({ onCTAClick }) {
