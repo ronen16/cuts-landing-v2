@@ -129,7 +129,7 @@ const HERO_HEADLINES = {
   c: {
     lines: [
       "איך להגדיל את העסק שלכם",
-      { text: "", accent: <React.Fragment>בעזרת נכס אמון שעובד <br className="hero-accent-br" />בשבילכם 24/7?</React.Fragment> },
+      { text: "", accent: "בעזרת נכס אמון שעובד בשבילכם 24/7?" },
     ],
   },
   d: {
@@ -219,7 +219,7 @@ function Hero({ onCTAClick }) {
             }} />
 
 
-            <h1 className="display hero-h1" style={{
+            <h1 className="display" style={{
               fontSize: "clamp(34px, 4.9cqw, 82px)",
               margin: 0,
               fontWeight: 900,
