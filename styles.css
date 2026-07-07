@@ -437,7 +437,8 @@ details.faq .answer { padding-top: 14px; color: var(--fg); opacity: 0.75; line-h
 .hero-poster-img--baked { filter: none; }
 /* Mobile-only line break inside a hero accent line. */
 .hero-accent-br { display: none; }
-@container (max-width: 600px) { .hero-accent-br { display: inline; } }
+@container (max-width: 600px) { .hero-accent-br { display: block; } }
+@media (max-width: 600px) { .hero-accent-br { display: block; } }
 
 .admin-toolbar {
   position: fixed;
