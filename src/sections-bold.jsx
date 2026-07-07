@@ -129,7 +129,7 @@ const HERO_HEADLINES = {
   c: {
     lines: [
       "איך להגדיל את העסק שלכם",
-      { text: "", accent: "בעזרת נכס אמון שעובד בשבילכם 24/7?" },
+      { text: "", accent: <React.Fragment>בעזרת נכס אמון שעובד <br className="hero-accent-br" />בשבילכם 24/7?</React.Fragment> },
     ],
   },
   d: {

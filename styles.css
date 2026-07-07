@@ -435,6 +435,9 @@ details.faq .answer { padding-top: 14px; color: var(--fg); opacity: 0.75; line-h
 .hero-poster-btn:hover .hero-poster-img { transform: scale(1.05); }
 /* Baked posters are already color-graded in the image — render true colors. */
 .hero-poster-img--baked { filter: none; }
+/* Mobile-only line break inside a hero accent line. */
+.hero-accent-br { display: none; }
+@container (max-width: 600px) { .hero-accent-br { display: inline; } }
 
 .admin-toolbar {
   position: fixed;
