@@ -394,14 +394,18 @@ function Hero({ onCTAClick }) {
                 color: "var(--accent)"
               }}>
               <span style={{
-                width: 78, height: 78, borderRadius: "50%",
+                position: "relative",
+                width: 62, height: 62, borderRadius: "50%",
+                background: "var(--accent)",
                 display: "flex", alignItems: "center", justifyContent: "center",
-                background: "rgba(255,213,0,0.14)",
-                border: "2px solid var(--accent)",
-                boxShadow: "0 0 30px rgba(255,213,0,0.35)"
+                boxShadow: "0 10px 30px rgba(255,213,0,0.45)"
               }}>
-                <svg width="30" height="34" viewBox="0 0 30 34" fill="none" aria-hidden="true">
-                  <path d="M4 3.5 26 17 4 30.5V3.5Z" fill="var(--accent)" />
+                <span aria-hidden="true" style={{
+                  position: "absolute", inset: -9, borderRadius: "50%",
+                  border: "1.5px solid rgba(255,213,0,0.5)"
+                }} />
+                <svg width="22" height="22" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                  <path d="M6 4 L16 10 L6 16 Z" fill="#0A0A0A" />
                 </svg>
               </span>
               <span className="mono" style={{
