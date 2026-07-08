@@ -544,7 +544,8 @@ function useAdminMode() {
   // Full reset: force position + scale back to default. Writes an explicit
   // {x:0,y:0,s:1} override so it also cancels a value published in live-overrides
   // (deleting the local entry would let the live value show through again).
-  const resetElementOffset = React.useCallback((id) => patchElementEntry(id, { x: 0, y: 0, s: 1 }), [patchElementEntry]);
+  const updateElementEntry = React.useCallback((id, patch) => patchElementEntry(id, patch), [patchElementEntry]);
+  const resetElementOffset = React.useCallback((id) => patchElementEntry(id, { x: 0, y: 0, s: 1, lh: null, ls: null }), [patchElementEntry]);
 
   const toggleSectionHidden = React.useCallback((id) => toggleLayeredHidden("hiddenSections", id), [toggleLayeredHidden]);
 
@@ -835,6 +836,7 @@ function useAdminMode() {
     updateSectionOrder,
     updateElementOffset,
     updateElementScale,
+    updateElementEntry,
     resetElementOffset,
     toggleSectionHidden,
     updateVideoOrder,
@@ -2470,6 +2472,7 @@ window.__cutsNudgeSelectionFontSize = nudgeSelectionFontSize;
 // we can build calc(base * scale) responsively and restore on reset. Kept in a
 // WeakMap (not a DOM attribute) so nothing leaks into published overrides.
 const baseFontMap = new WeakMap();
+const baseStyleMaps = { lineHeight: new WeakMap(), letterSpacing: new WeakMap() };
 
 function restoreBaseFont(el) {
   if (baseFontMap.has(el)) {
@@ -2478,20 +2481,40 @@ function restoreBaseFont(el) {
   }
 }
 
+// Set an inline style prop from an offset value, remembering the element's own
+// original value so a reset restores it exactly (not a blanket wipe that would
+// also drop the value baked into the JSX).
+function applyCapturedStyle(el, prop, value) {
+  const map = baseStyleMaps[prop];
+  if (value != null && value !== "") {
+    if (!map.has(el)) map.set(el, el.style[prop]);
+    el.style[prop] = value;
+  } else if (map.has(el)) {
+    el.style[prop] = map.get(el);
+    map.delete(el);
+  }
+}
+
+function restoreAllCaptured(el) {
+  restoreBaseFont(el);
+  applyCapturedStyle(el, "lineHeight", null);
+  applyCapturedStyle(el, "letterSpacing", null);
+}
+
 function applyElementOffsets(offsets) {
   if (!offsets) return;
   const root = document.getElementById("root");
   if (!root) return;
-  // First, clear stale transforms/scale from elements that no longer have an offset
+  // First, clear stale styling from elements that no longer have an offset
   root.querySelectorAll("[data-move-id]").forEach((el) => {
     const id = el.getAttribute("data-move-id");
     if (!offsets[id]) {
       el.style.transform = "";
       el.style.willChange = "";
-      restoreBaseFont(el);
+      restoreAllCaptured(el);
     }
   });
-  // Then, apply current offsets (position + font scale)
+  // Then, apply current offsets (position + font scale + line/letter spacing)
   for (const [id, off] of Object.entries(offsets)) {
     const el = findElementByPath(id);
     if (!el) continue;
@@ -2507,6 +2530,8 @@ function applyElementOffsets(offsets) {
     } else {
       restoreBaseFont(el);
     }
+    applyCapturedStyle(el, "lineHeight", off && off.lh != null ? String(off.lh) : null);
+    applyCapturedStyle(el, "letterSpacing", off && off.ls != null ? off.ls + "px" : null);
   }
 }
 

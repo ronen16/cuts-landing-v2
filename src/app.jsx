@@ -2,34 +2,52 @@
 
 // Floating size control shown when a headline (or any element) is clicked in
 // move mode. Scales the element's font-size live and persists via elementOffsets.
-function ScaleControl({ el, scale, onScale, onReset, onClose }) {
-  const pct = Math.round(scale * 100);
-  // Measure the selected text's actual rendered size after each change so the
-  // reading is exact (the DOM font-size is set imperatively one effect later).
-  const [px, setPx] = React.useState(null);
+function ScaleControl({ el, entry, onScale, onPatch, onReset, onClose }) {
+  const scale = (entry && entry.s) || 1;
+  // Measure the element's rendered size / spacing after each change (deferred to
+  // rAF so it reads the values applied imperatively by the offsets effect).
+  const [m, setM] = React.useState(null);
   React.useEffect(() => {
-    if (!el) { setPx(null); return; }
-    const raf = requestAnimationFrame(() =>
-      setPx(Math.round(parseFloat(getComputedStyle(el).fontSize)))
-    );
+    if (!el) { setM(null); return; }
+    const raf = requestAnimationFrame(() => {
+      const cs = getComputedStyle(el);
+      const fs = parseFloat(cs.fontSize) || 16;
+      let lhPx = parseFloat(cs.lineHeight);
+      if (isNaN(lhPx)) lhPx = fs * 1.2;
+      const ls = cs.letterSpacing === "normal" ? 0 : (parseFloat(cs.letterSpacing) || 0);
+      setM({ px: Math.round(fs), lh: Math.round((lhPx / fs) * 100) / 100, ls: Math.round(ls * 10) / 10 });
+    });
     return () => cancelAnimationFrame(raf);
-  }, [el, scale]);
+  }, [el, entry]);
+  const px = m && m.px, lh = m && m.lh, ls = m ? m.ls : null;
   const clampS = (v) => Math.min(3, Math.max(0.3, v));
-  // Nudge the scale so the rendered size changes by ~delta pixels (at this view).
-  const stepPx = (delta) => {
-    if (!px) return;
-    const next = clampS((scale * (px + delta)) / px);
-    onScale(Math.round(next * 1000) / 1000);
+  // Steps read the live computed value each click so rapid presses compound.
+  const live = () => {
+    const cs = getComputedStyle(el);
+    const fs = parseFloat(cs.fontSize) || 16;
+    let lhPx = parseFloat(cs.lineHeight); if (isNaN(lhPx)) lhPx = fs * 1.2;
+    const lsv = cs.letterSpacing === "normal" ? 0 : (parseFloat(cs.letterSpacing) || 0);
+    return { fs: Math.round(fs), lh: Math.round((lhPx / fs) * 100) / 100, ls: Math.round(lsv * 10) / 10 };
   };
+  const stepPx = (d) => { if (!el) return; const c = live(); onScale(Math.round(clampS((scale * (c.fs + d)) / c.fs) * 1000) / 1000); };
+  const stepLh = (d) => { if (!el) return; onPatch({ lh: Math.max(0.7, Math.round((live().lh + d) * 100) / 100) }); };
+  const stepLs = (d) => { if (!el) return; onPatch({ ls: Math.round((live().ls + d) * 10) / 10 }); };
+  const Row = ({ label, value, onMinus, onPlus }) =>
+    React.createElement("div", { className: "scale-control__row" },
+      React.createElement("span", { className: "scale-control__label" }, label),
+      React.createElement("button", { type: "button", className: "scale-control__btn", onClick: onMinus, "aria-label": "הקטן" }, "−"),
+      React.createElement("span", { className: "scale-control__val" }, value),
+      React.createElement("button", { type: "button", className: "scale-control__btn", onClick: onPlus, "aria-label": "הגדל" }, "+")
+    );
   return (
-    <div className="scale-control" dir="rtl">
-      <span className="scale-control__label">גודל טקסט</span>
-      <button type="button" className="scale-control__btn" onClick={() => stepPx(-2)} aria-label="הקטן">−</button>
-      <span className="scale-control__val">{px != null ? `${px}px` : "…"}</span>
-      <button type="button" className="scale-control__btn" onClick={() => stepPx(2)} aria-label="הגדל">+</button>
-      <span className="scale-control__sub">{pct}%</span>
-      <button type="button" className="scale-control__reset" onClick={onReset}>איפוס</button>
-      <button type="button" className="scale-control__close" onClick={onClose} aria-label="סגור">✕</button>
+    <div className="scale-control scale-control--panel" dir="rtl">
+      <Row label="גודל" value={px != null ? `${px}px` : "…"} onMinus={() => stepPx(-2)} onPlus={() => stepPx(2)} />
+      <Row label="מרווח שורות" value={lh != null ? lh.toFixed(2) : "…"} onMinus={() => stepLh(-0.1)} onPlus={() => stepLh(0.1)} />
+      <Row label="מרווח אותיות" value={ls != null ? `${ls}px` : "…"} onMinus={() => stepLs(-0.5)} onPlus={() => stepLs(0.5)} />
+      <div className="scale-control__row scale-control__actions">
+        <button type="button" className="scale-control__reset" onClick={onReset}>איפוס</button>
+        <button type="button" className="scale-control__close" onClick={onClose} aria-label="סגור">✕</button>
+      </div>
     </div>
   );
 }
@@ -325,8 +343,9 @@ function App() {
       {admin.movingElements && scaleTarget &&
         <ScaleControl
           el={scaleTarget.el}
-          scale={(effOffsets[scaleTarget.id] && effOffsets[scaleTarget.id].s) || 1}
+          entry={effOffsets[scaleTarget.id] || {}}
           onScale={(s) => admin.updateElementScale(scaleTarget.id, s)}
+          onPatch={(patch) => admin.updateElementEntry(scaleTarget.id, patch)}
           onReset={() => admin.resetElementOffset(scaleTarget.id)}
           onClose={() => setScaleTarget(null)}
         />
