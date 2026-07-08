@@ -197,11 +197,11 @@ function App() {
   React.useEffect(() => {
     if (!admin.editingText) { setTextSel(null); return; }
     const handler = () => {
-      const s = window.__cutsGetSelectionFontSize ? window.__cutsGetSelectionFontSize() : null;
+      const s = window.__cutsGetSelectionStyle ? window.__cutsGetSelectionStyle() : null;
       setTextSel((prev) => {
         if (!s) return prev === null ? prev : null;
-        if (prev && prev.px === s.px) return prev;
-        return { px: s.px };
+        if (prev && prev.px === s.px && prev.lh === s.lh && prev.ls === s.ls) return prev;
+        return s;
       });
     };
     document.addEventListener("selectionchange", handler);
@@ -331,13 +331,22 @@ function App() {
       </div>
       <TweaksPanel open={tweaksOpen} tweaks={tweaks} setTweaks={setTweaks} />
       {admin.editingText && textSel &&
-        <div className="scale-control" dir="rtl" onMouseDown={(e) => e.preventDefault()}>
-          <span className="scale-control__label">גודל טקסט מסומן</span>
-          <button type="button" className="scale-control__btn" onMouseDown={(e) => e.preventDefault()}
-            onClick={() => window.__cutsNudgeSelectionFontSize(-2)} aria-label="הקטן">−</button>
-          <span className="scale-control__val">{textSel.px}px</span>
-          <button type="button" className="scale-control__btn" onMouseDown={(e) => e.preventDefault()}
-            onClick={() => window.__cutsNudgeSelectionFontSize(2)} aria-label="הגדל">+</button>
+        <div className="scale-control scale-control--panel" dir="rtl" onMouseDown={(e) => e.preventDefault()}>
+          <div className="scale-control__title">טקסט מסומן</div>
+          {[
+            { label: "גודל", value: `${textSel.px}px`, prop: "size", d: 2 },
+            { label: "מרווח שורות", value: textSel.lh.toFixed(2), prop: "line", d: 0.1 },
+            { label: "מרווח אותיות", value: `${textSel.ls}px`, prop: "letter", d: 0.5 },
+          ].map((r) =>
+            <div key={r.prop} className="scale-control__row">
+              <span className="scale-control__label">{r.label}</span>
+              <button type="button" className="scale-control__btn" onMouseDown={(e) => e.preventDefault()}
+                onClick={() => window.__cutsNudgeSelectionStyle(r.prop, -r.d)} aria-label="הקטן">−</button>
+              <span className="scale-control__val">{r.value}</span>
+              <button type="button" className="scale-control__btn" onMouseDown={(e) => e.preventDefault()}
+                onClick={() => window.__cutsNudgeSelectionStyle(r.prop, r.d)} aria-label="הגדל">+</button>
+            </div>
+          )}
         </div>
       }
       {admin.movingElements && scaleTarget &&

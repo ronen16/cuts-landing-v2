@@ -2404,26 +2404,30 @@ function getEditableSelection() {
   return { sel, range, editable };
 }
 
-function getSelectionFontSize() {
+// Current size / line-height / letter-spacing at the selection.
+function getSelectionStyle() {
   const info = getEditableSelection();
   if (!info) return null;
   const node = info.range.startContainer;
   const el = node.nodeType === 1 ? node : node.parentElement;
-  return { px: Math.round(parseFloat(getComputedStyle(el).fontSize)) };
+  const cs = getComputedStyle(el);
+  const fs = parseFloat(cs.fontSize) || 16;
+  let lhPx = parseFloat(cs.lineHeight);
+  if (isNaN(lhPx)) lhPx = fs * 1.2;
+  const ls = cs.letterSpacing === "normal" ? 0 : (parseFloat(cs.letterSpacing) || 0);
+  return { px: Math.round(fs), lh: Math.round((lhPx / fs) * 100) / 100, ls: Math.round(ls * 10) / 10 };
 }
-window.__cutsGetSelectionFontSize = getSelectionFontSize;
+window.__cutsGetSelectionStyle = getSelectionStyle;
 
-function setSelectionFontSize(px) {
+// Apply a style patch ({fontSize|lineHeight|letterSpacing}) to the selected run,
+// wrapping it in a cuts-fs span (or adjusting the existing one).
+function applyStyleToSelection(styleObj) {
   const info = getEditableSelection();
   if (!info) return;
   const { sel, range, editable } = info;
   const sc = range.startContainer;
   const startEl = sc.nodeType === 1 ? sc : sc.parentElement;
   let target = null;
-  // If the selection already covers exactly one of our sizing spans, adjust it
-  // in place instead of nesting another span. Two shapes reach here: the range
-  // sits on the span element itself (after a programmatic re-select), or inside
-  // its text node covering the whole thing (after a manual drag-select).
   let existing = null;
   if (sc.nodeType === 1 && sc.classList && sc.classList.contains("cuts-fs")) {
     existing = sc;
@@ -2433,11 +2437,9 @@ function setSelectionFontSize(px) {
   }
   if (existing) {
     target = existing;
-    target.style.fontSize = px + "px";
   } else {
     const span = document.createElement("span");
     span.className = "cuts-fs";
-    span.style.fontSize = px + "px";
     try {
       range.surroundContents(span);
     } catch (_) {
@@ -2447,24 +2449,25 @@ function setSelectionFontSize(px) {
     }
     target = span;
   }
+  Object.keys(styleObj).forEach((k) => { target.style[k] = styleObj[k]; });
   // Keep the same text selected so consecutive +/- keep hitting it.
   const nr = document.createRange();
   nr.selectNodeContents(target);
   sel.removeAllRanges();
   sel.addRange(nr);
-  // Persist through the normal inline-edit save path.
   editable.dispatchEvent(new Event("input", { bubbles: true }));
 }
-window.__cutsSetSelectionFontSize = setSelectionFontSize;
 
-// Change the selection's size by delta px, measured fresh each call so rapid
-// clicks compound correctly (never off a stale reading).
-function nudgeSelectionFontSize(delta) {
-  const cur = getSelectionFontSize();
+// Nudge one property of the selection, measured fresh each call so rapid clicks
+// compound correctly. prop: "size" | "line" | "letter".
+function nudgeSelectionStyle(prop, delta) {
+  const cur = getSelectionStyle();
   if (!cur) return;
-  setSelectionFontSize(Math.max(6, cur.px + delta));
+  if (prop === "size") applyStyleToSelection({ fontSize: Math.max(6, cur.px + delta) + "px" });
+  else if (prop === "line") applyStyleToSelection({ lineHeight: String(Math.max(0.7, Math.round((cur.lh + delta) * 100) / 100)) });
+  else if (prop === "letter") applyStyleToSelection({ letterSpacing: (Math.round((cur.ls + delta) * 10) / 10) + "px" });
 }
-window.__cutsNudgeSelectionFontSize = nudgeSelectionFontSize;
+window.__cutsNudgeSelectionStyle = nudgeSelectionStyle;
 
 // ---------- Move-any-element drag ----------
 

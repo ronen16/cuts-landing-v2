@@ -483,6 +483,7 @@ details.faq .answer { padding-top: 14px; color: var(--fg); opacity: 0.75; line-h
   padding: 12px 14px;
   min-width: 232px;
 }
+.scale-control__title { font-size: 12px; font-weight: 800; letter-spacing: 0.04em; color: rgba(255,213,0,0.85); text-align: center; margin-bottom: 2px; }
 .scale-control__row { display: flex; align-items: center; gap: 8px; }
 .scale-control--panel .scale-control__label { flex: 1; text-align: right; }
 .scale-control--panel .scale-control__val { min-width: 52px; }
