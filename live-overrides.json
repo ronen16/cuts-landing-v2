@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "publishedAt": "2026-07-05T16:35:50.951Z",
+  "publishedAt": "2026-07-08T11:13:40.391Z",
   "overrides": {
     "sec:how-it-works>button[0]#h:d901835d": "👁 הצג",
     "sec:services>section[0]>div[0]>div[1]>div[0]>h3[0]#h:a5c90c46": "צילום ותאורה מקצועית",
@@ -156,8 +156,8 @@
     "sec:problem>section[0]>div[1]>div[1]>div[0]>div[5]#h:448634b4": "כל שנה אתם משלמים יותר<br>ומקבלים לידים פחות רלוונטיים.",
     "sec:problem>section[0]>div[1]>div[1]>div[1]>div[5]#h:1402e1d2": "מתוך 100 אנשים שרואים את המודעה<br>98 גוללים הלאה בלי לעצור",
     "sec:problem>section[0]>div[1]>div[1]>div[2]>div[5]#h:8a194c74": "מתוך 100 אנשים שנכנסים&nbsp;<br>96 עוזבים בלי להשאיר פרטים.",
-    "sec:solution>section[0]>div[2]>h2[0]>span[1]>span[0]#h:8d9de74a": "גורמים ללקוחות לבוא אליכם.<span aria-hidden=\"true\" style=\"position: absolute; left: 3%; right: 3%; bottom: -0.06em; height: 5px; background: linear-gradient(90deg, transparent, var(--accent) 15%, var(--accent) 85%, transparent); opacity: 0.55; border-radius: 3px; filter: blur(0.5px);\"></span>",
-    "sec:solution>section[0]>div[2]>h2[0]>span[0]>span[0]#h:c74280b3": "מפסיקים <span style=\"position: relative; display: inline-block; color: rgb(255, 255, 255);\">למכור בכוח<span aria-hidden=\"true\" style=\"position: absolute; left: -4%; right: -4%; top: 52%; height: 6px; background: linear-gradient(90deg, transparent, rgb(255, 59, 59) 12%, rgb(255, 59, 59) 88%, transparent); transform: rotate(-2deg); border-radius: 3px; opacity: 0.85; box-shadow: rgba(255, 59, 59, 0.5) 0px 0px 16px;\"></span></span>",
+    "sec:solution>section[0]>div[2]>h2[0]>span[1]>span[0]#h:8d9de74a": "<span class=\"cuts-fs\" style=\"font-size: 37px;\">גורמים ללקוחות לבוא אליכם.<span aria-hidden=\"true\" style=\"position: absolute; left: 3%; right: 3%; bottom: -0.06em; height: 5px; background: linear-gradient(90deg, transparent, var(--accent) 15%, var(--accent) 85%, transparent); opacity: 0.55; border-radius: 3px; filter: blur(0.5px);\"></span></span><span aria-hidden=\"true\" style=\"position: absolute; left: 3%; right: 3%; bottom: -0.06em; height: 5px; background: linear-gradient(90deg, transparent, var(--accent) 15%, var(--accent) 85%, transparent); opacity: 0.55; border-radius: 3px; filter: blur(0.5px);\"></span>",
+    "sec:solution>section[0]>div[2]>h2[0]>span[0]>span[0]#h:c74280b3": "<span class=\"cuts-fs\" style=\"font-size: 47px;\">מפסיקים <span style=\"position: relative; display: inline-block; color: rgb(255, 255, 255);\">למכור בכוח<span aria-hidden=\"true\" style=\"position: absolute; left: -4%; right: -4%; top: 52%; height: 6px; background: linear-gradient(90deg, transparent, rgb(255, 59, 59) 12%, rgb(255, 59, 59) 88%, transparent); transform: rotate(-2deg); border-radius: 3px; opacity: 0.85; box-shadow: rgba(255, 59, 59, 0.5) 0px 0px 16px;\"></span></span></span><span style=\"position: relative; display: inline-block; color: rgb(255, 255, 255);\"><span aria-hidden=\"true\" style=\"position: absolute; left: -4%; right: -4%; top: 52%; height: 6px; background: linear-gradient(90deg, transparent, rgb(255, 59, 59) 12%, rgb(255, 59, 59) 88%, transparent); transform: rotate(-2deg); border-radius: 3px; opacity: 0.85; box-shadow: rgba(255, 59, 59, 0.5) 0px 0px 16px;\"></span></span>",
     "sec:solution>section[0]>div[2]>div[1]>div[2]>p[0]#h:85681439": "עד שהלקוח מגיע לשיחת מכירה,\nהוא כבר ״מכיר אותך מהפודקאסט״.\n90% מעבודת השכנוע כבר קרתה, הוא בא להצטרף.<br>",
     "sec:solution>section[0]>div[2]>div[2]>p[0]>span[0]#h:e0cbcfc3": "זה בדיוק ההבדל בין לקוח<span style=\"position: relative; display: inline-block; color: rgba(255, 255, 255, 0.95); font-weight: 800;\">שמתמקח על כל שקל<span aria-hidden=\"true\" style=\"position: absolute; left: -3%; right: -3%; top: 52%; height: 5px; background: linear-gradient(90deg, transparent, rgb(255, 59, 59) 12%, rgb(255, 59, 59) 88%, transparent); transform: scaleX(0); transform-origin: right center; transition: transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) 0.7s; border-radius: 3px; opacity: 0.9; box-shadow: rgba(255, 59, 59, 0.55) 0px 0px 14px;\"></span></span>,",
     "sec:inline-lead-1>section[0]>div[1]>div[0]>div[0]>p[0]#h:b826b7bc": "השאירו פרטים ונחזור אליכם תוך 24 שעות<br>לקביעת שיחת אבחון ללא עלות.<br>בלי שיחת מכירה לוחצת, ובלי התחייבות.",
@@ -190,7 +190,28 @@
     "sec:guest-strip>section[0]>div[3]>p[0]>span[1]#h:73437c0f": "לשרוף תקציב על מודעות, <br>להתחרות על מחיר ולקוות שיזכרו אתכם.",
     "sec:guest-strip>section[0]>div[3]>p[0]>span[2]#h:5d724389": "או שאפשר לבנות נכס שעובד בשבילכם 24/7,",
     "sec:guest-strip>section[0]>div[3]>p[0]>span[3]#h:42511260": "שמסביר מי אתם ולמה דווקא אתם — גם כשאתם ישנים.",
-    "sec:guest-strip>section[0]>div[3]>p[0]>span[4]>span[0]#h:d6473f5e": "וכדי שתתחילו לבנות אותו כמו שצריך"
+    "sec:guest-strip>section[0]>div[3]>p[0]>span[4]>span[0]#h:d6473f5e": "וכדי שתתחילו לבנות אותו כמו שצריך",
+    "root>div[0]>div[1]>button[2]#h:54a7f4e7": "איפוס",
+    "sec:hero>section[0]>div[1]>div[0]>div[1]>h1[0]>span[0]#h:5998c5f0": "<span class=\"cuts-fs\" style=\"font-size: 32px;\">איך להגדיל את העסק שלכם</span>",
+    "sec:hero>section[0]>div[1]>div[0]>div[1]>h1[0]>span[1]>span[0]#h:3a96d81c": "<span class=\"cuts-fs\" style=\"font-size: 36px;\"><span class=\"cuts-fs\" style=\"font-size: 50px;\">בעזרת נכס אמון <br></span></span><span class=\"cuts-fs\" style=\"font-size: 36px;\"><span class=\"cuts-fs\" style=\"font-size: 36px;\">שעובד בשבילכם 24/7?</span><span aria-hidden=\"true\" style=\"position: absolute; left: 2%; right: 2%; bottom: -0.08em; height: 5px; background: linear-gradient(90deg, transparent, var(--accent) 15%, var(--accent) 85%, transparent); opacity: 0.5; border-radius: 3px; filter: blur(0.5px);\"></span></span><span aria-hidden=\"true\" style=\"position: absolute; left: 2%; right: 2%; bottom: -0.08em; height: 5px; background: linear-gradient(90deg, transparent, var(--accent) 15%, var(--accent) 85%, transparent); opacity: 0.5; border-radius: 3px; filter: blur(0.5px);\"></span>",
+    "sec:hero>section[0]>div[1]>div[0]>p[0]#h:e69b5aad": "פעם הייתם צריכים להסביר מי אתם בכל שיחת מכירה, <br>עם פודקאסט — הם כבר יודעים.<span style=\"color: var(--accent); font-weight: 700;\"></span>",
+    "sec:social-proof>section[0]>div[1]>div[0]>h2[0]>span[0]#h:86096dd5": "<span class=\"cuts-fs\" style=\"font-size: 34px;\">לפני שאתם ממשיכים לקרוא</span>",
+    "sec:social-proof>section[0]>div[1]>div[0]>h2[0]>span[1]>span[0]#h:31e29896": "<span class=\"cuts-fs\" style=\"font-size: 40px;\"><span class=\"cuts-fs\" style=\"font-size: 48px;\">זה מה שהלקוחות <br></span><span class=\"cuts-fs\" style=\"font-size: 50px;\">שלנו מספרים.<span aria-hidden=\"true\" style=\"position: absolute; left: 3%; right: 3%; bottom: -0.06em; height: 5px; background: linear-gradient(90deg, transparent, var(--accent) 15%, var(--accent) 85%, transparent); opacity: 0.55; border-radius: 3px; filter: blur(0.5px);\"></span></span><span aria-hidden=\"true\" style=\"position: absolute; left: 3%; right: 3%; bottom: -0.06em; height: 5px; background: linear-gradient(90deg, transparent, var(--accent) 15%, var(--accent) 85%, transparent); opacity: 0.55; border-radius: 3px; filter: blur(0.5px);\"></span></span><span aria-hidden=\"true\" style=\"position: absolute; left: 3%; right: 3%; bottom: -0.06em; height: 5px; background: linear-gradient(90deg, transparent, var(--accent) 15%, var(--accent) 85%, transparent); opacity: 0.55; border-radius: 3px; filter: blur(0.5px);\"></span>",
+    "sec:problem>section[0]>div[1]>h2[0]>span[0]#h:bcd8f4f0": "המשחק של הפרסום הממומן השתנה.",
+    "sec:problem>section[0]>div[1]>h2[0]>span[1]#h:3c346f27": "מי שלא מבין את זה,",
+    "sec:solution>section[0]>div[2]>div[0]>p[0]#h:42f1f4cf": "פודקאסט הוא הכלי השיווקי <span style=\"color: var(--accent); font-weight: 700;\">היחיד</span> שמייצר שלושה דברים <span style=\"color: rgb(255, 255, 255); font-weight: 700; border-bottom: 2px solid rgba(255, 213, 0, 0.5); padding-bottom: 2px;\">בו־זמנית</span>,<br>שאף פורמט אחר לא נותן:",
+    "sec:who-its-for>section[0]>div[0]>div[0]>h2[0]>span[1]>span[0]#h:f384a0bf": "אבל אם אתם כאן",
+    "sec:who-its-for>section[0]>div[0]>div[0]>h2[0]>span[0]#h:94030e7d": "פודקאסט לא מתאים לכולם.",
+    "sec:services>section[0]>div[0]>div[0]>h2[0]>span[0]#h:20e07541": "<span class=\"cuts-fs\" style=\"font-size: 50px;\">אתם מדברים.</span>",
+    "sec:studio-booking>section[0]>div[2]>div[0]>div[0]>div[0]>h2[0]#h:c016ae3e": "בואו נראה איך <span style=\"color: var(--accent); background: linear-gradient(transparent 65%, rgba(255, 213, 0, 0.18) 65%); padding: 0px 6px;\">הפודקאסט שלכם</span>&nbsp;ייראה.",
+    "sec:results>section[0]>div[0]>div[0]>h2[0]>span[0]#h:4a341740": "<span class=\"cuts-fs\" style=\"font-size: 58px;\">ככה נראים</span>",
+    "sec:results>section[0]>div[0]>div[0]>h2[0]>span[1]#h:f704f3b8": "<span class=\"cuts-fs\" style=\"font-size: 46px;\">הפודקאסטים שלנו.<span aria-hidden=\"true\" style=\"position: absolute; left: 3%; right: 3%; bottom: -0.06em; height: 5px; background: linear-gradient(90deg, transparent, var(--accent) 15%, var(--accent) 85%, transparent); opacity: 0.55; border-radius: 3px; filter: blur(0.5px);\"></span></span><span aria-hidden=\"true\" style=\"position: absolute; left: 3%; right: 3%; bottom: -0.06em; height: 5px; background: linear-gradient(90deg, transparent, var(--accent) 15%, var(--accent) 85%, transparent); opacity: 0.55; border-radius: 3px; filter: blur(0.5px);\"></span>",
+    "sec:guest-strip>section[0]>div[1]>div[0]>h2[0]>span[0]#h:dd0a57b6": "<span class=\"cuts-fs\" style=\"font-size: 46px;\">כאן אנחנו הופכים </span>",
+    "sec:guest-strip>section[0]>div[1]>div[0]>h2[0]>span[1]#h:a77b7e7b": "<span class=\"cuts-fs\" style=\"font-size: 54px;\">מומחים למותגים.</span><span aria-hidden=\"true\" style=\"position: absolute; left: 3%; right: 3%; bottom: -0.06em; height: 5px; background: linear-gradient(90deg, transparent, var(--accent) 15%, var(--accent) 85%, transparent); opacity: 0.55; border-radius: 3px; filter: blur(0.5px);\"></span>",
+    "sec:guest-strip>section[0]>div[3]>p[0]>span[5]>span[0]#h:62470421": "הכנו לכם הצעה שלא תחזור.",
+    "sec:final-cta>section[0]>div[0]>div[0]>div[0]>h2[0]>span[0]#h:30eb11ac": "עד כאן קראתם - הגיע הזמן להתחיל.",
+    "root>div[0]>div[0]>div[0]>footer[0]>div[0]>span[0]>a[0]#h:a42044a8": "מדיניות פרטיות",
+    "sec:solution>section[0]>div[2]>div[1]>div[0]>div[1]#h:00000601": "01"
   },
   "sectionOrder": [
     "hero",
@@ -217,7 +238,13 @@
     }
   },
   "elementOffsetsDesktop": {},
-  "elementOffsetsMobile": {},
+  "elementOffsetsMobile": {
+    "sec:hero>section[0]>div[1]>div[0]>div[1]>h1[0]#h:64f2220c": {
+      "x": 0,
+      "y": 0,
+      "s": 1
+    }
+  },
   "hiddenSections": [
     "how-it-works"
   ],
