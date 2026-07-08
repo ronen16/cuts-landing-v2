@@ -460,7 +460,8 @@ details.faq .answer { padding-top: 14px; color: var(--fg); opacity: 0.75; line-h
   display: flex; align-items: center; justify-content: center;
 }
 .scale-control__btn:active { background: var(--accent); color: #0A0A0A; }
-.scale-control__val { min-width: 46px; text-align: center; font-weight: 800; font-size: 14px; }
+.scale-control__val { min-width: 58px; text-align: center; font-weight: 800; font-size: 15px; }
+.scale-control__sub { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.45); min-width: 38px; text-align: center; }
 .scale-control__reset, .scale-control__close {
   appearance: none; cursor: pointer;
   background: transparent; border: 0; color: rgba(255,255,255,0.7);

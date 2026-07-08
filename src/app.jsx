@@ -2,16 +2,32 @@
 
 // Floating size control shown when a headline (or any element) is clicked in
 // move mode. Scales the element's font-size live and persists via elementOffsets.
-function ScaleControl({ scale, onScale, onReset, onClose }) {
+function ScaleControl({ el, scale, onScale, onReset, onClose }) {
   const pct = Math.round(scale * 100);
-  const clamp = (v) => Math.min(3, Math.max(0.4, v));
-  const step = (factor) => onScale(Math.round(clamp(scale * factor) * 100) / 100);
+  // Measure the selected text's actual rendered size after each change so the
+  // reading is exact (the DOM font-size is set imperatively one effect later).
+  const [px, setPx] = React.useState(null);
+  React.useEffect(() => {
+    if (!el) { setPx(null); return; }
+    const raf = requestAnimationFrame(() =>
+      setPx(Math.round(parseFloat(getComputedStyle(el).fontSize)))
+    );
+    return () => cancelAnimationFrame(raf);
+  }, [el, scale]);
+  const clampS = (v) => Math.min(3, Math.max(0.3, v));
+  // Nudge the scale so the rendered size changes by ~delta pixels (at this view).
+  const stepPx = (delta) => {
+    if (!px) return;
+    const next = clampS((scale * (px + delta)) / px);
+    onScale(Math.round(next * 1000) / 1000);
+  };
   return (
     <div className="scale-control" dir="rtl">
-      <span className="scale-control__label">גודל</span>
-      <button type="button" className="scale-control__btn" onClick={() => step(1 / 1.08)} aria-label="הקטן">−</button>
-      <span className="scale-control__val">{pct}%</span>
-      <button type="button" className="scale-control__btn" onClick={() => step(1.08)} aria-label="הגדל">+</button>
+      <span className="scale-control__label">גודל טקסט</span>
+      <button type="button" className="scale-control__btn" onClick={() => stepPx(-2)} aria-label="הקטן">−</button>
+      <span className="scale-control__val">{px != null ? `${px}px` : "…"}</span>
+      <button type="button" className="scale-control__btn" onClick={() => stepPx(2)} aria-label="הגדל">+</button>
+      <span className="scale-control__sub">{pct}%</span>
       <button type="button" className="scale-control__reset" onClick={onReset}>איפוס</button>
       <button type="button" className="scale-control__close" onClick={onClose} aria-label="סגור">✕</button>
     </div>
@@ -144,7 +160,7 @@ function App() {
     const rootEl = document.getElementById("root");
     return window.__cutsAttachMoveListeners(
       rootEl, admin.movingElements, admin.updateElementOffset,
-      (id) => setScaleTarget({ id })
+      (id, el) => setScaleTarget({ id, el })
     );
   }, [admin.movingElements, admin.updateElementOffset]);
   React.useEffect(() => { if (!admin.movingElements) setScaleTarget(null); }, [admin.movingElements]);
@@ -273,6 +289,7 @@ function App() {
       <TweaksPanel open={tweaksOpen} tweaks={tweaks} setTweaks={setTweaks} />
       {admin.movingElements && scaleTarget &&
         <ScaleControl
+          el={scaleTarget.el}
           scale={(effOffsets[scaleTarget.id] && effOffsets[scaleTarget.id].s) || 1}
           onScale={(s) => admin.updateElementScale(scaleTarget.id, s)}
           onReset={() => admin.resetElementOffset(scaleTarget.id)}
