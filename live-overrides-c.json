@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "publishedAt": "2026-07-08T15:20:05.409Z",
+  "publishedAt": "2026-07-08T15:20:48.803Z",
   "overrides": {
     "sec:how-it-works>button[0]#h:d901835d": "👁 הצג",
     "sec:services>section[0]>div[0]>div[1]>div[0]>h3[0]#h:a5c90c46": "צילום ותאורה מקצועית",
@@ -231,7 +231,8 @@
     "sec:solution>section[0]>div[2]>div[1]>div[0]>h3[0]#h:1579787b": "קשר אישי עמוק",
     "sec:hero>section[0]>div[1]>div[0]>div[1]>h1[0]>span[1]>span[0]>span[1]>span[0]#h:9b733d71": "שעובד בשבילכם 24/7?",
     "sec:hero>section[0]>div[1]>div[0]>div[1]>h1[0]>span[1]>span[0]>span[0]>span[0]>span[0]#h:81dde24b": "בעזרת נכס אמון",
-    "sec:hero>section[0]>div[1]>div[0]>div[1]>h1[0]>span[0]>span[0]#h:5998c5f0": "איך להגדיל את העסק שלכם"
+    "sec:hero>section[0]>div[1]>div[0]>div[1]>h1[0]>span[0]>span[0]#h:5998c5f0": "איך להגדיל את העסק שלכם",
+    "sec:hero>section[0]>div[1]>div[0]>div[1]>h1[0]>span[1]>span[0]>span[0]>span[0]#h:81dde24b": "בעזרת נכס אמון <br>"
   },
   "sectionOrder": [
     "hero",
@@ -288,7 +289,7 @@
     "sec:hero>section[0]>div[1]>div[0]>div[1]>h1[0]>span[1]#h:73290123": {
       "x": 0,
       "y": 0,
-      "lh": 0.85,
+      "lh": 0.75,
       "s": 1.354
     },
     "sec:services>section[0]>div[0]>div[0]>h2[0]>span[1]#h:50ed6a4a": {
