@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "publishedAt": "2026-07-08T11:13:40.391Z",
+  "publishedAt": "2026-07-08T14:53:54.354Z",
   "overrides": {
     "sec:how-it-works>button[0]#h:d901835d": "👁 הצג",
     "sec:services>section[0]>div[0]>div[1]>div[0]>h3[0]#h:a5c90c46": "צילום ותאורה מקצועית",
@@ -211,7 +211,10 @@
     "sec:guest-strip>section[0]>div[3]>p[0]>span[5]>span[0]#h:62470421": "הכנו לכם הצעה שלא תחזור.",
     "sec:final-cta>section[0]>div[0]>div[0]>div[0]>h2[0]>span[0]#h:30eb11ac": "עד כאן קראתם - הגיע הזמן להתחיל.",
     "root>div[0]>div[0]>div[0]>footer[0]>div[0]>span[0]>a[0]#h:a42044a8": "מדיניות פרטיות",
-    "sec:solution>section[0]>div[2]>div[1]>div[0]>div[1]#h:00000601": "01"
+    "sec:solution>section[0]>div[2]>div[1]>div[0]>div[1]#h:00000601": "01",
+    "root>div[0]>div[1]>div[2]>button[0]#h:00002212": "−",
+    "sec:social-proof>section[0]>div[1]>div[0]>h2[0]>span[1]>span[0]>span[0]>span[1]#h:8070e8cb": "שלנו מספרים.<span aria-hidden=\"true\" style=\"position: absolute; left: 3%; right: 3%; bottom: -0.06em; height: 5px; background: linear-gradient(90deg, transparent, var(--accent) 15%, var(--accent) 85%, transparent); opacity: 0.55; border-radius: 3px; filter: blur(0.5px);\"></span>",
+    "sec:social-proof>section[0]>div[1]>div[0]>h2[0]>span[1]>span[0]>span[0]>span[0]#h:9dc60675": "<span class=\"cuts-fs\" style=\"font-size: 52px;\">זה מה שהלקוחות</span> <br>"
   },
   "sectionOrder": [
     "hero",
@@ -243,6 +246,19 @@
       "x": 0,
       "y": 0,
       "s": 1
+    },
+    "sec:social-proof>section[0]>div[1]>div[0]>h2[0]>span[1]#h:31e29896": {
+      "x": 0,
+      "y": 0.7929662500000001,
+      "lh": 0.86
+    },
+    "sec:results>section[0]>div[0]>div[0]>h2[0]>span[1]#h:f704f3b8": {
+      "x": 0,
+      "y": -9.91015625
+    },
+    "sec:guest-strip>section[0]>div[1]>div[0]>h2[0]>span[1]#h:a77b7e7b": {
+      "x": 0,
+      "y": -12.00393125
     }
   },
   "hiddenSections": [
