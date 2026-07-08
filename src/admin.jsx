@@ -2528,7 +2528,18 @@ function applyElementOffsets(offsets) {
     el.style.transform = `translate(${x}px, ${y}px)`;
     el.style.willChange = "transform";
     if (s !== 1) {
-      if (!baseFontMap.has(el)) baseFontMap.set(el, el.style.fontSize || getComputedStyle(el).fontSize);
+      if (!baseFontMap.has(el)) {
+        // Prefer an inline font-size (the responsive clamp on a headline); if the
+        // element is a line inside a headline with no own size, inherit the
+        // ancestor's inline size so the scale stays responsive, not fixed px.
+        let baseFont = el.style.fontSize;
+        if (!baseFont) {
+          let a = el.parentElement;
+          while (a && a !== root && !a.style.fontSize) a = a.parentElement;
+          baseFont = (a && a.style.fontSize) || getComputedStyle(el).fontSize;
+        }
+        baseFontMap.set(el, baseFont);
+      }
       el.style.fontSize = `calc(${baseFontMap.get(el)} * ${s})`;
     } else {
       restoreBaseFont(el);
@@ -2595,11 +2606,17 @@ function pickMoveTarget(start) {
   // Walk up from the click target until we find an element inside #root.
   const root = document.getElementById("root");
   if (!root || !root.contains(start)) return null;
-  // Clicking anywhere inside a heading/paragraph selects that whole block as a
-  // single unit — so moving/scaling a headline affects the entire headline (and
-  // scaling reads its responsive clamp font-size as the base, not a fixed px).
+  // Inside a heading/paragraph, select the individual LINE (the heading's direct
+  // child that was clicked) so multiple lines of one headline can be selected
+  // separately. A click straight on the heading itself selects the whole block.
   const block = start.closest && start.closest("h1, h2, h3, h4, p");
-  if (block && root.contains(block)) return block;
+  if (block && root.contains(block)) {
+    if (start === block) return block;
+    let node = start;
+    while (node && node.parentElement && node.parentElement !== block) node = node.parentElement;
+    if (node && node.parentElement === block) return node;
+    return block;
+  }
   let el = start;
   // Otherwise, if the target is a leaf text span, step up to its parent.
   if (el.tagName === "SPAN" || el.tagName === "STRONG" || el.tagName === "EM") {
