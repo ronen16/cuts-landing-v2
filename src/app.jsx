@@ -2,10 +2,9 @@
 
 // Floating size control shown when a headline (or any element) is clicked in
 // move mode. Scales the element's font-size live and persists via elementOffsets.
-function ScaleControl({ el, entry, onScale, onPatch, onReset, onClose }) {
-  const scale = (entry && entry.s) || 1;
-  // Measure the element's rendered size / spacing after each change (deferred to
-  // rAF so it reads the values applied imperatively by the offsets effect).
+function ScaleControl({ el, entry, count, onNudge, onReset, onClose }) {
+  // Measure the primary element for display, deferred to rAF so it reads the
+  // values applied imperatively by the offsets effect. Re-runs when entry changes.
   const [m, setM] = React.useState(null);
   React.useEffect(() => {
     if (!el) { setM(null); return; }
@@ -19,31 +18,22 @@ function ScaleControl({ el, entry, onScale, onPatch, onReset, onClose }) {
     });
     return () => cancelAnimationFrame(raf);
   }, [el, entry]);
-  const px = m && m.px, lh = m && m.lh, ls = m ? m.ls : null;
-  const clampS = (v) => Math.min(3, Math.max(0.3, v));
-  // Steps read the live computed value each click so rapid presses compound.
-  const live = () => {
-    const cs = getComputedStyle(el);
-    const fs = parseFloat(cs.fontSize) || 16;
-    let lhPx = parseFloat(cs.lineHeight); if (isNaN(lhPx)) lhPx = fs * 1.2;
-    const lsv = cs.letterSpacing === "normal" ? 0 : (parseFloat(cs.letterSpacing) || 0);
-    return { fs: Math.round(fs), lh: Math.round((lhPx / fs) * 100) / 100, ls: Math.round(lsv * 10) / 10 };
-  };
-  const stepPx = (d) => { if (!el) return; const c = live(); onScale(Math.round(clampS((scale * (c.fs + d)) / c.fs) * 1000) / 1000); };
-  const stepLh = (d) => { if (!el) return; onPatch({ lh: Math.max(0.7, Math.round((live().lh + d) * 100) / 100) }); };
-  const stepLs = (d) => { if (!el) return; onPatch({ ls: Math.round((live().ls + d) * 10) / 10 }); };
-  const Row = ({ label, value, onMinus, onPlus }) =>
-    React.createElement("div", { className: "scale-control__row" },
-      React.createElement("span", { className: "scale-control__label" }, label),
-      React.createElement("button", { type: "button", className: "scale-control__btn", onClick: onMinus, "aria-label": "הקטן" }, "−"),
-      React.createElement("span", { className: "scale-control__val" }, value),
-      React.createElement("button", { type: "button", className: "scale-control__btn", onClick: onPlus, "aria-label": "הגדל" }, "+")
-    );
+  const rows = [
+    { label: "גודל", value: m ? `${m.px}px` : "…", prop: "size", d: 2 },
+    { label: "מרווח שורות", value: m ? m.lh.toFixed(2) : "…", prop: "line", d: 0.1 },
+    { label: "מרווח אותיות", value: m ? `${m.ls}px` : "…", prop: "letter", d: 0.5 },
+  ];
   return (
     <div className="scale-control scale-control--panel" dir="rtl">
-      <Row label="גודל" value={px != null ? `${px}px` : "…"} onMinus={() => stepPx(-2)} onPlus={() => stepPx(2)} />
-      <Row label="מרווח שורות" value={lh != null ? lh.toFixed(2) : "…"} onMinus={() => stepLh(-0.1)} onPlus={() => stepLh(0.1)} />
-      <Row label="מרווח אותיות" value={ls != null ? `${ls}px` : "…"} onMinus={() => stepLs(-0.5)} onPlus={() => stepLs(0.5)} />
+      <div className="scale-control__title">{count > 1 ? `${count} נבחרו — משנה יחד` : "אלמנט נבחר"}</div>
+      {rows.map((r) =>
+        <div key={r.prop} className="scale-control__row">
+          <span className="scale-control__label">{r.label}</span>
+          <button type="button" className="scale-control__btn" onClick={() => onNudge(r.prop, -r.d)} aria-label="הקטן">−</button>
+          <span className="scale-control__val">{r.value}</span>
+          <button type="button" className="scale-control__btn" onClick={() => onNudge(r.prop, r.d)} aria-label="הגדל">+</button>
+        </div>
+      )}
       <div className="scale-control__row scale-control__actions">
         <button type="button" className="scale-control__reset" onClick={onReset}>איפוס</button>
         <button type="button" className="scale-control__close" onClick={onClose} aria-label="סגור">✕</button>
@@ -172,24 +162,27 @@ function App() {
 
   // Wire element-move dragging. A click without a drag selects the element for
   // scaling (the floating size control below acts on it).
-  const [scaleTarget, setScaleTarget] = React.useState(null);
+  // Multi-select: each click toggles an element in/out of the set, and the size
+  // controls apply to every selected element together (e.g. 2 of 3 headline lines).
+  const [selection, setSelection] = React.useState([]);
   React.useEffect(() => {
     if (!window.__cutsAttachMoveListeners) return;
     const rootEl = document.getElementById("root");
     return window.__cutsAttachMoveListeners(
       rootEl, admin.movingElements, admin.updateElementOffset,
-      (id, el) => setScaleTarget({ id, el })
+      (id, el) => setSelection((prev) => {
+        const i = prev.findIndex((s) => s.id === id);
+        if (i >= 0) return prev.filter((s) => s.id !== id);
+        return [...prev, { id, el }];
+      })
     );
   }, [admin.movingElements, admin.updateElementOffset]);
-  React.useEffect(() => { if (!admin.movingElements) setScaleTarget(null); }, [admin.movingElements]);
-  // Outline the currently selected element so it's clear what stays selected —
-  // every size edit applies to it until another element is clicked.
+  React.useEffect(() => { if (!admin.movingElements) setSelection([]); }, [admin.movingElements]);
+  // Outline every selected element so it's clear what the controls act on.
   React.useEffect(() => {
-    const el = scaleTarget && scaleTarget.el;
-    if (!el) return;
-    el.classList.add("admin-scale-selected");
-    return () => el.classList.remove("admin-scale-selected");
-  }, [scaleTarget]);
+    selection.forEach((s) => s.el && s.el.classList.add("admin-scale-selected"));
+    return () => selection.forEach((s) => s.el && s.el.classList.remove("admin-scale-selected"));
+  }, [selection]);
 
   // In text-edit mode, track the current text selection so a size control can
   // resize just the selected words/letters.
@@ -231,6 +224,25 @@ function App() {
     if (!window.__cutsApplyElementOffsets) return;
     window.__cutsApplyElementOffsets(effOffsets);
   }, [effOffsets]);
+
+  // Apply a size / line-height / letter-spacing nudge to every selected element,
+  // read fresh per element so each keeps its own value and moves by the same step.
+  const nudgeSelection = React.useCallback((prop, delta) => {
+    selection.forEach(({ id, el }) => {
+      const cs = getComputedStyle(el);
+      const fs = parseFloat(cs.fontSize) || 16;
+      if (prop === "size") {
+        const s = (effOffsets[id] && effOffsets[id].s) || 1;
+        admin.updateElementScale(id, Math.round(Math.min(3, Math.max(0.3, (s * (fs + delta)) / fs)) * 1000) / 1000);
+      } else if (prop === "line") {
+        let lhPx = parseFloat(cs.lineHeight); if (isNaN(lhPx)) lhPx = fs * 1.2;
+        admin.updateElementEntry(id, { lh: Math.max(0.7, Math.round((lhPx / fs + delta) * 100) / 100) });
+      } else if (prop === "letter") {
+        const ls = cs.letterSpacing === "normal" ? 0 : (parseFloat(cs.letterSpacing) || 0);
+        admin.updateElementEntry(id, { ls: Math.round((ls + delta) * 10) / 10 });
+      }
+    });
+  }, [selection, effOffsets, admin]);
 
   // Body class for admin mode (used by CSS to style editable elements)
   React.useEffect(() => {
@@ -349,14 +361,14 @@ function App() {
           )}
         </div>
       }
-      {admin.movingElements && scaleTarget &&
+      {admin.movingElements && selection.length > 0 &&
         <ScaleControl
-          el={scaleTarget.el}
-          entry={effOffsets[scaleTarget.id] || {}}
-          onScale={(s) => admin.updateElementScale(scaleTarget.id, s)}
-          onPatch={(patch) => admin.updateElementEntry(scaleTarget.id, patch)}
-          onReset={() => admin.resetElementOffset(scaleTarget.id)}
-          onClose={() => setScaleTarget(null)}
+          el={selection[0].el}
+          entry={effOffsets[selection[0].id] || {}}
+          count={selection.length}
+          onNudge={nudgeSelection}
+          onReset={() => selection.forEach((s) => admin.resetElementOffset(s.id))}
+          onClose={() => setSelection([])}
         />
       }
       {AdminPanel && <AdminPanel admin={admin} />}
