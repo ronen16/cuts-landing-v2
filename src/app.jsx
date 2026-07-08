@@ -2,7 +2,7 @@
 
 // Floating size control shown when a headline (or any element) is clicked in
 // move mode. Scales the element's font-size live and persists via elementOffsets.
-function ScaleControl({ scale, onScale, onClose }) {
+function ScaleControl({ scale, onScale, onReset, onClose }) {
   const pct = Math.round(scale * 100);
   const clamp = (v) => Math.min(3, Math.max(0.4, v));
   const step = (factor) => onScale(Math.round(clamp(scale * factor) * 100) / 100);
@@ -12,7 +12,7 @@ function ScaleControl({ scale, onScale, onClose }) {
       <button type="button" className="scale-control__btn" onClick={() => step(1 / 1.08)} aria-label="הקטן">−</button>
       <span className="scale-control__val">{pct}%</span>
       <button type="button" className="scale-control__btn" onClick={() => step(1.08)} aria-label="הגדל">+</button>
-      <button type="button" className="scale-control__reset" onClick={() => onScale(1)}>איפוס</button>
+      <button type="button" className="scale-control__reset" onClick={onReset}>איפוס</button>
       <button type="button" className="scale-control__close" onClick={onClose} aria-label="סגור">✕</button>
     </div>
   );
@@ -275,6 +275,7 @@ function App() {
         <ScaleControl
           scale={(effOffsets[scaleTarget.id] && effOffsets[scaleTarget.id].s) || 1}
           onScale={(s) => admin.updateElementScale(scaleTarget.id, s)}
+          onReset={() => admin.resetElementOffset(scaleTarget.id)}
           onClose={() => setScaleTarget(null)}
         />
       }

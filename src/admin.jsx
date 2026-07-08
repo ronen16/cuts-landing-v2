@@ -541,6 +541,10 @@ function useAdminMode() {
   }, []);
   const updateElementOffset = React.useCallback((id, x, y) => patchElementEntry(id, { x, y }), [patchElementEntry]);
   const updateElementScale = React.useCallback((id, s) => patchElementEntry(id, { s }), [patchElementEntry]);
+  // Full reset: force position + scale back to default. Writes an explicit
+  // {x:0,y:0,s:1} override so it also cancels a value published in live-overrides
+  // (deleting the local entry would let the live value show through again).
+  const resetElementOffset = React.useCallback((id) => patchElementEntry(id, { x: 0, y: 0, s: 1 }), [patchElementEntry]);
 
   const toggleSectionHidden = React.useCallback((id) => toggleLayeredHidden("hiddenSections", id), [toggleLayeredHidden]);
 
@@ -831,6 +835,7 @@ function useAdminMode() {
     updateSectionOrder,
     updateElementOffset,
     updateElementScale,
+    resetElementOffset,
     toggleSectionHidden,
     updateVideoOrder,
     toggleVideoHidden,
