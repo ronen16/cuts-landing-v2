@@ -449,10 +449,18 @@ function useAdminMode() {
   React.useEffect(() => {
     if (!unlocked || liveSyncedRef.current) return;
     liveSyncedRef.current = true;
+    // Snapshot local state now. The fetch below is async (can take seconds when
+    // GitHub rate-limits and we fall back to the raw CDN); if the user starts
+    // editing before it resolves, we must NOT overwrite their in-progress work
+    // with the older live copy — that silently reverted just-typed text.
+    const snap = (s) => JSON.stringify([s.overrides || {}, s.overridesDesktop || {}, s.overridesMobile || {}]);
+    const startSnapshot = snap(loadAdminState());
     (async () => {
       try {
         const live = await fetchLiveOverrides(loadPublishSettings());
         if (!live || typeof live !== "object") return;
+        // Bail if anything was edited while the fetch was in flight.
+        if (snap(loadAdminState()) !== startSnapshot) return;
         const liveCount = Object.keys(live.overrides || {}).length;
         const localCount = Object.keys(overrides || {}).length;
         if (liveCount < localCount) return; // keep local unpublished work
