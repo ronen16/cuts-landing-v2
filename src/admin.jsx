@@ -2551,6 +2551,10 @@ function attachMoveListeners(rootEl, moving, onCommit, onSelect) {
     if (!moveDragState) return;
     const dx = e.clientX - moveDragState.startClientX;
     const dy = e.clientY - moveDragState.startClientY;
+    // Ignore jitter below a small threshold so a tap/click (which always has a
+    // little movement, especially on touch) stays a selection, not a drag.
+    if (!moveDragState.dragging && Math.hypot(dx, dy) < 5) return;
+    moveDragState.dragging = true;
     const x = moveDragState.startX + dx;
     const y = moveDragState.startY + dy;
     moveDragState.el.style.transform = `translate(${x}px, ${y}px)`;
@@ -2562,17 +2566,16 @@ function attachMoveListeners(rootEl, moving, onCommit, onSelect) {
 
   function onPointerUp(e) {
     if (!moveDragState) return;
-    const { el, id, latestX, latestY, startX, startY } = moveDragState;
+    const { el, id, latestX, latestY, startX, startY, dragging } = moveDragState;
     const finalX = latestX != null ? latestX : startX;
     const finalY = latestY != null ? latestY : startY;
     el.classList.remove("admin-moving");
     document.body.classList.remove("admin-moving-active");
-    const wasDrag = latestX != null || latestY != null;
     moveDragState = null;
-    if (wasDrag) {
+    if (dragging) {
       onCommit(id, finalX, finalY);
     } else if (onSelect) {
-      // A click without a drag selects the element for scaling.
+      // A click/tap without a real drag selects the element for scaling.
       onSelect(id, el);
     }
     e.preventDefault();
