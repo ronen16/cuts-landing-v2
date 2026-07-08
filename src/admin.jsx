@@ -2386,6 +2386,84 @@ function attachInlineEditing(rootEl, editing, onChange) {
 
 window.__cutsAttachInlineEditing = attachInlineEditing;
 
+// ---------- Per-selection font sizing (words / letters) ----------
+// In text-edit mode the user can select any run of text and resize just that
+// run. The selection is wrapped in a <span class="cuts-fs" style="font-size">,
+// which persists as part of the element's innerHTML override.
+
+function getEditableSelection() {
+  const sel = typeof window !== "undefined" && window.getSelection && window.getSelection();
+  if (!sel || sel.rangeCount === 0 || sel.isCollapsed) return null;
+  const range = sel.getRangeAt(0);
+  const anc = range.commonAncestorContainer;
+  const host = anc.nodeType === 1 ? anc : anc.parentElement;
+  const editable = host && host.closest && host.closest("[data-edit-id]");
+  if (!editable || String(range.toString()).trim() === "") return null;
+  return { sel, range, editable };
+}
+
+function getSelectionFontSize() {
+  const info = getEditableSelection();
+  if (!info) return null;
+  const node = info.range.startContainer;
+  const el = node.nodeType === 1 ? node : node.parentElement;
+  return { px: Math.round(parseFloat(getComputedStyle(el).fontSize)) };
+}
+window.__cutsGetSelectionFontSize = getSelectionFontSize;
+
+function setSelectionFontSize(px) {
+  const info = getEditableSelection();
+  if (!info) return;
+  const { sel, range, editable } = info;
+  const sc = range.startContainer;
+  const startEl = sc.nodeType === 1 ? sc : sc.parentElement;
+  let target = null;
+  // If the selection already covers exactly one of our sizing spans, adjust it
+  // in place instead of nesting another span. Two shapes reach here: the range
+  // sits on the span element itself (after a programmatic re-select), or inside
+  // its text node covering the whole thing (after a manual drag-select).
+  let existing = null;
+  if (sc.nodeType === 1 && sc.classList && sc.classList.contains("cuts-fs")) {
+    existing = sc;
+  } else if (startEl && startEl.classList.contains("cuts-fs") &&
+             range.toString() === startEl.textContent) {
+    existing = startEl;
+  }
+  if (existing) {
+    target = existing;
+    target.style.fontSize = px + "px";
+  } else {
+    const span = document.createElement("span");
+    span.className = "cuts-fs";
+    span.style.fontSize = px + "px";
+    try {
+      range.surroundContents(span);
+    } catch (_) {
+      const frag = range.extractContents();
+      span.appendChild(frag);
+      range.insertNode(span);
+    }
+    target = span;
+  }
+  // Keep the same text selected so consecutive +/- keep hitting it.
+  const nr = document.createRange();
+  nr.selectNodeContents(target);
+  sel.removeAllRanges();
+  sel.addRange(nr);
+  // Persist through the normal inline-edit save path.
+  editable.dispatchEvent(new Event("input", { bubbles: true }));
+}
+window.__cutsSetSelectionFontSize = setSelectionFontSize;
+
+// Change the selection's size by delta px, measured fresh each call so rapid
+// clicks compound correctly (never off a stale reading).
+function nudgeSelectionFontSize(delta) {
+  const cur = getSelectionFontSize();
+  if (!cur) return;
+  setSelectionFontSize(Math.max(6, cur.px + delta));
+}
+window.__cutsNudgeSelectionFontSize = nudgeSelectionFontSize;
+
 // ---------- Move-any-element drag ----------
 
 // Original font-size per element, captured before the first scale is applied so

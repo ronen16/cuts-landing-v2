@@ -173,6 +173,23 @@ function App() {
     return () => el.classList.remove("admin-scale-selected");
   }, [scaleTarget]);
 
+  // In text-edit mode, track the current text selection so a size control can
+  // resize just the selected words/letters.
+  const [textSel, setTextSel] = React.useState(null);
+  React.useEffect(() => {
+    if (!admin.editingText) { setTextSel(null); return; }
+    const handler = () => {
+      const s = window.__cutsGetSelectionFontSize ? window.__cutsGetSelectionFontSize() : null;
+      setTextSel((prev) => {
+        if (!s) return prev === null ? prev : null;
+        if (prev && prev.px === s.px) return prev;
+        return { px: s.px };
+      });
+    };
+    document.addEventListener("selectionchange", handler);
+    return () => document.removeEventListener("selectionchange", handler);
+  }, [admin.editingText]);
+
   // Apply saved element offsets to the DOM on render (live + local).
   const mergedOffsets = React.useMemo(() => {
     if (!liveOverrides) return admin.elementOffsets;
@@ -295,6 +312,16 @@ function App() {
         <Variant onCTAClick={onCTAClick} form={form} admin={effectiveAdmin} />
       </div>
       <TweaksPanel open={tweaksOpen} tweaks={tweaks} setTweaks={setTweaks} />
+      {admin.editingText && textSel &&
+        <div className="scale-control" dir="rtl" onMouseDown={(e) => e.preventDefault()}>
+          <span className="scale-control__label">גודל טקסט מסומן</span>
+          <button type="button" className="scale-control__btn" onMouseDown={(e) => e.preventDefault()}
+            onClick={() => window.__cutsNudgeSelectionFontSize(-2)} aria-label="הקטן">−</button>
+          <span className="scale-control__val">{textSel.px}px</span>
+          <button type="button" className="scale-control__btn" onMouseDown={(e) => e.preventDefault()}
+            onClick={() => window.__cutsNudgeSelectionFontSize(2)} aria-label="הגדל">+</button>
+        </div>
+      }
       {admin.movingElements && scaleTarget &&
         <ScaleControl
           el={scaleTarget.el}
