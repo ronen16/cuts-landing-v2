@@ -2521,6 +2521,7 @@ function applyElementOffsets(offsets) {
     const id = el.getAttribute("data-move-id");
     if (!offsets[id]) {
       el.style.transform = "";
+      el.style.transformOrigin = "";
       el.style.willChange = "";
       restoreAllCaptured(el);
     }
@@ -2533,25 +2534,12 @@ function applyElementOffsets(offsets) {
     const y = (off && off.y) || 0;
     const s = (off && off.s) || 1;
     el.setAttribute("data-move-id", id);
-    el.style.transform = `translate(${x}px, ${y}px)`;
+    // Scale via transform (origin = center) so text grows from the middle and,
+    // being a transform, it does NOT reflow — resizing one line never pushes the
+    // lines around it. font-size is left untouched.
+    el.style.transform = `translate(${x}px, ${y}px) scale(${s})`;
+    el.style.transformOrigin = "center";
     el.style.willChange = "transform";
-    if (s !== 1) {
-      if (!baseFontMap.has(el)) {
-        // Prefer an inline font-size (the responsive clamp on a headline); if the
-        // element is a line inside a headline with no own size, inherit the
-        // ancestor's inline size so the scale stays responsive, not fixed px.
-        let baseFont = el.style.fontSize;
-        if (!baseFont) {
-          let a = el.parentElement;
-          while (a && a !== root && !a.style.fontSize) a = a.parentElement;
-          baseFont = (a && a.style.fontSize) || getComputedStyle(el).fontSize;
-        }
-        baseFontMap.set(el, baseFont);
-      }
-      el.style.fontSize = `calc(${baseFontMap.get(el)} * ${s})`;
-    } else {
-      restoreBaseFont(el);
-    }
     applyCapturedStyle(el, "lineHeight", off && off.lh != null ? String(off.lh) : null);
     applyCapturedStyle(el, "letterSpacing", off && off.ls != null ? off.ls + "px" : null);
   }
@@ -2661,6 +2649,8 @@ function attachMoveListeners(rootEl, moving, onCommit, onSelect) {
     const m = cur.match(/translate\(\s*(-?\d+(?:\.\d+)?)px\s*,\s*(-?\d+(?:\.\d+)?)px\s*\)/);
     const startX = m ? parseFloat(m[1]) : 0;
     const startY = m ? parseFloat(m[2]) : 0;
+    const sm = cur.match(/scale\(\s*(-?\d+(?:\.\d+)?)\s*\)/);
+    const startScale = sm ? parseFloat(sm[1]) : 1;
 
     // translateX that horizontally centers the element in its container — used
     // to magnetize the element to the middle while Shift is held during a drag.
@@ -2677,6 +2667,7 @@ function attachMoveListeners(rootEl, moving, onCommit, onSelect) {
       startClientY: e.clientY,
       startX,
       startY,
+      startScale,
       snapX,
     };
 
@@ -2698,7 +2689,8 @@ function attachMoveListeners(rootEl, moving, onCommit, onSelect) {
     // Hold Shift to magnetize the element to the horizontal center.
     const x = e.shiftKey ? moveDragState.snapX : moveDragState.startX + dx;
     const y = moveDragState.startY + dy;
-    moveDragState.el.style.transform = `translate(${x}px, ${y}px)`;
+    moveDragState.el.style.transform = `translate(${x}px, ${y}px) scale(${moveDragState.startScale})`;
+    moveDragState.el.style.transformOrigin = "center";
     moveDragState.el.style.willChange = "transform";
     moveDragState.latestX = x;
     moveDragState.latestY = y;

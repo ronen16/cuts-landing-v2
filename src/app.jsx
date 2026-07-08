@@ -18,8 +18,9 @@ function ScaleControl({ el, entry, count, onNudge, onReset, onClose }) {
     });
     return () => cancelAnimationFrame(raf);
   }, [el, entry]);
+  const scale = (entry && entry.s) || 1;
   const rows = [
-    { label: "גודל", value: m ? `${m.px}px` : "…", prop: "size", d: 2 },
+    { label: "גודל", value: m ? `${Math.round(m.px * scale)}px` : "…", prop: "size", d: 2 },
     { label: "מרווח שורות", value: m ? m.lh.toFixed(2) : "…", prop: "line", d: 0.1 },
     { label: "מרווח אותיות", value: m ? `${m.ls}px` : "…", prop: "letter", d: 0.5 },
   ];
@@ -258,8 +259,10 @@ function App() {
       const cs = getComputedStyle(el);
       const fs = parseFloat(cs.fontSize) || 16;
       if (prop === "size") {
+        // Scale is a transform multiplier of the (unchanged) base font-size, so a
+        // delta-px step is delta/base added to the current scale.
         const s = (effOffsets[id] && effOffsets[id].s) || 1;
-        admin.updateElementScale(id, Math.round(Math.min(3, Math.max(0.3, (s * (fs + delta)) / fs)) * 1000) / 1000);
+        admin.updateElementScale(id, Math.round(Math.min(3, Math.max(0.3, s + delta / fs)) * 1000) / 1000);
       } else if (prop === "line") {
         let lhPx = parseFloat(cs.lineHeight); if (isNaN(lhPx)) lhPx = fs * 1.2;
         admin.updateElementEntry(id, { lh: Math.max(0.7, Math.round((lhPx / fs + delta) * 100) / 100) });
