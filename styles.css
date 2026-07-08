@@ -436,6 +436,12 @@ details.faq .answer { padding-top: 14px; color: var(--fg); opacity: 0.75; line-h
 /* Baked posters are already color-graded in the image — render true colors. */
 .hero-poster-img--baked { filter: none; }
 
+.admin-scale-selected {
+  outline: 2px dashed var(--accent) !important;
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
 .scale-control {
   position: fixed;
   bottom: 24px; left: 50%;

@@ -164,6 +164,14 @@ function App() {
     );
   }, [admin.movingElements, admin.updateElementOffset]);
   React.useEffect(() => { if (!admin.movingElements) setScaleTarget(null); }, [admin.movingElements]);
+  // Outline the currently selected element so it's clear what stays selected —
+  // every size edit applies to it until another element is clicked.
+  React.useEffect(() => {
+    const el = scaleTarget && scaleTarget.el;
+    if (!el) return;
+    el.classList.add("admin-scale-selected");
+    return () => el.classList.remove("admin-scale-selected");
+  }, [scaleTarget]);
 
   // Apply saved element offsets to the DOM on render (live + local).
   const mergedOffsets = React.useMemo(() => {
