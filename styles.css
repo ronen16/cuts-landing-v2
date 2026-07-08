@@ -442,6 +442,22 @@ details.faq .answer { padding-top: 14px; color: var(--fg); opacity: 0.75; line-h
   border-radius: 2px;
 }
 
+/* Narrowest-phone safe-zone side guides (edit/move modes). */
+.safe-guide {
+  position: fixed; top: 0; bottom: 0; width: 2px;
+  background: rgba(255,45,45,0.6);
+  box-shadow: 0 0 6px rgba(255,0,0,0.45);
+  z-index: 9997; pointer-events: none;
+}
+/* While editing/arranging, headings never auto-wrap — only manual Enter breaks
+   a line, so the author fully controls where lines split. */
+body.admin-editing-text :is(h1, h2, h3, h4),
+body.admin-moving-elements :is(h1, h2, h3, h4),
+body.admin-editing-text :is(h1, h2, h3, h4) *,
+body.admin-moving-elements :is(h1, h2, h3, h4) * {
+  white-space: nowrap !important;
+}
+
 .scale-control {
   position: fixed;
   bottom: 24px; left: 50%;

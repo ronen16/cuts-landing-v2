@@ -42,6 +42,32 @@ function ScaleControl({ el, entry, count, onNudge, onReset, onClose }) {
   );
 }
 
+// Red side-guides marking the narrowest-phone safe content width (~320px phone
+// minus page padding). Keep headline lines inside these while editing and they
+// will never overflow on the smallest phone.
+const SAFE_CONTENT_WIDTH = 285;
+function SafeZoneGuides({ canvasRef }) {
+  const [cx, setCx] = React.useState(null);
+  React.useEffect(() => {
+    const measure = () => {
+      const el = canvasRef.current;
+      if (el) { const r = el.getBoundingClientRect(); setCx(r.left + r.width / 2); }
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    const id = setInterval(measure, 500);
+    return () => { window.removeEventListener("resize", measure); clearInterval(id); };
+  }, []);
+  if (cx == null) return null;
+  const half = SAFE_CONTENT_WIDTH / 2;
+  return (
+    <React.Fragment>
+      <div className="safe-guide" style={{ left: cx - half }} />
+      <div className="safe-guide" style={{ left: cx + half }} />
+    </React.Fragment>
+  );
+}
+
 function App() {
   const [tweaks, setTweaks] = React.useState(window.TWEAK_DEFAULTS);
   const [tweaksOpen, setTweaksOpen] = React.useState(false);
@@ -342,6 +368,7 @@ function App() {
         <Variant onCTAClick={onCTAClick} form={form} admin={effectiveAdmin} />
       </div>
       <TweaksPanel open={tweaksOpen} tweaks={tweaks} setTweaks={setTweaks} />
+      {(admin.editingText || admin.movingElements) && <SafeZoneGuides canvasRef={canvasRef} />}
       {admin.editingText && textSel &&
         <div className="scale-control scale-control--panel" dir="rtl" onMouseDown={(e) => e.preventDefault()}>
           <div className="scale-control__title">טקסט מסומן</div>
