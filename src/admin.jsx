@@ -2654,6 +2654,14 @@ function attachMoveListeners(rootEl, moving, onCommit, onSelect) {
     const startX = m ? parseFloat(m[1]) : 0;
     const startY = m ? parseFloat(m[2]) : 0;
 
+    // translateX that horizontally centers the element in its container — used
+    // to magnetize the element to the middle while Shift is held during a drag.
+    const container = (target.closest && target.closest(".wrap, .site-canvas")) || target.parentElement || rootEl;
+    const cRect = container.getBoundingClientRect();
+    const elRect = target.getBoundingClientRect();
+    const naturalCenterX = (elRect.left + elRect.width / 2) - startX;
+    const snapX = Math.round((cRect.left + cRect.width / 2) - naturalCenterX);
+
     moveDragState = {
       el: target,
       id: moveId,
@@ -2661,6 +2669,7 @@ function attachMoveListeners(rootEl, moving, onCommit, onSelect) {
       startClientY: e.clientY,
       startX,
       startY,
+      snapX,
     };
 
     target.classList.add("admin-moving");
@@ -2678,7 +2687,8 @@ function attachMoveListeners(rootEl, moving, onCommit, onSelect) {
     // little movement, especially on touch) stays a selection, not a drag.
     if (!moveDragState.dragging && Math.hypot(dx, dy) < 5) return;
     moveDragState.dragging = true;
-    const x = moveDragState.startX + dx;
+    // Hold Shift to magnetize the element to the horizontal center.
+    const x = e.shiftKey ? moveDragState.snapX : moveDragState.startX + dx;
     const y = moveDragState.startY + dy;
     moveDragState.el.style.transform = `translate(${x}px, ${y}px)`;
     moveDragState.el.style.willChange = "transform";
