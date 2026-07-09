@@ -117,7 +117,7 @@ const HERO_HEADLINES = {
   a: {
     lines: [
       "הלקוחות הכי טובים שלכם",
-      { text: "", accent: "יסמכו עליכם" },
+      { text: "", accent: "יסמכו עליכם", underline: false },
       { text: "", accent: "עוד לפני שיחת המכירה" },
     ],
   },
@@ -245,12 +245,14 @@ function Hero({ onCTAClick }) {
                           textShadow: "0 0 40px rgba(255,213,0,0.45)"
                         }}>
                           {line.accent}
+                          {line.underline !== false &&
                           <span aria-hidden="true" style={{
                             position: "absolute", left: "2%", right: "2%", bottom: "-0.08em",
                             height: 5,
                             background: "linear-gradient(90deg, transparent, var(--accent) 15%, var(--accent) 85%, transparent)",
                             opacity: 0.5, borderRadius: 3, filter: "blur(0.5px)"
                           }} />
+                          }
                         </span>
                       }
                     </span>
