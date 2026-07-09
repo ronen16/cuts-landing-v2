@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "publishedAt": "2026-07-09T07:43:16.461Z",
+  "publishedAt": "2026-07-09T08:08:06.045Z",
   "overrides": {
     "sec:how-it-works>button[0]#h:d901835d": "👁 הצג",
     "sec:services>section[0]>div[0]>div[1]>div[0]>h3[0]#h:a5c90c46": "צילום ותאורה מקצועית",
@@ -227,7 +227,8 @@
     "root>div[0]>div[1]>div[4]>button[0]#h:54a7f4e7": "איפוס",
     "sec:guarantee>section[0]>div[2]>div[4]>div[2]>div[2]>div[1]#h:13b66148": "מדריך: הגדרת פודקאסט בפלטפורמות",
     "sec:guarantee>section[0]>div[2]>div[4]>div[2]>div[0]>div[2]#h:34f2d04d": "רשימה מותאמת אישית של 20 נושאים שמעניינים <br>את הלקוחות שלכם — מוכן להקלטה.",
-    "sec:guarantee>section[0]>div[2]>div[4]>div[2]>div[1]>div[2]#h:d197e7e8": "כל מה שצריך לדעת לפני ההקלטה — שאלות, מבנה, ואיך לגרום לאורח לדבר על מה שמעניין את הקהל."
+    "sec:guarantee>section[0]>div[2]>div[4]>div[2]>div[1]>div[2]#h:d197e7e8": "כל מה שצריך לדעת לפני ההקלטה — שאלות, מבנה, ואיך לגרום לאורח לדבר על מה שמעניין את הקהל.",
+    "sec:hero>section[0]>div[1]>div[0]>div[1]>h1[0]>span[1]>span[0]>span[0]#h:1148ac0f": "למכור את עצמכם<br>&nbsp;בכל שיחת מכירה<span aria-hidden=\"true\" style=\"position: absolute; left: 2%; right: 2%; bottom: -0.08em; height: 5px; background: linear-gradient(90deg, transparent, var(--accent) 15%, var(--accent) 85%, transparent); opacity: 0.5; border-radius: 3px; filter: blur(0.5px);\"></span>"
   },
   "sectionOrder": [
     "hero",
@@ -279,11 +280,11 @@
     },
     "sec:hero>section[0]>div[1]>div[0]>div[1]>h1[0]>span[0]#h:5998c5f0": {
       "x": 0,
-      "y": 10.87890625
+      "y": 5.34374375
     },
     "sec:hero>section[0]>div[1]>div[0]>div[1]>h1[0]>span[1]#h:73290123": {
       "x": 0,
-      "y": 0,
+      "y": 8.84375,
       "lh": 1.05,
       "s": 1.354
     },
