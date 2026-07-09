@@ -106,8 +106,11 @@ const HERO_VIMEO_HASH = "";
 // saved at git tag `thumbnail-v1`. To go back:  git checkout thumbnail-v1 -- \
 //   src/sections-bold.jsx styles.css build.mjs assets/hero-video-poster.jpg
 const HERO_VIDEO_POSTER = "assets/hero-video-poster.jpg";
-// True when the poster already has the title + play button baked into the image.
-// Baked posters render clean (no HTML text/play/gradient/banner/corners on top).
+// Optional looping animation shown in place of the static poster (autoplay,
+// muted, loop). Empty falls back to the poster image. It's treated as baked.
+const HERO_VIDEO_LOOP = "assets/hero-video-loop.mp4";
+// True when the poster/loop already has the title + play button baked in.
+// Baked media renders clean (no HTML text/play/gradient/banner/corners on top).
 const HERO_POSTER_BAKED = true;
 
 // Per-variant hero headline (white lead line + accent highlight line). Only
@@ -407,7 +410,15 @@ function Hero({ onCTAClick }) {
                 cursor: HERO_VIMEO_ID ? "pointer" : "default",
                 color: "var(--accent)"
               }}>
-              {HERO_VIDEO_POSTER &&
+              {HERO_VIDEO_LOOP ?
+              <video src={HERO_VIDEO_LOOP} autoPlay muted loop playsInline
+                poster={HERO_VIDEO_POSTER || undefined}
+                className="hero-poster-img hero-poster-img--baked"
+                style={{
+                position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover",
+                pointerEvents: "none"
+              }} /> :
+              HERO_VIDEO_POSTER &&
               <img src={HERO_VIDEO_POSTER} alt=""
                 className={HERO_POSTER_BAKED ? "hero-poster-img hero-poster-img--baked" : "hero-poster-img"}
                 style={{
