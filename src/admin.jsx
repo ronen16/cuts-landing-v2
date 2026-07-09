@@ -2457,7 +2457,18 @@ function applyStyleToSelection(styleObj) {
     }
     target = span;
   }
-  Object.keys(styleObj).forEach((k) => { target.style[k] = styleObj[k]; });
+  Object.keys(styleObj).forEach((k) => {
+    if (k === "fontSize") {
+      // Store the size relative to the parent (em) instead of a fixed px, so when
+      // the whole line/element is later scaled, this run grows with it rather than
+      // staying frozen (which looked like "only the line spacing changed").
+      const px = parseFloat(styleObj[k]);
+      const parentFs = parseFloat(getComputedStyle(target.parentElement).fontSize) || 16;
+      target.style.fontSize = Math.round((px / parentFs) * 1000) / 1000 + "em";
+    } else {
+      target.style[k] = styleObj[k];
+    }
+  });
   // Keep the same text selected so consecutive +/- keep hitting it.
   const nr = document.createRange();
   nr.selectNodeContents(target);
