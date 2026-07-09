@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "publishedAt": "2026-07-09T06:13:45.842Z",
+  "publishedAt": "2026-07-09T06:14:32.689Z",
   "overrides": {
     "sec:how-it-works>button[0]#h:d901835d": "👁 הצג",
     "sec:services>section[0]>div[0]>div[1]>div[0]>h3[0]#h:a5c90c46": "צילום ותאורה מקצועית",
@@ -232,7 +232,7 @@
     "sec:hero>section[0]>div[1]>div[0]>div[1]>h1[0]>span[1]>span[0]>span[1]>span[0]#h:9b733d71": "שעובד בשבילכם 24/7?",
     "sec:hero>section[0]>div[1]>div[0]>div[1]>h1[0]>span[1]>span[0]>span[0]>span[0]>span[0]#h:81dde24b": "בעזרת נכס אמון",
     "sec:hero>section[0]>div[1]>div[0]>div[1]>h1[0]>span[0]>span[0]#h:5998c5f0": "איך להגדיל את העסק שלכם",
-    "sec:hero>section[0]>div[1]>div[0]>div[1]>h1[0]>span[1]>span[0]>span[0]>span[0]#h:81dde24b": "בעזרת נכס אמון <br>",
+    "sec:hero>section[0]>div[1]>div[0]>div[1]>h1[0]>span[1]>span[0]>span[0]>span[0]#h:81dde24b": "<span class=\"cuts-fs\" style=\"font-size: 52px;\">בעזרת נכס אמון</span> <br>",
     "root>div[0]>div[3]>div[2]>button[1]#h:0000002b": "+",
     "root>div[0]>div[3]>div[1]>button[0]#h:00002212": "−",
     "root>div[0]>div[3]>div[1]>button[1]#h:0000002b": "+"
