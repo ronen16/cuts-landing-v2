@@ -449,12 +449,13 @@ details.faq .answer { padding-top: 14px; color: var(--fg); opacity: 0.75; line-h
   box-shadow: 0 0 6px rgba(255,0,0,0.45);
   z-index: 9997; pointer-events: none;
 }
-/* While editing/arranging, headings never auto-wrap — only manual Enter breaks
-   a line, so the author fully controls where lines split. */
-body.admin-editing-text :is(h1, h2, h3, h4),
-body.admin-moving-elements :is(h1, h2, h3, h4),
-body.admin-editing-text :is(h1, h2, h3, h4) *,
-body.admin-moving-elements :is(h1, h2, h3, h4) * {
+/* While editing/arranging, the hero headline (h1) never auto-wraps — only manual
+   Enter breaks split a line. Section headings (h2) keep wrapping so long ones
+   don't overflow and break the layout. */
+body.admin-editing-text h1,
+body.admin-moving-elements h1,
+body.admin-editing-text h1 *,
+body.admin-moving-elements h1 * {
   white-space: nowrap !important;
 }
 
