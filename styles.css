@@ -449,15 +449,6 @@ details.faq .answer { padding-top: 14px; color: var(--fg); opacity: 0.75; line-h
   box-shadow: 0 0 6px rgba(255,0,0,0.45);
   z-index: 9997; pointer-events: none;
 }
-/* While editing/arranging, the hero headline (h1) never auto-wraps — only manual
-   Enter breaks split a line. Section headings (h2) keep wrapping so long ones
-   don't overflow and break the layout. */
-body.admin-editing-text h1,
-body.admin-moving-elements h1,
-body.admin-editing-text h1 *,
-body.admin-moving-elements h1 * {
-  white-space: nowrap !important;
-}
 
 .scale-control {
   position: fixed;
