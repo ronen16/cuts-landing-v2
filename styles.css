@@ -442,6 +442,24 @@ details.faq .answer { padding-top: 14px; color: var(--fg); opacity: 0.75; line-h
   border-radius: 2px;
 }
 
+/* Free-hand editing: while editing/arranging, headings never auto-wrap (only a
+   manual Enter breaks a line) and nothing clips them, so text can extend freely.
+   The red safe-zone guides show how far is safe on the narrowest phone. */
+body.admin-editing-text :is(h1, h2, h3, h4),
+body.admin-moving-elements :is(h1, h2, h3, h4),
+body.admin-editing-text :is(h1, h2, h3, h4) *,
+body.admin-moving-elements :is(h1, h2, h3, h4) * {
+  white-space: nowrap !important;
+}
+body.admin-editing-text section,
+body.admin-moving-elements section,
+body.admin-editing-text .site-canvas,
+body.admin-moving-elements .site-canvas,
+body.admin-editing-text .wrap,
+body.admin-moving-elements .wrap {
+  overflow: visible !important;
+}
+
 /* Narrowest-phone safe-zone side guides (edit/move modes). */
 .safe-guide {
   position: fixed; top: 0; bottom: 0; width: 2px;

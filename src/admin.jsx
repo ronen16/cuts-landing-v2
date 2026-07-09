@@ -2545,26 +2545,12 @@ function applyElementOffsets(offsets) {
     const y = (off && off.y) || 0;
     const s = (off && off.s) || 1;
     el.setAttribute("data-move-id", id);
-    el.style.transform = `translate(${x}px, ${y}px)`;
+    // Scale via transform from the center: it enlarges EVERYTHING inside (all
+    // text, including individually-sized words) and grows symmetrically from the
+    // middle. Being a transform it doesn't reflow, so it never pushes neighbours.
+    el.style.transform = `translate(${x}px, ${y}px) scale(${s})`;
+    el.style.transformOrigin = "center";
     el.style.willChange = "transform";
-    // Scale via font-size so the text reflows and wraps normally (never overflows
-    // and gets clipped). Centered text grows from the middle. Base is the
-    // element's own inline size, or the nearest ancestor's clamp so a headline
-    // line stays responsive rather than frozen to a fixed px.
-    if (s !== 1) {
-      if (!baseFontMap.has(el)) {
-        let baseFont = el.style.fontSize;
-        if (!baseFont) {
-          let a = el.parentElement;
-          while (a && a !== root && !a.style.fontSize) a = a.parentElement;
-          baseFont = (a && a.style.fontSize) || getComputedStyle(el).fontSize;
-        }
-        baseFontMap.set(el, baseFont);
-      }
-      el.style.fontSize = `calc(${baseFontMap.get(el)} * ${s})`;
-    } else {
-      restoreBaseFont(el);
-    }
     applyCapturedStyle(el, "lineHeight", off && off.lh != null ? String(off.lh) : null);
     applyCapturedStyle(el, "letterSpacing", off && off.ls != null ? off.ls + "px" : null);
   }
@@ -2714,7 +2700,8 @@ function attachMoveListeners(rootEl, moving, onCommit, onSelect) {
     // Hold Shift to magnetize the element to the horizontal center.
     const x = e.shiftKey ? moveDragState.snapX : moveDragState.startX + dx;
     const y = moveDragState.startY + dy;
-    moveDragState.el.style.transform = `translate(${x}px, ${y}px)`;
+    moveDragState.el.style.transform = `translate(${x}px, ${y}px) scale(${moveDragState.startScale})`;
+    moveDragState.el.style.transformOrigin = "center";
     moveDragState.el.style.willChange = "transform";
     moveDragState.latestX = x;
     moveDragState.latestY = y;
