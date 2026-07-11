@@ -61,6 +61,52 @@ function getAttribution() {
   } catch (_) { return null; }
 }
 
+// ── Never-lose-a-lead safety net ────────────────────────────────────────────
+// A lead can fail to reach the server (network drop / crash). We stamp each
+// submission with a client_id, and if the send fails we stash the payload in
+// localStorage and re-post it on the next page load. The server upserts on
+// client_id so replays are idempotent — no duplicate leads.
+const PENDING_LEADS_KEY = "cuts_pending_leads";
+
+function newClientId() {
+  try { if (window.crypto && crypto.randomUUID) return crypto.randomUUID(); } catch (_) {}
+  return "c-" + Date.now() + "-" + Math.random().toString(36).slice(2, 10);
+}
+function readPendingLeads() {
+  try { return JSON.parse(localStorage.getItem(PENDING_LEADS_KEY) || "[]"); } catch (_) { return []; }
+}
+function writePendingLeads(arr) {
+  try { localStorage.setItem(PENDING_LEADS_KEY, JSON.stringify(arr)); } catch (_) {}
+}
+function savePendingLead(payload) {
+  const arr = readPendingLeads();
+  if (!arr.some((p) => p && p.client_id === payload.client_id)) {
+    arr.push(payload);
+    writePendingLeads(arr.slice(-20));
+  }
+}
+async function drainPendingLeads() {
+  const arr = readPendingLeads();
+  if (!arr.length) return;
+  const remaining = [];
+  for (const p of arr) {
+    try {
+      const r = await fetch("/api/lead", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(p),
+      });
+      if (!r.ok) remaining.push(p); // server got it or not; keep to retry — dedup on client_id
+    } catch (_) {
+      remaining.push(p);
+    }
+  }
+  writePendingLeads(remaining);
+}
+if (typeof window !== "undefined") {
+  window.addEventListener("load", () => { drainPendingLeads(); });
+}
+
 // Map utm_source to a human-readable platform name (Hebrew where it makes sense).
 function platformFromAttribution(attr) {
   const s = String((attr && attr.utm_source) || "").toLowerCase();
@@ -272,11 +318,20 @@ function useForm() {
       // item directly via the Monday GraphQL API. Replaced the Make webhook
       // (Make's column encoder kept rejecting the payload). `keepalive: true`
       // ensures the request completes after the redirect fires.
+      const name = (values.name || "").trim();
+      const goThankYou = () => {
+        try {
+          window.location.assign("thank-you.html?name=" + encodeURIComponent(name));
+        } catch (_) {
+          window.location.href = "thank-you.html";
+        }
+      };
+      let payload = null;
       try {
         const attr = getAttribution();
-        const payload = {
+        payload = {
           data: {
-            full_name: (values.name || "").trim(),
+            full_name: name,
             phone_number: (values.phone || "").trim(),
             email: (values.email || "").trim(),
           },
@@ -290,24 +345,32 @@ function useForm() {
           dateCreated:  new Date().toISOString(),
           source:       "cuts.co.il-landing",
           ab_variant:   getVariant(),
+          client_id:    newClientId(),
           // Full attribution snapshot for traceability / future analytics.
           attribution:  attr || null,
         };
-        fetch("/api/lead", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-          keepalive: true,
-        }).catch(() => {});
       } catch (_) {}
-      // Redirect every successful lead to the thank-you page.
-      try {
-        window.location.assign(
-          "thank-you.html?name=" + encodeURIComponent((values.name || "").trim())
-        );
-      } catch (_) {
-        window.location.href = "thank-you.html";
-      }
+
+      // Send, THEN redirect. Awaiting (with a short timeout so a slow network
+      // can't block the redirect) avoids the double-send race and lets us stash
+      // the lead for retry if it failed — so no lead is ever lost.
+      (async () => {
+        if (!payload) return goThankYou();
+        try {
+          const timeout = new Promise((resolve) => setTimeout(() => resolve(null), 4000));
+          const req = fetch("/api/lead", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+            keepalive: true,
+          }).catch(() => null);
+          const r = await Promise.race([req, timeout]);
+          if (!r || !r.ok) savePendingLead(payload);
+        } catch (_) {
+          savePendingLead(payload);
+        }
+        goThankYou();
+      })();
     }
   };
   return { values, setField, errors, touched, blur, submit, submitted, consent, setConsent };

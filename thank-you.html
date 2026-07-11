@@ -161,5 +161,31 @@ src="https://www.facebook.com/tr?id=646207438565937&ev=Lead&noscript=1"
     <a class="back anim d5" href="index.html">← חזרה לאתר</a>
   </main>
 
+  <!-- Never-lose-a-lead: retry any lead that failed to send from the form, right
+       after the redirect lands here. Idempotent — the server upserts on client_id. -->
+  <script>
+    (function () {
+      try {
+        var KEY = "cuts_pending_leads";
+        var arr = JSON.parse(localStorage.getItem(KEY) || "[]");
+        if (!arr.length) return;
+        var remaining = [];
+        var done = 0;
+        arr.forEach(function (p) {
+          fetch("/api/lead", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(p),
+          }).then(function (r) { if (!r.ok) remaining.push(p); })
+            .catch(function () { remaining.push(p); })
+            .finally(function () {
+              if (++done === arr.length) {
+                try { localStorage.setItem(KEY, JSON.stringify(remaining)); } catch (e) {}
+              }
+            });
+        });
+      } catch (e) {}
+    })();
+  </script>
 </body>
 </html>
