@@ -162,38 +162,23 @@ function Hero({ onCTAClick }) {
   // Hero showreel — lazy Vimeo facade. Set HERO_VIMEO_ID once the clip is ready;
   // until then a placeholder panel renders and nothing streams.
   const [heroVideoPlaying, setHeroVideoPlaying] = React.useState(false);
-  const heroIframeRef = React.useRef(null);
+  const [heroUnmuted, setHeroUnmuted] = React.useState(false);
   // Auto-open the real video on load (muted — browsers block sound-on-autoplay).
   React.useEffect(() => {
     if (HERO_VIDEO_AUTOOPEN && HERO_VIMEO_ID) setHeroVideoPlaying(true);
   }, []);
-  // VSL trick: it starts muted, then unmutes on the visitor's FIRST interaction
-  // anywhere (click / tap / key / scroll) — the earliest moment a browser allows
-  // sound. Uses the Vimeo Player SDK so playback keeps its position (no restart).
+  // VSL trick: the clip auto-opens muted, then on the visitor's FIRST interaction
+  // anywhere (click / tap / key) we reload the iframe with muted=0. A real user
+  // gesture grants sticky activation, so the reloaded frame is allowed to play
+  // WITH sound — which Vimeo's setMuted(false) API can't do once muted=1 is set
+  // in the URL. Trade-off: the reload restarts the clip (fine for a short hero).
   React.useEffect(() => {
     if (!heroVideoPlaying || !HERO_VIDEO_AUTOOPEN || !HERO_VIMEO_ID) return;
-    let cleanup = () => {};
-    const loadSdk = () => new Promise((resolve) => {
-      if (window.Vimeo) return resolve(window.Vimeo);
-      const s = document.createElement("script");
-      s.src = "https://player.vimeo.com/api/player.js";
-      s.onload = () => resolve(window.Vimeo);
-      s.onerror = () => resolve(null);
-      document.head.appendChild(s);
-    });
-    loadSdk().then((Vimeo) => {
-      if (!Vimeo || !heroIframeRef.current) return;
-      const player = new Vimeo.Player(heroIframeRef.current);
-      const events = ["pointerdown", "touchstart", "keydown", "wheel"];
-      const remove = () => events.forEach((ev) => window.removeEventListener(ev, unmute, true));
-      const unmute = () => {
-        try { player.setMuted(false); player.setVolume(1); } catch (_) {}
-        remove();
-      };
-      events.forEach((ev) => window.addEventListener(ev, unmute, { capture: true, passive: true }));
-      cleanup = remove;
-    });
-    return () => cleanup();
+    const events = ["pointerdown", "touchstart", "keydown"];
+    const remove = () => events.forEach((ev) => window.removeEventListener(ev, unmute, true));
+    const unmute = () => { setHeroUnmuted(true); remove(); };
+    events.forEach((ev) => window.addEventListener(ev, unmute, { capture: true }));
+    return remove;
   }, [heroVideoPlaying]);
 
   const heroVariant = (typeof window !== "undefined" && window.__cutsGetVariant)
@@ -429,7 +414,7 @@ function Hero({ onCTAClick }) {
 
             {HERO_VIMEO_ID && heroVideoPlaying ?
             <iframe
-              src={`https://player.vimeo.com/video/${HERO_VIMEO_ID}?autoplay=1&muted=${HERO_VIDEO_AUTOOPEN ? 1 : 0}&title=0&byline=0&portrait=0&badge=0&autopause=0&app_id=58479${HERO_VIMEO_HASH ? `&h=${HERO_VIMEO_HASH}` : ""}`}
+              src={`https://player.vimeo.com/video/${HERO_VIMEO_ID}?autoplay=1&muted=${HERO_VIDEO_AUTOOPEN && !heroUnmuted ? 1 : 0}&playsinline=1&title=0&byline=0&portrait=0&badge=0&autopause=0&app_id=58479${HERO_VIMEO_HASH ? `&h=${HERO_VIMEO_HASH}` : ""}`}
               title="Cuts showreel"
               allow="autoplay; fullscreen; picture-in-picture"
               allowFullScreen
