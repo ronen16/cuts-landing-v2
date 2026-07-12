@@ -525,18 +525,19 @@ function Hero({ onCTAClick }) {
             </button>
             }
             </div>
-            {HERO_VIMEO_ID && heroVideoPlaying && heroMuted &&
-            <div style={{ display: "flex", justifyContent: "center", marginTop: 12 }}>
-              <span className="hero-sound-hint" aria-hidden="true">
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
-                  <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4.03v8.06A4.5 4.5 0 0 0 16.5 12z" />
-                  <path d="M19 12a7 7 0 0 0-3.5-6.06v2.3A4.7 4.7 0 0 1 17 12a4.7 4.7 0 0 1-1.5 3.76v2.3A7 7 0 0 0 19 12z" />
-                </svg>
-                הקש בכל מקום להפעלת הקול
-              </span>
-            </div>
-            }
           </div>
+
+          {HERO_VIMEO_ID && heroVideoPlaying && heroMuted &&
+          <div style={{ display: "flex", justifyContent: "center", margin: "0 0 32px" }}>
+            <span className="hero-sound-hint" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
+                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4.03v8.06A4.5 4.5 0 0 0 16.5 12z" />
+                <path d="M19 12a7 7 0 0 0-3.5-6.06v2.3A4.7 4.7 0 0 1 17 12a4.7 4.7 0 0 1-1.5 3.76v2.3A7 7 0 0 0 19 12z" />
+              </svg>
+              הקש בכל מקום להפעלת הקול
+            </span>
+          </div>
+          }
 
           {/* CTA — centered */}
           <div style={{
