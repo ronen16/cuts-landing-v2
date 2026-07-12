@@ -162,10 +162,39 @@ function Hero({ onCTAClick }) {
   // Hero showreel — lazy Vimeo facade. Set HERO_VIMEO_ID once the clip is ready;
   // until then a placeholder panel renders and nothing streams.
   const [heroVideoPlaying, setHeroVideoPlaying] = React.useState(false);
+  const heroIframeRef = React.useRef(null);
   // Auto-open the real video on load (muted — browsers block sound-on-autoplay).
   React.useEffect(() => {
     if (HERO_VIDEO_AUTOOPEN && HERO_VIMEO_ID) setHeroVideoPlaying(true);
   }, []);
+  // VSL trick: it starts muted, then unmutes on the visitor's FIRST interaction
+  // anywhere (click / tap / key / scroll) — the earliest moment a browser allows
+  // sound. Uses the Vimeo Player SDK so playback keeps its position (no restart).
+  React.useEffect(() => {
+    if (!heroVideoPlaying || !HERO_VIDEO_AUTOOPEN || !HERO_VIMEO_ID) return;
+    let cleanup = () => {};
+    const loadSdk = () => new Promise((resolve) => {
+      if (window.Vimeo) return resolve(window.Vimeo);
+      const s = document.createElement("script");
+      s.src = "https://player.vimeo.com/api/player.js";
+      s.onload = () => resolve(window.Vimeo);
+      s.onerror = () => resolve(null);
+      document.head.appendChild(s);
+    });
+    loadSdk().then((Vimeo) => {
+      if (!Vimeo || !heroIframeRef.current) return;
+      const player = new Vimeo.Player(heroIframeRef.current);
+      const events = ["pointerdown", "touchstart", "keydown", "wheel"];
+      const remove = () => events.forEach((ev) => window.removeEventListener(ev, unmute, true));
+      const unmute = () => {
+        try { player.setMuted(false); player.setVolume(1); } catch (_) {}
+        remove();
+      };
+      events.forEach((ev) => window.addEventListener(ev, unmute, { capture: true, passive: true }));
+      cleanup = remove;
+    });
+    return () => cleanup();
+  }, [heroVideoPlaying]);
 
   const heroVariant = (typeof window !== "undefined" && window.__cutsGetVariant)
     ? window.__cutsGetVariant() : "a";
