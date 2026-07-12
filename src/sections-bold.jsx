@@ -109,6 +109,9 @@ const HERO_VIDEO_POSTER = "assets/hero-video-poster.jpg";
 // Optional looping animation shown in place of the static poster (autoplay,
 // muted, loop). Empty falls back to the poster image. It's treated as baked.
 const HERO_VIDEO_LOOP = "assets/hero-video-loop.mp4";
+// Auto-open the real Vimeo video on page load. Browsers forbid sound-on-autoplay,
+// so it starts MUTED — the viewer taps once to unmute.
+const HERO_VIDEO_AUTOOPEN = true;
 // True when the poster/loop already has the title + play button baked in.
 // Baked media renders clean (no HTML text/play/gradient/banner/corners on top).
 const HERO_POSTER_BAKED = true;
@@ -159,6 +162,10 @@ function Hero({ onCTAClick }) {
   // Hero showreel — lazy Vimeo facade. Set HERO_VIMEO_ID once the clip is ready;
   // until then a placeholder panel renders and nothing streams.
   const [heroVideoPlaying, setHeroVideoPlaying] = React.useState(false);
+  // Auto-open the real video on load (muted — browsers block sound-on-autoplay).
+  React.useEffect(() => {
+    if (HERO_VIDEO_AUTOOPEN && HERO_VIMEO_ID) setHeroVideoPlaying(true);
+  }, []);
 
   const heroVariant = (typeof window !== "undefined" && window.__cutsGetVariant)
     ? window.__cutsGetVariant() : "a";
@@ -393,7 +400,7 @@ function Hero({ onCTAClick }) {
 
             {HERO_VIMEO_ID && heroVideoPlaying ?
             <iframe
-              src={`https://player.vimeo.com/video/${HERO_VIMEO_ID}?autoplay=1&title=0&byline=0&portrait=0&badge=0&autopause=0&app_id=58479${HERO_VIMEO_HASH ? `&h=${HERO_VIMEO_HASH}` : ""}`}
+              src={`https://player.vimeo.com/video/${HERO_VIMEO_ID}?autoplay=1&muted=${HERO_VIDEO_AUTOOPEN ? 1 : 0}&title=0&byline=0&portrait=0&badge=0&autopause=0&app_id=58479${HERO_VIMEO_HASH ? `&h=${HERO_VIMEO_HASH}` : ""}`}
               title="Cuts showreel"
               allow="autoplay; fullscreen; picture-in-picture"
               allowFullScreen
