@@ -108,7 +108,7 @@ const HERO_VIMEO_HASH = "";
 const HERO_VIDEO_POSTER = "assets/hero-video-poster.jpg";
 // Optional looping animation shown in place of the static poster (autoplay,
 // muted, loop). Empty falls back to the poster image. It's treated as baked.
-const HERO_VIDEO_LOOP = "";
+const HERO_VIDEO_LOOP = "assets/hero-video-loop.mp4";
 // True when the poster/loop already has the title + play button baked in.
 // Baked media renders clean (no HTML text/play/gradient/banner/corners on top).
 const HERO_POSTER_BAKED = true;
