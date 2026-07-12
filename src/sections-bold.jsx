@@ -411,8 +411,9 @@ function Hero({ onCTAClick }) {
                 color: "var(--accent)"
               }}>
               {HERO_VIDEO_LOOP ?
-              <video src={HERO_VIDEO_LOOP} autoPlay muted loop playsInline
+              <video src={HERO_VIDEO_LOOP} autoPlay muted loop playsInline preload="auto"
                 poster={HERO_VIDEO_POSTER || undefined}
+                onLoadedData={(e) => { const p = e.target.play(); if (p && p.catch) p.catch(() => {}); }}
                 className="hero-poster-img hero-poster-img--baked"
                 style={{
                 position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover",
