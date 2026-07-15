@@ -3262,6 +3262,7 @@ function StudioBookingLead({ form }) {
                 {/* Submit */}
                 <button
                 type="submit"
+                disabled={submitted}
                 {...tapHandlers(submit)}
                 style={{
                   width: "100%",
@@ -3273,13 +3274,14 @@ function StudioBookingLead({ form }) {
                   fontSize: 16,
                   fontWeight: 800,
                   fontFamily: "inherit",
-                  cursor: "pointer",
+                  cursor: submitted ? "default" : "pointer",
+                  opacity: submitted ? 0.6 : 1,
                   marginTop: 8,
                   boxShadow: "0 8px 24px rgba(255,213,0,0.3)",
                   transition: "box-shadow 0.2s ease",
                   display: "flex", alignItems: "center", justifyContent: "center", gap: 10
                 }}>
-                קביעת שיחת אבחון ←
+                {submitted ? "שולח…" : "קביעת שיחת אבחון ←"}
                 </button>
 
                 {/* footer note */}
@@ -3441,6 +3443,7 @@ function MiniLeadStripe({ form }) {
             
               <button
               type="submit"
+              disabled={submitted}
               {...tapHandlers(submit)}
               style={{
                 padding: "14px 28px",
@@ -3451,12 +3454,13 @@ function MiniLeadStripe({ form }) {
                 fontSize: 15,
                 fontWeight: 800,
                 fontFamily: "inherit",
-                cursor: "pointer",
+                cursor: submitted ? "default" : "pointer",
+                opacity: submitted ? 0.6 : 1,
                 whiteSpace: "nowrap",
                 boxShadow: "0 6px 20px rgba(255,213,0,0.25)",
               }}>
 
-                שליחה ←
+                {submitted ? "שולח…" : "שליחה ←"}
               </button>
 
               <div style={{ flex: "1 1 100%", marginTop: 2 }}>
@@ -3597,11 +3601,12 @@ function InlineLeadForm({ form }) {
                 <span className="err" style={{ display: "block", marginTop: 6 }}>{errors.consent}</span>
                 }
               </div>
-              <button type="submit" className="btn btn-primary" {...tapHandlers(submit)} style={{
+              <button type="submit" className="btn btn-primary" disabled={submitted} {...tapHandlers(submit)} style={{
               marginTop: 6, justifyContent: "center", padding: "18px",
-              fontSize: 16, borderRadius: 10
+              fontSize: 16, borderRadius: 10,
+              opacity: submitted ? 0.6 : 1, cursor: submitted ? "default" : "pointer"
             }}>
-                בוא נקבע שיחה ←
+                {submitted ? "שולח…" : "בוא נקבע שיחה ←"}
               </button>
               <p className="mono" style={{
               fontSize: 11, opacity: 0.5, margin: "2px 0 0",
@@ -3796,11 +3801,12 @@ function FinalCTA({ form, onCTAClick }) {
                   <span className="err" style={{ display: "block", marginTop: 6 }}>{errors.consent}</span>
                   }
                 </div>
-                <button type="submit" className="btn btn-primary" {...tapHandlers(submit)} style={{
+                <button type="submit" className="btn btn-primary" disabled={submitted} {...tapHandlers(submit)} style={{
                 marginTop: 4, justifyContent: "center", padding: "20px",
-                fontSize: 17, borderRadius: 12, fontWeight: 800
+                fontSize: 17, borderRadius: 12, fontWeight: 800,
+                opacity: submitted ? 0.6 : 1, cursor: submitted ? "default" : "pointer"
               }}>
-                  בוא נקבע שיחה ←
+                  {submitted ? "שולח…" : "בוא נקבע שיחה ←"}
                 </button>
               </div>
 

@@ -294,6 +294,12 @@ function useForm() {
   const [submitted, setSubmitted] = React.useState(false);
   const [touched, setTouched] = React.useState({});
   const [consent, setConsentState] = React.useState(false);
+  // Synchronous re-entry guard. The submit button is type="submit" AND carries
+  // tapHandlers(submit), so a single tap can fire submit several times in the
+  // same tick — and nothing here throttled it, so each fire created its own
+  // lead + WhatsApp. A ref (not state) blocks repeats synchronously, before any
+  // re-render. Never reset: a successful submit redirects to the thank-you page.
+  const sendingRef = React.useRef(false);
 
   const setField = (k, v) => {
     setValues((prev) => ({ ...prev, [k]: v }));
@@ -308,11 +314,14 @@ function useForm() {
 
   const submit = (e) => {
     e.preventDefault();
+    if (sendingRef.current) return; // a send is already in flight — ignore repeat fires
     const errs = validateForm(values);
     if (!consent) errs.consent = "יש לאשר את תקנון האתר כדי להמשיך";
     setErrors(errs);
     setTouched({ name: true, phone: true, email: true, consent: true });
     if (Object.keys(errs).length === 0) {
+      sendingRef.current = true;
+      setSubmitted(true);
       // No inline confirmation — redirect straight to the thank-you page below.
       // Fire-and-forget POST to our own Vercel Function — creates the Monday
       // item directly via the Monday GraphQL API. Replaced the Make webhook

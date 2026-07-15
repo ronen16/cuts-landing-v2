@@ -100,6 +100,31 @@ async function upsertLead(row) {
   }
 }
 
+// Defense in depth against the customer being spammed. A correct submit creates
+// exactly one lead, but if several still slip through (double-tap that survives
+// across a reload, two devices, a client regression) we must not create a Monday
+// item + fire a WhatsApp for each. Returns true when this phone already produced
+// a Monday item within the last `windowMs`. Note: this can't catch a same-instant
+// burst (none of the racing rows has a monday_item_id yet) — the client-side
+// re-entry guard handles that; this covers duplicates that arrive seconds apart.
+async function phoneRecentlyLanded(phoneNorm, clientId, windowMs = 120000) {
+  if (!supabaseConfigured() || !phoneNorm) return false;
+  try {
+    const since = new Date(Date.now() - windowMs).toISOString();
+    const q = `${SUPABASE_URL}/rest/v1/${LEADS_TABLE}` +
+      `?select=client_id&phone_normalized=eq.${encodeURIComponent(phoneNorm)}` +
+      `&monday_item_id=not.is.null&created_at=gte.${encodeURIComponent(since)}` +
+      `&client_id=neq.${encodeURIComponent(clientId)}&limit=1`;
+    const r = await fetch(q, { headers: supabaseHeaders() });
+    if (!r.ok) return false;
+    const rows = await r.json();
+    return Array.isArray(rows) && rows.length > 0;
+  } catch (e) {
+    console.error("[lead] phone-dedup exception:", (e && e.message) || e);
+    return false;
+  }
+}
+
 // Best-effort patch of a stored lead after Monday responds.
 async function patchLead(clientId, patch) {
   if (!supabaseConfigured() || !clientId) return;
@@ -176,6 +201,15 @@ export default async function handler(req, res) {
   // Replay dedup: this submission already produced a Monday item — don't repeat.
   if (stored && stored.monday_item_id) {
     return res.status(200).json({ ok: true, item_id: stored.monday_item_id, deduped: true });
+  }
+
+  // Phone-window dedup: same number already landed a Monday item moments ago —
+  // this is a duplicate submission, not a new lead. Skip Monday + Make so the
+  // customer isn't added repeatedly and messaged repeatedly.
+  if (await phoneRecentlyLanded(phoneNorm, clientId)) {
+    console.log(`[lead] skipping duplicate for ${phoneNorm} (recent Monday item exists)`);
+    await patchLead(clientId, { status: "dup_phone" });
+    return res.status(200).json({ ok: true, deduped: true, reason: "recent-phone" });
   }
 
   const token = process.env.MONDAY_API_TOKEN;
