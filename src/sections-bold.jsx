@@ -5794,7 +5794,7 @@ function ClosingPullQuote() {
             whiteSpace: "nowrap",
             textShadow: "0 0 30px rgba(255,213,0,0.45)"
           }}>
-            איפה להעביר את התשלום
+            ״איך אפשר לשלם?״
             <span aria-hidden="true" style={{
               position: "absolute",
               left: 0, right: 0, bottom: "-0.08em",
@@ -5806,7 +5806,7 @@ function ClosingPullQuote() {
               borderRadius: 2,
               boxShadow: "0 0 12px rgba(255,213,0,0.6)"
             }} />
-          </span>.
+          </span>
         </AnimatedLine>
       </p>
     </div>);
