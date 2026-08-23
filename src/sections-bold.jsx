@@ -2648,9 +2648,9 @@ function Guarantee({ onCTAClick }) {
           transition: "opacity 0.7s ease 0.3s, transform 0.7s ease 0.3s"
         }}>
           {[
-          { n: "01", t: "מקליטים פרק ניסיון.", s: "במחיר היכרות מיוחד." },
-          { n: "02", t: "אתם רואים את התוצאה.", s: "פרק מוגמר עם 2 רילסים." },
-          { n: "03", t: "אתם מחליטים.", s: "ממשיכים או עוצרים — בחירתכם." }].
+          { n: "01", t: "מקליטים פרק היכרות", s: "במחיר מיוחד" },
+          { n: "02", t: "מקבלים את התוצאה", s: "פרק ערוך עם רילסים לרשתות החברתיות" },
+          { n: "03", t: "הבחירה בידיים שלך", s: "ממשיכים לעונה או שנפרדים בחיוך :)" }].
           map((step, i) =>
           <div
             key={i}
@@ -2680,15 +2680,15 @@ function Guarantee({ onCTAClick }) {
           {[
           {
             kind: "no",
-            label: "אם לא אהבתם",
-            main: <>עוצרים. בלי שאלות, בלי לחץ.</>,
-            sub: "אנחנו לא מאמינים בלקוחות שנשארים כי הם חייבים."
+            label: "אם לא אהבת",
+            main: <>בסדר גמור ונאחל לך בהצלחה בהמשך :)</>,
+            sub: ""
           },
           {
             kind: "yes",
-            label: "אם אהבתם",
-            main: <>ממשיכים עם חבילה מותאמת <span className="yes-highlight">+ 15% הנחה.</span></>,
-            sub: "כי סמכתם עלינו מהצעד הראשון."
+            label: "אם אהבת",
+            main: <>נתחיל לבנות יחד את נכס האמון של העסק שלך!</>,
+            sub: ""
           }].
           map((row, i) =>
           <div key={i} className={`guarantee-row guarantee-row--${row.kind}`} style={{ ["--row-delay"]: `${i * 0.6}s` }}>
@@ -2719,7 +2719,7 @@ function Guarantee({ onCTAClick }) {
               <div className="guarantee-row__content">
                 <div className="guarantee-row__label">{row.label}</div>
                 <div className="guarantee-row__main">{row.main}</div>
-                <div className="guarantee-row__sub">{row.sub}</div>
+                {row.sub && <div className="guarantee-row__sub">{row.sub}</div>}
               </div>
             </div>
           )}
