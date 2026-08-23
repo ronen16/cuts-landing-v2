@@ -2607,7 +2607,7 @@ function Guarantee({ onCTAClick }) {
             textWrap: "balance"
           }}>
             <span style={{ display: "block", opacity: 0.92 }}>
-              פרק ניסיון בלי התחייבות.
+              פרק היכרות ללא התחייבות.
             </span>
             <span style={{ display: "block", position: "relative", marginTop: 6 }}>
               <span style={{
@@ -2636,7 +2636,7 @@ function Guarantee({ onCTAClick }) {
           transform: inView ? "translateY(0)" : "translateY(8px)",
           transition: "opacity 0.7s ease 0.25s, transform 0.7s ease 0.25s"
         }}>
-          לא צריך להאמין לנו על המילה — תנו לתוצאה לדבר בעצמה.
+          אל תאמינו לנו, תבדקו את התוצרים שלנו :)
         </p>
 
         {/* How it works — 3 steps */}
