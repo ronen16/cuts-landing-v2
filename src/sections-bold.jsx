@@ -3606,7 +3606,7 @@ function InlineLeadForm({ form }) {
               fontSize: 16, borderRadius: 10,
               opacity: submitted ? 0.6 : 1, cursor: submitted ? "default" : "pointer"
             }}>
-                {submitted ? "שולח…" : "בוא נקבע שיחה ←"}
+                {submitted ? "שולח…" : "אני רוצה שיחות מכירה יותר קלות ←"}
               </button>
               <p className="mono" style={{
               fontSize: 11, opacity: 0.5, margin: "2px 0 0",
