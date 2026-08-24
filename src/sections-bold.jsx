@@ -2662,10 +2662,10 @@ function Guarantee({ onCTAClick }) {
         .refund__lead {
           position: relative;
           z-index: 1;
-          margin-bottom: 14px;
+          margin-bottom: 0;
           font-size: clamp(15px, 1.5cqw, 20px);
           font-weight: 700;
-          line-height: 1.5;
+          line-height: 1.35;
           color: rgba(255,255,255,0.82);
           text-wrap: balance;
         }
@@ -2788,7 +2788,7 @@ function Guarantee({ onCTAClick }) {
           .refund { padding: 32px 20px 28px; margin-top: 30px; border-radius: 18px; }
           .refund__icon { width: 52px; height: 52px; margin-bottom: 14px; }
           .refund__watermark { width: 250px; height: 250px; }
-          .refund__lead { font-size: 14px; margin-bottom: 12px; }
+          .refund__lead { font-size: 14px; margin-bottom: 0; }
           .refund__plain { font-size: 12px; letter-spacing: 0.06em; padding: 8px 16px; }
           .refund__fine { font-size: 10px; }
           .refund__corner { width: 16px; height: 16px; }
