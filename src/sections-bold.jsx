@@ -544,7 +544,7 @@ function Hero({ onCTAClick }) {
             display: "flex", justifyContent: "center",
             marginBottom: 28
           }}>
-            <CTAButton onCTAClick={onCTAClick} label="בוא נדבר על הפודקאסט שלך" />
+            <CTAButton onCTAClick={onCTAClick} label="אני רוצה תוכן שבונה אמון" />
           </div>
 
           <p style={{
