@@ -2557,6 +2557,138 @@ function Guarantee({ onCTAClick }) {
             box-shadow: 0 8px 24px -6px rgba(255,213,0,0.5);
           }
         }
+
+        /* === Refund guarantee — the fine print deletes itself === */
+        .refund {
+          position: relative;
+          max-width: 720px;
+          margin: 34px auto 0;
+          padding: 30px 44px 26px;
+          text-align: center;
+          opacity: 0;
+        }
+        .refund[data-in="1"] {
+          animation: refundIn 0.7s cubic-bezier(0.2,0.8,0.2,1) 0.15s forwards;
+        }
+        .refund__halo {
+          position: absolute;
+          left: 50%; top: 42%;
+          width: 460px; height: 160px;
+          transform: translate(-50%, -50%);
+          background: radial-gradient(ellipse at center, rgba(255,213,0,0.13), transparent 70%);
+          filter: blur(6px);
+          pointer-events: none;
+        }
+        .refund[data-in="1"] .refund__halo {
+          animation: refundHalo 4.5s ease-in-out 1.4s infinite;
+        }
+        .refund__corner {
+          position: absolute;
+          width: 18px; height: 18px;
+          border: 1.5px solid var(--accent);
+          opacity: 0.55;
+          pointer-events: none;
+        }
+        .refund__corner--tl { top: 0; left: 0; border-right: none; border-bottom: none; border-top-left-radius: 4px; }
+        .refund__corner--tr { top: 0; right: 0; border-left: none; border-bottom: none; border-top-right-radius: 4px; }
+        .refund__corner--bl { bottom: 0; left: 0; border-right: none; border-top: none; border-bottom-left-radius: 4px; }
+        .refund__corner--br { bottom: 0; right: 0; border-left: none; border-top: none; border-bottom-right-radius: 4px; }
+        .refund__headline {
+          position: relative;
+          font-size: clamp(21px, 2.2cqw, 30px);
+          font-weight: 900;
+          line-height: 1.25;
+          letter-spacing: -0.01em;
+          color: rgba(255,255,255,0.95);
+          text-wrap: balance;
+        }
+        .refund__accent {
+          color: var(--accent);
+          text-shadow: 0 0 34px rgba(255,213,0,0.45), 0 0 70px rgba(255,213,0,0.18);
+        }
+        /* Both lines share one grid cell so the swap never shifts the layout. */
+        .refund__swap {
+          display: grid;
+          place-items: center;
+          margin-top: 16px;
+          min-height: 26px;
+        }
+        .refund__swap > * { grid-area: 1 / 1; }
+        /* Short enough to stay on one line at any width, so the strike is
+           always a single clean cut through it. */
+        .refund__fine {
+          position: relative;
+          display: inline-block;
+          font-size: 10.5px;
+          line-height: 1.5;
+          opacity: 0;
+          color: rgba(255,255,255,0.42);
+        }
+        /* One continuous animation — appear, hold while the strike draws,
+           then dissolve. Two stacked animations fought over opacity. */
+        .refund[data-in="1"] .refund__fine {
+          animation: refundFine 2.4s ease 0.55s forwards;
+        }
+        .refund__strike {
+          position: absolute;
+          left: 0; right: 0;
+          top: 52%;
+          height: 2px;
+          border-radius: 2px;
+          background: linear-gradient(90deg, transparent, #ff3b3b 10%, #ff3b3b 90%, transparent);
+          box-shadow: 0 0 12px rgba(255,59,59,0.65);
+          transform: scaleX(0);
+          transform-origin: right;
+        }
+        .refund[data-in="1"] .refund__strike {
+          animation: refundStrike 0.55s cubic-bezier(0.3,0.9,0.3,1) 1.35s forwards;
+        }
+        .refund__plain {
+          font-size: 13px;
+          font-weight: 700;
+          letter-spacing: 0.14em;
+          color: rgba(255,255,255,0.92);
+          opacity: 0;
+        }
+        .refund[data-in="1"] .refund__plain {
+          animation: refundPlainIn 0.55s cubic-bezier(0.2,0.8,0.2,1) 2.45s forwards;
+        }
+        .refund__sep { color: var(--accent); opacity: 0.8; margin: 0 8px; }
+        @keyframes refundIn {
+          from { opacity: 0; transform: translateY(16px); }
+          to   { opacity: 1; transform: none; }
+        }
+        @keyframes refundHalo {
+          0%, 100% { opacity: 0.55; }
+          50%      { opacity: 1; }
+        }
+        @keyframes refundFine {
+          0%   { opacity: 0; transform: translateY(0); }
+          15%  { opacity: 1; }
+          60%  { opacity: 1; transform: translateY(0); }
+          82%  { opacity: 0; transform: translateY(-7px); }
+          100% { opacity: 0; transform: translateY(-7px); }
+        }
+        @keyframes refundStrike {
+          from { transform: scaleX(0); }
+          to   { transform: scaleX(1); }
+        }
+        @keyframes refundPlainIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to   { opacity: 1; transform: none; }
+        }
+        @container (max-width: 600px) {
+          .refund { padding: 26px 26px 22px; margin-top: 26px; }
+          .refund__plain { font-size: 11.5px; letter-spacing: 0.1em; }
+          .refund__fine { font-size: 9.5px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .refund, .refund[data-in="1"] { opacity: 1; animation: none; }
+          .refund[data-in="1"] .refund__halo { animation: none; }
+          .refund[data-in="1"] .refund__fine { animation: none; opacity: 0; }
+          .refund[data-in="1"] .refund__strike { animation: none; }
+          .refund__plain, .refund[data-in="1"] .refund__plain { animation: none; opacity: 1; }
+        }
       `}</style>
 
       <div className="wrap" style={{ position: "relative", zIndex: 1 }}>
@@ -2828,6 +2960,34 @@ function Guarantee({ onCTAClick }) {
                 </div>
               </div>
             )}
+          </div>
+
+          {/* Refund guarantee — the fine print strikes itself out and is
+              replaced by the plain promise. Answers the countdown's urgency. */}
+          <div className="refund" data-in={inView ? "1" : "0"}>
+            <span aria-hidden="true" className="refund__halo" />
+            <span aria-hidden="true" className="refund__corner refund__corner--tl" />
+            <span aria-hidden="true" className="refund__corner refund__corner--tr" />
+            <span aria-hidden="true" className="refund__corner refund__corner--bl" />
+            <span aria-hidden="true" className="refund__corner refund__corner--br" />
+
+            <div className="display refund__headline">
+              <span className="refund__accent">החזר כספי מלא</span> אם אתם לא מרוצים
+            </div>
+
+            <div className="refund__swap">
+              {/* The wrapper carries the animation and must NOT be aria-hidden —
+                  styles.css kills animations on [aria-hidden] to spare phone
+                  GPUs. The text inside is what gets hidden from screen readers,
+                  so the fake legalese is never announced. */}
+              <span className="refund__fine">
+                <span aria-hidden="true">בכפוף לתקנון · בניכוי דמי טיפול · ט.ל.ח</span>
+                <span className="refund__strike" />
+              </span>
+              <span className="mono refund__plain">
+                בלי אותיות קטנות<span className="refund__sep">·</span>בלי שאלות
+              </span>
+            </div>
           </div>
 
           {/* Countdown — sits where the bonus-total used to be */}
