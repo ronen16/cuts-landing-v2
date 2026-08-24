@@ -2643,12 +2643,25 @@ function Guarantee({ onCTAClick }) {
         .refund[data-in="1"] .refund__iconCheck {
           animation: refundDraw 0.5s ease-out 1.15s forwards;
         }
+        /* Two quiet set-up lines, then the promise at full size — the build-up
+           is what makes the yellow line land. */
+        .refund__lead {
+          position: relative;
+          z-index: 1;
+          margin-bottom: 14px;
+          font-size: clamp(15px, 1.5cqw, 20px);
+          font-weight: 700;
+          line-height: 1.5;
+          color: rgba(255,255,255,0.82);
+          text-wrap: balance;
+        }
+        .refund__lead span { display: block; }
         .refund__headline {
           position: relative;
           z-index: 1;
-          font-size: clamp(30px, 3.4cqw, 46px);
+          font-size: clamp(24px, 2.9cqw, 38px);
           font-weight: 900;
-          line-height: 1.1;
+          line-height: 1.15;
           letter-spacing: -0.02em;
           color: rgba(255,255,255,0.96);
           text-wrap: balance;
@@ -2657,13 +2670,6 @@ function Guarantee({ onCTAClick }) {
           display: block;
           color: var(--accent);
           text-shadow: 0 0 44px rgba(255,213,0,0.55), 0 0 90px rgba(255,213,0,0.22);
-        }
-        .refund__sub {
-          display: block;
-          margin-top: 4px;
-          font-size: 0.62em;
-          font-weight: 800;
-          color: rgba(255,255,255,0.9);
         }
         /* Both lines share one grid cell so the swap never shifts the layout. */
         .refund__swap {
@@ -2766,6 +2772,7 @@ function Guarantee({ onCTAClick }) {
           .refund { padding: 32px 20px 28px; margin-top: 30px; border-radius: 18px; }
           .refund__icon { width: 52px; height: 52px; margin-bottom: 14px; }
           .refund__watermark { width: 250px; height: 250px; }
+          .refund__lead { font-size: 14px; margin-bottom: 12px; }
           .refund__plain { font-size: 12px; letter-spacing: 0.06em; padding: 8px 16px; }
           .refund__fine { font-size: 10px; }
           .refund__corner { width: 16px; height: 16px; }
@@ -3082,9 +3089,13 @@ function Guarantee({ onCTAClick }) {
               </svg>
             </span>
 
+            <div className="refund__lead">
+              <span>ובגלל שאנחנו כל כך בטוחים במה שאתם הולכים לקבל אצלנו</span>
+              <span>אם לא תהיו מרוצים מהשירות והתוצרים שלנו</span>
+            </div>
+
             <div className="display refund__headline">
-              <span className="refund__accent">החזר כספי מלא</span>
-              <span className="refund__sub">אם אתם לא מרוצים</span>
+              <span className="refund__accent">תקבלו החזר כספי מלא על פרק ההיכרות</span>
             </div>
 
             <div className="refund__swap">
