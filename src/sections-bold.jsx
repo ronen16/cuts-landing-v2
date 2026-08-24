@@ -2561,57 +2561,118 @@ function Guarantee({ onCTAClick }) {
         /* === Refund guarantee — the fine print deletes itself === */
         .refund {
           position: relative;
-          max-width: 720px;
-          margin: 34px auto 0;
-          padding: 30px 44px 26px;
+          max-width: 820px;
+          margin: 44px auto 0;
+          padding: 44px 48px 38px;
           text-align: center;
+          border-radius: 22px;
+          border: 1.5px solid rgba(255,213,0,0.34);
+          background:
+            radial-gradient(120% 140% at 50% 0%, rgba(255,213,0,0.09), transparent 62%),
+            rgba(255,255,255,0.022);
+          overflow: hidden;
+          isolation: isolate;
           opacity: 0;
         }
         .refund[data-in="1"] {
-          animation: refundIn 0.7s cubic-bezier(0.2,0.8,0.2,1) 0.15s forwards;
+          animation:
+            refundIn 0.7s cubic-bezier(0.2,0.8,0.2,1) 0.15s forwards,
+            refundPanelGlow 4.2s ease-in-out 1.6s infinite;
+        }
+        /* Oversized ghost shield — the same trick the yes/no cards use with
+           their giant check and cross, so the panel reads as part of the set. */
+        .refund__watermark {
+          position: absolute;
+          left: 50%; top: 50%;
+          width: 340px; height: 340px;
+          transform: translate(-50%, -50%);
+          color: var(--accent);
+          opacity: 0.05;
+          pointer-events: none;
+          z-index: 0;
         }
         .refund__halo {
           position: absolute;
-          left: 50%; top: 42%;
-          width: 460px; height: 160px;
+          left: 50%; top: 34%;
+          width: 520px; height: 190px;
           transform: translate(-50%, -50%);
-          background: radial-gradient(ellipse at center, rgba(255,213,0,0.13), transparent 70%);
-          filter: blur(6px);
+          background: radial-gradient(ellipse at center, rgba(255,213,0,0.16), transparent 70%);
+          filter: blur(8px);
           pointer-events: none;
+          z-index: 0;
         }
         .refund[data-in="1"] .refund__halo {
           animation: refundHalo 4.5s ease-in-out 1.4s infinite;
         }
         .refund__corner {
           position: absolute;
-          width: 18px; height: 18px;
-          border: 1.5px solid var(--accent);
-          opacity: 0.55;
+          width: 20px; height: 20px;
+          border: 2px solid var(--accent);
+          opacity: 0.8;
           pointer-events: none;
+          z-index: 2;
         }
-        .refund__corner--tl { top: 0; left: 0; border-right: none; border-bottom: none; border-top-left-radius: 4px; }
-        .refund__corner--tr { top: 0; right: 0; border-left: none; border-bottom: none; border-top-right-radius: 4px; }
-        .refund__corner--bl { bottom: 0; left: 0; border-right: none; border-top: none; border-bottom-left-radius: 4px; }
-        .refund__corner--br { bottom: 0; right: 0; border-left: none; border-top: none; border-bottom-right-radius: 4px; }
+        .refund__corner--tl { top: 12px; left: 12px; border-right: none; border-bottom: none; border-top-left-radius: 5px; }
+        .refund__corner--tr { top: 12px; right: 12px; border-left: none; border-bottom: none; border-top-right-radius: 5px; }
+        .refund__corner--bl { bottom: 12px; left: 12px; border-right: none; border-top: none; border-bottom-left-radius: 5px; }
+        .refund__corner--br { bottom: 12px; right: 12px; border-left: none; border-top: none; border-bottom-right-radius: 5px; }
+        /* Wrapper carries the pop-in; the svg inside is aria-hidden and would
+           have its animation stripped on phones (see styles.css). */
+        .refund__icon {
+          position: relative;
+          z-index: 1;
+          display: block;
+          width: 64px; height: 64px;
+          margin: 0 auto 18px;
+          color: var(--accent);
+          opacity: 0;
+          filter: drop-shadow(0 0 18px rgba(255,213,0,0.5));
+        }
+        .refund[data-in="1"] .refund__icon {
+          animation: refundIconIn 0.55s cubic-bezier(0.2,0.9,0.3,1.4) 0.4s forwards;
+        }
+        .refund__icon svg { width: 100%; height: 100%; display: block; }
+        /* pathLength="1" normalises every path, so one dash pair draws both. */
+        .refund__iconShield, .refund__iconCheck {
+          stroke-dasharray: 1;
+          stroke-dashoffset: 1;
+        }
+        .refund[data-in="1"] .refund__iconShield {
+          animation: refundDraw 0.8s ease-out 0.5s forwards;
+        }
+        .refund[data-in="1"] .refund__iconCheck {
+          animation: refundDraw 0.5s ease-out 1.15s forwards;
+        }
         .refund__headline {
           position: relative;
-          font-size: clamp(21px, 2.2cqw, 30px);
+          z-index: 1;
+          font-size: clamp(30px, 3.4cqw, 46px);
           font-weight: 900;
-          line-height: 1.25;
-          letter-spacing: -0.01em;
-          color: rgba(255,255,255,0.95);
+          line-height: 1.1;
+          letter-spacing: -0.02em;
+          color: rgba(255,255,255,0.96);
           text-wrap: balance;
         }
         .refund__accent {
+          display: block;
           color: var(--accent);
-          text-shadow: 0 0 34px rgba(255,213,0,0.45), 0 0 70px rgba(255,213,0,0.18);
+          text-shadow: 0 0 44px rgba(255,213,0,0.55), 0 0 90px rgba(255,213,0,0.22);
+        }
+        .refund__sub {
+          display: block;
+          margin-top: 4px;
+          font-size: 0.62em;
+          font-weight: 800;
+          color: rgba(255,255,255,0.9);
         }
         /* Both lines share one grid cell so the swap never shifts the layout. */
         .refund__swap {
+          position: relative;
+          z-index: 1;
           display: grid;
           place-items: center;
-          margin-top: 16px;
-          min-height: 26px;
+          margin-top: 22px;
+          min-height: 34px;
         }
         .refund__swap > * { grid-area: 1 / 1; }
         /* Short enough to stay on one line at any width, so the strike is
@@ -2619,15 +2680,15 @@ function Guarantee({ onCTAClick }) {
         .refund__fine {
           position: relative;
           display: inline-block;
-          font-size: 10.5px;
+          font-size: 11.5px;
           line-height: 1.5;
           opacity: 0;
-          color: rgba(255,255,255,0.42);
+          color: rgba(255,255,255,0.45);
         }
         /* One continuous animation — appear, hold while the strike draws,
            then dissolve. Two stacked animations fought over opacity. */
         .refund[data-in="1"] .refund__fine {
-          animation: refundFine 2.4s ease 0.55s forwards;
+          animation: refundFine 2.1s ease 1.5s forwards;
         }
         .refund__strike {
           position: absolute;
@@ -2641,22 +2702,46 @@ function Guarantee({ onCTAClick }) {
           transform-origin: right;
         }
         .refund[data-in="1"] .refund__strike {
-          animation: refundStrike 0.55s cubic-bezier(0.3,0.9,0.3,1) 1.35s forwards;
+          animation: refundStrike 0.5s cubic-bezier(0.3,0.9,0.3,1) 2.05s forwards;
         }
+        /* The resolved promise lands as a stamped chip, not a caption. */
         .refund__plain {
-          font-size: 13px;
-          font-weight: 700;
-          letter-spacing: 0.14em;
-          color: rgba(255,255,255,0.92);
+          display: inline-flex;
+          align-items: center;
+          padding: 9px 22px;
+          border: 1.5px solid rgba(255,213,0,0.55);
+          border-radius: 999px;
+          background: rgba(255,213,0,0.07);
+          font-size: 14px;
+          font-weight: 800;
+          letter-spacing: 0.1em;
+          white-space: nowrap;
+          color: #fff;
           opacity: 0;
         }
         .refund[data-in="1"] .refund__plain {
-          animation: refundPlainIn 0.55s cubic-bezier(0.2,0.8,0.2,1) 2.45s forwards;
+          animation: refundStamp 0.55s cubic-bezier(0.2,0.9,0.3,1.5) 3s forwards;
         }
-        .refund__sep { color: var(--accent); opacity: 0.8; margin: 0 8px; }
+        .refund__sep { color: var(--accent); margin: 0 9px; }
         @keyframes refundIn {
           from { opacity: 0; transform: translateY(16px); }
           to   { opacity: 1; transform: none; }
+        }
+        @keyframes refundPanelGlow {
+          0%, 100% { box-shadow: 0 0 0 0 rgba(255,213,0,0); }
+          50%      { box-shadow: 0 22px 70px -24px rgba(255,213,0,0.45); }
+        }
+        @keyframes refundIconIn {
+          from { opacity: 0; transform: translateY(10px) scale(0.8); }
+          to   { opacity: 1; transform: none; }
+        }
+        @keyframes refundDraw {
+          from { stroke-dashoffset: 1; }
+          to   { stroke-dashoffset: 0; }
+        }
+        @keyframes refundStamp {
+          0%   { opacity: 0; transform: scale(1.25); }
+          100% { opacity: 1; transform: scale(1); }
         }
         @keyframes refundHalo {
           0%, 100% { opacity: 0.55; }
@@ -2678,16 +2763,26 @@ function Guarantee({ onCTAClick }) {
           to   { opacity: 1; transform: none; }
         }
         @container (max-width: 600px) {
-          .refund { padding: 26px 26px 22px; margin-top: 26px; }
-          .refund__plain { font-size: 11.5px; letter-spacing: 0.1em; }
-          .refund__fine { font-size: 9.5px; }
+          .refund { padding: 32px 20px 28px; margin-top: 30px; border-radius: 18px; }
+          .refund__icon { width: 52px; height: 52px; margin-bottom: 14px; }
+          .refund__watermark { width: 250px; height: 250px; }
+          .refund__plain { font-size: 12px; letter-spacing: 0.06em; padding: 8px 16px; }
+          .refund__fine { font-size: 10px; }
+          .refund__corner { width: 16px; height: 16px; }
+          .refund__corner--tl, .refund__corner--tr { top: 9px; }
+          .refund__corner--bl, .refund__corner--br { bottom: 9px; }
+          .refund__corner--tl, .refund__corner--bl { left: 9px; }
+          .refund__corner--tr, .refund__corner--br { right: 9px; }
         }
         @media (prefers-reduced-motion: reduce) {
           .refund, .refund[data-in="1"] { opacity: 1; animation: none; }
           .refund[data-in="1"] .refund__halo { animation: none; }
+          .refund__icon, .refund[data-in="1"] .refund__icon { animation: none; opacity: 1; }
+          .refund[data-in="1"] .refund__iconShield,
+          .refund[data-in="1"] .refund__iconCheck { animation: none; stroke-dashoffset: 0; }
           .refund[data-in="1"] .refund__fine { animation: none; opacity: 0; }
           .refund[data-in="1"] .refund__strike { animation: none; }
-          .refund__plain, .refund[data-in="1"] .refund__plain { animation: none; opacity: 1; }
+          .refund__plain, .refund[data-in="1"] .refund__plain { animation: none; opacity: 1; transform: none; }
         }
       `}</style>
 
@@ -2966,13 +3061,30 @@ function Guarantee({ onCTAClick }) {
               replaced by the plain promise. Answers the countdown's urgency. */}
           <div className="refund" data-in={inView ? "1" : "0"}>
             <span aria-hidden="true" className="refund__halo" />
+            <svg aria-hidden="true" className="refund__watermark" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 2 L20.5 5.6 V11 C20.5 16.1 16.8 20.4 12 22 C7.2 20.4 3.5 16.1 3.5 11 V5.6 Z" />
+              <path d="M8.2 12.1 L11 14.9 L16 9.3" />
+            </svg>
             <span aria-hidden="true" className="refund__corner refund__corner--tl" />
             <span aria-hidden="true" className="refund__corner refund__corner--tr" />
             <span aria-hidden="true" className="refund__corner refund__corner--bl" />
             <span aria-hidden="true" className="refund__corner refund__corner--br" />
 
+            {/* Shield draws itself, then the check lands inside it. */}
+            <span className="refund__icon">
+              <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+                <path className="refund__iconShield" pathLength="1"
+                  d="M12 2 L20.5 5.6 V11 C20.5 16.1 16.8 20.4 12 22 C7.2 20.4 3.5 16.1 3.5 11 V5.6 Z" />
+                <path className="refund__iconCheck" pathLength="1" strokeWidth="2.2"
+                  d="M8.2 12.1 L11 14.9 L16 9.3" />
+              </svg>
+            </span>
+
             <div className="display refund__headline">
-              <span className="refund__accent">החזר כספי מלא</span> אם אתם לא מרוצים
+              <span className="refund__accent">החזר כספי מלא</span>
+              <span className="refund__sub">אם אתם לא מרוצים</span>
             </div>
 
             <div className="refund__swap">
