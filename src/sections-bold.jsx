@@ -1535,10 +1535,16 @@ function CountdownDigit({ value, label }) {
 
 }
 
-// Money coming back: a 320° loop around (12,12) with the gap at the top, run
-// anti-clockwise so the arrowhead reads as returning rather than refreshing.
-const REFUND_LOOP = "M8.82 3.26 A 9.3 9.3 0 1 0 15.18 3.26";
-const REFUND_ARROWHEAD = "M17.61 2.81 L15.18 3.26 L16.75 5.16";
+// A crest rather than the stock rounded shield: straight shoulders down to a
+// squared waist, then curved flanks into the point. The inner outline is the
+// same path at 74%, which gives the doubled-line look of an emblem.
+const SHIELD_OUTER =
+  "M12.00 2.20 L20.30 6.05 L20.30 12.30 C20.30 17.05 16.70 20.45 12.00 21.90 " +
+  "C7.30 20.45 3.70 17.05 3.70 12.30 L3.70 6.05 Z";
+const SHIELD_INNER =
+  "M12.00 4.89 L18.14 7.74 L18.14 12.37 C18.14 15.88 15.48 18.40 12.00 19.47 " +
+  "C8.52 18.40 5.86 15.88 5.86 12.37 L5.86 7.74 Z";
+const SHIELD_CHECK = "M8.9 12.3 L11.1 14.6 L15.3 9.9";
 
 function Guarantee({ onCTAClick }) {
   const sectionRef = React.useRef(null);
@@ -2638,24 +2644,19 @@ function Guarantee({ onCTAClick }) {
         }
         .refund__icon svg { width: 100%; height: 100%; display: block; }
         /* pathLength="1" normalises every path, so one dash pair draws both. */
-        .refund__loop, .refund__loopHead {
+        .refund__crest, .refund__crestInner, .refund__crestCheck {
           stroke-dasharray: 1;
           stroke-dashoffset: 1;
         }
-        .refund[data-in="1"] .refund__loop {
-          animation: refundDraw 0.85s ease-out 0.5s forwards;
+        .refund__crestInner { opacity: 0.45; }
+        .refund[data-in="1"] .refund__crest {
+          animation: refundDraw 0.8s ease-out 0.5s forwards;
         }
-        .refund[data-in="1"] .refund__loopHead {
-          animation: refundDraw 0.22s ease-out 1.3s forwards;
+        .refund[data-in="1"] .refund__crestInner {
+          animation: refundDraw 0.55s ease-out 0.95s forwards;
         }
-        .refund__shekel {
-          transform: scale(0.4);
-          transform-box: fill-box;
-          transform-origin: center;
-          opacity: 0;
-        }
-        .refund[data-in="1"] .refund__shekel {
-          animation: refundCoin 0.45s cubic-bezier(0.2,0.9,0.3,1.5) 1.45s forwards;
+        .refund[data-in="1"] .refund__crestCheck {
+          animation: refundDraw 0.42s cubic-bezier(0.3,0.9,0.3,1) 1.35s forwards;
         }
         /* One quiet set-up line, then the condition and the promise as a single
            two-line accent block — same size, no gap between them. */
@@ -2757,10 +2758,6 @@ function Guarantee({ onCTAClick }) {
           from { stroke-dashoffset: 1; }
           to   { stroke-dashoffset: 0; }
         }
-        @keyframes refundCoin {
-          from { transform: scale(0.4); opacity: 0; }
-          to   { transform: scale(1); opacity: 1; }
-        }
         @keyframes refundStamp {
           0%   { opacity: 0; transform: scale(1.25); }
           100% { opacity: 1; transform: scale(1); }
@@ -2801,9 +2798,9 @@ function Guarantee({ onCTAClick }) {
           .refund, .refund[data-in="1"] { opacity: 1; animation: none; }
           .refund[data-in="1"] .refund__halo { animation: none; }
           .refund__icon, .refund[data-in="1"] .refund__icon { animation: none; opacity: 1; }
-          .refund[data-in="1"] .refund__loop,
-          .refund[data-in="1"] .refund__loopHead { animation: none; stroke-dashoffset: 0; }
-          .refund__shekel, .refund[data-in="1"] .refund__shekel { animation: none; transform: none; opacity: 1; }
+          .refund[data-in="1"] .refund__crest,
+          .refund[data-in="1"] .refund__crestInner,
+          .refund[data-in="1"] .refund__crestCheck { animation: none; stroke-dashoffset: 0; }
           .refund[data-in="1"] .refund__fine { animation: none; opacity: 0; }
           .refund[data-in="1"] .refund__strike { animation: none; }
           .refund__plain, .refund[data-in="1"] .refund__plain { animation: none; opacity: 1; transform: none; }
@@ -3086,24 +3083,22 @@ function Guarantee({ onCTAClick }) {
           <div className="refund" data-in={inView ? "1" : "0"}>
             <span aria-hidden="true" className="refund__halo" />
             <svg aria-hidden="true" className="refund__watermark" viewBox="0 0 24 24"
-              fill="none" stroke="currentColor" strokeWidth="0.7" strokeLinecap="round" strokeLinejoin="round">
-              <path d={REFUND_LOOP} />
-              <path d={REFUND_ARROWHEAD} />
+              fill="none" stroke="currentColor" strokeWidth="0.6" strokeLinecap="round" strokeLinejoin="round">
+              <path d={SHIELD_OUTER} />
+              <path d={SHIELD_INNER} />
             </svg>
             <span aria-hidden="true" className="refund__corner refund__corner--tl" />
             <span aria-hidden="true" className="refund__corner refund__corner--tr" />
             <span aria-hidden="true" className="refund__corner refund__corner--bl" />
             <span aria-hidden="true" className="refund__corner refund__corner--br" />
 
-            {/* The loop travels back around to the shekel, which then lands. */}
+            {/* Crest draws, its inner line follows, then the check lands. */}
             <span className="refund__icon">
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                 strokeLinejoin="round" strokeLinecap="round">
-                <path className="refund__loop" pathLength="1" strokeWidth="1.7" d={REFUND_LOOP} />
-                <path className="refund__loopHead" pathLength="1" strokeWidth="1.7" d={REFUND_ARROWHEAD} />
-                <text className="refund__shekel" x="12" y="12.1"
-                  textAnchor="middle" dominantBaseline="central"
-                  fontSize="11.5" fontWeight="900" fill="currentColor" stroke="none">₪</text>
+                <path className="refund__crest" pathLength="1" strokeWidth="1.6" d={SHIELD_OUTER} />
+                <path className="refund__crestInner" pathLength="1" strokeWidth="0.75" d={SHIELD_INNER} />
+                <path className="refund__crestCheck" pathLength="1" strokeWidth="2.1" d={SHIELD_CHECK} />
               </svg>
             </span>
 
