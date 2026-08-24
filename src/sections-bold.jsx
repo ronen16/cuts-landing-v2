@@ -1535,6 +1535,25 @@ function CountdownDigit({ value, label }) {
 
 }
 
+// Notched edge of the guarantee seal: 16 points alternating between radius
+// 10.5 and 9.1 around (12,12), traced clockwise from the top.
+const SEAL_EDGE =
+  "M12.00 1.50 L13.78 3.07 L16.02 2.30 L17.06 4.43 L19.42 4.58 L19.57 6.94 " +
+  "L21.70 7.98 L20.93 10.22 L22.50 12.00 L20.93 13.78 L21.70 16.02 L19.57 17.06 " +
+  "L19.42 19.42 L17.06 19.57 L16.02 21.70 L13.78 20.93 L12.00 22.50 L10.22 20.93 " +
+  "L7.98 21.70 L6.94 19.57 L4.58 19.42 L4.43 17.06 L2.30 16.02 L3.07 13.78 " +
+  "L1.50 12.00 L3.07 10.22 L2.30 7.98 L4.43 6.94 L4.58 4.58 L6.94 4.43 " +
+  "L7.98 2.30 L10.22 3.07 Z";
+
+// Waveform inside the seal — heights chosen to read as speech, not a bell curve.
+const SEAL_BARS = [
+  { x: 8.15, h: 3.4 },
+  { x: 9.88, h: 6.4 },
+  { x: 11.61, h: 8.4 },
+  { x: 13.34, h: 5.2 },
+  { x: 15.07, h: 3.0 },
+];
+
 function Guarantee({ onCTAClick }) {
   const sectionRef = React.useRef(null);
   const [inView, setInView] = React.useState(false);
@@ -2633,15 +2652,25 @@ function Guarantee({ onCTAClick }) {
         }
         .refund__icon svg { width: 100%; height: 100%; display: block; }
         /* pathLength="1" normalises every path, so one dash pair draws both. */
-        .refund__iconShield, .refund__iconCheck {
+        .refund__sealEdge, .refund__sealRing {
           stroke-dasharray: 1;
           stroke-dashoffset: 1;
         }
-        .refund[data-in="1"] .refund__iconShield {
-          animation: refundDraw 0.8s ease-out 0.5s forwards;
+        .refund[data-in="1"] .refund__sealEdge {
+          animation: refundDraw 0.85s ease-out 0.5s forwards;
         }
-        .refund[data-in="1"] .refund__iconCheck {
-          animation: refundDraw 0.5s ease-out 1.15s forwards;
+        .refund[data-in="1"] .refund__sealRing {
+          animation: refundDraw 0.5s ease-out 1.05s forwards;
+        }
+        .refund__sealBar {
+          transform: scaleY(0);
+          transform-box: fill-box;
+          transform-origin: center;
+          opacity: 0.92;
+        }
+        .refund[data-in="1"] .refund__sealBar {
+          animation: refundBar 0.42s cubic-bezier(0.2,0.9,0.3,1.4) forwards;
+          animation-delay: calc(1.3s + var(--bar-i) * 0.07s);
         }
         /* Two quiet set-up lines, then the promise at full size — the build-up
            is what makes the yellow line land. */
@@ -2656,6 +2685,13 @@ function Guarantee({ onCTAClick }) {
           text-wrap: balance;
         }
         .refund__lead span { display: block; }
+        /* Accent on the condition too, but dimmer and unglowed so the promise
+           below it still reads as the loudest line. */
+        .refund__leadAccent {
+          color: var(--accent);
+          font-weight: 800;
+          opacity: 0.92;
+        }
         .refund__headline {
           position: relative;
           z-index: 1;
@@ -2745,6 +2781,10 @@ function Guarantee({ onCTAClick }) {
           from { stroke-dashoffset: 1; }
           to   { stroke-dashoffset: 0; }
         }
+        @keyframes refundBar {
+          from { transform: scaleY(0); }
+          to   { transform: scaleY(1); }
+        }
         @keyframes refundStamp {
           0%   { opacity: 0; transform: scale(1.25); }
           100% { opacity: 1; transform: scale(1); }
@@ -2785,8 +2825,9 @@ function Guarantee({ onCTAClick }) {
           .refund, .refund[data-in="1"] { opacity: 1; animation: none; }
           .refund[data-in="1"] .refund__halo { animation: none; }
           .refund__icon, .refund[data-in="1"] .refund__icon { animation: none; opacity: 1; }
-          .refund[data-in="1"] .refund__iconShield,
-          .refund[data-in="1"] .refund__iconCheck { animation: none; stroke-dashoffset: 0; }
+          .refund[data-in="1"] .refund__sealEdge,
+          .refund[data-in="1"] .refund__sealRing { animation: none; stroke-dashoffset: 0; }
+          .refund__sealBar, .refund[data-in="1"] .refund__sealBar { animation: none; transform: scaleY(1); }
           .refund[data-in="1"] .refund__fine { animation: none; opacity: 0; }
           .refund[data-in="1"] .refund__strike { animation: none; }
           .refund__plain, .refund[data-in="1"] .refund__plain { animation: none; opacity: 1; transform: none; }
@@ -3069,29 +3110,38 @@ function Guarantee({ onCTAClick }) {
           <div className="refund" data-in={inView ? "1" : "0"}>
             <span aria-hidden="true" className="refund__halo" />
             <svg aria-hidden="true" className="refund__watermark" viewBox="0 0 24 24"
-              fill="none" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 2 L20.5 5.6 V11 C20.5 16.1 16.8 20.4 12 22 C7.2 20.4 3.5 16.1 3.5 11 V5.6 Z" />
-              <path d="M8.2 12.1 L11 14.9 L16 9.3" />
+              fill="none" stroke="currentColor" strokeWidth="0.9" strokeLinejoin="round">
+              <path d={SEAL_EDGE} />
+              <circle cx="12" cy="12" r="7.1" />
             </svg>
             <span aria-hidden="true" className="refund__corner refund__corner--tl" />
             <span aria-hidden="true" className="refund__corner refund__corner--tr" />
             <span aria-hidden="true" className="refund__corner refund__corner--bl" />
             <span aria-hidden="true" className="refund__corner refund__corner--br" />
 
-            {/* Shield draws itself, then the check lands inside it. */}
+            {/* A certification seal whose centre is the thing being guaranteed:
+                the notched edge draws, the ring closes, then the waveform rises
+                bar by bar — the same audio motif the hero opens with. */}
             <span className="refund__icon">
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-                <path className="refund__iconShield" pathLength="1"
-                  d="M12 2 L20.5 5.6 V11 C20.5 16.1 16.8 20.4 12 22 C7.2 20.4 3.5 16.1 3.5 11 V5.6 Z" />
-                <path className="refund__iconCheck" pathLength="1" strokeWidth="2.2"
-                  d="M8.2 12.1 L11 14.9 L16 9.3" />
+                strokeLinejoin="round" strokeLinecap="round">
+                <path className="refund__sealEdge" pathLength="1" strokeWidth="1.35" d={SEAL_EDGE} />
+                <circle className="refund__sealRing" pathLength="1" strokeWidth="0.9" cx="12" cy="12" r="7.1" />
+                {SEAL_BARS.map((bar, i) =>
+                <rect
+                  key={i}
+                  className="refund__sealBar"
+                  style={{ ["--bar-i"]: i }}
+                  x={bar.x} y={12 - bar.h / 2} width="1.25" height={bar.h}
+                  rx="0.62" fill="currentColor" stroke="none"
+                />
+                )}
               </svg>
             </span>
 
             <div className="refund__lead">
               <span>ובגלל שאנחנו כל כך בטוחים במה שאתם הולכים לקבל אצלנו</span>
-              <span>אם לא תהיו מרוצים מהשירות והתוצרים שלנו</span>
+              <span className="refund__leadAccent">אם לא תהיו מרוצים מהשירות והתוצרים שלנו</span>
             </div>
 
             <div className="display refund__headline">
