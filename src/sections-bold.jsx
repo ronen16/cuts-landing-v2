@@ -1535,24 +1535,10 @@ function CountdownDigit({ value, label }) {
 
 }
 
-// Notched edge of the guarantee seal: 16 points alternating between radius
-// 10.5 and 9.1 around (12,12), traced clockwise from the top.
-const SEAL_EDGE =
-  "M12.00 1.50 L13.78 3.07 L16.02 2.30 L17.06 4.43 L19.42 4.58 L19.57 6.94 " +
-  "L21.70 7.98 L20.93 10.22 L22.50 12.00 L20.93 13.78 L21.70 16.02 L19.57 17.06 " +
-  "L19.42 19.42 L17.06 19.57 L16.02 21.70 L13.78 20.93 L12.00 22.50 L10.22 20.93 " +
-  "L7.98 21.70 L6.94 19.57 L4.58 19.42 L4.43 17.06 L2.30 16.02 L3.07 13.78 " +
-  "L1.50 12.00 L3.07 10.22 L2.30 7.98 L4.43 6.94 L4.58 4.58 L6.94 4.43 " +
-  "L7.98 2.30 L10.22 3.07 Z";
-
-// Waveform inside the seal — heights chosen to read as speech, not a bell curve.
-const SEAL_BARS = [
-  { x: 8.15, h: 3.4 },
-  { x: 9.88, h: 6.4 },
-  { x: 11.61, h: 8.4 },
-  { x: 13.34, h: 5.2 },
-  { x: 15.07, h: 3.0 },
-];
+// Money coming back: a 320° loop around (12,12) with the gap at the top, run
+// anti-clockwise so the arrowhead reads as returning rather than refreshing.
+const REFUND_LOOP = "M8.82 3.26 A 9.3 9.3 0 1 0 15.18 3.26";
+const REFUND_ARROWHEAD = "M17.61 2.81 L15.18 3.26 L16.75 5.16";
 
 function Guarantee({ onCTAClick }) {
   const sectionRef = React.useRef(null);
@@ -2652,28 +2638,27 @@ function Guarantee({ onCTAClick }) {
         }
         .refund__icon svg { width: 100%; height: 100%; display: block; }
         /* pathLength="1" normalises every path, so one dash pair draws both. */
-        .refund__sealEdge, .refund__sealRing {
+        .refund__loop, .refund__loopHead {
           stroke-dasharray: 1;
           stroke-dashoffset: 1;
         }
-        .refund[data-in="1"] .refund__sealEdge {
+        .refund[data-in="1"] .refund__loop {
           animation: refundDraw 0.85s ease-out 0.5s forwards;
         }
-        .refund[data-in="1"] .refund__sealRing {
-          animation: refundDraw 0.5s ease-out 1.05s forwards;
+        .refund[data-in="1"] .refund__loopHead {
+          animation: refundDraw 0.22s ease-out 1.3s forwards;
         }
-        .refund__sealBar {
-          transform: scaleY(0);
+        .refund__shekel {
+          transform: scale(0.4);
           transform-box: fill-box;
           transform-origin: center;
-          opacity: 0.92;
+          opacity: 0;
         }
-        .refund[data-in="1"] .refund__sealBar {
-          animation: refundBar 0.42s cubic-bezier(0.2,0.9,0.3,1.4) forwards;
-          animation-delay: calc(1.3s + var(--bar-i) * 0.07s);
+        .refund[data-in="1"] .refund__shekel {
+          animation: refundCoin 0.45s cubic-bezier(0.2,0.9,0.3,1.5) 1.45s forwards;
         }
-        /* Two quiet set-up lines, then the promise at full size — the build-up
-           is what makes the yellow line land. */
+        /* One quiet set-up line, then the condition and the promise as a single
+           two-line accent block — same size, no gap between them. */
         .refund__lead {
           position: relative;
           z-index: 1;
@@ -2684,22 +2669,13 @@ function Guarantee({ onCTAClick }) {
           color: rgba(255,255,255,0.82);
           text-wrap: balance;
         }
-        .refund__lead span { display: block; }
-        /* Accent on the condition too, but dimmer and unglowed so the promise
-           below it still reads as the loudest line. */
-        .refund__leadAccent {
-          color: var(--accent);
-          font-weight: 800;
-          opacity: 0.92;
-        }
         .refund__headline {
           position: relative;
           z-index: 1;
-          font-size: clamp(24px, 2.9cqw, 38px);
+          font-size: clamp(21px, 2.5cqw, 33px);
           font-weight: 900;
-          line-height: 1.15;
+          line-height: 1.22;
           letter-spacing: -0.02em;
-          color: rgba(255,255,255,0.96);
           text-wrap: balance;
         }
         .refund__accent {
@@ -2781,9 +2757,9 @@ function Guarantee({ onCTAClick }) {
           from { stroke-dashoffset: 1; }
           to   { stroke-dashoffset: 0; }
         }
-        @keyframes refundBar {
-          from { transform: scaleY(0); }
-          to   { transform: scaleY(1); }
+        @keyframes refundCoin {
+          from { transform: scale(0.4); opacity: 0; }
+          to   { transform: scale(1); opacity: 1; }
         }
         @keyframes refundStamp {
           0%   { opacity: 0; transform: scale(1.25); }
@@ -2825,9 +2801,9 @@ function Guarantee({ onCTAClick }) {
           .refund, .refund[data-in="1"] { opacity: 1; animation: none; }
           .refund[data-in="1"] .refund__halo { animation: none; }
           .refund__icon, .refund[data-in="1"] .refund__icon { animation: none; opacity: 1; }
-          .refund[data-in="1"] .refund__sealEdge,
-          .refund[data-in="1"] .refund__sealRing { animation: none; stroke-dashoffset: 0; }
-          .refund__sealBar, .refund[data-in="1"] .refund__sealBar { animation: none; transform: scaleY(1); }
+          .refund[data-in="1"] .refund__loop,
+          .refund[data-in="1"] .refund__loopHead { animation: none; stroke-dashoffset: 0; }
+          .refund__shekel, .refund[data-in="1"] .refund__shekel { animation: none; transform: none; opacity: 1; }
           .refund[data-in="1"] .refund__fine { animation: none; opacity: 0; }
           .refund[data-in="1"] .refund__strike { animation: none; }
           .refund__plain, .refund[data-in="1"] .refund__plain { animation: none; opacity: 1; transform: none; }
@@ -3110,41 +3086,33 @@ function Guarantee({ onCTAClick }) {
           <div className="refund" data-in={inView ? "1" : "0"}>
             <span aria-hidden="true" className="refund__halo" />
             <svg aria-hidden="true" className="refund__watermark" viewBox="0 0 24 24"
-              fill="none" stroke="currentColor" strokeWidth="0.9" strokeLinejoin="round">
-              <path d={SEAL_EDGE} />
-              <circle cx="12" cy="12" r="7.1" />
+              fill="none" stroke="currentColor" strokeWidth="0.7" strokeLinecap="round" strokeLinejoin="round">
+              <path d={REFUND_LOOP} />
+              <path d={REFUND_ARROWHEAD} />
             </svg>
             <span aria-hidden="true" className="refund__corner refund__corner--tl" />
             <span aria-hidden="true" className="refund__corner refund__corner--tr" />
             <span aria-hidden="true" className="refund__corner refund__corner--bl" />
             <span aria-hidden="true" className="refund__corner refund__corner--br" />
 
-            {/* A certification seal whose centre is the thing being guaranteed:
-                the notched edge draws, the ring closes, then the waveform rises
-                bar by bar — the same audio motif the hero opens with. */}
+            {/* The loop travels back around to the shekel, which then lands. */}
             <span className="refund__icon">
               <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                 strokeLinejoin="round" strokeLinecap="round">
-                <path className="refund__sealEdge" pathLength="1" strokeWidth="1.35" d={SEAL_EDGE} />
-                <circle className="refund__sealRing" pathLength="1" strokeWidth="0.9" cx="12" cy="12" r="7.1" />
-                {SEAL_BARS.map((bar, i) =>
-                <rect
-                  key={i}
-                  className="refund__sealBar"
-                  style={{ ["--bar-i"]: i }}
-                  x={bar.x} y={12 - bar.h / 2} width="1.25" height={bar.h}
-                  rx="0.62" fill="currentColor" stroke="none"
-                />
-                )}
+                <path className="refund__loop" pathLength="1" strokeWidth="1.7" d={REFUND_LOOP} />
+                <path className="refund__loopHead" pathLength="1" strokeWidth="1.7" d={REFUND_ARROWHEAD} />
+                <text className="refund__shekel" x="12" y="12.1"
+                  textAnchor="middle" dominantBaseline="central"
+                  fontSize="11.5" fontWeight="900" fill="currentColor" stroke="none">₪</text>
               </svg>
             </span>
 
             <div className="refund__lead">
-              <span>ובגלל שאנחנו כל כך בטוחים במה שאתם הולכים לקבל אצלנו</span>
-              <span className="refund__leadAccent">אם לא תהיו מרוצים מהשירות והתוצרים שלנו</span>
+              ובגלל שאנחנו כל כך בטוחים במה שאתם הולכים לקבל אצלנו
             </div>
 
             <div className="display refund__headline">
+              <span className="refund__accent">אם לא תהיו מרוצים מהשירות והתוצרים שלנו</span>
               <span className="refund__accent">תקבלו החזר כספי מלא על פרק ההיכרות</span>
             </div>
 
