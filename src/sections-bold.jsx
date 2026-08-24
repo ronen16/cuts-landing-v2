@@ -3006,7 +3006,7 @@ function Guarantee({ onCTAClick }) {
             textAlign: "center", maxWidth: 640, margin: "0 auto 28px",
             fontSize: 15, opacity: 0.7, lineHeight: 1.55
           }}>
-            רק מי שמתחיל פרק <strong style={{ color: "var(--accent)", fontWeight: 800 }}>השבוע</strong> מקבל 4 מדריכים דיגיטליים בחינם — שיעזרו לכם להפיק את המקסימום מהפודקאסטים שלכם.
+            4 בונוסים בחינם — שיעזרו לכם להפיק את המקסימום מהפודקאסטים שלכם.
           </p>
 
           <div className="cq-stack" style={{
