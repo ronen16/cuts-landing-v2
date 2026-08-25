@@ -360,6 +360,10 @@ function useForm() {
         };
       } catch (_) {}
 
+      // Tell the heatmap collector a lead happened — funnel's last stage.
+      // Fire-and-forget: analytics must never affect the submit path.
+      try { document.dispatchEvent(new CustomEvent("cuts:lead")); } catch (_) {}
+
       // Send, THEN redirect. Awaiting (with a short timeout so a slow network
       // can't block the redirect) avoids the double-send race and lets us stash
       // the lead for retry if it failed — so no lead is ever lost.

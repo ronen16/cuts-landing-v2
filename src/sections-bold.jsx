@@ -3457,6 +3457,7 @@ function StudioBookingLead({ form }) {
                   opacity: 0.6, marginBottom: 8, fontWeight: 600
                 }}>שם מלא</label>
                   <input
+                  name="fullName"
                   type="text"
                   placeholder="ישראל ישראלי"
                   value={values.name || ""}
@@ -3489,6 +3490,7 @@ function StudioBookingLead({ form }) {
                   opacity: 0.6, marginBottom: 8, fontWeight: 600
                 }}>טלפון</label>
                   <input
+                  name="phone"
                   type="tel"
                   placeholder="050-0000000"
                   dir="ltr"
@@ -3667,6 +3669,7 @@ function MiniLeadStripe({ form }) {
             }}>
             
               <input
+              name="fullName"
               type="text"
               placeholder="שם מלא"
               value={values.name || ""}
@@ -3686,6 +3689,7 @@ function MiniLeadStripe({ form }) {
               onFocus={(e) => {e.target.style.borderColor = "var(--accent)";}} />
             
               <input
+              name="phone"
               type="tel"
               placeholder="טלפון"
               dir="ltr"
@@ -3852,12 +3856,12 @@ function InlineLeadForm({ form }) {
           }}>
               <div className={`field ${errors.name && touched.name ? "error" : ""}`}>
                 <label>שם מלא</label>
-                <input value={values.name} onChange={(e) => setField("name", e.target.value)} onBlur={() => blur("name")} placeholder="משה לוי" />
+                <input name="fullName" value={values.name} onChange={(e) => setField("name", e.target.value)} onBlur={() => blur("name")} placeholder="משה לוי" />
                 {errors.name && touched.name && <span className="err">{errors.name}</span>}
               </div>
               <div className={`field ${errors.phone && touched.phone ? "error" : ""}`}>
                 <label>טלפון</label>
-                <input dir="ltr" value={values.phone} onChange={(e) => setField("phone", e.target.value.replace(/\D/g, "").slice(0, 10))} onBlur={() => blur("phone")} placeholder="054-000-0000" />
+                <input name="phone" dir="ltr" value={values.phone} onChange={(e) => setField("phone", e.target.value.replace(/\D/g, "").slice(0, 10))} onBlur={() => blur("phone")} placeholder="054-000-0000" />
                 {errors.phone && touched.phone && <span className="err">{errors.phone}</span>}
               </div>
               <div style={{ marginTop: 4 }}>
@@ -4052,12 +4056,12 @@ function FinalCTA({ form, onCTAClick }) {
             }}>
                 <div className={`field ${errors.name && touched.name ? "error" : ""}`}>
                   <label>שם מלא</label>
-                  <input id="cta-form-name" value={values.name} onChange={(e) => setField("name", e.target.value)} onBlur={() => blur("name")} placeholder="משה לוי" />
+                  <input id="cta-form-name" name="fullName" value={values.name} onChange={(e) => setField("name", e.target.value)} onBlur={() => blur("name")} placeholder="משה לוי" />
                   {errors.name && touched.name && <span className="err">{errors.name}</span>}
                 </div>
                 <div className={`field ${errors.phone && touched.phone ? "error" : ""}`}>
                   <label>טלפון</label>
-                  <input dir="ltr" value={values.phone} onChange={(e) => setField("phone", e.target.value.replace(/\D/g, "").slice(0, 10))} onBlur={() => blur("phone")} placeholder="054-000-0000" />
+                  <input name="phone" dir="ltr" value={values.phone} onChange={(e) => setField("phone", e.target.value.replace(/\D/g, "").slice(0, 10))} onBlur={() => blur("phone")} placeholder="054-000-0000" />
                   {errors.phone && touched.phone && <span className="err">{errors.phone}</span>}
                 </div>
                 <div style={{ marginTop: 2 }}>

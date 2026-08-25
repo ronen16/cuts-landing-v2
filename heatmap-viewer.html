@@ -6,9 +6,15 @@
 <meta name="robots" content="noindex, nofollow">
 <title>מפת חום — Cuts</title>
 <style>
-  :root { --accent: #FFD500; --bg: #101014; --card: #1a1a20; --line: rgba(255,255,255,0.1); }
+  :root {
+    --accent: #FFD500; --bg: #101014; --card: #1a1a20; --line: rgba(255,255,255,0.1);
+    --blue: #3CAAFF; --gray: #8A8A96; --rage: #FF3C3C;
+    --space-2: 8px; --space-3: 12px; --space-4: 18px; --space-6: 28px;
+  }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { background: var(--bg); color: #fff; font-family: system-ui, sans-serif; min-height: 100vh; }
+  /* Flex containers below would otherwise out-specify the UA rule for [hidden]. */
+  .legend[hidden], .chipbar[hidden], .stage-outer[hidden] { display: none; }
 
   .bar {
     position: sticky; top: 0; z-index: 20;
@@ -24,18 +30,26 @@
   .tabs { display: flex; background: #24242c; border-radius: 8px; padding: 3px; gap: 2px; }
   .tabs button {
     background: transparent; color: rgba(255,255,255,0.65); border: 0;
-    border-radius: 6px; padding: 7px 18px; font-size: 14px; font-weight: 600; cursor: pointer;
+    border-radius: 6px; padding: 7px 14px; font-size: 14px; font-weight: 600; cursor: pointer;
   }
   .tabs button.on { background: var(--accent); color: #111; }
   .bar .stat { font-size: 13px; opacity: 0.6; margin-inline-start: auto; white-space: nowrap; }
 
-  .legend {
-    display: flex; align-items: center; gap: 8px; font-size: 11.5px; opacity: 0.85;
-  }
+  .legend { display: flex; align-items: center; gap: var(--space-2); font-size: 11.5px; opacity: 0.85; }
   .legend .ramp {
     width: 110px; height: 10px; border-radius: 5px;
     background: linear-gradient(to left, rgba(255,32,32,1), rgba(255,213,0,1), rgba(40,220,120,1), rgba(60,170,255,1), rgba(60,60,255,0.55));
   }
+
+  .chipbar { display: flex; justify-content: center; gap: var(--space-2); padding: var(--space-4) 12px 0; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: #24242c; color: rgba(255,255,255,0.7); cursor: pointer;
+    border: 1px solid var(--line); border-radius: 999px;
+    padding: 7px 15px; font-size: 13px; font-weight: 600; font-family: inherit;
+  }
+  .chip.on { border-color: var(--rage); color: #fff; background: rgba(255,60,60,0.16); }
+  .chip .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--rage); }
 
   .stage-outer { display: flex; justify-content: center; padding: 22px 12px 60px; }
   .stage {
@@ -45,8 +59,8 @@
   }
   .stage iframe { display: block; border: 0; }
   .stage .overlay { position: absolute; top: 0; left: 0; }
-  #clickCanvas { pointer-events: auto; }
-  #scrollCanvas, #labelCanvas { pointer-events: none; }
+  #clickCanvas, #moveCanvas { pointer-events: auto; }
+  #scrollCanvas, #labelCanvas, #rageCanvas { pointer-events: none; }
 
   .tip {
     position: fixed; z-index: 30; pointer-events: none; display: none;
@@ -57,6 +71,35 @@
 
   .msg { padding: 80px 20px; text-align: center; opacity: 0.75; font-size: 15px; line-height: 1.8; }
   .msg b { color: var(--accent); }
+
+  .panel { max-width: 880px; margin: 0 auto; padding: var(--space-6) var(--space-4) 70px; }
+  .panel h2 { font-size: 17px; font-weight: 700; margin-bottom: var(--space-4); color: var(--accent); }
+  .panel .empty { padding: 60px 10px; text-align: center; opacity: 0.65; font-size: 15px; line-height: 1.8; }
+  .panel .empty button { margin-top: 14px; }
+
+  .fstage { margin-bottom: var(--space-4); }
+  .fhead { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+  .fname { font-size: 14.5px; font-weight: 600; }
+  .fmeta { font-size: 12.5px; opacity: 0.6; }
+  .ftrack { background: #1e1e26; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; height: 42px; }
+  .ffill { height: 100%; border-radius: 9px; min-width: 3px; transition: width 0.35s ease; }
+  .ffill.s1 { background: linear-gradient(to left, #5a5f74, #7c8298); }
+  .ffill.s2 { background: linear-gradient(to left, #2b7fc4, var(--blue)); }
+  .ffill.s3 { background: linear-gradient(to left, #d9b500, var(--accent)); }
+  .ftotal { margin-top: var(--space-6); font-size: 15px; text-align: center; }
+  .ftotal strong { color: var(--accent); font-size: 20px; }
+
+  table.forms { width: 100%; border-collapse: collapse; font-size: 14px; }
+  table.forms th, table.forms td { padding: 11px 12px; text-align: right; border-bottom: 1px solid var(--line); }
+  table.forms th { font-size: 12.5px; opacity: 0.6; font-weight: 600; }
+  table.forms td.num { font-variant-numeric: tabular-nums; }
+  table.forms td.drop { font-weight: 700; }
+
+  .chart-wrap { direction: ltr; }
+  .chart-legend { display: flex; gap: var(--space-3); margin-bottom: var(--space-3); flex-wrap: wrap; }
+  .lchip { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; opacity: 0.85; }
+  .lchip i { width: 14px; height: 3px; border-radius: 2px; display: inline-block; }
+  #trendsCanvas { display: block; width: 100%; border: 1px solid var(--line); border-radius: 12px; background: #15151b; }
 </style>
 </head>
 <body>
@@ -64,7 +107,11 @@
     <b>מפת חום</b>
     <div class="tabs">
       <button id="tabClicks" class="on">קליקים</button>
+      <button id="tabMoves">תנועה</button>
       <button id="tabScroll">גלילה</button>
+      <button id="tabFunnel">משפך</button>
+      <button id="tabForms">טפסים</button>
+      <button id="tabTrends">מגמות</button>
     </div>
     <select id="page">
       <option value="/" selected>דף הבית</option>
@@ -82,20 +129,28 @@
       <option value="30" selected>30 ימים</option>
       <option value="90">90 ימים</option>
     </select>
-    <span class="legend"><span>מעט</span><span class="ramp"></span><span>הרבה</span></span>
+    <span class="legend" id="legend"><span>מעט</span><span class="ramp"></span><span>הרבה</span></span>
     <span class="stat" id="stat"></span>
   </div>
 
   <div class="msg" id="msg" hidden></div>
 
-  <div class="stage-outer">
+  <div class="chipbar" id="chipbar" hidden>
+    <button class="chip on" id="rageChip" type="button"><span class="dot"></span><span id="rageChipText">קליקי תסכול</span></button>
+  </div>
+
+  <div class="stage-outer" id="stageOuter">
     <div class="stage" id="stage" hidden>
       <iframe id="frame" scrolling="no" title="תצוגת האתר"></iframe>
       <canvas id="clickCanvas" class="overlay"></canvas>
+      <canvas id="moveCanvas" class="overlay"></canvas>
       <canvas id="scrollCanvas" class="overlay"></canvas>
       <canvas id="labelCanvas" class="overlay"></canvas>
+      <canvas id="rageCanvas" class="overlay"></canvas>
     </div>
   </div>
+
+  <div class="panel" id="panel" hidden></div>
 
   <div class="tip" id="tip"></div>
 
@@ -107,15 +162,35 @@
   var els = {
     page: $("page"), variant: $("variant"),
     device: $("device"), days: $("days"), stat: $("stat"),
-    msg: $("msg"), stage: $("stage"), frame: $("frame"),
-    click: $("clickCanvas"), scroll: $("scrollCanvas"), labels: $("labelCanvas"),
-    tabClicks: $("tabClicks"), tabScroll: $("tabScroll"), tip: $("tip"),
+    msg: $("msg"), stage: $("stage"), stageOuter: $("stageOuter"), frame: $("frame"),
+    click: $("clickCanvas"), move: $("moveCanvas"), scroll: $("scrollCanvas"),
+    labels: $("labelCanvas"), rage: $("rageCanvas"),
+    legend: $("legend"), panel: $("panel"), tip: $("tip"),
+    chipbar: $("chipbar"), rageChip: $("rageChip"), rageChipText: $("rageChipText"),
   };
+  var TABS = {
+    clicks: $("tabClicks"), moves: $("tabMoves"), scroll: $("tabScroll"),
+    funnel: $("tabFunnel"), forms: $("tabForms"), trends: $("tabTrends"),
+  };
+  var HEAT_MODES = { clicks: true, moves: true, scroll: true };
+  var FIELD_NAMES = { fullName: "שם מלא", phone: "טלפון" };
+
   var mode = "clicks";
   var lastData = null;
-  var pixelPoints = []; // {x, y, count} in page pixels — for the hover tooltip
+  var fatal = null;
+  var heatReady = false;
+  var points = { clicks: [], moves: [] };   // page-pixel points, for the hover tooltip
+  var ragePoints = [];
+  var rageOn = true;
+  var rageFrame = 0;
+  var trends = { data: null, loading: false, stale: true, hover: -1 };
 
-  function showMsg(html) { els.msg.innerHTML = html; els.msg.hidden = false; els.stage.hidden = true; }
+  function showMsg(html) {
+    fatal = html;
+    els.msg.innerHTML = html;
+    els.msg.hidden = false;
+    els.stage.hidden = true; els.panel.hidden = true; els.chipbar.hidden = true;
+  }
   if (!key) { showMsg("חסר מפתח גישה (?key=)"); return; }
 
   // ── Hotjar-style palette: intensity 0→1 mapped through a colour ramp ──────
@@ -143,6 +218,26 @@
     return [LUT[i], LUT[i + 1], LUT[i + 2]];
   }
 
+  // ── Contract-tolerant readers: an older cached API omits the new blocks ───
+  function block(name) {
+    var b = lastData && lastData[name];
+    if (!b || typeof b !== "object") return { total: 0, sections: {} };
+    return { total: +b.total || 0, sections: (b.sections && typeof b.sections === "object") ? b.sections : {} };
+  }
+  function sumSections(sections) {
+    var sum = 0;
+    Object.keys(sections).forEach(function (sid) {
+      var cells = sections[sid];
+      if (!cells) return;
+      Object.keys(cells).forEach(function (k) { sum += +cells[k] || 0; });
+    });
+    return sum;
+  }
+  function totalOf(name) {
+    var b = block(name);
+    return b.total || sumSections(b.sections);
+  }
+
   // A/B variants live only on the home page; elsewhere everything is "-".
   function currentVariant() {
     return els.page.value === "/" ? els.variant.value : "-";
@@ -168,32 +263,44 @@
     syncVariantVisibility();
   }
 
+  function apiUrl(apiMode) {
+    return "/api/heatmap?mode=" + apiMode + "&key=" + encodeURIComponent(key) +
+      "&page=" + encodeURIComponent(els.page.value) +
+      "&variant=" + encodeURIComponent(currentVariant()) +
+      "&device=" + els.device.value + "&days=" + els.days.value;
+  }
+
   async function load() {
     els.stat.textContent = "טוען…";
     syncVariantVisibility();
-    var page = els.page.value, v = currentVariant();
-    var d = els.device.value, days = els.days.value;
+    heatReady = false;
+    var page = els.page.value, v = currentVariant(), d = els.device.value;
     var r;
-    try {
-      r = await fetch("/api/heatmap?mode=agg&key=" + encodeURIComponent(key) +
-        "&page=" + encodeURIComponent(page) +
-        "&variant=" + encodeURIComponent(v) + "&device=" + d + "&days=" + days);
-    } catch (e) { showMsg("שגיאת רשת"); return; }
+    try { r = await fetch(apiUrl("agg")); }
+    catch (e) { showMsg("שגיאת רשת"); return; }
     if (r.status === 403) { showMsg("מפתח גישה שגוי"); return; }
     if (!r.ok) { showMsg("שגיאה בטעינת נתונים (" + r.status + ")"); return; }
-    lastData = await r.json();
+    try { lastData = await r.json(); }
+    catch (e) { showMsg("תשובה לא תקינה מהשרת"); return; }
+    fatal = null;
+    els.msg.hidden = true;
+
     // An older cached function returns no page list — fall back to home only.
     syncPages(lastData.pages);
+    var movesTotal = totalOf("moves");
+    var stat = (lastData.total_clicks || 0) + " קליקים · " +
+      (lastData.total_scroll_sessions || 0) + " סשנים · " + lastData.days + " ימים";
+    if (movesTotal) stat += " · " + movesTotal + " תזוזות";
+    els.stat.textContent = stat;
 
-    els.stat.textContent = lastData.total_clicks + " קליקים · " +
-      lastData.total_scroll_sessions + " סשנים · " + lastData.days + " ימים";
+    if (hasAnyHeat()) loadFrame(page, v, d);
+    trends.stale = true;
+    applyMode();
+  }
 
-    if (!lastData.total_clicks && !lastData.total_scroll_sessions) {
-      showMsg("<b>עדיין אין דאטה לחתך הזה.</b><br>האיסוף התחיל היום — כל מבקר אמיתי נספר מעכשיו.<br>תן לזה כמה ימים ותחזור.");
-      return;
-    }
-    els.msg.hidden = true; els.stage.hidden = false;
-    loadFrame(page, v, d);
+  function hasAnyHeat() {
+    if (!lastData) return false;
+    return !!(lastData.total_clicks || lastData.total_scroll_sessions || totalOf("moves"));
   }
 
   var frameToken = 0;
@@ -224,30 +331,42 @@
 
     var fullH = doc.documentElement.scrollHeight;
     els.frame.style.height = fullH + "px";
-    [els.click, els.scroll, els.labels].forEach(function (c) {
+    [els.click, els.move, els.scroll, els.labels, els.rage].forEach(function (c) {
       c.width = width; c.height = fullH;
       c.style.width = width + "px"; c.style.height = fullH + "px";
     });
     render(doc, width, fullH);
-  }
-
-  function render(doc, width, fullH) {
-    renderClicks(doc, width, fullH);
-    renderScroll(width, fullH);
+    heatReady = true;
     applyMode();
   }
 
-  // ── Click map: accumulate grayscale intensity, then colorize ──────────────
-  function renderClicks(doc, width, fullH) {
-    var data = lastData;
-    var ctx = els.click.getContext("2d");
-    ctx.clearRect(0, 0, width, fullH);
-    pixelPoints = [];
+  function render(doc, width, fullH) {
+    var grid = lastData.grid || 20;
 
-    var pts = [];
-    var maxCount = 1;
-    Object.keys(data.sections).forEach(function (sid) {
-      // "__page" clicks were recorded against the whole document (pages with
+    var clicks = buildPoints(lastData.sections, grid, doc, width, fullH);
+    points.clicks = clicks.pts;
+    paintHeat(els.click, clicks, width, fullH);
+
+    var moves = buildPoints(block("moves").sections, grid, doc, width, fullH);
+    points.moves = moves.pts;
+    paintHeat(els.move, moves, width, fullH);
+
+    ragePoints = buildPoints(block("rage").sections, grid, doc, width, fullH).pts;
+    clearCanvas(els.rage);
+
+    renderScroll(width, fullH);
+  }
+
+  function clearCanvas(c) {
+    c.getContext("2d").clearRect(0, 0, c.width, c.height);
+  }
+
+  // ── Section cells → page pixels. Shared by clicks, moves and rage ─────────
+  function buildPoints(sections, grid, doc, width, fullH) {
+    var pts = [], maxCount = 1;
+    if (!sections || typeof sections !== "object") return { pts: pts, max: maxCount };
+    Object.keys(sections).forEach(function (sid) {
+      // "__page" hits were recorded against the whole document (pages with
       // no section markup), so the frame itself is their box.
       var left = 0, top = 0, boxW = width, boxH = fullH;
       if (sid !== "__page") {
@@ -257,17 +376,28 @@
         left = r.left; top = r.top + (doc.defaultView.scrollY || 0);
         boxW = r.width; boxH = r.height;
       }
-      var cells = data.sections[sid];
+      var cells = sections[sid];
+      if (!cells) return;
       Object.keys(cells).forEach(function (cellKey) {
         var p = cellKey.split(",");
-        var x = ((+p[0] + 0.5) / data.grid) * boxW + left;
-        var y = ((+p[1] + 0.5) / data.grid) * boxH + top;
-        var count = cells[cellKey];
+        var count = +cells[cellKey] || 0;
+        if (!count) return;
         maxCount = Math.max(maxCount, count);
-        pts.push({ x: x, y: y, c: count });
+        pts.push({
+          x: ((+p[0] + 0.5) / grid) * boxW + left,
+          y: ((+p[1] + 0.5) / grid) * boxH + top,
+          c: count,
+        });
       });
     });
-    pixelPoints = pts;
+    return { pts: pts, max: maxCount };
+  }
+
+  // ── Heat: accumulate grayscale intensity, then colorize through the LUT ───
+  function paintHeat(canvas, built, width, fullH) {
+    var ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, width, fullH);
+    var pts = built.pts;
     if (!pts.length) return;
 
     // Pass 1 — grayscale alpha accumulation on an offscreen canvas.
@@ -276,7 +406,7 @@
     var octx = off.getContext("2d");
     var radius = Math.max(22, Math.round(width * 0.075));
     // Sparse data still has to read as heat: floor the per-point alpha.
-    var alphaFor = function (c) { return Math.min(1, 0.28 + 0.72 * (c / maxCount)); };
+    var alphaFor = function (c) { return Math.min(1, 0.28 + 0.72 * (c / built.max)); };
     pts.forEach(function (p) {
       var g = octx.createRadialGradient(p.x, p.y, 0, p.x, p.y, radius);
       g.addColorStop(0, "rgba(0,0,0," + alphaFor(p.c) + ")");
@@ -302,19 +432,69 @@
     ctx.putImageData(img, 0, 0);
   }
 
+  // ── Rage layer: pulsing red badges drawn above the click heat ─────────────
+  var RAGE_PULSE_MS = 1500;
+  var RAGE_FPS_MS = 55;
+  var rageLastPaint = 0;
+
+  function rageRadius(count) { return 13 + Math.min(13, count * 1.6); }
+
+  function drawRage(ts) {
+    rageFrame = requestAnimationFrame(drawRage);
+    if (ts - rageLastPaint < RAGE_FPS_MS) return;
+    rageLastPaint = ts;
+    var ctx = els.rage.getContext("2d");
+    var phase = (ts % RAGE_PULSE_MS) / RAGE_PULSE_MS;
+    ctx.font = "700 11px system-ui";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    // Clearing only each badge's box keeps a full-page canvas cheap to animate;
+    // every box is cleared before anything is drawn so neighbours can overlap.
+    ragePoints.forEach(function (p) {
+      var pad = rageRadius(p.c) + 24;
+      ctx.clearRect(p.x - pad, p.y - pad, pad * 2, pad * 2);
+    });
+    ragePoints.forEach(function (p) {
+      var base = rageRadius(p.c);
+      var ring = base + phase * 20;
+      ctx.strokeStyle = "rgba(255,60,60," + (0.75 * (1 - phase)).toFixed(3) + ")";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, ring, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.fillStyle = "rgba(255,40,40,0.92)";
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, base, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "rgba(255,255,255,0.85)";
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.fillStyle = "#fff";
+      ctx.fillText(String(p.c), p.x, p.y + 0.5);
+    });
+  }
+
+  function syncRageLayer() {
+    var live = mode === "clicks" && rageOn && heatReady && ragePoints.length > 0;
+    if (live && !rageFrame) { rageFrame = requestAnimationFrame(drawRage); }
+    if (!live && rageFrame) { cancelAnimationFrame(rageFrame); rageFrame = 0; }
+    els.rage.style.display = live ? "block" : "none";
+    if (!live) clearCanvas(els.rage);
+  }
+
   // ── Scroll map: full-page colour wash + reach labels ──────────────────────
   function renderScroll(width, fullH) {
-    var data = lastData;
+    var buckets = (lastData && lastData.scroll_buckets) || [];
     var sctx = els.scroll.getContext("2d");
     var lctx = els.labels.getContext("2d");
     sctx.clearRect(0, 0, width, fullH);
     lctx.clearRect(0, 0, width, fullH);
-    var total = data.scroll_buckets[0];
+    var total = buckets[0];
     if (!total) return;
 
     var g = sctx.createLinearGradient(0, 0, 0, fullH);
     for (var b = 0; b <= 10; b++) {
-      var t = data.scroll_buckets[b] / total;
+      var t = (buckets[b] || 0) / total;
       var c = scrollColor(t);
       g.addColorStop(Math.min(1, b / 10), "rgba(" + c[0] + "," + c[1] + "," + c[2] + ",0.55)");
     }
@@ -327,7 +507,7 @@
     [25, 50, 75].forEach(function (pctDepth) {
       var y = Math.round(fullH * pctDepth / 100);
       var bucket = Math.min(10, Math.floor(pctDepth / 10));
-      var frac = Math.round((data.scroll_buckets[bucket] / total) * 100);
+      var frac = Math.round(((buckets[bucket] || 0) / total) * 100);
       lctx.strokeStyle = "rgba(255,255,255,0.75)";
       lctx.setLineDash([7, 6]);
       lctx.beginPath(); lctx.moveTo(0, y); lctx.lineTo(width, y); lctx.stroke();
@@ -343,40 +523,476 @@
     });
   }
 
-  function applyMode() {
-    els.click.style.display = mode === "clicks" ? "block" : "none";
-    els.scroll.style.display = mode === "scroll" ? "block" : "none";
-    els.labels.style.display = mode === "scroll" ? "block" : "none";
-    els.tabClicks.classList.toggle("on", mode === "clicks");
-    els.tabScroll.classList.toggle("on", mode === "scroll");
-    els.tip.style.display = "none";
+  // ── Mode switching ────────────────────────────────────────────────────────
+  function heatTotalFor(m) {
+    if (m === "clicks") return (lastData && lastData.total_clicks) || 0;
+    if (m === "moves") return totalOf("moves");
+    return (lastData && lastData.total_scroll_sessions) || 0;
   }
 
-  // ── Hover tooltip on the click map — count near the cursor ────────────────
-  els.click.addEventListener("mousemove", function (e) {
-    if (mode !== "clicks" || !pixelPoints.length || !lastData) return;
-    var rect = els.click.getBoundingClientRect();
-    var x = e.clientX - rect.left, y = e.clientY - rect.top;
-    var R = Math.max(26, els.click.width * 0.05);
-    var sum = 0;
-    for (var i = 0; i < pixelPoints.length; i++) {
-      var p = pixelPoints[i];
-      if ((p.x - x) * (p.x - x) + (p.y - y) * (p.y - y) <= R * R) sum += p.c;
+  function emptyHeatMessage(m) {
+    if (!hasAnyHeat()) {
+      return "<b>עדיין אין דאטה לחתך הזה.</b><br>האיסוף התחיל היום — כל מבקר אמיתי נספר מעכשיו.<br>תן לזה כמה ימים ותחזור.";
     }
-    if (!sum) { els.tip.style.display = "none"; return; }
-    var pct = Math.round((sum / lastData.total_clicks) * 1000) / 10;
-    els.tip.textContent = sum + " קליקים · " + pct + "% מכלל הקליקים";
-    els.tip.style.display = "block";
-    els.tip.style.left = Math.min(innerWidth - 220, e.clientX + 14) + "px";
-    els.tip.style.top = (e.clientY + 14) + "px";
-  });
-  els.click.addEventListener("mouseleave", function () { els.tip.style.display = "none"; });
+    if (m === "moves") return "<b>אין דאטה עדיין</b><br>לא נאספה תנועת עכבר בחתך הזה.";
+    if (m === "scroll") return "<b>אין דאטה עדיין</b><br>לא נאספו סשני גלילה בחתך הזה.";
+    return "<b>אין דאטה עדיין</b><br>לא נרשמו קליקים בחתך הזה.";
+  }
 
-  els.tabClicks.addEventListener("click", function () { mode = "clicks"; applyMode(); });
-  els.tabScroll.addEventListener("click", function () { mode = "scroll"; applyMode(); });
-  [els.page, els.variant, els.device, els.days].forEach(function (el) {
-    el.addEventListener("change", load);
+  function applyMode() {
+    Object.keys(TABS).forEach(function (m) { TABS[m].classList.toggle("on", m === mode); });
+    els.tip.style.display = "none";
+    var isHeat = !!HEAT_MODES[mode];
+    els.legend.hidden = !isHeat;
+
+    if (fatal) { syncRageLayer(); return; }
+    // Tab clicked while the first fetch is still in flight — the stat line
+    // already says "טוען…", so show nothing rather than a false empty state.
+    if (!lastData) {
+      els.stageOuter.hidden = true; els.panel.hidden = true;
+      els.chipbar.hidden = true; els.msg.hidden = true;
+      syncRageLayer();
+      return;
+    }
+
+    els.click.style.display = mode === "clicks" ? "block" : "none";
+    els.move.style.display = mode === "moves" ? "block" : "none";
+    els.scroll.style.display = mode === "scroll" ? "block" : "none";
+    els.labels.style.display = mode === "scroll" ? "block" : "none";
+
+    if (!isHeat) {
+      els.stageOuter.hidden = true;
+      els.chipbar.hidden = true;
+      els.msg.hidden = true;
+      els.panel.hidden = false;
+      syncRageLayer();
+      renderPanel();
+      return;
+    }
+
+    els.panel.hidden = true;
+    els.stageOuter.hidden = false;
+
+    if (mode === "moves" && els.device.value === "mobile") {
+      els.stage.hidden = true;
+      els.msg.hidden = true;
+      els.chipbar.hidden = true;
+      els.stageOuter.hidden = true;
+      els.panel.hidden = false;
+      renderMovesMobileHint();
+      syncRageLayer();
+      return;
+    }
+
+    if (!heatTotalFor(mode)) {
+      els.stage.hidden = true;
+      els.chipbar.hidden = true;
+      els.msg.innerHTML = emptyHeatMessage(mode);
+      els.msg.hidden = false;
+      syncRageLayer();
+      return;
+    }
+
+    els.msg.hidden = true;
+    els.stage.hidden = false;
+    var rageTotal = totalOf("rage");
+    els.chipbar.hidden = !(mode === "clicks" && rageTotal > 0);
+    els.rageChipText.textContent = "קליקי תסכול (" + rageTotal + ")";
+    els.rageChip.classList.toggle("on", rageOn);
+    syncRageLayer();
+  }
+
+  function clearPanel() {
+    while (els.panel.firstChild) els.panel.removeChild(els.panel.firstChild);
+  }
+
+  function panelEmpty(text, actionLabel, onAction) {
+    var box = document.createElement("div");
+    box.className = "empty";
+    text.split("\n").forEach(function (line, i) {
+      if (i) box.appendChild(document.createElement("br"));
+      box.appendChild(document.createTextNode(line));
+    });
+    if (actionLabel) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "chip";
+      btn.textContent = actionLabel;
+      btn.addEventListener("click", onAction);
+      box.appendChild(document.createElement("br"));
+      box.appendChild(btn);
+    }
+    return box;
+  }
+
+  function renderMovesMobileHint() {
+    clearPanel();
+    els.panel.appendChild(panelEmpty(
+      "מפת תנועת עכבר קיימת רק בדסקטופ",
+      "החלף לתצוגת דסקטופ",
+      function () { els.device.value = "desktop"; load(); }
+    ));
+  }
+
+  function renderPanel() {
+    clearPanel();
+    if (mode === "funnel") return renderFunnel();
+    if (mode === "forms") return renderForms();
+    if (mode === "trends") return renderTrends();
+  }
+
+  function heading(text) {
+    var h = document.createElement("h2");
+    h.textContent = text;
+    return h;
+  }
+
+  function pct(part, whole) {
+    if (!whole) return 0;
+    return Math.round((part / whole) * 1000) / 10;
+  }
+
+  // ── משפך: 3 RTL bars, each width proportional to the top stage ────────────
+  function renderFunnel() {
+    els.panel.appendChild(heading("משפך המרה"));
+    var f = lastData && lastData.funnel;
+    if (!f || typeof f !== "object") {
+      els.panel.appendChild(panelEmpty("אין דאטה עדיין\nהמשפך יופיע ברגע שהאיסוף החדש יתחיל לזרום."));
+      return;
+    }
+    var sessions = +f.sessions || 0, formView = +f.form_view || 0, leads = +f.leads || 0;
+    if (!sessions && !formView && !leads) {
+      els.panel.appendChild(panelEmpty("אין דאטה עדיין\nעוד לא נספרו ביקורים בחתך הזה."));
+      return;
+    }
+    var stages = [
+      { name: "ביקרו בדף", value: sessions, prev: null, cls: "s1" },
+      { name: "ראו טופס", value: formView, prev: sessions, cls: "s2" },
+      { name: "השאירו פרטים", value: leads, prev: formView, cls: "s3" },
+    ];
+    stages.forEach(function (s) {
+      var wrap = document.createElement("div");
+      wrap.className = "fstage";
+      var head = document.createElement("div");
+      head.className = "fhead";
+      var name = document.createElement("span");
+      name.className = "fname";
+      name.textContent = s.name;
+      var meta = document.createElement("span");
+      meta.className = "fmeta";
+      var parts = [s.value.toLocaleString("he-IL")];
+      if (s.prev !== null) parts.push(pct(s.value, s.prev) + "% מהשלב הקודם");
+      parts.push(pct(s.value, sessions) + "% מהמבקרים");
+      meta.textContent = parts.join(" · ");
+      head.appendChild(name); head.appendChild(meta);
+      var track = document.createElement("div");
+      track.className = "ftrack";
+      var fill = document.createElement("div");
+      fill.className = "ffill " + s.cls;
+      fill.style.width = (sessions ? Math.max(0.6, (s.value / sessions) * 100) : 0) + "%";
+      track.appendChild(fill);
+      wrap.appendChild(head); wrap.appendChild(track);
+      els.panel.appendChild(wrap);
+    });
+    var total = document.createElement("div");
+    total.className = "ftotal";
+    total.appendChild(document.createTextNode("המרה כוללת "));
+    var strong = document.createElement("strong");
+    strong.textContent = pct(leads, sessions) + "%";
+    total.appendChild(strong);
+    els.panel.appendChild(total);
+  }
+
+  // ── טפסים: per-field focus / abandon / complete, sorted by focus ──────────
+  function renderForms() {
+    els.panel.appendChild(heading("התנהגות בטופס"));
+    var fields = lastData && lastData.forms && lastData.forms.fields;
+    var names = (fields && typeof fields === "object") ? Object.keys(fields) : [];
+    if (!names.length) {
+      els.panel.appendChild(panelEmpty("עדיין אין דאטה על טפסים"));
+      return;
+    }
+    var rows = names.map(function (n) {
+      var f = fields[n] || {};
+      var focus = +f.focus || 0;
+      var abandon = +f.abandon || 0;
+      return {
+        name: FIELD_NAMES[n] || n,
+        focus: focus,
+        abandon: abandon,
+        complete: +f.complete || 0,
+        drop: focus ? Math.round((abandon / focus) * 100) : 0,
+      };
+    }).sort(function (a, b) { return b.focus - a.focus; });
+
+    var table = document.createElement("table");
+    table.className = "forms";
+    var thead = document.createElement("thead");
+    var hrow = document.createElement("tr");
+    ["שדה", "התחילו למלא", "נטשו", "השלימו", "אחוז נטישה"].forEach(function (h) {
+      var th = document.createElement("th");
+      th.textContent = h;
+      hrow.appendChild(th);
+    });
+    thead.appendChild(hrow);
+    table.appendChild(thead);
+    var tbody = document.createElement("tbody");
+    rows.forEach(function (r) {
+      var tr = document.createElement("tr");
+      [r.name, r.focus, r.abandon, r.complete].forEach(function (val, i) {
+        var td = document.createElement("td");
+        if (i) td.className = "num";
+        td.textContent = String(val);
+        tr.appendChild(td);
+      });
+      var td = document.createElement("td");
+      td.className = "num drop";
+      td.style.color = r.drop >= 50 ? "#FF6B6B" : (r.drop >= 25 ? "var(--accent)" : "#5FD08A");
+      td.textContent = r.drop + "%";
+      tr.appendChild(td);
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+    els.panel.appendChild(table);
+  }
+
+  // ── מגמות: lazy-loaded daily series on a hand-drawn canvas ────────────────
+  var SERIES = [
+    { key: "sessions", label: "סשנים", color: "#8A8A96" },
+    { key: "clicks", label: "קליקים", color: "#3CAAFF" },
+    { key: "leads", label: "לידים", color: "#FFD500" },
+  ];
+
+  function renderTrends() {
+    els.panel.appendChild(heading("מגמות לאורך זמן"));
+    if (trends.stale && !trends.loading) { loadTrends(); }
+    if (trends.loading) {
+      els.panel.appendChild(panelEmpty("טוען…"));
+      return;
+    }
+    var series = trends.data && trends.data.series;
+    if (!Array.isArray(series) || !series.length) {
+      els.panel.appendChild(panelEmpty("אין דאטה עדיין\nהגרף יופיע אחרי שיצטברו ימי איסוף."));
+      return;
+    }
+    var wrap = document.createElement("div");
+    wrap.className = "chart-wrap";
+    wrap.dir = "ltr";
+    var legend = document.createElement("div");
+    legend.className = "chart-legend";
+    SERIES.forEach(function (s) {
+      var chip = document.createElement("span");
+      chip.className = "lchip";
+      var i = document.createElement("i");
+      i.style.background = s.color;
+      chip.appendChild(i);
+      chip.appendChild(document.createTextNode(s.label));
+      legend.appendChild(chip);
+    });
+    var canvas = document.createElement("canvas");
+    canvas.id = "trendsCanvas";
+    canvas.style.height = "320px";
+    wrap.appendChild(legend);
+    wrap.appendChild(canvas);
+    els.panel.appendChild(wrap);
+    canvas.addEventListener("mousemove", onTrendsHover);
+    canvas.addEventListener("mouseleave", function () {
+      trends.hover = -1;
+      els.tip.style.display = "none";
+      drawTrends();
+    });
+    drawTrends();
+  }
+
+  async function loadTrends() {
+    trends.loading = true;
+    trends.stale = false;
+    var r;
+    try { r = await fetch(apiUrl("trends")); }
+    catch (e) { trends.loading = false; trends.data = null; if (mode === "trends") renderPanel(); return; }
+    if (!r.ok) { trends.loading = false; trends.data = null; if (mode === "trends") renderPanel(); return; }
+    try { trends.data = await r.json(); }
+    catch (e) { trends.data = null; }
+    trends.loading = false;
+    if (mode === "trends") renderPanel();
+  }
+
+  var CHART_PAD = { l: 46, r: 16, t: 18, b: 30 };
+
+  function trendsGeometry(canvas) {
+    var series = trends.data.series;
+    var W = canvas.clientWidth || 700;
+    var H = 320;
+    var max = 1;
+    series.forEach(function (d) {
+      SERIES.forEach(function (s) { max = Math.max(max, +d[s.key] || 0); });
+    });
+    max = niceMax(max);
+    var plotW = W - CHART_PAD.l - CHART_PAD.r;
+    var plotH = H - CHART_PAD.t - CHART_PAD.b;
+    var n = series.length;
+    return {
+      W: W, H: H, max: max, plotW: plotW, plotH: plotH, n: n,
+      xFor: function (i) { return CHART_PAD.l + (n === 1 ? plotW / 2 : (i * plotW) / (n - 1)); },
+      yFor: function (v) { return CHART_PAD.t + plotH - (Math.max(0, v) / max) * plotH; },
+    };
+  }
+
+  function niceMax(v) {
+    var mag = Math.pow(10, Math.floor(Math.log10(v)));
+    var steps = [1, 2, 2.5, 5, 10];
+    for (var i = 0; i < steps.length; i++) {
+      if (v <= steps[i] * mag) return steps[i] * mag;
+    }
+    return 10 * mag;
+  }
+
+  function drawTrends() {
+    var canvas = document.getElementById("trendsCanvas");
+    if (!canvas || !trends.data || !Array.isArray(trends.data.series)) return;
+    var series = trends.data.series;
+    var g = trendsGeometry(canvas);
+    var dpr = Math.min(2, window.devicePixelRatio || 1);
+    canvas.width = Math.round(g.W * dpr);
+    canvas.height = Math.round(g.H * dpr);
+    var ctx = canvas.getContext("2d");
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, g.W, g.H);
+
+    // Dotted grid + y labels.
+    ctx.font = "11px system-ui";
+    ctx.textBaseline = "middle";
+    ctx.textAlign = "right";
+    ctx.setLineDash([2, 4]);
+    for (var k = 0; k <= 4; k++) {
+      var val = (g.max / 4) * k;
+      var y = g.yFor(val);
+      ctx.strokeStyle = "rgba(255,255,255,0.12)";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(CHART_PAD.l, y);
+      ctx.lineTo(g.W - CHART_PAD.r, y);
+      ctx.stroke();
+      ctx.fillStyle = "rgba(255,255,255,0.45)";
+      ctx.fillText(String(Math.round(val)), CHART_PAD.l - 8, y);
+    }
+    ctx.setLineDash([]);
+
+    // X labels — at most 6 ticks so they never collide.
+    ctx.textAlign = "center";
+    ctx.textBaseline = "top";
+    ctx.fillStyle = "rgba(255,255,255,0.45)";
+    var step = Math.max(1, Math.ceil(g.n / 6));
+    for (var i = 0; i < g.n; i += step) {
+      ctx.fillText(shortDate(series[i].date), g.xFor(i), g.H - CHART_PAD.b + 8);
+    }
+
+    SERIES.forEach(function (s) {
+      var pts = series.map(function (d, idx) {
+        return { x: g.xFor(idx), y: g.yFor(+d[s.key] || 0) };
+      });
+      ctx.beginPath();
+      ctx.moveTo(pts[0].x, CHART_PAD.t + g.plotH);
+      pts.forEach(function (p) { ctx.lineTo(p.x, p.y); });
+      ctx.lineTo(pts[pts.length - 1].x, CHART_PAD.t + g.plotH);
+      ctx.closePath();
+      ctx.fillStyle = withAlpha(s.color, 0.13);
+      ctx.fill();
+
+      ctx.beginPath();
+      pts.forEach(function (p, idx) { idx ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y); });
+      ctx.strokeStyle = s.color;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    });
+
+    if (trends.hover >= 0 && trends.hover < g.n) {
+      var hx = g.xFor(trends.hover);
+      ctx.setLineDash([3, 3]);
+      ctx.strokeStyle = "rgba(255,255,255,0.4)";
+      ctx.beginPath();
+      ctx.moveTo(hx, CHART_PAD.t);
+      ctx.lineTo(hx, CHART_PAD.t + g.plotH);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      SERIES.forEach(function (s) {
+        ctx.fillStyle = s.color;
+        ctx.beginPath();
+        ctx.arc(hx, g.yFor(+series[trends.hover][s.key] || 0), 3.5, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    }
+  }
+
+  function withAlpha(hex, a) {
+    var n = parseInt(hex.slice(1), 16);
+    return "rgba(" + ((n >> 16) & 255) + "," + ((n >> 8) & 255) + "," + (n & 255) + "," + a + ")";
+  }
+
+  function shortDate(iso) {
+    var p = String(iso || "").split("-");
+    return p.length === 3 ? p[2] + "/" + p[1] : String(iso || "");
+  }
+
+  function onTrendsHover(e) {
+    var canvas = e.currentTarget;
+    if (!trends.data || !Array.isArray(trends.data.series) || !trends.data.series.length) return;
+    var g = trendsGeometry(canvas);
+    var rect = canvas.getBoundingClientRect();
+    var x = e.clientX - rect.left;
+    var idx = g.n === 1 ? 0 : Math.round(((x - CHART_PAD.l) / g.plotW) * (g.n - 1));
+    idx = Math.max(0, Math.min(g.n - 1, idx));
+    if (idx !== trends.hover) { trends.hover = idx; drawTrends(); }
+    var d = trends.data.series[idx];
+    els.tip.textContent = shortDate(d.date) + " · " +
+      SERIES.map(function (s) { return (+d[s.key] || 0) + " " + s.label; }).join(" · ");
+    els.tip.style.display = "block";
+    els.tip.style.left = Math.min(innerWidth - 260, e.clientX + 14) + "px";
+    els.tip.style.top = (e.clientY + 14) + "px";
+  }
+
+  // ── Hover tooltip on the heat maps — count near the cursor ────────────────
+  function heatHover(canvas, source, unit) {
+    canvas.addEventListener("mousemove", function (e) {
+      var pts = points[source];
+      if (mode !== source || !pts.length) return;
+      var rect = canvas.getBoundingClientRect();
+      var x = e.clientX - rect.left, y = e.clientY - rect.top;
+      var R = Math.max(26, canvas.width * 0.05);
+      var sum = 0;
+      for (var i = 0; i < pts.length; i++) {
+        var p = pts[i];
+        if ((p.x - x) * (p.x - x) + (p.y - y) * (p.y - y) <= R * R) sum += p.c;
+      }
+      if (!sum) { els.tip.style.display = "none"; return; }
+      var total = heatTotalFor(source) || sum;
+      var share = Math.round((sum / total) * 1000) / 10;
+      els.tip.textContent = sum + " " + unit + " · " + share + "% מהסך הכל";
+      els.tip.style.display = "block";
+      els.tip.style.left = Math.min(innerWidth - 240, e.clientX + 14) + "px";
+      els.tip.style.top = (e.clientY + 14) + "px";
+    });
+    canvas.addEventListener("mouseleave", function () { els.tip.style.display = "none"; });
+  }
+  heatHover(els.click, "clicks", "קליקים");
+  heatHover(els.move, "moves", "תזוזות");
+
+  els.rageChip.addEventListener("click", function () {
+    rageOn = !rageOn;
+    els.rageChip.classList.toggle("on", rageOn);
+    syncRageLayer();
   });
+
+  Object.keys(TABS).forEach(function (m) {
+    TABS[m].addEventListener("click", function () { mode = m; applyMode(); });
+  });
+
+  [els.page, els.variant, els.device, els.days].forEach(function (el) {
+    el.addEventListener("change", function () { trends.stale = true; load(); });
+  });
+
+  addEventListener("resize", function () { if (mode === "trends") drawTrends(); });
+
   load();
 })();
 </script>

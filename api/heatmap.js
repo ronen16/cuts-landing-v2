@@ -1,6 +1,7 @@
 // Vercel Serverless Function — /api/heatmap
-// POST: ingest click/scroll batches from the self-hosted collector.
+// POST: ingest click/scroll/rage/move/form batches from the self-hosted collector.
 // GET ?mode=agg: aggregated data for the viewer (requires HEATMAP_VIEW_KEY).
+// GET ?mode=trends: per-day sessions/clicks/leads for the same slice.
 //
 // Same raw-fetch Supabase pattern as api/lead.js — service key stays
 // server-side, and a missing env config degrades to a no-op rather than
@@ -30,6 +31,13 @@ const VARIANTS = new Set(["a", "b", "c", "d", "-"]);
 const DEVICES = new Set(["mobile", "desktop"]);
 const MAX_PAGE_LEN = 80;
 const DEFAULT_PAGE = "/";
+const MAX_SECTION_LEN = 40;
+// Kinds that carry a point inside a section: same shape, same validation.
+const COORD_KINDS = new Set(["click", "rage", "move"]);
+// form_field reuses reached_section to carry what happened to the field.
+const FIELD_ACTIONS = new Set(["focus", "abandon", "complete"]);
+const GRID = 40;
+const DAY_MS = 86400000;
 
 // A path the collector normalized: absolute, short, no whitespace.
 // Anything else is treated as absent rather than rejected — old collector
@@ -57,42 +65,77 @@ function headers(extra) {
   };
 }
 
+function sectionValid(value) {
+  return typeof value === "string" && value.length <= MAX_SECTION_LEN;
+}
+
+// The coord kinds have always tolerated an empty section_id; the form kinds
+// key their aggregates by it, so there it has to actually be there.
+function sectionNamed(value) {
+  return sectionValid(value) && value.length > 0;
+}
+
 // Accept only what the schema expects, drop everything else. A row that
 // fails validation is skipped silently — analytics never earns a retry loop.
 function sanitize(ev, sessionId) {
   if (!ev || typeof ev !== "object") return null;
   if (!VARIANTS.has(ev.variant) || !DEVICES.has(ev.device)) return null;
   const page = cleanPage(ev.page) || DEFAULT_PAGE;
+  // Every kind is written with the same key set: PostgREST refuses a bulk
+  // insert whose objects don't all carry the same columns, and one batch
+  // mixes clicks, scrolls, moves and form events.
+  const common = {
+    session_id: sessionId,
+    page,
+    variant: ev.variant,
+    device: ev.device,
+    section_id: null,
+    rel_x: null,
+    rel_y: null,
+    scroll_pct: null,
+    reached_section: null,
+  };
 
-  if (ev.kind === "click") {
+  if (COORD_KINDS.has(ev.kind)) {
     const relX = Number(ev.rel_x);
     const relY = Number(ev.rel_y);
-    if (typeof ev.section_id !== "string" || ev.section_id.length > 40) return null;
+    if (!sectionValid(ev.section_id)) return null;
     if (!(relX >= 0 && relX <= 1) || !(relY >= 0 && relY <= 1)) return null;
     return {
-      session_id: sessionId,
-      page,
-      variant: ev.variant,
-      device: ev.device,
-      kind: "click",
+      ...common,
+      kind: ev.kind,
       section_id: ev.section_id,
       rel_x: relX,
       rel_y: relY,
     };
   }
 
+  if (ev.kind === "form_view") {
+    if (!sectionNamed(ev.section_id)) return null;
+    return { ...common, kind: "form_view", section_id: ev.section_id };
+  }
+
+  if (ev.kind === "lead") {
+    return { ...common, kind: "lead" };
+  }
+
+  if (ev.kind === "form_field") {
+    if (!sectionNamed(ev.section_id)) return null;
+    if (!FIELD_ACTIONS.has(ev.reached_section)) return null;
+    return {
+      ...common,
+      kind: "form_field",
+      section_id: ev.section_id,
+      reached_section: ev.reached_section,
+    };
+  }
+
   if (ev.kind === "scroll") {
     const pct = Number(ev.scroll_pct);
     if (!(pct >= 0 && pct <= 100)) return null;
-    const reached =
-      typeof ev.reached_section === "string" && ev.reached_section.length <= 40
-        ? ev.reached_section
-        : null;
+    const reached = sectionValid(ev.reached_section) ? ev.reached_section : null;
     return {
-      session_id: sessionId,
-      page,
-      variant: ev.variant,
-      device: ev.device,
+      ...common,
       kind: "scroll",
       scroll_pct: Math.round(pct),
       reached_section: reached,
@@ -130,33 +173,102 @@ async function handlePost(req, res) {
   return res.status(204).end();
 }
 
-async function handleGet(req, res) {
-  const { key, variant, device, days, page } = req.query || {};
-  if (!viewKeyValid(key)) return res.status(403).json({ error: "forbidden" });
-  if (!configured()) return res.status(503).json({ error: "storage not configured" });
-
+// The slice every GET mode works on: one page, one variant, one device,
+// one time window. Trend days bucket by UTC date — an Israel session before
+// 03:00 local lands on the previous bar; acceptable for reading trends.
+function sliceOf(req) {
+  const { variant, device, days, page } = req.query || {};
   const v = VARIANTS.has(variant) ? variant : "c";
   const d = DEVICES.has(device) ? device : "mobile";
   const p = cleanPage(page) || DEFAULT_PAGE;
   const windowDays = Math.min(90, Math.max(1, parseInt(days, 10) || 30));
-  const since = new Date(Date.now() - windowDays * 86400000).toISOString();
+  const since = new Date(Date.now() - windowDays * DAY_MS).toISOString();
   const sinceParam = encodeURIComponent(since);
-
   const base =
     `${SUPABASE_URL}/rest/v1/${TABLE}` +
     `?page=eq.${encodeURIComponent(p)}&variant=eq.${v}` +
     `&device=eq.${d}&ts=gte.${sinceParam}`;
+  return { v, d, p, windowDays, since, sinceParam, base };
+}
+
+// A panel whose query fails degrades to zeros — one missing block must never
+// take the whole dashboard down with it.
+async function fetchRows(url) {
+  try {
+    const r = await fetch(url, { headers: headers() });
+    if (!r.ok) {
+      console.error(`[heatmap] query failed: ${r.status}`);
+      return [];
+    }
+    const rows = await r.json();
+    return Array.isArray(rows) ? rows : [];
+  } catch (err) {
+    console.error("[heatmap] query error:", (err && err.message) || err);
+    return [];
+  }
+}
+
+// Point events → GRID×GRID cell counts per section.
+function bucketPoints(rows) {
+  const sections = {};
+  for (const row of rows) {
+    const sec = (sections[row.section_id] ||= {});
+    const cell =
+      Math.min(GRID - 1, Math.floor(row.rel_x * GRID)) +
+      "," +
+      Math.min(GRID - 1, Math.floor(row.rel_y * GRID));
+    sec[cell] = (sec[cell] || 0) + 1;
+  }
+  return sections;
+}
+
+function countSessions(rows) {
+  const seen = new Set();
+  for (const row of rows) {
+    if (row && row.session_id) seen.add(row.session_id);
+  }
+  return seen.size;
+}
+
+async function handleGet(req, res) {
+  if (!viewKeyValid((req.query || {}).key)) return res.status(403).json({ error: "forbidden" });
+  if (!configured()) return res.status(503).json({ error: "storage not configured" });
+
+  const slice = sliceOf(req);
+  if ((req.query || {}).mode === "trends") return handleTrends(res, slice);
+  return handleAgg(res, slice);
+}
+
+async function handleAgg(res, slice) {
+  const { v, d, p, windowDays, sinceParam, base } = slice;
 
   // PostgREST has no group-by; volumes here are small (a landing page, capped
   // at 200 events/session), so fetch raw rows and bucket in the function.
   // Same for DISTINCT — the page list is deduped here.
-  const [clicksRes, scrollsRes, pagesRes] = await Promise.all([
+  const [
+    clicksRes,
+    scrollsRes,
+    pagesRes,
+    rageRows,
+    moveRows,
+    sessionRows,
+    formViewRows,
+    leadRows,
+    fieldRows,
+  ] = await Promise.all([
     fetch(`${base}&kind=eq.click&select=section_id,rel_x,rel_y&limit=50000`, { headers: headers() }),
     fetch(`${base}&kind=eq.scroll&select=scroll_pct,reached_section&limit=10000`, { headers: headers() }),
     fetch(
       `${SUPABASE_URL}/rest/v1/${TABLE}?device=eq.${d}&ts=gte.${sinceParam}&select=page&limit=2000`,
       { headers: headers() }
     ),
+    fetchRows(`${base}&kind=eq.rage&select=section_id,rel_x,rel_y&limit=20000`),
+    fetchRows(`${base}&kind=eq.move&select=section_id,rel_x,rel_y&limit=50000`),
+    // Every session emits exactly one scroll record, so it's the session count.
+    fetchRows(`${base}&kind=eq.scroll&select=session_id&limit=20000`),
+    fetchRows(`${base}&kind=eq.form_view&select=session_id&limit=20000`),
+    fetchRows(`${base}&kind=eq.lead&select=session_id&limit=20000`),
+    fetchRows(`${base}&kind=eq.form_field&select=session_id,section_id,reached_section&limit=20000`),
   ]);
   if (!clicksRes.ok || !scrollsRes.ok) {
     return res.status(502).json({ error: "storage query failed" });
@@ -176,16 +288,26 @@ async function handleGet(req, res) {
     a === DEFAULT_PAGE ? -1 : b === DEFAULT_PAGE ? 1 : a.localeCompare(b)
   );
 
-  // Clicks → 40×40 grid per section.
-  const GRID = 40;
-  const sections = {};
-  for (const c of clicks) {
-    const sec = (sections[c.section_id] ||= {});
-    const cell =
-      Math.min(GRID - 1, Math.floor(c.rel_x * GRID)) +
-      "," +
-      Math.min(GRID - 1, Math.floor(c.rel_y * GRID));
-    sec[cell] = (sec[cell] || 0) + 1;
+  const sections = bucketPoints(clicks);
+
+  // Per field: how many distinct sessions focused / abandoned / completed it.
+  const fieldSessions = {};
+  for (const row of fieldRows) {
+    if (!row || !FIELD_ACTIONS.has(row.reached_section) || !row.section_id) continue;
+    const field = (fieldSessions[row.section_id] ||= {
+      focus: new Set(),
+      abandon: new Set(),
+      complete: new Set(),
+    });
+    if (row.session_id) field[row.reached_section].add(row.session_id);
+  }
+  const fields = {};
+  for (const [name, actions] of Object.entries(fieldSessions)) {
+    fields[name] = {
+      focus: actions.focus.size,
+      abandon: actions.abandon.size,
+      complete: actions.complete.size,
+    };
   }
 
   // Scroll → % of sessions reaching each 10% bucket (cumulative),
@@ -211,6 +333,69 @@ async function handleGet(req, res) {
     sections,
     scroll_buckets: buckets,
     deepest_section_counts: reach,
+    rage: { total: rageRows.length, sections: bucketPoints(rageRows) },
+    moves: { total: moveRows.length, sections: bucketPoints(moveRows) },
+    funnel: {
+      sessions: countSessions(sessionRows),
+      form_view: countSessions(formViewRows),
+      leads: countSessions(leadRows),
+    },
+    forms: { fields },
+  });
+}
+
+function utcDate(value) {
+  const ms = typeof value === "number" ? value : Date.parse(value);
+  return Number.isNaN(ms) ? null : new Date(ms).toISOString().slice(0, 10);
+}
+
+// Every UTC day the window touches, oldest→newest. The first day is partial
+// (the window starts mid-day), but dropping it would silently lose events.
+function utcDays(fromIso, toMs) {
+  const days = [];
+  let cursor = Date.parse(`${utcDate(fromIso)}T00:00:00Z`);
+  const last = Date.parse(`${utcDate(toMs)}T00:00:00Z`);
+  while (cursor <= last) {
+    days.push(utcDate(cursor));
+    cursor += DAY_MS;
+  }
+  return days;
+}
+
+async function handleTrends(res, slice) {
+  const rows = await fetchRows(`${slice.base}&select=ts,kind,session_id&limit=50000`);
+
+  const byDate = new Map();
+  for (const row of rows) {
+    const date = row && row.ts ? utcDate(row.ts) : null;
+    if (!date) continue;
+    let day = byDate.get(date);
+    if (!day) {
+      day = { sessions: new Set(), clicks: 0, leads: new Set() };
+      byDate.set(date, day);
+    }
+    if (row.session_id) day.sessions.add(row.session_id);
+    if (row.kind === "click") day.clicks += 1;
+    if (row.kind === "lead" && row.session_id) day.leads.add(row.session_id);
+  }
+
+  const series = utcDays(slice.since, Date.now()).map((date) => {
+    const day = byDate.get(date);
+    return {
+      date,
+      sessions: day ? day.sessions.size : 0,
+      clicks: day ? day.clicks : 0,
+      leads: day ? day.leads.size : 0,
+    };
+  });
+
+  res.setHeader("Cache-Control", "no-store");
+  return res.status(200).json({
+    page: slice.p,
+    variant: slice.v,
+    device: slice.d,
+    days: slice.windowDays,
+    series,
   });
 }
 

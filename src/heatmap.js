@@ -9,9 +9,23 @@
   "use strict";
 
   var ENDPOINT = "/api/heatmap";
-  var FLUSH_AT = 25;      // send a batch every N click events
+  var FLUSH_AT = 40;      // send a batch every N events — move samples burst
   var SESSION_CAP = 200;  // hard ceiling per session
   var MOBILE_MAX = 600;   // matches the site's @container breakpoint
+
+  var RAGE_MIN_CLICKS = 3;
+  var RAGE_RADIUS_PX = 48;
+  var RAGE_WINDOW_MS = 1200;
+  var RAGE_COOLDOWN_MS = 2000; // one burst is one event, not a stream
+
+  var MOVE_CAP = 60;           // move samples allowed per session
+  var MOVE_SAMPLE_MS = 400;
+  var MOVE_GRID_PX = 40;
+  // Moves are ambient noise next to clicks and funnel steps, so they stop
+  // early: this many slots of the session cap stay reserved for the rest.
+  var MOVE_RESERVED_SLOTS = 40;
+
+  var LATE_RENDER_MS = 3000;   // React sections that mount after boot
 
   // The viewer embeds the site with ?hm_view=1 — never record ourselves.
   if (/[?&]hm_view=1/.test(location.search)) return;
@@ -51,6 +65,65 @@
     return window.innerWidth < MOBILE_MAX ? "mobile" : "desktop";
   }
 
+  function round3(n) {
+    return Math.round(n * 1000) / 1000;
+  }
+
+  // Shared anchoring for clicks, rage bursts and move samples: a point in
+  // client coords becomes section-relative, or document-relative when the
+  // page carries no section markup. Returns null when the point is
+  // unmeasurable (collapsed box, outside its own section).
+  function anchorAt(clientX, clientY, el) {
+    var section = el && el.closest ? el.closest("[data-section-id]") : null;
+    if (section) {
+      var r = section.getBoundingClientRect();
+      if (r.width < 1 || r.height < 1) return null;
+      var offsetX = clientX - r.left;
+      var offsetY = clientY - r.top;
+      if (offsetX < 0 || offsetX > r.width) return null;
+      if (offsetY < 0 || offsetY > r.height) return null;
+      return {
+        sectionId: section.getAttribute("data-section-id"),
+        relX: offsetX / r.width,
+        relY: offsetY / r.height,
+        cellX: Math.floor(offsetX / MOVE_GRID_PX),
+        cellY: Math.floor(offsetY / MOVE_GRID_PX),
+      };
+    }
+    var doc = document.documentElement;
+    if (doc.scrollWidth < 1 || doc.scrollHeight < 1) return null;
+    var pageX = clientX + (window.scrollX || doc.scrollLeft || 0);
+    var pageY = clientY + (window.scrollY || doc.scrollTop || 0);
+    return {
+      sectionId: "__page",
+      relX: clamp01(pageX / doc.scrollWidth),
+      relY: clamp01(pageY / doc.scrollHeight),
+      cellX: Math.floor(pageX / MOVE_GRID_PX),
+      cellY: Math.floor(pageY / MOVE_GRID_PX),
+    };
+  }
+
+  // Funnel steps must survive an in-tab reload, so their fired sets live in
+  // sessionStorage; blocked storage degrades to in-memory once-per-load.
+  function loadFiredSet(key) {
+    var set = {};
+    try {
+      var list = JSON.parse(sessionStorage.getItem(key) || "[]");
+      for (var i = 0; i < list.length; i++) set[list[i]] = true;
+    } catch (e) { /* swallow */ }
+    return set;
+  }
+
+  function persistFiredSet(key, set) {
+    try {
+      var list = [];
+      for (var k in set) {
+        if (Object.prototype.hasOwnProperty.call(set, k)) list.push(k);
+      }
+      sessionStorage.setItem(key, JSON.stringify(list));
+    } catch (e) { /* swallow */ }
+  }
+
   var sessionId;
   try {
     sessionId = sessionStorage.getItem("cuts_hm_sid");
@@ -82,16 +155,29 @@
     } catch (e) { /* never the page's problem */ }
   }
 
-  function record(ev) {
-    if (sentCount + pending.length >= SESSION_CAP) return;
+  // opts.lowPriority marks move samples, which give up their slot long
+  // before the real signal does. Returns whether the event was queued.
+  function record(ev, opts) {
+    var ceiling = opts && opts.lowPriority
+      ? SESSION_CAP - MOVE_RESERVED_SLOTS
+      : SESSION_CAP;
+    if (sentCount + pending.length >= ceiling) return false;
     pending.push(ev);
     if (pending.length >= FLUSH_AT) {
       sentCount += pending.length;
       flush();
     }
+    return true;
+  }
+
+  function flushImmediate() {
+    sentCount += pending.length;
+    flush();
   }
 
   // ── clicks / taps ─────────────────────────────────────────────────────────
+  // No section markup? anchorAt falls back to the document, so a plain page
+  // like thank-you.html is measurable without touching its HTML.
   document.addEventListener("pointerdown", function (e) {
     try {
       if (!e.target || !e.target.closest) return;
@@ -99,36 +185,243 @@
       // Consent UI (banner + reopen button) is chrome, not page engagement.
       if (e.target.closest('[id^="cuts-consent"]')) return;
 
-      var sectionId, relX, relY;
-      var section = e.target.closest("[data-section-id]");
-      if (section) {
-        var r = section.getBoundingClientRect();
-        if (r.width < 1 || r.height < 1) return;
-        relX = (e.clientX - r.left) / r.width;
-        relY = (e.clientY - r.top) / r.height;
-        if (relX < 0 || relX > 1 || relY < 0 || relY > 1) return;
-        sectionId = section.getAttribute("data-section-id");
-      } else {
-        // No section markup — anchor against the document, so a plain page
-        // like thank-you.html is measurable without touching its HTML.
-        var doc = document.documentElement;
-        if (doc.scrollWidth < 1 || doc.scrollHeight < 1) return;
-        relX = clamp01((e.clientX + (window.scrollX || doc.scrollLeft || 0)) / doc.scrollWidth);
-        relY = clamp01((e.clientY + (window.scrollY || doc.scrollTop || 0)) / doc.scrollHeight);
-        sectionId = "__page";
-      }
+      var at = anchorAt(e.clientX, e.clientY, e.target);
+      if (!at) return;
 
       record({
         kind: "click",
         page: PAGE,
         variant: variant(),
         device: device(),
-        section_id: sectionId,
-        rel_x: Math.round(relX * 1000) / 1000,
-        rel_y: Math.round(relY * 1000) / 1000,
+        section_id: at.sectionId,
+        rel_x: round3(at.relX),
+        rel_y: round3(at.relY),
       });
+
+      trackRage(e);
     } catch (err) { /* swallow */ }
   }, { passive: true, capture: true });
+
+  // ── rage clicks ───────────────────────────────────────────────────────────
+  // Repeated stabs at the same spot mean something looks clickable and isn't.
+  var rageBuffer = [];
+  var rageQuietUntil = 0;
+
+  function trackRage(e) {
+    var now = Date.now();
+    if (now < rageQuietUntil) return;
+
+    var fresh = [];
+    for (var i = 0; i < rageBuffer.length; i++) {
+      if (now - rageBuffer[i].t <= RAGE_WINDOW_MS) fresh.push(rageBuffer[i]);
+    }
+    fresh.push({ x: e.clientX, y: e.clientY, t: now, target: e.target });
+    rageBuffer = fresh;
+
+    var cluster = [];
+    for (var j = 0; j < rageBuffer.length; j++) {
+      var dx = rageBuffer[j].x - e.clientX;
+      var dy = rageBuffer[j].y - e.clientY;
+      if (dx * dx + dy * dy <= RAGE_RADIUS_PX * RAGE_RADIUS_PX) cluster.push(rageBuffer[j]);
+    }
+    if (cluster.length < RAGE_MIN_CLICKS) return;
+
+    var sumX = 0, sumY = 0;
+    for (var k = 0; k < cluster.length; k++) {
+      sumX += cluster[k].x;
+      sumY += cluster[k].y;
+    }
+    var centroidX = sumX / cluster.length;
+    var centroidY = sumY / cluster.length;
+
+    // The centroid belongs to no single click, so ask the page what sits
+    // there; the last click's target is the fallback when hit-testing fails.
+    var host = null;
+    try {
+      host = document.elementFromPoint(centroidX, centroidY);
+    } catch (err) { /* swallow */ }
+    if (!host || !host.closest) host = e.target;
+
+    var at = anchorAt(centroidX, centroidY, host);
+    rageBuffer = [];
+    rageQuietUntil = now + RAGE_COOLDOWN_MS;
+    if (!at) return;
+
+    record({
+      kind: "rage",
+      page: PAGE,
+      variant: variant(),
+      device: device(),
+      section_id: at.sectionId,
+      rel_x: round3(at.relX),
+      rel_y: round3(at.relY),
+    });
+  }
+
+  // ── funnel: form sections coming into view ────────────────────────────────
+  var FORM_VIEW_KEY = "cuts_hm_fv";
+  var formViewsFired = loadFiredSet(FORM_VIEW_KEY);
+
+  var formObserver = null;
+
+  function watchFormSections() {
+    try {
+      if (!formObserver) return;
+      var sections = document.querySelectorAll("[data-section-id]");
+      for (var i = 0; i < sections.length; i++) {
+        var id = sections[i].getAttribute("data-section-id");
+        if (!id || formViewsFired[id]) continue;
+        if (!sections[i].querySelector("form")) continue;
+        formObserver.observe(sections[i]);
+      }
+    } catch (e) { /* swallow */ }
+  }
+
+  try {
+    if (window.IntersectionObserver) {
+      formObserver = new IntersectionObserver(function (entries) {
+        try {
+          for (var i = 0; i < entries.length; i++) {
+            var entry = entries[i];
+            if (!entry.isIntersecting || entry.intersectionRatio < 0.5) continue;
+            var id = entry.target.getAttribute("data-section-id");
+            formObserver.unobserve(entry.target);
+            if (!id || formViewsFired[id]) continue;
+            formViewsFired[id] = true;
+            persistFiredSet(FORM_VIEW_KEY, formViewsFired);
+            record({
+              kind: "form_view",
+              page: PAGE,
+              variant: variant(),
+              device: device(),
+              section_id: id,
+            });
+          }
+        } catch (err) { /* swallow */ }
+      }, { threshold: 0.5 });
+    }
+  } catch (e) { /* no IntersectionObserver — skip this signal entirely */ }
+
+  watchFormSections();
+  // React can mount the form section after us; one late sweep catches it.
+  setTimeout(watchFormSections, LATE_RENDER_MS);
+
+  // ── funnel: lead submitted ────────────────────────────────────────────────
+  var LEAD_KEY = "cuts_hm_lead";
+  var leadFired = false;
+  try {
+    leadFired = sessionStorage.getItem(LEAD_KEY) === "1";
+  } catch (e) { /* swallow */ }
+
+  document.addEventListener("cuts:lead", function () {
+    try {
+      if (leadFired) return;
+      leadFired = true;
+      try { sessionStorage.setItem(LEAD_KEY, "1"); } catch (err) { /* swallow */ }
+      record({
+        kind: "lead",
+        page: PAGE,
+        variant: variant(),
+        device: device(),
+      });
+      // A lead usually means a redirect is a heartbeat away.
+      flushImmediate();
+    } catch (err) { /* swallow */ }
+  });
+
+  // ── form fields ───────────────────────────────────────────────────────────
+  // Field *contents* are never read — only whether the box was left empty.
+  var FIELD_TAGS = { INPUT: true, TEXTAREA: true };
+  var NON_FIELD_TYPES = {
+    hidden: true, submit: true, button: true, reset: true, image: true,
+  };
+  var fieldFocusFired = {};
+  var fieldResults = {};
+
+  function fieldNameOf(el) {
+    var name = el.getAttribute("name") || el.id || el.type || "field";
+    return String(name).slice(0, 40);
+  }
+
+  function trackedField(target) {
+    if (!target || !target.tagName || !FIELD_TAGS[target.tagName]) return null;
+    if (target.tagName === "INPUT" && NON_FIELD_TYPES[target.type]) return null;
+    if (!target.closest || !target.closest("form")) return null;
+    return target;
+  }
+
+  document.addEventListener("focusin", function (e) {
+    try {
+      var field = trackedField(e.target);
+      if (!field) return;
+      var name = fieldNameOf(field);
+      if (fieldFocusFired[name]) return;
+      fieldFocusFired[name] = true;
+      record({
+        kind: "form_field",
+        page: PAGE,
+        variant: variant(),
+        device: device(),
+        section_id: name,
+        reached_section: "focus",
+      });
+    } catch (err) { /* swallow */ }
+  }, true);
+
+  document.addEventListener("focusout", function (e) {
+    try {
+      var field = trackedField(e.target);
+      if (!field) return;
+      var name = fieldNameOf(field);
+      var outcome = String(field.value || "").trim() ? "complete" : "abandon";
+      // First result wins, except that filling in an abandoned field later
+      // is real progress and gets its own event.
+      if (fieldResults[name] === outcome) return;
+      if (fieldResults[name] === "complete") return;
+      fieldResults[name] = outcome;
+      record({
+        kind: "form_field",
+        page: PAGE,
+        variant: variant(),
+        device: device(),
+        section_id: name,
+        reached_section: outcome,
+      });
+    } catch (err) { /* swallow */ }
+  }, true);
+
+  // ── move map (desktop only) ───────────────────────────────────────────────
+  var moveCount = 0;
+  var lastMoveSampleAt = 0;
+  var lastMoveCell = "";
+
+  document.addEventListener("mousemove", function (e) {
+    try {
+      if (moveCount >= MOVE_CAP) return;
+      if (device() !== "desktop") return;
+      var now = Date.now();
+      if (now - lastMoveSampleAt < MOVE_SAMPLE_MS) return;
+      lastMoveSampleAt = now;
+
+      var at = anchorAt(e.clientX, e.clientY, e.target);
+      if (!at) return;
+      // A cursor resting in one cell says nothing new.
+      var cell = at.sectionId + ":" + at.cellX + ":" + at.cellY;
+      if (cell === lastMoveCell) return;
+      lastMoveCell = cell;
+
+      var queued = record({
+        kind: "move",
+        page: PAGE,
+        variant: variant(),
+        device: device(),
+        section_id: at.sectionId,
+        rel_x: round3(at.relX),
+        rel_y: round3(at.relY),
+      }, { lowPriority: true });
+      if (queued) moveCount++;
+    } catch (err) { /* swallow */ }
+  }, { passive: true });
 
   // ── scroll depth ──────────────────────────────────────────────────────────
   var maxPct = 0;
@@ -161,7 +454,9 @@
 
   var scrollSent = false;
   function sendScrollRecord() {
-    if (scrollSent || maxPct === 0) return;
+    // 0% still counts — a visitor who never scrolls is a session too, and
+    // the funnel's denominator is built from these records.
+    if (scrollSent) return;
     scrollSent = true;
     record({
       kind: "scroll",
