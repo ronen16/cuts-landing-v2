@@ -107,7 +107,6 @@ async function run() {
   await copy("styles.css", path.join(DIST, "styles.css"));
   await copy("src/interactions.js", path.join(DIST, "src", "interactions.js"));
   await copy("src/heatmap.js", path.join(DIST, "src", "heatmap.js"));
-  await copy("src/consent.js", path.join(DIST, "src", "consent.js"));
   for (const f of STANDALONE_HTML) {
     try { await copy(f, path.join(DIST, f)); } catch (_) {}
   }
@@ -161,9 +160,7 @@ async function run() {
     .replace(/(<script[^>]+src=")src\/interactions\.js("[^>]*><\/script>)/g,
       `$1src/interactions.js?v=${V}$2`)
     .replace(/(<script[^>]+src=")src\/heatmap\.js("[^>]*><\/script>)/g,
-      `$1src/heatmap.js?v=${V}$2`)
-    .replace(/(<script[^>]+src=")src\/consent\.js("[^>]*><\/script>)/g,
-      `$1src/consent.js?v=${V}$2`);
+      `$1src/heatmap.js?v=${V}$2`);
   await fs.writeFile(path.join(DIST, "index.html"), html);
 
   console.log("✓ build complete → dist/");
