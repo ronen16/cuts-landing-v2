@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>מפת חום — Cuts</title>
+<style>
+  :root { --accent: #FFD500; --bg: #0A0A0A; --card: #141414; --line: rgba(255,255,255,0.1); }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: #fff; font-family: system-ui, sans-serif; min-height: 100vh; }
+
+  .bar {
+    position: sticky; top: 0; z-index: 10;
+    display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+    padding: 14px 18px; background: var(--card); border-bottom: 1px solid var(--line);
+  }
+  .bar b { color: var(--accent); margin-inline-end: 8px; }
+  .bar select, .bar button {
+    background: #1e1e1e; color: #fff; border: 1px solid var(--line);
+    border-radius: 8px; padding: 8px 12px; font-size: 14px; cursor: pointer;
+  }
+  .bar .stat { font-size: 13px; opacity: 0.65; margin-inline-start: auto; }
+
+  .layout { display: flex; gap: 18px; padding: 18px; align-items: flex-start; }
+
+  .stage-wrap { position: relative; margin: 0 auto; }
+  .stage {
+    position: relative; overflow: hidden;
+    border: 1px solid var(--line); border-radius: 12px; background: #000;
+  }
+  .stage iframe { display: block; border: 0; }
+  .stage canvas {
+    position: absolute; top: 0; left: 0;
+    pointer-events: none; mix-blend-mode: screen;
+  }
+
+  .side {
+    flex: 0 0 240px; position: sticky; top: 76px;
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px;
+  }
+  .side h3 { font-size: 14px; color: var(--accent); margin-bottom: 12px; }
+  .srow { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 12px; }
+  .srow .lbl { width: 44px; opacity: 0.6; }
+  .srow .track { flex: 1; height: 14px; background: #1e1e1e; border-radius: 4px; overflow: hidden; }
+  .srow .fill { height: 100%; background: linear-gradient(90deg, #2f6df6, var(--accent)); }
+  .srow .pct { width: 38px; text-align: left; font-variant-numeric: tabular-nums; }
+
+  .msg { padding: 60px 20px; text-align: center; opacity: 0.7; font-size: 15px; }
+  @media (max-width: 900px) { .layout { flex-direction: column; } .side { position: static; width: 100%; } }
+</style>
+</head>
+<body>
+  <div class="bar">
+    <b>מפת חום</b>
+    <select id="variant">
+      <option value="c" selected>c — הדומיין הראשי</option>
+      <option value="a">a</option>
+      <option value="b">b</option>
+      <option value="d">d</option>
+    </select>
+    <select id="device">
+      <option value="mobile" selected>מובייל</option>
+      <option value="desktop">דסקטופ</option>
+    </select>
+    <select id="days">
+      <option value="7">7 ימים</option>
+      <option value="30" selected>30 ימים</option>
+      <option value="90">90 ימים</option>
+    </select>
+    <button id="reload">רענון</button>
+    <span class="stat" id="stat"></span>
+  </div>
+
+  <div class="msg" id="msg" hidden></div>
+
+  <div class="layout" id="layout" hidden>
+    <div class="side">
+      <h3>עומק גלילה — % מהמבקרים שהגיעו</h3>
+      <div id="scrollbars"></div>
+    </div>
+    <div class="stage-wrap">
+      <div class="stage" id="stage">
+        <iframe id="frame" scrolling="no" title="תצוגת האתר"></iframe>
+        <canvas id="heat"></canvas>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function () {
+  "use strict";
+  var key = new URLSearchParams(location.search).get("key") || "";
+  var els = {
+    variant: document.getElementById("variant"),
+    device: document.getElementById("device"),
+    days: document.getElementById("days"),
+    reload: document.getElementById("reload"),
+    stat: document.getElementById("stat"),
+    msg: document.getElementById("msg"),
+    layout: document.getElementById("layout"),
+    frame: document.getElementById("frame"),
+    heat: document.getElementById("heat"),
+    scrollbars: document.getElementById("scrollbars"),
+  };
+
+  function showMsg(t) { els.msg.textContent = t; els.msg.hidden = false; els.layout.hidden = true; }
+
+  if (!key) { showMsg("חסר מפתח גישה (?key=)"); return; }
+
+  async function load() {
+    els.stat.textContent = "טוען…";
+    var v = els.variant.value, d = els.device.value, days = els.days.value;
+    var r;
+    try {
+      r = await fetch("/api/heatmap?mode=agg&key=" + encodeURIComponent(key) +
+        "&variant=" + v + "&device=" + d + "&days=" + days);
+    } catch (e) { showMsg("שגיאת רשת"); return; }
+    if (r.status === 403) { showMsg("מפתח גישה שגוי"); return; }
+    if (!r.ok) { showMsg("שגיאה בטעינת נתונים (" + r.status + ")"); return; }
+    var data = await r.json();
+
+    els.msg.hidden = true; els.layout.hidden = false;
+    els.stat.textContent = data.total_clicks + " קליקים · " +
+      data.total_scroll_sessions + " סשנים · " + data.days + " ימים";
+
+    renderScroll(data);
+    loadFrame(v, d, data);
+  }
+
+  function renderScroll(data) {
+    var total = data.scroll_buckets[0] || 0;
+    var html = "";
+    for (var i = 0; i <= 10; i++) {
+      var pct = total ? Math.round((data.scroll_buckets[i] / total) * 100) : 0;
+      html += '<div class="srow"><span class="lbl">' + (i * 10) + '%</span>' +
+        '<span class="track"><span class="fill" style="width:' + pct + '%"></span></span>' +
+        '<span class="pct">' + pct + '%</span></div>';
+    }
+    els.scrollbars.innerHTML = html;
+  }
+
+  var frameToken = 0;
+  function loadFrame(variant, device, data) {
+    var token = ++frameToken;
+    var width = device === "mobile" ? 390 : Math.min(1440, innerWidth - 320);
+    els.frame.style.width = width + "px";
+    els.frame.src = "/" + variant + "?hm_view=1";
+    els.frame.onload = function () {
+      if (token !== frameToken) return;
+      // Let the SPA hydrate + fetch overrides before measuring sections.
+      setTimeout(function () { paint(width, data, token); }, 3000);
+    };
+  }
+
+  function paint(width, data, token) {
+    if (token !== frameToken) return;
+    var doc;
+    try { doc = els.frame.contentDocument; } catch (e) { showMsg("אין גישה לפריים"); return; }
+    if (!doc) return;
+
+    var fullH = doc.documentElement.scrollHeight;
+    els.frame.style.height = fullH + "px";
+    els.heat.width = width;
+    els.heat.height = fullH;
+    els.heat.style.width = width + "px";
+    els.heat.style.height = fullH + "px";
+
+    var ctx = els.heat.getContext("2d");
+    ctx.clearRect(0, 0, width, fullH);
+
+    var grid = data.grid || 40;
+    var maxCount = 1;
+    Object.keys(data.sections).forEach(function (sid) {
+      Object.keys(data.sections[sid]).forEach(function (cell) {
+        maxCount = Math.max(maxCount, data.sections[sid][cell]);
+      });
+    });
+
+    Object.keys(data.sections).forEach(function (sid) {
+      var el = doc.querySelector('[data-section-id="' + sid + '"]');
+      if (!el) return; // section removed since the data was recorded
+      var r = el.getBoundingClientRect();
+      var top = r.top + (doc.defaultView.scrollY || 0);
+      var cells = data.sections[sid];
+      Object.keys(cells).forEach(function (cellKey) {
+        var parts = cellKey.split(",");
+        var cx = ((+parts[0] + 0.5) / grid) * r.width + r.left;
+        var cy = ((+parts[1] + 0.5) / grid) * r.height + top;
+        var count = cells[cellKey];
+        var intensity = count / maxCount;
+        var radius = 18 + intensity * 26;
+        var g = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
+        var color = heatColor(intensity);
+        g.addColorStop(0, "rgba(" + color + "," + (0.35 + intensity * 0.45) + ")");
+        g.addColorStop(1, "rgba(" + color + ",0)");
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    });
+  }
+
+  // blue → green → yellow → red
+  function heatColor(t) {
+    if (t < 0.33) return "47,109,246";
+    if (t < 0.6) return "60,200,120";
+    if (t < 0.85) return "255,213,0";
+    return "255,59,59";
+  }
+
+  els.reload.addEventListener("click", load);
+  els.variant.addEventListener("change", load);
+  els.device.addEventListener("change", load);
+  els.days.addEventListener("change", load);
+  load();
+})();
+</script>
+</body>
+</html>
