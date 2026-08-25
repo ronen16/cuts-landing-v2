@@ -4360,13 +4360,13 @@ function GuestStrip({ admin }) {
           /* Tall (9:16) row stays compact so more faces scroll past; wide
              (16:9) row shows ~one image at a time. Both run faster on mobile. */
           .guest-marquee-fade { width: 56px; }
-          .guest-marquee-row--tall > div { width: 165px !important; }
-          /* Narrow enough that more than one wide tile is on screen, so the row
-             reads as a strip in motion rather than one photo swapping. */
+          /* Both rows are sized so several tiles are on screen at once — the
+             point of the section is the number of faces, not any one of them. */
+          .guest-marquee-row--tall > div { width: 130px !important; }
           .guest-marquee-row--wide > div { width: 280px !important; }
-          /* Durations are set per width so both rows travel at ~150px/s — the
-             wide row's set is longer, so it needs longer to match. */
-          .guest-marquee-row--tall { animation-duration: 15s !important; }
+          /* Durations are set per width so both rows travel at ~150px/s — a
+             narrower tile means a shorter set, which needs less time. */
+          .guest-marquee-row--tall { animation-duration: 13s !important; }
           .guest-marquee-row--wide { animation-duration: 13s !important; }
           /* Blend the seam with the section above (Results): start the guest
              section at Results' card tone and fade to the page bg so there's no
@@ -4377,8 +4377,9 @@ function GuestStrip({ admin }) {
         }
         @container (max-width: 420px) {
           .guest-marquee-fade { width: 44px; }
-          .guest-marquee-row--tall > div { width: 150px !important; }
+          .guest-marquee-row--tall > div { width: 110px !important; }
           .guest-marquee-row--wide > div { width: 250px !important; }
+          .guest-marquee-row--tall { animation-duration: 11s !important; }
           .guest-marquee-row--wide { animation-duration: 12s !important; }
         }
       `}</style>
