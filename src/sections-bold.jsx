@@ -4291,8 +4291,8 @@ function GuestStrip({ admin }) {
       </div>
 
       <div id="guest-marquee" style={{ position: "relative", display: "flex", flexDirection: "column", gap: 14, direction: "ltr", overflow: "hidden" }}>
-        <div aria-hidden="true" style={{ position: "absolute", top: 0, bottom: 0, right: 0, width: 220, zIndex: 3, pointerEvents: "none", background: "linear-gradient(to left, var(--bg), transparent)" }} />
-        <div aria-hidden="true" style={{ position: "absolute", top: 0, bottom: 0, left: 0, width: 220, zIndex: 3, pointerEvents: "none", background: "linear-gradient(to right, var(--bg), transparent)" }} />
+        <div aria-hidden="true" className="guest-marquee-fade guest-marquee-fade--end" style={{ position: "absolute", top: 0, bottom: 0, right: 0, zIndex: 3, pointerEvents: "none", background: "linear-gradient(to left, var(--bg), transparent)" }} />
+        <div aria-hidden="true" className="guest-marquee-fade guest-marquee-fade--start" style={{ position: "absolute", top: 0, bottom: 0, left: 0, zIndex: 3, pointerEvents: "none", background: "linear-gradient(to right, var(--bg), transparent)" }} />
 
         {/* Two-row branded marquee — rows scroll in opposite directions.
             Items are rendered 3× so the wrapper is always ≥3× wider than the
@@ -4353,13 +4353,19 @@ function GuestStrip({ admin }) {
         /* Promote rows to their own GPU layer so images don't momentarily
            repaint to black (compositing flicker) during the animation. */
         .guest-marquee-row { will-change: transform; }
+        /* Fixed 220px per side is ~18% of a desktop strip but would cover a
+           phone twice over — the two sides overlapped and veiled every tile. */
+        .guest-marquee-fade { width: 220px; }
         @container (max-width: 768px) {
           /* Tall (9:16) row stays compact so more faces scroll past; wide
              (16:9) row shows ~one image at a time. Both run faster on mobile. */
+          .guest-marquee-fade { width: 56px; }
           .guest-marquee-row--tall > div { width: 165px !important; }
           .guest-marquee-row--wide > div { width: 400px !important; }
+          /* The wide row travels a longer set, so a shorter duration made it
+             run 63% faster than the tall row. Matched to ~150px/s. */
           .guest-marquee-row--tall { animation-duration: 15s !important; }
-          .guest-marquee-row--wide { animation-duration: 10.5s !important; }
+          .guest-marquee-row--wide { animation-duration: 17s !important; }
           /* Blend the seam with the section above (Results): start the guest
              section at Results' card tone and fade to the page bg so there's no
              hard line OR tone step. Bottom already meets the next (bg) section. */
@@ -4368,6 +4374,7 @@ function GuestStrip({ admin }) {
           .guest-heading-wrap { margin-bottom: 34px !important; }
         }
         @container (max-width: 420px) {
+          .guest-marquee-fade { width: 44px; }
           .guest-marquee-row--tall > div { width: 150px !important; }
           .guest-marquee-row--wide > div { width: 360px !important; }
         }
