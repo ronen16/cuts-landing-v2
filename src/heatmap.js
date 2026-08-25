@@ -22,12 +22,29 @@
     if (adminState.unlocked) return;
   } catch (e) { /* storage blocked — keep collecting, it's anonymous */ }
 
+  // Page identity. /a /b /c /d are rewrites of the home page, so they all
+  // collapse to "/" — the variant column already carries that distinction.
+  var PAGE = (function () {
+    try {
+      var p = location.pathname || "/";
+      if (/^\/(?:[abcd])?\/?$/.test(p)) return "/";
+      p = p.replace(/\/+$/, "");
+      return p ? p.slice(0, 80) : "/";
+    } catch (e) { return "/"; }
+  })();
+
   function variant() {
+    // A/B variants exist only on the home page; elsewhere the split is noise.
+    if (PAGE !== "/") return "-";
     try {
       if (window.__cutsGetVariant) return window.__cutsGetVariant();
       var m = location.pathname.match(/^\/([abcd])(?:\/|$)/);
       return m ? m[1] : "c"; // root serves variant c
     } catch (e) { return "c"; }
+  }
+
+  function clamp01(n) {
+    return n < 0 ? 0 : n > 1 ? 1 : n;
   }
 
   function device() {
@@ -77,18 +94,36 @@
   // ── clicks / taps ─────────────────────────────────────────────────────────
   document.addEventListener("pointerdown", function (e) {
     try {
-      var section = e.target && e.target.closest && e.target.closest("[data-section-id]");
-      if (!section) return;
-      var r = section.getBoundingClientRect();
-      if (r.width < 1 || r.height < 1) return;
-      var relX = (e.clientX - r.left) / r.width;
-      var relY = (e.clientY - r.top) / r.height;
-      if (relX < 0 || relX > 1 || relY < 0 || relY > 1) return;
+      if (!e.target || !e.target.closest) return;
+      // The consent banner floats over the page — dismissing it isn't engagement.
+      // Consent UI (banner + reopen button) is chrome, not page engagement.
+      if (e.target.closest('[id^="cuts-consent"]')) return;
+
+      var sectionId, relX, relY;
+      var section = e.target.closest("[data-section-id]");
+      if (section) {
+        var r = section.getBoundingClientRect();
+        if (r.width < 1 || r.height < 1) return;
+        relX = (e.clientX - r.left) / r.width;
+        relY = (e.clientY - r.top) / r.height;
+        if (relX < 0 || relX > 1 || relY < 0 || relY > 1) return;
+        sectionId = section.getAttribute("data-section-id");
+      } else {
+        // No section markup — anchor against the document, so a plain page
+        // like thank-you.html is measurable without touching its HTML.
+        var doc = document.documentElement;
+        if (doc.scrollWidth < 1 || doc.scrollHeight < 1) return;
+        relX = clamp01((e.clientX + (window.scrollX || doc.scrollLeft || 0)) / doc.scrollWidth);
+        relY = clamp01((e.clientY + (window.scrollY || doc.scrollTop || 0)) / doc.scrollHeight);
+        sectionId = "__page";
+      }
+
       record({
         kind: "click",
+        page: PAGE,
         variant: variant(),
         device: device(),
-        section_id: section.getAttribute("data-section-id"),
+        section_id: sectionId,
         rel_x: Math.round(relX * 1000) / 1000,
         rel_y: Math.round(relY * 1000) / 1000,
       });
@@ -130,6 +165,7 @@
     scrollSent = true;
     record({
       kind: "scroll",
+      page: PAGE,
       variant: variant(),
       device: device(),
       scroll_pct: maxPct,

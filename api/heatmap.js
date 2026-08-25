@@ -24,8 +24,25 @@ function viewKeyValid(key) {
 
 const MAX_BODY_BYTES = 32 * 1024;
 const MAX_EVENTS = 200;
-const VARIANTS = new Set(["a", "b", "c", "d"]);
+// "-" is the variant of every page that isn't the home page, where the A/B
+// split doesn't exist.
+const VARIANTS = new Set(["a", "b", "c", "d", "-"]);
 const DEVICES = new Set(["mobile", "desktop"]);
+const MAX_PAGE_LEN = 80;
+const DEFAULT_PAGE = "/";
+
+// A path the collector normalized: absolute, short, no whitespace.
+// Anything else is treated as absent rather than rejected — old collector
+// batches carry no page at all and must still land.
+function cleanPage(value) {
+  if (typeof value !== "string" || !value.startsWith("/")) return null;
+  // "//evil.com" and "/\evil.com" are protocol-relative URLs — the admin
+  // viewer iframes the page value, so these would load an attacker origin
+  // inside the trusted dashboard.
+  if (value[1] === "/" || value[1] === "\\") return null;
+  if (value.length > MAX_PAGE_LEN || /\s/.test(value)) return null;
+  return value;
+}
 
 function configured() {
   return !!(SUPABASE_URL && SUPABASE_KEY);
@@ -45,6 +62,7 @@ function headers(extra) {
 function sanitize(ev, sessionId) {
   if (!ev || typeof ev !== "object") return null;
   if (!VARIANTS.has(ev.variant) || !DEVICES.has(ev.device)) return null;
+  const page = cleanPage(ev.page) || DEFAULT_PAGE;
 
   if (ev.kind === "click") {
     const relX = Number(ev.rel_x);
@@ -53,6 +71,7 @@ function sanitize(ev, sessionId) {
     if (!(relX >= 0 && relX <= 1) || !(relY >= 0 && relY <= 1)) return null;
     return {
       session_id: sessionId,
+      page,
       variant: ev.variant,
       device: ev.device,
       kind: "click",
@@ -71,6 +90,7 @@ function sanitize(ev, sessionId) {
         : null;
     return {
       session_id: sessionId,
+      page,
       variant: ev.variant,
       device: ev.device,
       kind: "scroll",
@@ -111,30 +131,50 @@ async function handlePost(req, res) {
 }
 
 async function handleGet(req, res) {
-  const { key, variant, device, days } = req.query || {};
+  const { key, variant, device, days, page } = req.query || {};
   if (!viewKeyValid(key)) return res.status(403).json({ error: "forbidden" });
   if (!configured()) return res.status(503).json({ error: "storage not configured" });
 
   const v = VARIANTS.has(variant) ? variant : "c";
   const d = DEVICES.has(device) ? device : "mobile";
+  const p = cleanPage(page) || DEFAULT_PAGE;
   const windowDays = Math.min(90, Math.max(1, parseInt(days, 10) || 30));
   const since = new Date(Date.now() - windowDays * 86400000).toISOString();
+  const sinceParam = encodeURIComponent(since);
 
   const base =
     `${SUPABASE_URL}/rest/v1/${TABLE}` +
-    `?variant=eq.${v}&device=eq.${d}&ts=gte.${encodeURIComponent(since)}`;
+    `?page=eq.${encodeURIComponent(p)}&variant=eq.${v}` +
+    `&device=eq.${d}&ts=gte.${sinceParam}`;
 
   // PostgREST has no group-by; volumes here are small (a landing page, capped
   // at 200 events/session), so fetch raw rows and bucket in the function.
-  const [clicksRes, scrollsRes] = await Promise.all([
+  // Same for DISTINCT — the page list is deduped here.
+  const [clicksRes, scrollsRes, pagesRes] = await Promise.all([
     fetch(`${base}&kind=eq.click&select=section_id,rel_x,rel_y&limit=50000`, { headers: headers() }),
     fetch(`${base}&kind=eq.scroll&select=scroll_pct,reached_section&limit=10000`, { headers: headers() }),
+    fetch(
+      `${SUPABASE_URL}/rest/v1/${TABLE}?device=eq.${d}&ts=gte.${sinceParam}&select=page&limit=2000`,
+      { headers: headers() }
+    ),
   ]);
   if (!clicksRes.ok || !scrollsRes.ok) {
     return res.status(502).json({ error: "storage query failed" });
   }
   const clicks = await clicksRes.json();
   const scrolls = await scrollsRes.json();
+
+  // The page picker must never be the reason the view fails — "/" always exists.
+  const pageSet = new Set([DEFAULT_PAGE, p]);
+  if (pagesRes.ok) {
+    for (const row of await pagesRes.json()) {
+      const clean = cleanPage(row && row.page);
+      if (clean) pageSet.add(clean);
+    }
+  }
+  const pages = [...pageSet].sort((a, b) =>
+    a === DEFAULT_PAGE ? -1 : b === DEFAULT_PAGE ? 1 : a.localeCompare(b)
+  );
 
   // Clicks → 40×40 grid per section.
   const GRID = 40;
@@ -160,6 +200,8 @@ async function handleGet(req, res) {
 
   res.setHeader("Cache-Control", "no-store");
   return res.status(200).json({
+    page: p,
+    pages,
     variant: v,
     device: d,
     days: windowDays,

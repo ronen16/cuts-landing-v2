@@ -66,6 +66,9 @@
       <button id="tabClicks" class="on">קליקים</button>
       <button id="tabScroll">גלילה</button>
     </div>
+    <select id="page">
+      <option value="/" selected>דף הבית</option>
+    </select>
     <select id="variant">
       <option value="c" selected>c — הדומיין הראשי</option>
       <option value="a">a</option><option value="b">b</option><option value="d">d</option>
@@ -102,7 +105,8 @@
   var key = new URLSearchParams(location.search).get("key") || "";
   var $ = function (id) { return document.getElementById(id); };
   var els = {
-    variant: $("variant"), device: $("device"), days: $("days"), stat: $("stat"),
+    page: $("page"), variant: $("variant"),
+    device: $("device"), days: $("days"), stat: $("stat"),
     msg: $("msg"), stage: $("stage"), frame: $("frame"),
     click: $("clickCanvas"), scroll: $("scrollCanvas"), labels: $("labelCanvas"),
     tabClicks: $("tabClicks"), tabScroll: $("tabScroll"), tip: $("tip"),
@@ -139,17 +143,47 @@
     return [LUT[i], LUT[i + 1], LUT[i + 2]];
   }
 
+  // A/B variants live only on the home page; elsewhere everything is "-".
+  function currentVariant() {
+    return els.page.value === "/" ? els.variant.value : "-";
+  }
+
+  function syncVariantVisibility() {
+    els.variant.hidden = els.page.value !== "/";
+  }
+
+  // Rebuild the page picker from what the window actually contains, keeping
+  // the current choice when it's still there.
+  function syncPages(list) {
+    var pages = Array.isArray(list) && list.length ? list : ["/"];
+    var keep = els.page.value;
+    els.page.innerHTML = "";
+    pages.forEach(function (p) {
+      var opt = document.createElement("option");
+      opt.value = p;
+      opt.textContent = p === "/" ? "דף הבית" : p;
+      els.page.appendChild(opt);
+    });
+    els.page.value = pages.indexOf(keep) === -1 ? "/" : keep;
+    syncVariantVisibility();
+  }
+
   async function load() {
     els.stat.textContent = "טוען…";
-    var v = els.variant.value, d = els.device.value, days = els.days.value;
+    syncVariantVisibility();
+    var page = els.page.value, v = currentVariant();
+    var d = els.device.value, days = els.days.value;
     var r;
     try {
       r = await fetch("/api/heatmap?mode=agg&key=" + encodeURIComponent(key) +
-        "&variant=" + v + "&device=" + d + "&days=" + days);
+        "&page=" + encodeURIComponent(page) +
+        "&variant=" + encodeURIComponent(v) + "&device=" + d + "&days=" + days);
     } catch (e) { showMsg("שגיאת רשת"); return; }
     if (r.status === 403) { showMsg("מפתח גישה שגוי"); return; }
     if (!r.ok) { showMsg("שגיאה בטעינת נתונים (" + r.status + ")"); return; }
     lastData = await r.json();
+    // An older cached function returns no page list — fall back to home only.
+    syncPages(lastData.pages);
 
     els.stat.textContent = lastData.total_clicks + " קליקים · " +
       lastData.total_scroll_sessions + " סשנים · " + lastData.days + " ימים";
@@ -159,15 +193,17 @@
       return;
     }
     els.msg.hidden = true; els.stage.hidden = false;
-    loadFrame(v, d);
+    loadFrame(page, v, d);
   }
 
   var frameToken = 0;
-  function loadFrame(variant, device) {
+  function loadFrame(page, variant, device) {
     var token = ++frameToken;
     var width = device === "mobile" ? 390 : Math.min(1440, Math.max(1024, innerWidth - 80));
     els.frame.style.width = width + "px";
-    els.frame.src = "/" + variant + "?hm_view=1";
+    els.frame.src = page === "/"
+      ? "/" + variant + "?hm_view=1"
+      : page + (page.indexOf("?") === -1 ? "?" : "&") + "hm_view=1";
     els.frame.onload = function () {
       if (token !== frameToken) return;
       setTimeout(function () { prepare(width, token); }, 3200);
@@ -211,15 +247,21 @@
     var pts = [];
     var maxCount = 1;
     Object.keys(data.sections).forEach(function (sid) {
-      var el = doc.querySelector('[data-section-id="' + sid + '"]');
-      if (!el) return;
-      var r = el.getBoundingClientRect();
-      var top = r.top + (doc.defaultView.scrollY || 0);
+      // "__page" clicks were recorded against the whole document (pages with
+      // no section markup), so the frame itself is their box.
+      var left = 0, top = 0, boxW = width, boxH = fullH;
+      if (sid !== "__page") {
+        var el = doc.querySelector('[data-section-id="' + sid + '"]');
+        if (!el) return;
+        var r = el.getBoundingClientRect();
+        left = r.left; top = r.top + (doc.defaultView.scrollY || 0);
+        boxW = r.width; boxH = r.height;
+      }
       var cells = data.sections[sid];
       Object.keys(cells).forEach(function (cellKey) {
         var p = cellKey.split(",");
-        var x = ((+p[0] + 0.5) / data.grid) * r.width + r.left;
-        var y = ((+p[1] + 0.5) / data.grid) * r.height + top;
+        var x = ((+p[0] + 0.5) / data.grid) * boxW + left;
+        var y = ((+p[1] + 0.5) / data.grid) * boxH + top;
         var count = cells[cellKey];
         maxCount = Math.max(maxCount, count);
         pts.push({ x: x, y: y, c: count });
@@ -332,7 +374,9 @@
 
   els.tabClicks.addEventListener("click", function () { mode = "clicks"; applyMode(); });
   els.tabScroll.addEventListener("click", function () { mode = "scroll"; applyMode(); });
-  [els.variant, els.device, els.days].forEach(function (el) { el.addEventListener("change", load); });
+  [els.page, els.variant, els.device, els.days].forEach(function (el) {
+    el.addEventListener("change", load);
+  });
   load();
 })();
 </script>
