@@ -219,36 +219,6 @@ function Hero({ onCTAClick }) {
 
       <div className="wrap" style={{ position: "relative", zIndex: 2 }}>
         <div style={{ maxWidth: 1180, margin: "0 auto", textAlign: "center" }}>
-          {/* EYEBROW — live REC studio location */}
-          <div style={{
-            display: "inline-flex", flexDirection: "column", alignItems: "center", gap: 7,
-            padding: "12px 28px",
-            background: "rgba(255,213,0,0.04)",
-            border: "1px solid rgba(255,213,0,0.16)",
-            borderRadius: 14,
-            marginBottom: 36,
-            textAlign: "center"
-          }}>
-            <span style={{ display: "inline-flex", alignItems: "center", gap: 12 }}>
-              <span aria-hidden="true" style={{
-                width: 20, height: 1,
-                background: "linear-gradient(to right, transparent, rgba(255,213,0,0.55))"
-              }} />
-              <span className="mono" style={{
-                fontWeight: 700, letterSpacing: "0.08em",
-                color: "var(--accent)", fontSize: "14.5px", whiteSpace: "nowrap"
-              }}>אולפן הפודקאסטים החזק במדינה</span>
-              <span aria-hidden="true" style={{
-                width: 20, height: 1,
-                background: "linear-gradient(to left, transparent, rgba(255,213,0,0.55))"
-              }} />
-            </span>
-            <span className="mono" style={{
-              fontWeight: 600, letterSpacing: "0.03em",
-              color: "rgba(255,255,255,0.92)", fontSize: "15px"
-            }}>רק לבעלי עסקים שעושים 30,000 ש״ח ומעלה בחודש</span>
-          </div>
-
           {/* HEADLINE — refined cinematic */}
           <div style={{ position: "relative", margin: "0 auto 32px", maxWidth: 1160, padding: "12px 28px" }}>
             {/* ambient glow behind headline */}
