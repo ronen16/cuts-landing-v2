@@ -6,10 +6,21 @@
 // server-side, and a missing env config degrades to a no-op rather than
 // an error the collector would retry against.
 
+import { createHash } from "node:crypto";
+
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const VIEW_KEY = process.env.HEATMAP_VIEW_KEY;
+// Fallback when the env var isn't set: a one-way SHA-256 of the view key.
+// The key itself lives only in Ronen's viewer URL — this hash can't produce it.
+const VIEW_KEY_SHA256 = "67db196eab780f203604bc0f0c925d8117ef16bf29619850d2f1a0643638a348";
 const TABLE = "heatmap_events";
+
+function viewKeyValid(key) {
+  if (typeof key !== "string" || !key) return false;
+  if (VIEW_KEY) return key === VIEW_KEY;
+  return createHash("sha256").update(key).digest("hex") === VIEW_KEY_SHA256;
+}
 
 const MAX_BODY_BYTES = 32 * 1024;
 const MAX_EVENTS = 200;
@@ -101,7 +112,7 @@ async function handlePost(req, res) {
 
 async function handleGet(req, res) {
   const { key, variant, device, days } = req.query || {};
-  if (!VIEW_KEY || key !== VIEW_KEY) return res.status(403).json({ error: "forbidden" });
+  if (!viewKeyValid(key)) return res.status(403).json({ error: "forbidden" });
   if (!configured()) return res.status(503).json({ error: "storage not configured" });
 
   const v = VARIANTS.has(variant) ? variant : "c";
