@@ -122,9 +122,8 @@ const HERO_POSTER_BAKED = true;
 const HERO_HEADLINES = {
   a: {
     lines: [
-      "הלקוחות הכי טובים שלכם",
-      { text: "", accent: "יסמכו עליכם", underline: false },
-      { text: "", accent: "עוד לפני שיחת המכירה" },
+      "איך להגדיל את העסק שלכם",
+      { text: "", accent: "בעזרת נכס אמון שעובד בשבילכם 24/7?" },
     ],
   },
   b: {
