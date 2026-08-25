@@ -6,58 +6,69 @@
 <meta name="robots" content="noindex, nofollow">
 <title>מפת חום — Cuts</title>
 <style>
-  :root { --accent: #FFD500; --bg: #0A0A0A; --card: #141414; --line: rgba(255,255,255,0.1); }
+  :root { --accent: #FFD500; --bg: #101014; --card: #1a1a20; --line: rgba(255,255,255,0.1); }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { background: var(--bg); color: #fff; font-family: system-ui, sans-serif; min-height: 100vh; }
 
   .bar {
-    position: sticky; top: 0; z-index: 10;
+    position: sticky; top: 0; z-index: 20;
     display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
-    padding: 14px 18px; background: var(--card); border-bottom: 1px solid var(--line);
+    padding: 12px 18px; background: var(--card); border-bottom: 1px solid var(--line);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
   }
-  .bar b { color: var(--accent); margin-inline-end: 8px; }
-  .bar select, .bar button {
-    background: #1e1e1e; color: #fff; border: 1px solid var(--line);
+  .bar b { color: var(--accent); margin-inline-end: 4px; font-size: 15px; }
+  .bar select {
+    background: #24242c; color: #fff; border: 1px solid var(--line);
     border-radius: 8px; padding: 8px 12px; font-size: 14px; cursor: pointer;
   }
-  .bar .stat { font-size: 13px; opacity: 0.65; margin-inline-start: auto; }
+  .tabs { display: flex; background: #24242c; border-radius: 8px; padding: 3px; gap: 2px; }
+  .tabs button {
+    background: transparent; color: rgba(255,255,255,0.65); border: 0;
+    border-radius: 6px; padding: 7px 18px; font-size: 14px; font-weight: 600; cursor: pointer;
+  }
+  .tabs button.on { background: var(--accent); color: #111; }
+  .bar .stat { font-size: 13px; opacity: 0.6; margin-inline-start: auto; white-space: nowrap; }
 
-  .layout { display: flex; gap: 18px; padding: 18px; align-items: flex-start; }
+  .legend {
+    display: flex; align-items: center; gap: 8px; font-size: 11.5px; opacity: 0.85;
+  }
+  .legend .ramp {
+    width: 110px; height: 10px; border-radius: 5px;
+    background: linear-gradient(to left, rgba(255,32,32,1), rgba(255,213,0,1), rgba(40,220,120,1), rgba(60,170,255,1), rgba(60,60,255,0.55));
+  }
 
-  .stage-wrap { position: relative; margin: 0 auto; }
+  .stage-outer { display: flex; justify-content: center; padding: 22px 12px 60px; }
   .stage {
     position: relative; overflow: hidden;
-    border: 1px solid var(--line); border-radius: 12px; background: #000;
+    border: 1px solid var(--line); border-radius: 14px; background: #000;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.55);
   }
   .stage iframe { display: block; border: 0; }
-  .stage canvas {
-    position: absolute; top: 0; left: 0;
-    pointer-events: none; mix-blend-mode: screen;
+  .stage .overlay { position: absolute; top: 0; left: 0; }
+  #clickCanvas { pointer-events: auto; }
+  #scrollCanvas, #labelCanvas { pointer-events: none; }
+
+  .tip {
+    position: fixed; z-index: 30; pointer-events: none; display: none;
+    background: #111; color: #fff; border: 1px solid var(--accent);
+    border-radius: 8px; padding: 6px 12px; font-size: 12.5px; white-space: nowrap;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
   }
 
-  .side {
-    flex: 0 0 240px; position: sticky; top: 76px;
-    background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px;
-  }
-  .side h3 { font-size: 14px; color: var(--accent); margin-bottom: 12px; }
-  .srow { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 12px; }
-  .srow .lbl { width: 44px; opacity: 0.6; }
-  .srow .track { flex: 1; height: 14px; background: #1e1e1e; border-radius: 4px; overflow: hidden; }
-  .srow .fill { height: 100%; background: linear-gradient(90deg, #2f6df6, var(--accent)); }
-  .srow .pct { width: 38px; text-align: left; font-variant-numeric: tabular-nums; }
-
-  .msg { padding: 60px 20px; text-align: center; opacity: 0.7; font-size: 15px; }
-  @media (max-width: 900px) { .layout { flex-direction: column; } .side { position: static; width: 100%; } }
+  .msg { padding: 80px 20px; text-align: center; opacity: 0.75; font-size: 15px; line-height: 1.8; }
+  .msg b { color: var(--accent); }
 </style>
 </head>
 <body>
   <div class="bar">
     <b>מפת חום</b>
+    <div class="tabs">
+      <button id="tabClicks" class="on">קליקים</button>
+      <button id="tabScroll">גלילה</button>
+    </div>
     <select id="variant">
       <option value="c" selected>c — הדומיין הראשי</option>
-      <option value="a">a</option>
-      <option value="b">b</option>
-      <option value="d">d</option>
+      <option value="a">a</option><option value="b">b</option><option value="d">d</option>
     </select>
     <select id="device">
       <option value="mobile" selected>מובייל</option>
@@ -68,45 +79,65 @@
       <option value="30" selected>30 ימים</option>
       <option value="90">90 ימים</option>
     </select>
-    <button id="reload">רענון</button>
+    <span class="legend"><span>מעט</span><span class="ramp"></span><span>הרבה</span></span>
     <span class="stat" id="stat"></span>
   </div>
 
   <div class="msg" id="msg" hidden></div>
 
-  <div class="layout" id="layout" hidden>
-    <div class="side">
-      <h3>עומק גלילה — % מהמבקרים שהגיעו</h3>
-      <div id="scrollbars"></div>
-    </div>
-    <div class="stage-wrap">
-      <div class="stage" id="stage">
-        <iframe id="frame" scrolling="no" title="תצוגת האתר"></iframe>
-        <canvas id="heat"></canvas>
-      </div>
+  <div class="stage-outer">
+    <div class="stage" id="stage" hidden>
+      <iframe id="frame" scrolling="no" title="תצוגת האתר"></iframe>
+      <canvas id="clickCanvas" class="overlay"></canvas>
+      <canvas id="scrollCanvas" class="overlay"></canvas>
+      <canvas id="labelCanvas" class="overlay"></canvas>
     </div>
   </div>
+
+  <div class="tip" id="tip"></div>
 
 <script>
 (function () {
   "use strict";
   var key = new URLSearchParams(location.search).get("key") || "";
+  var $ = function (id) { return document.getElementById(id); };
   var els = {
-    variant: document.getElementById("variant"),
-    device: document.getElementById("device"),
-    days: document.getElementById("days"),
-    reload: document.getElementById("reload"),
-    stat: document.getElementById("stat"),
-    msg: document.getElementById("msg"),
-    layout: document.getElementById("layout"),
-    frame: document.getElementById("frame"),
-    heat: document.getElementById("heat"),
-    scrollbars: document.getElementById("scrollbars"),
+    variant: $("variant"), device: $("device"), days: $("days"), stat: $("stat"),
+    msg: $("msg"), stage: $("stage"), frame: $("frame"),
+    click: $("clickCanvas"), scroll: $("scrollCanvas"), labels: $("labelCanvas"),
+    tabClicks: $("tabClicks"), tabScroll: $("tabScroll"), tip: $("tip"),
   };
+  var mode = "clicks";
+  var lastData = null;
+  var pixelPoints = []; // {x, y, count} in page pixels — for the hover tooltip
 
-  function showMsg(t) { els.msg.textContent = t; els.msg.hidden = false; els.layout.hidden = true; }
-
+  function showMsg(html) { els.msg.innerHTML = html; els.msg.hidden = false; els.stage.hidden = true; }
   if (!key) { showMsg("חסר מפתח גישה (?key=)"); return; }
+
+  // ── Hotjar-style palette: intensity 0→1 mapped through a colour ramp ──────
+  // Built once as a 256-entry LUT from a gradient, exactly how heatmap
+  // libraries do it — this is what makes the blobs blend into one surface.
+  var LUT = (function () {
+    var c = document.createElement("canvas");
+    c.width = 256; c.height = 1;
+    var g = c.getContext("2d").createLinearGradient(0, 0, 256, 0);
+    g.addColorStop(0.00, "rgba(60,60,255,0)");
+    g.addColorStop(0.20, "rgba(60,60,255,0.7)");
+    g.addColorStop(0.40, "rgba(60,170,255,0.85)");
+    g.addColorStop(0.60, "rgba(40,220,120,0.9)");
+    g.addColorStop(0.78, "rgba(255,213,0,0.95)");
+    g.addColorStop(1.00, "rgba(255,32,32,1)");
+    var ctx = c.getContext("2d");
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, 256, 1);
+    return ctx.getImageData(0, 0, 256, 1).data;
+  })();
+
+  // Scroll ramp: share of visitors 0→1 → cold→hot (red = everyone saw it).
+  function scrollColor(t) {
+    var i = Math.max(0, Math.min(255, Math.round(t * 255))) * 4;
+    return [LUT[i], LUT[i + 1], LUT[i + 2]];
+  }
 
   async function load() {
     els.stat.textContent = "טוען…";
@@ -118,102 +149,190 @@
     } catch (e) { showMsg("שגיאת רשת"); return; }
     if (r.status === 403) { showMsg("מפתח גישה שגוי"); return; }
     if (!r.ok) { showMsg("שגיאה בטעינת נתונים (" + r.status + ")"); return; }
-    var data = await r.json();
+    lastData = await r.json();
 
-    els.msg.hidden = true; els.layout.hidden = false;
-    els.stat.textContent = data.total_clicks + " קליקים · " +
-      data.total_scroll_sessions + " סשנים · " + data.days + " ימים";
+    els.stat.textContent = lastData.total_clicks + " קליקים · " +
+      lastData.total_scroll_sessions + " סשנים · " + lastData.days + " ימים";
 
-    renderScroll(data);
-    loadFrame(v, d, data);
-  }
-
-  function renderScroll(data) {
-    var total = data.scroll_buckets[0] || 0;
-    var html = "";
-    for (var i = 0; i <= 10; i++) {
-      var pct = total ? Math.round((data.scroll_buckets[i] / total) * 100) : 0;
-      html += '<div class="srow"><span class="lbl">' + (i * 10) + '%</span>' +
-        '<span class="track"><span class="fill" style="width:' + pct + '%"></span></span>' +
-        '<span class="pct">' + pct + '%</span></div>';
+    if (!lastData.total_clicks && !lastData.total_scroll_sessions) {
+      showMsg("<b>עדיין אין דאטה לחתך הזה.</b><br>האיסוף התחיל היום — כל מבקר אמיתי נספר מעכשיו.<br>תן לזה כמה ימים ותחזור.");
+      return;
     }
-    els.scrollbars.innerHTML = html;
+    els.msg.hidden = true; els.stage.hidden = false;
+    loadFrame(v, d);
   }
 
   var frameToken = 0;
-  function loadFrame(variant, device, data) {
+  function loadFrame(variant, device) {
     var token = ++frameToken;
-    var width = device === "mobile" ? 390 : Math.min(1440, innerWidth - 320);
+    var width = device === "mobile" ? 390 : Math.min(1440, Math.max(1024, innerWidth - 80));
     els.frame.style.width = width + "px";
     els.frame.src = "/" + variant + "?hm_view=1";
     els.frame.onload = function () {
       if (token !== frameToken) return;
-      // Let the SPA hydrate + fetch overrides before measuring sections.
-      setTimeout(function () { paint(width, data, token); }, 3000);
+      setTimeout(function () { prepare(width, token); }, 3200);
     };
   }
 
-  function paint(width, data, token) {
+  function prepare(width, token) {
     if (token !== frameToken) return;
     var doc;
     try { doc = els.frame.contentDocument; } catch (e) { showMsg("אין גישה לפריים"); return; }
     if (!doc) return;
 
+    // Freeze the page under the heat — Hotjar renders on a static screenshot;
+    // a live page with marquees and pulsing glows would smear the reading.
+    var freeze = doc.createElement("style");
+    freeze.textContent = "*,*::before,*::after{animation-play-state:paused !important;transition:none !important;} video{visibility:hidden;}";
+    doc.head.appendChild(freeze);
+
     var fullH = doc.documentElement.scrollHeight;
     els.frame.style.height = fullH + "px";
-    els.heat.width = width;
-    els.heat.height = fullH;
-    els.heat.style.width = width + "px";
-    els.heat.style.height = fullH + "px";
+    [els.click, els.scroll, els.labels].forEach(function (c) {
+      c.width = width; c.height = fullH;
+      c.style.width = width + "px"; c.style.height = fullH + "px";
+    });
+    render(doc, width, fullH);
+  }
 
-    var ctx = els.heat.getContext("2d");
+  function render(doc, width, fullH) {
+    renderClicks(doc, width, fullH);
+    renderScroll(width, fullH);
+    applyMode();
+  }
+
+  // ── Click map: accumulate grayscale intensity, then colorize ──────────────
+  function renderClicks(doc, width, fullH) {
+    var data = lastData;
+    var ctx = els.click.getContext("2d");
     ctx.clearRect(0, 0, width, fullH);
+    pixelPoints = [];
 
-    var grid = data.grid || 40;
+    var pts = [];
     var maxCount = 1;
     Object.keys(data.sections).forEach(function (sid) {
-      Object.keys(data.sections[sid]).forEach(function (cell) {
-        maxCount = Math.max(maxCount, data.sections[sid][cell]);
-      });
-    });
-
-    Object.keys(data.sections).forEach(function (sid) {
       var el = doc.querySelector('[data-section-id="' + sid + '"]');
-      if (!el) return; // section removed since the data was recorded
+      if (!el) return;
       var r = el.getBoundingClientRect();
       var top = r.top + (doc.defaultView.scrollY || 0);
       var cells = data.sections[sid];
       Object.keys(cells).forEach(function (cellKey) {
-        var parts = cellKey.split(",");
-        var cx = ((+parts[0] + 0.5) / grid) * r.width + r.left;
-        var cy = ((+parts[1] + 0.5) / grid) * r.height + top;
+        var p = cellKey.split(",");
+        var x = ((+p[0] + 0.5) / data.grid) * r.width + r.left;
+        var y = ((+p[1] + 0.5) / data.grid) * r.height + top;
         var count = cells[cellKey];
-        var intensity = count / maxCount;
-        var radius = 18 + intensity * 26;
-        var g = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
-        var color = heatColor(intensity);
-        g.addColorStop(0, "rgba(" + color + "," + (0.35 + intensity * 0.45) + ")");
-        g.addColorStop(1, "rgba(" + color + ",0)");
-        ctx.fillStyle = g;
-        ctx.beginPath();
-        ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-        ctx.fill();
+        maxCount = Math.max(maxCount, count);
+        pts.push({ x: x, y: y, c: count });
       });
+    });
+    pixelPoints = pts;
+    if (!pts.length) return;
+
+    // Pass 1 — grayscale alpha accumulation on an offscreen canvas.
+    var off = document.createElement("canvas");
+    off.width = width; off.height = fullH;
+    var octx = off.getContext("2d");
+    var radius = Math.max(22, Math.round(width * 0.075));
+    // Sparse data still has to read as heat: floor the per-point alpha.
+    var alphaFor = function (c) { return Math.min(1, 0.28 + 0.72 * (c / maxCount)); };
+    pts.forEach(function (p) {
+      var g = octx.createRadialGradient(p.x, p.y, 0, p.x, p.y, radius);
+      g.addColorStop(0, "rgba(0,0,0," + alphaFor(p.c) + ")");
+      g.addColorStop(1, "rgba(0,0,0,0)");
+      octx.fillStyle = g;
+      octx.beginPath();
+      octx.arc(p.x, p.y, radius, 0, Math.PI * 2);
+      octx.fill();
+    });
+
+    // Pass 2 — colorize accumulated alpha through the LUT.
+    var img = octx.getImageData(0, 0, width, fullH);
+    var px = img.data;
+    for (var i = 3; i < px.length; i += 4) {
+      var a = px[i];
+      if (!a) continue;
+      var j = a * 4;
+      px[i - 3] = LUT[j];
+      px[i - 2] = LUT[j + 1];
+      px[i - 1] = LUT[j + 2];
+      px[i] = Math.min(255, Math.round(LUT[j + 3] * 0.85));
+    }
+    ctx.putImageData(img, 0, 0);
+  }
+
+  // ── Scroll map: full-page colour wash + reach labels ──────────────────────
+  function renderScroll(width, fullH) {
+    var data = lastData;
+    var sctx = els.scroll.getContext("2d");
+    var lctx = els.labels.getContext("2d");
+    sctx.clearRect(0, 0, width, fullH);
+    lctx.clearRect(0, 0, width, fullH);
+    var total = data.scroll_buckets[0];
+    if (!total) return;
+
+    var g = sctx.createLinearGradient(0, 0, 0, fullH);
+    for (var b = 0; b <= 10; b++) {
+      var t = data.scroll_buckets[b] / total;
+      var c = scrollColor(t);
+      g.addColorStop(Math.min(1, b / 10), "rgba(" + c[0] + "," + c[1] + "," + c[2] + ",0.55)");
+    }
+    sctx.fillStyle = g;
+    sctx.fillRect(0, 0, width, fullH);
+
+    // Depth labels every 25% + the "half the visitors reach here" line.
+    lctx.font = "700 13px system-ui";
+    lctx.textAlign = "left";
+    [25, 50, 75].forEach(function (pctDepth) {
+      var y = Math.round(fullH * pctDepth / 100);
+      var bucket = Math.min(10, Math.floor(pctDepth / 10));
+      var frac = Math.round((data.scroll_buckets[bucket] / total) * 100);
+      lctx.strokeStyle = "rgba(255,255,255,0.75)";
+      lctx.setLineDash([7, 6]);
+      lctx.beginPath(); lctx.moveTo(0, y); lctx.lineTo(width, y); lctx.stroke();
+      var label = frac + "% מהמבקרים מגיעים לכאן";
+      var w = lctx.measureText(label).width + 18;
+      lctx.setLineDash([]);
+      lctx.fillStyle = "rgba(0,0,0,0.82)";
+      lctx.beginPath();
+      lctx.roundRect(8, y - 24, w, 22, 6);
+      lctx.fill();
+      lctx.fillStyle = "#fff";
+      lctx.fillText(label, 17, y - 8);
     });
   }
 
-  // blue → green → yellow → red
-  function heatColor(t) {
-    if (t < 0.33) return "47,109,246";
-    if (t < 0.6) return "60,200,120";
-    if (t < 0.85) return "255,213,0";
-    return "255,59,59";
+  function applyMode() {
+    els.click.style.display = mode === "clicks" ? "block" : "none";
+    els.scroll.style.display = mode === "scroll" ? "block" : "none";
+    els.labels.style.display = mode === "scroll" ? "block" : "none";
+    els.tabClicks.classList.toggle("on", mode === "clicks");
+    els.tabScroll.classList.toggle("on", mode === "scroll");
+    els.tip.style.display = "none";
   }
 
-  els.reload.addEventListener("click", load);
-  els.variant.addEventListener("change", load);
-  els.device.addEventListener("change", load);
-  els.days.addEventListener("change", load);
+  // ── Hover tooltip on the click map — count near the cursor ────────────────
+  els.click.addEventListener("mousemove", function (e) {
+    if (mode !== "clicks" || !pixelPoints.length || !lastData) return;
+    var rect = els.click.getBoundingClientRect();
+    var x = e.clientX - rect.left, y = e.clientY - rect.top;
+    var R = Math.max(26, els.click.width * 0.05);
+    var sum = 0;
+    for (var i = 0; i < pixelPoints.length; i++) {
+      var p = pixelPoints[i];
+      if ((p.x - x) * (p.x - x) + (p.y - y) * (p.y - y) <= R * R) sum += p.c;
+    }
+    if (!sum) { els.tip.style.display = "none"; return; }
+    var pct = Math.round((sum / lastData.total_clicks) * 1000) / 10;
+    els.tip.textContent = sum + " קליקים · " + pct + "% מכלל הקליקים";
+    els.tip.style.display = "block";
+    els.tip.style.left = Math.min(innerWidth - 220, e.clientX + 14) + "px";
+    els.tip.style.top = (e.clientY + 14) + "px";
+  });
+  els.click.addEventListener("mouseleave", function () { els.tip.style.display = "none"; });
+
+  els.tabClicks.addEventListener("click", function () { mode = "clicks"; applyMode(); });
+  els.tabScroll.addEventListener("click", function () { mode = "scroll"; applyMode(); });
+  [els.variant, els.device, els.days].forEach(function (el) { el.addEventListener("change", load); });
   load();
 })();
 </script>
