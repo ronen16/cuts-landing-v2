@@ -37,7 +37,8 @@
      tabs stay on the system face while everything around them is branded. */
   button, select, input, textarea, table { font-family: inherit; }
   /* Flex containers below would otherwise out-specify the UA rule for [hidden]. */
-  .legend[hidden], .chipbar[hidden], .stage-outer[hidden] { display: none; }
+  .legend[hidden], .chipbar[hidden], .stage-outer[hidden],
+  .kpis[hidden], .field[hidden] { display: none; }
 
   .bar {
     position: sticky; top: 0; z-index: 20;
@@ -46,12 +47,6 @@
     box-shadow: 0 4px 24px rgba(0,0,0,0.4);
   }
   .bar b { color: var(--accent); margin-inline-end: 4px; font-size: 15px; }
-  .bar select {
-    background: #24242c; color: #fff; border: 1px solid var(--line);
-    border-radius: 8px; padding: 8px 12px; font-size: 14px; cursor: pointer;
-  }
-  /* A locked picker still shows its value — it just isn't a choice any more. */
-  .bar select:disabled { opacity: 0.55; cursor: default; }
   .tabs { display: flex; background: #24242c; border-radius: 8px; padding: 3px; gap: 2px; }
   .tabs button {
     background: transparent; color: rgba(255,255,255,0.65); border: 0;
@@ -60,9 +55,43 @@
   .tabs button.on { background: var(--accent); color: #111; }
   .bar .stat { font-size: 13px; opacity: 0.6; margin-inline-start: auto; white-space: nowrap; }
 
-  .srcline {
-    padding: 7px 18px; font-size: 12.5px; opacity: 0.6;
-    background: var(--card); border-bottom: 1px solid var(--line);
+  /* Six bare dropdowns are a guessing game; each one says what it filters. */
+  .filters {
+    display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: end;
+    padding: 12px 18px; background: rgba(255,255,255,0.02);
+    border-bottom: 1px solid var(--line);
+  }
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .field > span {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.02em;
+    color: var(--gray); text-transform: none;
+  }
+  .field select {
+    background: #24242c; color: #fff; border: 1px solid var(--line);
+    border-radius: 8px; padding: 8px 12px; font-size: 14px; cursor: pointer;
+  }
+  /* A locked picker still shows its value — it just isn't a choice any more. */
+  .field select:disabled { opacity: 0.55; cursor: default; }
+  .filters .legend { margin-inline-start: auto; padding-bottom: 8px; }
+
+  /* The numbers that answer "how is the page doing" before any map is read. */
+  .kpis {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1px; background: var(--line); border-bottom: 1px solid var(--line);
+  }
+  .kpi { background: var(--bg); padding: 14px 18px; }
+  .kpi .k-label { font-size: 12px; color: var(--gray); font-weight: 700; }
+  .kpi .k-value {
+    font-size: 26px; font-weight: 900; line-height: 1.25;
+    font-variant-numeric: tabular-nums;
+  }
+  .kpi .k-note { font-size: 11.5px; color: var(--gray); }
+  .kpi.accent .k-value { color: var(--accent); }
+
+  /* One sentence saying what the open tab is showing. */
+  .hint {
+    padding: 11px 18px; font-size: 13px; line-height: 1.6;
+    color: rgba(255,255,255,0.62); border-bottom: 1px solid var(--line);
   }
 
   .legend { display: flex; align-items: center; gap: var(--space-2); font-size: 11.5px; opacity: 0.85; }
@@ -143,35 +172,51 @@
       <button id="tabForms">טפסים</button>
       <button id="tabTrends">מגמות</button>
     </div>
-    <select id="page">
-      <option value="/" selected>דף הבית</option>
-    </select>
-    <select id="src" aria-label="מקור תנועה">
-      <option value="all" selected>מקור: הכול</option>
-      <option value="campaign">מקור: קמפיינים</option>
-      <option value="organic">מקור: אורגני+ישיר</option>
-    </select>
-    <select id="camp" aria-label="קמפיין" hidden>
-      <option value="all" selected>כל הקמפיינים</option>
-    </select>
-    <select id="variant">
-      <option value="c" selected>c — הדומיין הראשי</option>
-      <option value="a">a</option><option value="b">b</option><option value="d">d</option>
-    </select>
-    <select id="device">
-      <option value="mobile" selected>מובייל</option>
-      <option value="desktop">דסקטופ</option>
-    </select>
-    <select id="days">
-      <option value="7">7 ימים</option>
-      <option value="30" selected>30 ימים</option>
-      <option value="90">90 ימים</option>
-    </select>
-    <span class="legend" id="legend"><span>מעט</span><span class="ramp"></span><span>הרבה</span></span>
     <span class="stat" id="stat"></span>
   </div>
 
-  <div class="srcline" id="srcline" hidden></div>
+  <div class="filters">
+    <label class="field"><span>דף</span>
+      <select id="page">
+        <option value="/" selected>דף הבית</option>
+      </select>
+    </label>
+    <label class="field"><span>מקור תנועה</span>
+      <select id="src">
+        <option value="all" selected>הכול</option>
+        <option value="campaign">קמפיינים</option>
+        <option value="organic">אורגני + ישיר</option>
+      </select>
+    </label>
+    <label class="field" id="campField" hidden><span>קמפיין</span>
+      <select id="camp" hidden>
+        <option value="all" selected>כל הקמפיינים</option>
+      </select>
+    </label>
+    <label class="field" id="variantField"><span>גרסת הדף</span>
+      <select id="variant">
+        <option value="c" selected>c — הדומיין הראשי</option>
+        <option value="a">a</option><option value="b">b</option><option value="d">d</option>
+      </select>
+    </label>
+    <label class="field"><span>מכשיר</span>
+      <select id="device">
+        <option value="mobile" selected>מובייל</option>
+        <option value="desktop">דסקטופ</option>
+      </select>
+    </label>
+    <label class="field"><span>טווח זמן</span>
+      <select id="days">
+        <option value="7">7 ימים אחרונים</option>
+        <option value="30" selected>30 ימים אחרונים</option>
+        <option value="90">90 ימים אחרונים</option>
+      </select>
+    </label>
+    <span class="legend" id="legend"><span>מעט</span><span class="ramp"></span><span>הרבה</span></span>
+  </div>
+
+  <div class="kpis" id="kpis" hidden></div>
+  <p class="hint" id="hint"></p>
 
   <div class="msg" id="msg" hidden></div>
 
@@ -201,7 +246,8 @@
   var $ = function (id) { return document.getElementById(id); };
   var els = {
     page: $("page"), variant: $("variant"), src: $("src"), camp: $("camp"),
-    srcline: $("srcline"),
+    variantField: $("variantField"), campField: $("campField"),
+    kpis: $("kpis"), hint: $("hint"),
     device: $("device"), days: $("days"), stat: $("stat"),
     msg: $("msg"), stage: $("stage"), stageOuter: $("stageOuter"), frame: $("frame"),
     click: $("clickCanvas"), move: $("moveCanvas"), scroll: $("scrollCanvas"),
@@ -231,7 +277,7 @@
     els.msg.innerHTML = html;
     els.msg.hidden = false;
     els.stage.hidden = true; els.panel.hidden = true; els.chipbar.hidden = true;
-    els.srcline.hidden = true;
+    els.kpis.hidden = true;
   }
   if (!key) { showMsg("חסר מפתח גישה (?key=)"); return; }
 
@@ -286,7 +332,7 @@
   }
 
   function syncVariantVisibility() {
-    els.variant.hidden = els.page.value !== "/";
+    els.variantField.hidden = els.page.value !== "/";
   }
 
   // Rebuild the page picker from what the window actually contains, keeping
@@ -343,6 +389,7 @@
     var usable = campaignsAvailable && els.src.value !== "organic";
     if (!usable && els.camp.value !== "all") els.camp.value = "all";
     els.camp.hidden = !usable;
+    els.campField.hidden = !usable;
     syncSrcLock();
   }
 
@@ -375,27 +422,69 @@
   // ── Traffic source breakdown ──────────────────────────────────────────────
   // Campaign traffic is exactly what the collector prefixed "c:"; everything
   // else — organic referrals and direct visits — is the other half.
-  var SRC_LABELS = { campaign: "קמפיינים", organic: "אורגני+ישיר" };
+  var SRC_LABELS = { campaign: "קמפיינים", organic: "אורגני + ישיר" };
 
-  function renderSourceLine() {
-    // An older cached function ignores src entirely and echoes nothing back;
-    // claiming a filter is active would then be a lie, so say nothing at all.
-    if (!lastData || !lastData.src) { els.srcline.hidden = true; return; }
-    if (lastData.src !== "all") {
-      els.srcline.textContent = "מסונן לפי מקור · " + (SRC_LABELS[lastData.src] || lastData.src);
-      els.srcline.hidden = false;
-      return;
-    }
-    var sources = lastData.sources;
-    if (!sources || typeof sources !== "object") { els.srcline.hidden = true; return; }
+  function num(n) { return (+n || 0).toLocaleString("he-IL"); }
+
+  // Campaign traffic is exactly what the collector prefixed "c:"; everything
+  // else — organic referrals and direct visits — is the other half.
+  function sourceSplit() {
+    var sources = lastData && lastData.sources;
+    if (!sources || typeof sources !== "object") return null;
     var campaign = 0, organic = 0;
     Object.keys(sources).forEach(function (name) {
       var count = +sources[name] || 0;
       if (name.indexOf("c:") === 0) campaign += count; else organic += count;
     });
-    if (!campaign && !organic) { els.srcline.hidden = true; return; }
-    els.srcline.textContent = "קמפיינים: " + campaign + " · אורגני/ישיר: " + organic;
-    els.srcline.hidden = false;
+    if (!campaign && !organic) return null;
+    return { campaign: campaign, organic: organic };
+  }
+
+  function kpiCard(label, value, note, accent) {
+    var box = document.createElement("div");
+    box.className = "kpi" + (accent ? " accent" : "");
+    var l = document.createElement("div");
+    l.className = "k-label"; l.textContent = label;
+    var v = document.createElement("div");
+    v.className = "k-value"; v.textContent = value;
+    box.appendChild(l); box.appendChild(v);
+    if (note) {
+      var n = document.createElement("div");
+      n.className = "k-note"; n.textContent = note;
+      box.appendChild(n);
+    }
+    return box;
+  }
+
+  // ── The headline numbers ──────────────────────────────────────────────────
+  // Whatever tab is open, these answer the question the page is really for:
+  // how many people came, what did they do, how many turned into leads.
+  function renderKpis() {
+    while (els.kpis.firstChild) els.kpis.removeChild(els.kpis.firstChild);
+    if (!lastData) { els.kpis.hidden = true; return; }
+
+    var visitors = +lastData.total_scroll_sessions || 0;
+    var clicks = +lastData.total_clicks || 0;
+    var funnel = lastData.funnel || {};
+    var leads = +funnel.leads || 0;
+    var conv = visitors ? Math.round((leads / visitors) * 1000) / 10 : 0;
+
+    var split = sourceSplit();
+    var visitorsNote = "";
+    // An older cached function ignores src and echoes nothing back; claiming a
+    // filter is active would then be a lie, so say nothing at all.
+    if (lastData.src && lastData.src !== "all") {
+      visitorsNote = "מסונן: " + (SRC_LABELS[lastData.src] || lastData.src);
+    } else if (split) {
+      visitorsNote = num(split.campaign) + " מקמפיינים · " + num(split.organic) + " אורגני";
+    }
+
+    els.kpis.appendChild(kpiCard("מבקרים", num(visitors), visitorsNote));
+    els.kpis.appendChild(kpiCard("קליקים", num(clicks),
+      visitors ? (Math.round((clicks / visitors) * 10) / 10) + " בממוצע למבקר" : ""));
+    els.kpis.appendChild(kpiCard("לידים", num(leads), "השאירו שם וטלפון"));
+    els.kpis.appendChild(kpiCard("אחוז המרה", conv + "%", "מבקר → ליד", true));
+    els.kpis.hidden = false;
   }
 
   async function load() {
@@ -421,12 +510,8 @@
       syncSrcLock();
       return load(); // the locked campaign is gone from this slice — reload clean
     }
-    var movesTotal = totalOf("moves");
-    var stat = (lastData.total_clicks || 0) + " קליקים · " +
-      (lastData.total_scroll_sessions || 0) + " סשנים · " + lastData.days + " ימים";
-    if (movesTotal) stat += " · " + movesTotal + " תזוזות";
-    els.stat.textContent = stat;
-    renderSourceLine();
+    els.stat.textContent = lastData.days + " ימים אחרונים";
+    renderKpis();
 
     if (hasAnyHeat()) loadFrame(page, v, d);
     trends.stale = true;
@@ -448,9 +533,22 @@
       : page + (page.indexOf("?") === -1 ? "?" : "&") + "hm_view=1";
     els.frame.onload = function () {
       if (token !== frameToken) return;
-      setTimeout(function () { prepare(width, token); }, 3200);
+      // Waiting on the page's own fonts beats guessing with a long timer: it is
+      // both correct and, on a warm cache, several seconds faster.
+      var doc = els.frame.contentDocument;
+      var ready = (doc && doc.fonts && doc.fonts.ready) || Promise.resolve();
+      ready.then(function () {
+        setTimeout(function () { prepare(width, token); }, 600);
+      });
     };
   }
+
+  // Heat is smooth gradients, so a half-resolution backing store is invisible
+  // on screen while quartering both the canvas memory and the per-pixel
+  // colourise loop — the two things that made a full-page map crawl.
+  var HEAT_SCALE = 0.5;
+  var geom = null;
+  var painted = {};
 
   function prepare(width, token) {
     if (token !== frameToken) return;
@@ -466,30 +564,36 @@
 
     var fullH = doc.documentElement.scrollHeight;
     els.frame.style.height = fullH + "px";
-    [els.click, els.move, els.scroll, els.labels, els.rage].forEach(function (c) {
+    [els.click, els.move, els.scroll].forEach(function (c) {
+      c.width = Math.round(width * HEAT_SCALE);
+      c.height = Math.round(fullH * HEAT_SCALE);
+      c.style.width = width + "px"; c.style.height = fullH + "px";
+    });
+    // Labels and rage badges carry text, which upscaling would smear.
+    [els.labels, els.rage].forEach(function (c) {
       c.width = width; c.height = fullH;
       c.style.width = width + "px"; c.style.height = fullH + "px";
     });
-    render(doc, width, fullH);
+
+    geom = { doc: doc, width: width, fullH: fullH };
+    painted = {};
+    ragePoints = buildPoints(block("rage").sections, lastData.grid || 20, doc, width, fullH).pts;
+    clearCanvas(els.rage);
     heatReady = true;
     applyMode();
   }
 
-  function render(doc, width, fullH) {
+  // Paint only the layer the open tab actually shows, and only once. Painting
+  // all three up front meant every load did work for two maps nobody opened.
+  function ensurePainted(m) {
+    if (!geom || painted[m]) return;
+    painted[m] = true;
     var grid = lastData.grid || 20;
-
-    var clicks = buildPoints(lastData.sections, grid, doc, width, fullH);
-    points.clicks = clicks.pts;
-    paintHeat(els.click, clicks, width, fullH);
-
-    var moves = buildPoints(block("moves").sections, grid, doc, width, fullH);
-    points.moves = moves.pts;
-    paintHeat(els.move, moves, width, fullH);
-
-    ragePoints = buildPoints(block("rage").sections, grid, doc, width, fullH).pts;
-    clearCanvas(els.rage);
-
-    renderScroll(width, fullH);
+    if (m === "scroll") return renderScroll(geom.width, geom.fullH);
+    var sections = m === "clicks" ? lastData.sections : block("moves").sections;
+    var built = buildPoints(sections, grid, geom.doc, geom.width, geom.fullH);
+    points[m] = built.pts;
+    paintHeat(m === "clicks" ? els.click : els.move, built, geom.width, geom.fullH);
   }
 
   function clearCanvas(c) {
@@ -531,29 +635,32 @@
   // ── Heat: accumulate grayscale intensity, then colorize through the LUT ───
   function paintHeat(canvas, built, width, fullH) {
     var ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, width, fullH);
+    var w = canvas.width, h = canvas.height;   // already at HEAT_SCALE
+    var s = w / width;
+    ctx.clearRect(0, 0, w, h);
     var pts = built.pts;
     if (!pts.length) return;
 
     // Pass 1 — grayscale alpha accumulation on an offscreen canvas.
     var off = document.createElement("canvas");
-    off.width = width; off.height = fullH;
+    off.width = w; off.height = h;
     var octx = off.getContext("2d");
-    var radius = Math.max(22, Math.round(width * 0.075));
+    var radius = Math.max(22, Math.round(width * 0.075)) * s;
     // Sparse data still has to read as heat: floor the per-point alpha.
     var alphaFor = function (c) { return Math.min(1, 0.28 + 0.72 * (c / built.max)); };
     pts.forEach(function (p) {
-      var g = octx.createRadialGradient(p.x, p.y, 0, p.x, p.y, radius);
+      var x = p.x * s, y = p.y * s;
+      var g = octx.createRadialGradient(x, y, 0, x, y, radius);
       g.addColorStop(0, "rgba(0,0,0," + alphaFor(p.c) + ")");
       g.addColorStop(1, "rgba(0,0,0,0)");
       octx.fillStyle = g;
       octx.beginPath();
-      octx.arc(p.x, p.y, radius, 0, Math.PI * 2);
+      octx.arc(x, y, radius, 0, Math.PI * 2);
       octx.fill();
     });
 
     // Pass 2 — colorize accumulated alpha through the LUT.
-    var img = octx.getImageData(0, 0, width, fullH);
+    var img = octx.getImageData(0, 0, w, h);
     var px = img.data;
     for (var i = 3; i < px.length; i += 4) {
       var a = px[i];
@@ -622,19 +729,20 @@
     var buckets = (lastData && lastData.scroll_buckets) || [];
     var sctx = els.scroll.getContext("2d");
     var lctx = els.labels.getContext("2d");
-    sctx.clearRect(0, 0, width, fullH);
+    var sw = els.scroll.width, sh = els.scroll.height;
+    sctx.clearRect(0, 0, sw, sh);
     lctx.clearRect(0, 0, width, fullH);
     var total = buckets[0];
     if (!total) return;
 
-    var g = sctx.createLinearGradient(0, 0, 0, fullH);
+    var g = sctx.createLinearGradient(0, 0, 0, sh);
     for (var b = 0; b <= 10; b++) {
       var t = (buckets[b] || 0) / total;
       var c = scrollColor(t);
       g.addColorStop(Math.min(1, b / 10), "rgba(" + c[0] + "," + c[1] + "," + c[2] + ",0.55)");
     }
     sctx.fillStyle = g;
-    sctx.fillRect(0, 0, width, fullH);
+    sctx.fillRect(0, 0, sw, sh);
 
     // Depth labels every 25% + the "half the visitors reach here" line.
     lctx.font = "700 13px FbTypograph2, system-ui";
@@ -674,8 +782,20 @@
     return "<b>אין דאטה עדיין</b><br>לא נרשמו קליקים בחתך הזה.";
   }
 
+  // Every tab explains itself, so nobody has to decode a colour ramp to know
+  // what they are looking at.
+  var HINTS = {
+    clicks: "איפה לוחצים בפועל. אדום = הרבה קליקים, כחול = מעט. אזור בולט שנשאר כחול לא עובד.",
+    moves: "לאן העכבר נודד — קירוב טוב למה שקוראים. דסקטופ בלבד.",
+    scroll: "עד כמה גוללים למטה. הקו המקווקו מראה לאן מגיע כל אחוז מהמבקרים.",
+    funnel: "כמה נשרו בין ביקור בדף, מפגש עם הטופס, והשארת פרטים.",
+    forms: "שדה־שדה: כמה התחילו למלא וכמה נטשו באמצע.",
+    trends: "אותם מספרים לאורך זמן — כדי לראות אם שינוי בדף שיפר או הרס.",
+  };
+
   function applyMode() {
     Object.keys(TABS).forEach(function (m) { TABS[m].classList.toggle("on", m === mode); });
+    els.hint.textContent = HINTS[mode] || "";
     els.tip.style.display = "none";
     var isHeat = !!HEAT_MODES[mode];
     els.legend.hidden = !isHeat;
@@ -730,6 +850,7 @@
 
     els.msg.hidden = true;
     els.stage.hidden = false;
+    ensurePainted(mode);
     var rageTotal = totalOf("rage");
     els.chipbar.hidden = !(mode === "clicks" && rageTotal > 0);
     els.rageChipText.textContent = "קליקי תסכול (" + rageTotal + ")";
