@@ -57,6 +57,59 @@
     } catch (e) { return "c"; }
   }
 
+  // ── traffic source ────────────────────────────────────────────────────────
+  // "c:" means the visit came from a paid campaign, "r:" from an organic
+  // referral, bare "direct" from neither. The API filters on that prefix, so
+  // it's a contract: the shape may gain values, never a different grammar.
+  var SOURCE_MAX = 40;
+
+  function cleanToken(value) {
+    return String(value || "").toLowerCase().replace(/[^a-z0-9._:-]/g, "");
+  }
+
+  // A referrer only counts when it's someone else's site — our own pages
+  // linking to each other say nothing about where the visitor came from.
+  function externalHost(url) {
+    if (!url) return "";
+    try {
+      var here = String(location.hostname || "").toLowerCase().replace(/^www\./, "");
+      var host = new URL(url, location.href).hostname.toLowerCase().replace(/^www\./, "");
+      if (!host || host === here) return "";
+      return cleanToken(host);
+    } catch (e) { return ""; }
+  }
+
+  var SOURCE = (function () {
+    var attr = {};
+    try {
+      attr = JSON.parse(sessionStorage.getItem("cuts_attribution") || "{}") || {};
+    } catch (e) { attr = {}; }
+
+    // primitives.jsx caches the first landing's params, but the collector also
+    // runs on pages it never loads (thank-you.html), so the URL is read too.
+    var params = null;
+    try { params = new URLSearchParams(location.search); } catch (e) { /* swallow */ }
+
+    function attribute(name) {
+      if (attr && attr[name]) return attr[name];
+      return (params && params.get(name)) || "";
+    }
+
+    var utmSource = cleanToken(attribute("utm_source"));
+    if (utmSource) return ("c:" + utmSource).slice(0, SOURCE_MAX);
+    // A click id without a utm_source still names the network that sent it.
+    if (attribute("fbclid")) return "c:facebook";
+    if (attribute("gclid")) return "c:google";
+    if (attribute("ttclid")) return "c:tiktok";
+
+    var host = "";
+    try { host = externalHost(document.referrer); } catch (e) { host = ""; }
+    if (!host) host = externalHost(attr && attr.referrer);
+    if (host) return ("r:" + host).slice(0, SOURCE_MAX);
+
+    return "direct";
+  })();
+
   function clamp01(n) {
     return n < 0 ? 0 : n > 1 ? 1 : n;
   }
@@ -193,6 +246,7 @@
         page: PAGE,
         variant: variant(),
         device: device(),
+        source: SOURCE,
         section_id: at.sectionId,
         rel_x: round3(at.relX),
         rel_y: round3(at.relY),
@@ -252,6 +306,7 @@
       page: PAGE,
       variant: variant(),
       device: device(),
+      source: SOURCE,
       section_id: at.sectionId,
       rel_x: round3(at.relX),
       rel_y: round3(at.relY),
@@ -294,6 +349,7 @@
               page: PAGE,
               variant: variant(),
               device: device(),
+              source: SOURCE,
               section_id: id,
             });
           }
@@ -323,6 +379,7 @@
         page: PAGE,
         variant: variant(),
         device: device(),
+        source: SOURCE,
       });
       // A lead usually means a redirect is a heartbeat away.
       flushImmediate();
@@ -362,6 +419,7 @@
         page: PAGE,
         variant: variant(),
         device: device(),
+        source: SOURCE,
         section_id: name,
         reached_section: "focus",
       });
@@ -384,6 +442,7 @@
         page: PAGE,
         variant: variant(),
         device: device(),
+        source: SOURCE,
         section_id: name,
         reached_section: outcome,
       });
@@ -415,6 +474,7 @@
         page: PAGE,
         variant: variant(),
         device: device(),
+        source: SOURCE,
         section_id: at.sectionId,
         rel_x: round3(at.relX),
         rel_y: round3(at.relY),
@@ -463,6 +523,7 @@
       page: PAGE,
       variant: variant(),
       device: device(),
+      source: SOURCE,
       scroll_pct: maxPct,
       reached_section: deepestSection,
     });

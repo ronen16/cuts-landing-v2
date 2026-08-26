@@ -35,6 +35,11 @@
   .tabs button.on { background: var(--accent); color: #111; }
   .bar .stat { font-size: 13px; opacity: 0.6; margin-inline-start: auto; white-space: nowrap; }
 
+  .srcline {
+    padding: 7px 18px; font-size: 12.5px; opacity: 0.6;
+    background: var(--card); border-bottom: 1px solid var(--line);
+  }
+
   .legend { display: flex; align-items: center; gap: var(--space-2); font-size: 11.5px; opacity: 0.85; }
   .legend .ramp {
     width: 110px; height: 10px; border-radius: 5px;
@@ -116,6 +121,11 @@
     <select id="page">
       <option value="/" selected>דף הבית</option>
     </select>
+    <select id="src" aria-label="מקור תנועה">
+      <option value="all" selected>מקור: הכול</option>
+      <option value="campaign">מקור: קמפיינים</option>
+      <option value="organic">מקור: אורגני+ישיר</option>
+    </select>
     <select id="variant">
       <option value="c" selected>c — הדומיין הראשי</option>
       <option value="a">a</option><option value="b">b</option><option value="d">d</option>
@@ -132,6 +142,8 @@
     <span class="legend" id="legend"><span>מעט</span><span class="ramp"></span><span>הרבה</span></span>
     <span class="stat" id="stat"></span>
   </div>
+
+  <div class="srcline" id="srcline" hidden></div>
 
   <div class="msg" id="msg" hidden></div>
 
@@ -160,7 +172,7 @@
   var key = new URLSearchParams(location.search).get("key") || "";
   var $ = function (id) { return document.getElementById(id); };
   var els = {
-    page: $("page"), variant: $("variant"),
+    page: $("page"), variant: $("variant"), src: $("src"), srcline: $("srcline"),
     device: $("device"), days: $("days"), stat: $("stat"),
     msg: $("msg"), stage: $("stage"), stageOuter: $("stageOuter"), frame: $("frame"),
     click: $("clickCanvas"), move: $("moveCanvas"), scroll: $("scrollCanvas"),
@@ -190,6 +202,7 @@
     els.msg.innerHTML = html;
     els.msg.hidden = false;
     els.stage.hidden = true; els.panel.hidden = true; els.chipbar.hidden = true;
+    els.srcline.hidden = true;
   }
   if (!key) { showMsg("חסר מפתח גישה (?key=)"); return; }
 
@@ -267,7 +280,34 @@
     return "/api/heatmap?mode=" + apiMode + "&key=" + encodeURIComponent(key) +
       "&page=" + encodeURIComponent(els.page.value) +
       "&variant=" + encodeURIComponent(currentVariant()) +
+      "&src=" + encodeURIComponent(els.src.value) +
       "&device=" + els.device.value + "&days=" + els.days.value;
+  }
+
+  // ── Traffic source breakdown ──────────────────────────────────────────────
+  // Campaign traffic is exactly what the collector prefixed "c:"; everything
+  // else — organic referrals and direct visits — is the other half.
+  var SRC_LABELS = { campaign: "קמפיינים", organic: "אורגני+ישיר" };
+
+  function renderSourceLine() {
+    // An older cached function ignores src entirely and echoes nothing back;
+    // claiming a filter is active would then be a lie, so say nothing at all.
+    if (!lastData || !lastData.src) { els.srcline.hidden = true; return; }
+    if (lastData.src !== "all") {
+      els.srcline.textContent = "מסונן לפי מקור · " + (SRC_LABELS[lastData.src] || lastData.src);
+      els.srcline.hidden = false;
+      return;
+    }
+    var sources = lastData.sources;
+    if (!sources || typeof sources !== "object") { els.srcline.hidden = true; return; }
+    var campaign = 0, organic = 0;
+    Object.keys(sources).forEach(function (name) {
+      var count = +sources[name] || 0;
+      if (name.indexOf("c:") === 0) campaign += count; else organic += count;
+    });
+    if (!campaign && !organic) { els.srcline.hidden = true; return; }
+    els.srcline.textContent = "קמפיינים: " + campaign + " · אורגני/ישיר: " + organic;
+    els.srcline.hidden = false;
   }
 
   async function load() {
@@ -292,6 +332,7 @@
       (lastData.total_scroll_sessions || 0) + " סשנים · " + lastData.days + " ימים";
     if (movesTotal) stat += " · " + movesTotal + " תזוזות";
     els.stat.textContent = stat;
+    renderSourceLine();
 
     if (hasAnyHeat()) loadFrame(page, v, d);
     trends.stale = true;
@@ -987,7 +1028,7 @@
     TABS[m].addEventListener("click", function () { mode = m; applyMode(); });
   });
 
-  [els.page, els.variant, els.device, els.days].forEach(function (el) {
+  [els.page, els.variant, els.src, els.device, els.days].forEach(function (el) {
     el.addEventListener("change", function () { trends.stale = true; load(); });
   });
 

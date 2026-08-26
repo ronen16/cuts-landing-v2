@@ -36,6 +36,12 @@ const MAX_SECTION_LEN = 40;
 const COORD_KINDS = new Set(["click", "rage", "move"]);
 // form_field reuses reached_section to carry what happened to the field.
 const FIELD_ACTIONS = new Set(["focus", "abandon", "complete"]);
+// Traffic source, as the collector writes it: "c:<network>" for campaign
+// traffic, "r:<host>" for an organic referral, "direct" for neither. The
+// dashboard's campaign/organic split is that "c:" prefix and nothing else.
+const SOURCE_PATTERN = /^[a-z0-9._:-]{1,40}$/;
+const DEFAULT_SOURCE = "direct";
+const SOURCE_FILTERS = new Set(["all", "campaign", "organic"]);
 const GRID = 40;
 const DAY_MS = 86400000;
 
@@ -75,6 +81,13 @@ function sectionNamed(value) {
   return sectionValid(value) && value.length > 0;
 }
 
+// Collectors deployed before the source column existed send no source at all,
+// and the column is NOT NULL — an unusable value becomes "direct" rather than
+// dropping an otherwise valid event.
+function cleanSource(value) {
+  return typeof value === "string" && SOURCE_PATTERN.test(value) ? value : DEFAULT_SOURCE;
+}
+
 // Accept only what the schema expects, drop everything else. A row that
 // fails validation is skipped silently — analytics never earns a retry loop.
 function sanitize(ev, sessionId) {
@@ -89,6 +102,7 @@ function sanitize(ev, sessionId) {
     page,
     variant: ev.variant,
     device: ev.device,
+    source: cleanSource(ev.source),
     section_id: null,
     rel_x: null,
     rel_y: null,
@@ -173,22 +187,35 @@ async function handlePost(req, res) {
   return res.status(204).end();
 }
 
+// "organic" is everything that isn't a campaign — an r: referral and a direct
+// visit answer the same question ("didn't come from an ad"), so they share a
+// bucket instead of splitting Ronen's numbers three ways.
+function sourceClause(src) {
+  if (src === "campaign") return "&source=like.c:*";
+  if (src === "organic") return "&source=not.like.c:*";
+  return "";
+}
+
 // The slice every GET mode works on: one page, one variant, one device,
-// one time window. Trend days bucket by UTC date — an Israel session before
-// 03:00 local lands on the previous bar; acceptable for reading trends.
+// one source class, one time window. Trend days bucket by UTC date — an
+// Israel session before 03:00 local lands on the previous bar; acceptable
+// for reading trends.
 function sliceOf(req) {
-  const { variant, device, days, page } = req.query || {};
+  const { variant, device, days, page, src } = req.query || {};
   const v = VARIANTS.has(variant) ? variant : "c";
   const d = DEVICES.has(device) ? device : "mobile";
   const p = cleanPage(page) || DEFAULT_PAGE;
+  const s = SOURCE_FILTERS.has(src) ? src : "all";
   const windowDays = Math.min(90, Math.max(1, parseInt(days, 10) || 30));
   const since = new Date(Date.now() - windowDays * DAY_MS).toISOString();
   const sinceParam = encodeURIComponent(since);
-  const base =
+  // baseAll is the same slice without the source filter — the breakdown has
+  // to keep showing every source, including the ones the filter hides.
+  const baseAll =
     `${SUPABASE_URL}/rest/v1/${TABLE}` +
     `?page=eq.${encodeURIComponent(p)}&variant=eq.${v}` +
     `&device=eq.${d}&ts=gte.${sinceParam}`;
-  return { v, d, p, windowDays, since, sinceParam, base };
+  return { v, d, p, s, windowDays, since, sinceParam, baseAll, base: baseAll + sourceClause(s) };
 }
 
 // A panel whose query fails degrades to zeros — one missing block must never
@@ -230,6 +257,22 @@ function countSessions(rows) {
   return seen.size;
 }
 
+// Sessions per raw source value. A session that somehow carries two sources
+// (a reload that picked up new UTM params) is counted once, under the first
+// one seen, so the breakdown always sums to the session count.
+function countSourceSessions(rows) {
+  const sourceOf = new Map();
+  for (const row of rows) {
+    if (!row || !row.session_id || sourceOf.has(row.session_id)) continue;
+    sourceOf.set(row.session_id, cleanSource(row.source));
+  }
+  const counts = {};
+  for (const source of sourceOf.values()) {
+    counts[source] = (counts[source] || 0) + 1;
+  }
+  return counts;
+}
+
 async function handleGet(req, res) {
   if (!viewKeyValid((req.query || {}).key)) return res.status(403).json({ error: "forbidden" });
   if (!configured()) return res.status(503).json({ error: "storage not configured" });
@@ -240,7 +283,7 @@ async function handleGet(req, res) {
 }
 
 async function handleAgg(res, slice) {
-  const { v, d, p, windowDays, sinceParam, base } = slice;
+  const { v, d, p, s, windowDays, sinceParam, base, baseAll } = slice;
 
   // PostgREST has no group-by; volumes here are small (a landing page, capped
   // at 200 events/session), so fetch raw rows and bucket in the function.
@@ -255,6 +298,7 @@ async function handleAgg(res, slice) {
     formViewRows,
     leadRows,
     fieldRows,
+    sourceRows,
   ] = await Promise.all([
     fetch(`${base}&kind=eq.click&select=section_id,rel_x,rel_y&limit=50000`, { headers: headers() }),
     fetch(`${base}&kind=eq.scroll&select=scroll_pct,reached_section&limit=10000`, { headers: headers() }),
@@ -269,6 +313,9 @@ async function handleAgg(res, slice) {
     fetchRows(`${base}&kind=eq.form_view&select=session_id&limit=20000`),
     fetchRows(`${base}&kind=eq.lead&select=session_id&limit=20000`),
     fetchRows(`${base}&kind=eq.form_field&select=session_id,section_id,reached_section&limit=20000`),
+    // Deliberately on baseAll: the breakdown is the whole picture of the
+    // slice, which is what tells Ronen whether a filter is worth applying.
+    fetchRows(`${baseAll}&kind=eq.scroll&select=session_id,source&limit=20000`),
   ]);
   if (!clicksRes.ok || !scrollsRes.ok) {
     return res.status(502).json({ error: "storage query failed" });
@@ -326,6 +373,8 @@ async function handleAgg(res, slice) {
     pages,
     variant: v,
     device: d,
+    src: s,
+    sources: countSourceSessions(sourceRows),
     days: windowDays,
     grid: GRID,
     total_clicks: clicks.length,
@@ -394,6 +443,7 @@ async function handleTrends(res, slice) {
     page: slice.p,
     variant: slice.v,
     device: slice.d,
+    src: slice.s,
     days: slice.windowDays,
     series,
   });
