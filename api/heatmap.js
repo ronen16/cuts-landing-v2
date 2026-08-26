@@ -377,16 +377,44 @@ function campaignVariants(name) {
 const ROW_ORGANIC = "__organic";
 const ROW_DIRECT = "__direct";
 
-function rowKeyOf(row) {
+// Untagged paid traffic is named after its network. Meta's own codes are not
+// words anyone should have to translate while reading a table.
+const NETWORK_NAMES = {
+  "c:fb": "פייסבוק", "c:facebook": "פייסבוק",
+  "c:ig": "אינסטגרם", "c:instagram": "אינסטגרם",
+  "c:google": "גוגל", "c:tiktok": "טיקטוק",
+};
+
+function rowKeyOf(row, canonical) {
   const source = cleanSource(row && row.source);
   if (source.indexOf("c:") !== 0) return source === "direct" ? ROW_DIRECT : ROW_ORGANIC;
-  const campaign = cleanCampaign(row && row.campaign);
+  const value = cleanCampaign(row && row.campaign);
   // A paid visit whose ad never named itself still belongs with paid traffic,
   // so it gets the network's own row rather than being lost among the organic.
-  return campaign ? "c|" + campaign : "c|" + source;
+  if (!value) return "c|" + source;
+  const { campaign, ad } = splitCampaign(value);
+  const name = (canonical && canonical.get(hebrewStripped(campaign))) || campaign;
+  return "c|" + (ad ? name + "|" + ad : name);
+}
+
+// One campaign spelled two ways is still one campaign: rows written before the
+// token filter learned Hebrew kept only the ASCII part of the name. The fuller
+// spelling wins, and every row keys to it.
+function canonicalCampaigns(rows) {
+  const best = new Map();
+  for (const row of rows) {
+    const { campaign } = splitCampaign(cleanCampaign(row && row.campaign));
+    if (!campaign) continue;
+    const bare = hebrewStripped(campaign);
+    if (!bare) continue;
+    const held = best.get(bare);
+    if (!held || campaign.length > held.length) best.set(bare, campaign);
+  }
+  return best;
 }
 
 function buildBreakdown(scrollRows, clickRows, leadRows) {
+  const canonical = canonicalCampaigns([...scrollRows, ...clickRows, ...leadRows]);
   const rows = new Map();
   const seen = { visitors: new Set(), leads: new Set() };
   const touch = (key) => {
@@ -397,13 +425,13 @@ function buildBreakdown(scrollRows, clickRows, leadRows) {
   for (const row of scrollRows) {
     if (!row || !row.session_id || seen.visitors.has(row.session_id)) continue;
     seen.visitors.add(row.session_id);
-    touch(rowKeyOf(row)).visitors += 1;
+    touch(rowKeyOf(row, canonical)).visitors += 1;
   }
-  for (const row of clickRows) if (row) touch(rowKeyOf(row)).clicks += 1;
+  for (const row of clickRows) if (row) touch(rowKeyOf(row, canonical)).clicks += 1;
   for (const row of leadRows) {
     if (!row || !row.session_id || seen.leads.has(row.session_id)) continue;
     seen.leads.add(row.session_id);
-    touch(rowKeyOf(row)).leads += 1;
+    touch(rowKeyOf(row, canonical)).leads += 1;
   }
 
   const paid = [], rest = [];
@@ -411,7 +439,14 @@ function buildBreakdown(scrollRows, clickRows, leadRows) {
     if (r.key.indexOf("c|") !== 0) { rest.push({ ...r, paid: false, label: r.key === ROW_DIRECT ? "ישיר" : "אורגני" }); continue; }
     const value = r.key.slice(2);
     const { campaign, ad } = splitCampaign(value);
-    paid.push({ ...r, paid: true, campaign, filter: value, label: ad || campaign || value });
+    const network = NETWORK_NAMES[value];
+    paid.push({
+      ...r, paid: true, campaign,
+      // A network row is keyed by source, not by a campaign the query could
+      // match — offering it as a filter would just empty the map.
+      filter: network ? "" : value,
+      label: network ? network + " — בלי תיוג מודעה" : (ad || campaign || value),
+    });
   }
   // Ads first and biggest first: the top row is the one worth reading.
   paid.sort((a, b) => b.visitors - a.visitors || b.clicks - a.clicks);

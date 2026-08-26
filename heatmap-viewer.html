@@ -461,7 +461,8 @@
     rows.forEach(function (row) {
       SRC_COLS.forEach(function (col) { totals[col.key] += +row[col.key] || 0; });
       var tr = document.createElement("tr");
-      var isSelected = row.paid && selected !== "all" && selected === row.filter;
+      var canFilter = !!(row.paid && row.filter);
+      var isSelected = canFilter && selected !== "all" && selected === row.filter;
       if (isSelected) tr.className = "on";
 
       var name = document.createElement("td");
@@ -490,7 +491,7 @@
       // Only paid rows can narrow the map — "organic" isn't a stored value the
       // API can filter on, and offering a filter that does nothing is worse
       // than not offering it.
-      if (row.paid) {
+      if (canFilter) {
         tr.addEventListener("click", function () {
           els.camp.value = isSelected ? "all" : row.filter;
           load();
@@ -522,7 +523,7 @@
   function syncMapTitle() {
     var rows = (lastData && lastData.breakdown) || [];
     var selected = els.camp.value;
-    var chosen = rows.filter(function (r) { return r.paid && r.filter === selected; })[0];
+    var chosen = rows.filter(function (r) { return r.filter && r.filter === selected; })[0];
     var base = MAP_TITLES[mode] || MAP_TITLES.clicks;
     els.mapTitle.textContent = chosen ? base + " — " + chosen.label : base;
   }
