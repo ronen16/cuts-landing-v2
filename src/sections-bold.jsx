@@ -110,8 +110,10 @@ const HERO_VIDEO_POSTER = "assets/hero-video-poster.jpg";
 // muted, loop). Empty falls back to the poster image. It's treated as baked.
 const HERO_VIDEO_LOOP = "assets/hero-video-loop.mp4";
 // Auto-open the real Vimeo video on page load. Browsers forbid sound-on-autoplay,
-// so it starts MUTED — the viewer taps once to unmute.
-const HERO_VIDEO_AUTOOPEN = true;
+// so it starts MUTED — the viewer taps once to unmute. OFF since 26/08/2026:
+// the visitor taps the poster to start (with sound); flip back to true to
+// restore the muted-VSL behavior.
+const HERO_VIDEO_AUTOOPEN = false;
 // True when the poster/loop already has the title + play button baked in.
 // Baked media renders clean (no HTML text/play/gradient/banner/corners on top).
 const HERO_POSTER_BAKED = true;
@@ -163,6 +165,9 @@ function Hero({ onCTAClick }) {
   const [heroVideoPlaying, setHeroVideoPlaying] = React.useState(false);
   const [heroMuted, setHeroMuted] = React.useState(true);
   const heroIframeRef = React.useRef(null);
+  // A poster tap is a real user gesture, so the player may start WITH sound —
+  // only the auto-open path must embed muted. Read at iframe mount time.
+  const heroOpenedByTapRef = React.useRef(false);
   // Auto-open the real video (muted — browsers block sound-on-autoplay), but
   // only after window load + an idle slot. Mounting the Vimeo iframe on first
   // render put the player's ~2MB of script + stream on the critical path
@@ -418,7 +423,7 @@ function Hero({ onCTAClick }) {
             {HERO_VIMEO_ID && heroVideoPlaying ?
             <iframe
               ref={heroIframeRef}
-              src={`https://player.vimeo.com/video/${HERO_VIMEO_ID}?autoplay=1&muted=1&playsinline=1&title=0&byline=0&portrait=0&badge=0&autopause=0&app_id=58479${HERO_VIMEO_HASH ? `&h=${HERO_VIMEO_HASH}` : ""}`}
+              src={`https://player.vimeo.com/video/${HERO_VIMEO_ID}?autoplay=1&muted=${heroOpenedByTapRef.current ? 0 : 1}&playsinline=1&title=0&byline=0&portrait=0&badge=0&autopause=0&app_id=58479${HERO_VIMEO_HASH ? `&h=${HERO_VIMEO_HASH}` : ""}`}
               title="Cuts showreel"
               allow="autoplay; fullscreen; picture-in-picture"
               allowFullScreen
@@ -427,7 +432,12 @@ function Hero({ onCTAClick }) {
             <button
               type="button"
               className="hero-poster-btn"
-              onClick={() => HERO_VIMEO_ID && setHeroVideoPlaying(true)}
+              onClick={() => {
+                if (!HERO_VIMEO_ID) return;
+                heroOpenedByTapRef.current = true;
+                setHeroMuted(false);
+                setHeroVideoPlaying(true);
+              }}
               aria-label={HERO_VIMEO_ID ? "נגן סרטון" : "סרטון בקרוב"}
               style={{
                 position: "absolute", inset: 0, padding: 0,
