@@ -60,56 +60,81 @@
     border-radius: 8px; padding: 8px 12px; font-size: 14px; cursor: pointer;
   }
 
-  .block { max-width: 1180px; margin: 0 auto; padding: var(--space-6) var(--space-4) 0; }
-  .block h2 { font-size: 15px; font-weight: 900; color: var(--accent); margin-bottom: var(--space-3); }
-  .blockhead {
-    display: flex; align-items: center; gap: var(--space-3);
-    flex-wrap: wrap; margin-bottom: var(--space-3);
+  /* The work area: map on the left, everything that explains it on the right,
+     both filling the window so nothing important sits below the fold. */
+  .work {
+    display: grid; grid-template-columns: 1fr 320px;
+    height: calc(100vh - 57px); overflow: hidden;
   }
-  .blockhead h2 { margin: 0; }
-  .blockhead .legend { margin-inline-start: auto; }
+  .mapview { overflow: auto; background: #101014; padding: 18px; }
+  .side {
+    overflow: auto; border-inline-start: 1px solid var(--line);
+    background: var(--card); padding: 16px;
+    display: flex; flex-direction: column; gap: 18px;
+  }
+  .sidebox h3 {
+    font-size: 11.5px; font-weight: 700; color: var(--gray);
+    margin-bottom: 9px; letter-spacing: 0.02em;
+  }
+  .sidebox .legend { margin-top: 10px; }
+
+  /* Ranked, with a bar behind each row — the shape of the numbers is readable
+     before any of them are. */
+  ol.top { list-style: none; display: flex; flex-direction: column; gap: 3px; }
+  ol.top li {
+    position: relative; padding: 9px 10px; border-radius: 7px;
+    background: #1e1e26; overflow: hidden; font-size: 13px;
+  }
+  ol.top li .fill {
+    position: absolute; inset-block: 0; inset-inline-start: 0;
+    background: rgba(255,222,31,0.16);
+  }
+  ol.top li .row { position: relative; display: flex; gap: 8px; align-items: baseline; }
+  ol.top li .rank { color: var(--gray); font-weight: 700; font-size: 11.5px; min-width: 14px; }
+  ol.top li .what { flex: 1; font-weight: 700; line-height: 1.45; }
+  ol.top li .pct { color: var(--accent); font-weight: 900; font-variant-numeric: tabular-nums; }
+  ol.top li .sub { position: relative; color: var(--gray); font-size: 11.5px; margin-top: 2px; }
+  .sidebox .empty { color: var(--gray); font-size: 13px; line-height: 1.7; }
 
   /* One row per ad. Reading down the first column answers "which ad works". */
-  table.src { width: 100%; border-collapse: collapse; font-size: 14.5px; }
-  table.src th {
-    font-size: 11.5px; font-weight: 700; color: var(--gray);
-    padding: 0 12px 8px; text-align: right; white-space: nowrap;
-  }
-  table.src th.n, table.src td.n { text-align: left; font-variant-numeric: tabular-nums; }
-  table.src td {
-    padding: 12px; border-top: 1px solid var(--line); vertical-align: middle;
-  }
+  table.src { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  table.src thead { display: none; }
+  table.src td { padding: 8px 6px; border-top: 1px solid var(--line); }
   table.src tbody tr { cursor: pointer; }
   table.src tbody tr:hover td { background: rgba(255,255,255,0.04); }
   table.src tr.on td { background: rgba(255,222,31,0.10); }
   table.src tr.on td:first-child { box-shadow: inset -3px 0 0 var(--accent); }
-  table.src td.name { font-weight: 700; }
-  table.src .tag {
-    display: inline-block; margin-inline-start: 8px; padding: 2px 8px;
-    border-radius: 999px; font-size: 11px; font-weight: 700;
-    background: rgba(255,222,31,0.14); color: var(--accent);
-  }
-  table.src .tag.off { background: rgba(255,255,255,0.07); color: var(--gray); }
-  table.src td.n b { font-size: 17px; font-weight: 900; }
+  table.src td.name { font-weight: 700; line-height: 1.4; }
+  table.src td.n { text-align: left; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  table.src td.n b { font-size: 15px; font-weight: 900; }
+  table.src .tag { display: block; font-size: 10.5px; font-weight: 700; color: var(--accent); }
+  table.src .tag.off { color: var(--gray); }
   table.src tr.total td { border-top: 2px solid var(--line); color: var(--gray); cursor: default; }
   table.src tr.total:hover td { background: none; }
 
+  .more { padding: 0 16px 24px; }
+  .more > button {
+    background: none; border: 0; color: var(--gray); cursor: pointer;
+    font-size: 12.5px; font-weight: 700; padding: 6px 0;
+  }
+  .more > button:hover { color: #fff; }
+  .more > button::after { content: " ▾"; }
+  .more > button[aria-expanded="true"]::after { content: " ▴"; }
+  .advfilters { display: flex; gap: 12px; margin-top: 12px; flex-wrap: wrap; }
+
+  @media (max-width: 900px) {
+    .work { grid-template-columns: 1fr; height: auto; overflow: visible; }
+    .side { border-inline-start: 0; border-top: 1px solid var(--line); }
+  }
+
   .seg { display: flex; background: #24242c; border-radius: 8px; padding: 3px; gap: 2px; }
+  .seg.wide { width: 100%; }
+  .seg.wide button { flex: 1; }
   .seg button {
     background: transparent; color: rgba(255,255,255,0.65); border: 0;
     border-radius: 6px; padding: 6px 14px; font-size: 13.5px; font-weight: 700; cursor: pointer;
   }
   .seg button.on { background: var(--accent); color: #111; }
-
-  .more { max-width: 1180px; margin: 0 auto; padding: 40px var(--space-4) 70px; }
-  .more > button {
-    background: none; border: 0; color: var(--gray); cursor: pointer;
-    font-size: 13.5px; font-weight: 700; padding: 8px 0;
-  }
-  .more > button:hover { color: #fff; }
-  .more > button::after { content: " ▾"; }
-  .more > button[aria-expanded="true"]::after { content: " ▴"; }
-  .advfilters { display: flex; gap: 14px; margin-top: var(--space-4); }
 
   .field { display: flex; flex-direction: column; gap: 4px; }
   .field > span {
@@ -145,7 +170,7 @@
   .chip.on { border-color: var(--rage); color: #fff; background: rgba(255,60,60,0.16); }
   .chip .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--rage); }
 
-  .stage-outer { display: flex; justify-content: center; padding: 22px 12px 60px; }
+  .stage-outer { display: flex; justify-content: center; }
   .stage {
     position: relative; overflow: hidden;
     border: 1px solid var(--line); border-radius: 14px; background: #000;
@@ -207,40 +232,59 @@
     <span class="stat" id="stat"></span>
   </div>
 
-  <!-- Question one: how many people came, from which ad. -->
-  <section class="block">
-    <h2>מאיפה הגיעו</h2>
-    <div id="srcTable"></div>
-  </section>
-
-  <!-- Question two: where they clicked. Nothing else on this screen. -->
-  <section class="block">
-    <div class="blockhead">
-      <h2 id="mapTitle">איפה לחצו</h2>
-      <div class="seg" id="deviceSeg">
-        <button type="button" data-device="mobile" class="on">מובייל</button>
-        <button type="button" data-device="desktop">דסקטופ</button>
-      </div>
-      <span class="legend" id="legend"><span>מעט</span><span class="ramp"></span><span>הרבה</span></span>
-    </div>
-
-    <div class="chipbar" id="chipbar" hidden>
-      <button class="chip on" id="rageChip" type="button"><span class="dot"></span><span id="rageChipText">קליקי תסכול</span></button>
-    </div>
-
-    <div class="msg" id="msg" hidden></div>
-
-    <div class="stage-outer" id="stageOuter">
-      <div class="stage" id="stage" hidden>
-        <iframe id="frame" scrolling="no" title="תצוגת האתר"></iframe>
-        <canvas id="clickCanvas" class="overlay"></canvas>
-        <canvas id="moveCanvas" class="overlay"></canvas>
-        <canvas id="scrollCanvas" class="overlay"></canvas>
-        <canvas id="labelCanvas" class="overlay"></canvas>
-        <canvas id="rageCanvas" class="overlay"></canvas>
+  <!-- Hotjar's shape: the map owns the screen and everything that explains it
+       sits in a column beside it, so nothing is below the fold. -->
+  <main class="work">
+    <div class="mapview" id="mapView">
+      <div class="msg" id="msg" hidden></div>
+      <div class="stage-outer" id="stageOuter">
+        <div class="stage" id="stage" hidden>
+          <iframe id="frame" scrolling="no" title="תצוגת האתר"></iframe>
+          <canvas id="clickCanvas" class="overlay"></canvas>
+          <canvas id="moveCanvas" class="overlay"></canvas>
+          <canvas id="scrollCanvas" class="overlay"></canvas>
+          <canvas id="labelCanvas" class="overlay"></canvas>
+          <canvas id="rageCanvas" class="overlay"></canvas>
+        </div>
       </div>
     </div>
-  </section>
+
+    <aside class="side">
+      <div class="sidebox">
+        <h3>סוג מפה</h3>
+        <div class="seg wide" id="modeSeg">
+          <button type="button" data-mode="clicks" class="on">קליקים</button>
+          <button type="button" data-mode="moves">תנועה</button>
+          <button type="button" data-mode="scroll">גלילה</button>
+        </div>
+        <span class="legend" id="legend"><span>מעט</span><span class="ramp"></span><span>הרבה</span></span>
+      </div>
+
+      <div class="sidebox">
+        <h3>מכשיר</h3>
+        <div class="seg wide" id="deviceSeg">
+          <button type="button" data-device="mobile" class="on">מובייל</button>
+          <button type="button" data-device="desktop">דסקטופ</button>
+        </div>
+      </div>
+
+      <!-- The answer to "where did they click", in words. A ranked list beats
+           reading blobs, and it is the thing Hotjar is actually useful for. -->
+      <div class="sidebox" id="topBox">
+        <h3 id="topTitle">הכי נלחצים</h3>
+        <ol class="top" id="topList"></ol>
+      </div>
+
+      <div class="sidebox">
+        <h3 id="mapTitle">מאיפה הגיעו</h3>
+        <div id="srcTable"></div>
+      </div>
+
+      <div class="chipbar" id="chipbar" hidden>
+        <button class="chip on" id="rageChip" type="button"><span class="dot"></span><span id="rageChipText">קליקי תסכול</span></button>
+      </div>
+    </aside>
+  </main>
 
   <!-- Everything else, folded away. It was five tabs competing with the two
        things this page is for. -->
@@ -302,7 +346,8 @@
     legend: $("legend"), panel: $("panel"), tip: $("tip"),
     chipbar: $("chipbar"), rageChip: $("rageChip"), rageChipText: $("rageChipText"),
     srcTable: $("srcTable"), mapTitle: $("mapTitle"), deviceSeg: $("deviceSeg"),
-    moreBtn: $("moreBtn"), moreWrap: $("moreWrap"),
+    moreBtn: $("moreBtn"), moreWrap: $("moreWrap"), modeSeg: $("modeSeg"),
+    topList: $("topList"), topTitle: $("topTitle"), mapView: $("mapView"),
   };
   var TABS = {
     clicks: $("tabClicks"), moves: $("tabMoves"), scroll: $("tabScroll"),
@@ -573,7 +618,8 @@
   var frameToken = 0;
   function loadFrame(page, variant, device) {
     var token = ++frameToken;
-    var width = device === "mobile" ? 390 : Math.min(1440, Math.max(1024, innerWidth - 80));
+    var avail = (els.mapView.clientWidth || innerWidth) - 36;
+    var width = device === "mobile" ? 390 : Math.min(1440, Math.max(900, avail));
     els.frame.style.width = width + "px";
     els.frame.src = page === "/"
       ? "/" + variant + "?hm_view=1"
@@ -641,6 +687,148 @@
     var built = buildPoints(sections, grid, geom.doc, geom.width, geom.fullH);
     points[m] = built.pts;
     paintHeat(m === "clicks" ? els.click : els.move, built, geom.width, geom.fullH);
+    renderTopList();
+  }
+
+  // ── What was clicked, in words ────────────────────────────────────────────
+  // The blobs say where; this says what. The frame is laid out at full page
+  // height with no internal scrolling, so page coordinates are also viewport
+  // coordinates and elementFromPoint can name the thing under each blob.
+  var LABEL_MAX = 46;
+
+  var CONTROLS = "a,button,[role=button],input,textarea,select,label";
+
+  // Section ids are code names. The area's own heading is what Ronen wrote and
+  // what he will recognise; the id is the last resort.
+  var sectionNames = {};
+
+  function sectionLabel(section) {
+    if (!section) return "אזור בדף";
+    var id = section.getAttribute("data-section-id") || "אזור בדף";
+    if (sectionNames[id]) return sectionNames[id];
+    var head = section.querySelector("h1,h2,h3");
+    var text = head ? readableText(head) : "";
+    if (text.length > LABEL_MAX) text = text.slice(0, LABEL_MAX - 1) + "…";
+    sectionNames[id] = text ? "אזור: " + text : id;
+    return sectionNames[id];
+  }
+
+  // textContent runs block children together — "רותחים" + "בעזרת" arrives as
+  // "רותחיםבעזרת". innerText is laid out, so it keeps the line breaks that make
+  // the words separate words.
+  function readableText(el) {
+    var raw = (el.getAttribute && (el.getAttribute("aria-label") ||
+      el.getAttribute("placeholder") || el.getAttribute("value"))) || "";
+    if (!raw) raw = el.innerText || el.textContent || "";
+    return String(raw).replace(/\s+/g, " ").trim();
+  }
+
+  function labelForPoint(doc, x, y) {
+    var el;
+    try { el = doc.elementFromPoint(x, y); } catch (e) { return null; }
+    if (!el) return null;
+
+    // A control is what the click was actually for, so it wins — but only when
+    // it is close by. Climbing all the way to an <li> that wraps a whole FAQ
+    // answer names the wrong thing.
+    var control = el.closest ? el.closest(CONTROLS) : null;
+    var target = control || el;
+    var text = readableText(target);
+
+    // A container's worth of text is not a label. Fall back to the element
+    // actually under the cursor, then to the area it lives in — named after
+    // that area's own heading, because "hero" is not something anyone said.
+    if (!control && text.length > LABEL_MAX * 2) text = readableText(el);
+    if (!text || text.length > LABEL_MAX * 2) {
+      text = sectionLabel(el.closest && el.closest("[data-section-id]"));
+    }
+
+    var tag = target.tagName;
+    var kind = tag === "A" ? "קישור"
+      : (tag === "BUTTON" || target.getAttribute("role") === "button") ? "כפתור"
+      : (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") ? "שדה"
+      : "";
+    if (text.length > LABEL_MAX) text = text.slice(0, LABEL_MAX - 1) + "…";
+    return { text: text, kind: kind };
+  }
+
+  function renderTopList() {
+    var host = els.topList;
+    while (host.firstChild) host.removeChild(host.firstChild);
+    els.topTitle.textContent = mode === "moves" ? "אזורים עם הכי הרבה תנועה" : "הכי נלחצים";
+    if (mode === "scroll") {
+      els.topTitle.textContent = "כמה הגיעו לעומק";
+      return renderScrollDepthList();
+    }
+
+    var pts = points[mode] || [];
+    if (!geom || !pts.length) return emptySide(host, "עוד אין מספיק נתונים למפה הזו.");
+
+    var byLabel = {};
+    var total = 0;
+    pts.forEach(function (p) {
+      var found = labelForPoint(geom.doc, p.x, p.y);
+      if (!found) return;
+      var id = found.kind + " " + found.text;
+      var entry = byLabel[id] || (byLabel[id] = { text: found.text, kind: found.kind, count: 0 });
+      entry.count += p.c;
+      total += p.c;
+    });
+
+    var ranked = Object.keys(byLabel).map(function (k) { return byLabel[k]; })
+      .sort(function (a, b) { return b.count - a.count; }).slice(0, 8);
+    if (!ranked.length || !total) return emptySide(host, "עוד אין מספיק נתונים למפה הזו.");
+
+    var unit = mode === "moves" ? "תזוזות" : "קליקים";
+    ranked.forEach(function (item, i) {
+      var pct = Math.round((item.count / total) * 100);
+      host.appendChild(topRow(i + 1, item.text, pct, item.count + " " + unit +
+        (item.kind ? " · " + item.kind : ""), pct));
+    });
+  }
+
+  // Scroll has no points to name, but the same list shape answers the same
+  // question: how far down did people actually get.
+  function renderScrollDepthList() {
+    var host = els.topList;
+    var buckets = (lastData && lastData.scroll_buckets) || [];
+    var total = buckets[0];
+    if (!total) return emptySide(host, "עוד אין מספיק נתונים למפה הזו.");
+    [25, 50, 75, 100].forEach(function (depth, i) {
+      var b = Math.min(10, Math.round(depth / 10));
+      var reached = buckets[b] || 0;
+      var pct = Math.round((reached / total) * 100);
+      host.appendChild(topRow(i + 1, "גללו עד " + depth + "% מהדף", pct, reached + " מבקרים", pct));
+    });
+  }
+
+  function topRow(rank, what, pct, sub, width) {
+    var li = document.createElement("li");
+    var fill = document.createElement("span");
+    fill.className = "fill";
+    fill.style.width = Math.max(2, Math.min(100, width)) + "%";
+    li.appendChild(fill);
+    var row = document.createElement("div");
+    row.className = "row";
+    var r = document.createElement("span");
+    r.className = "rank"; r.textContent = rank + ".";
+    var w = document.createElement("span");
+    w.className = "what"; w.textContent = what;
+    var p = document.createElement("span");
+    p.className = "pct"; p.textContent = pct + "%";
+    row.appendChild(r); row.appendChild(w); row.appendChild(p);
+    li.appendChild(row);
+    var s = document.createElement("div");
+    s.className = "sub"; s.textContent = sub;
+    li.appendChild(s);
+    return li;
+  }
+
+  function emptySide(host, text) {
+    var box = document.createElement("div");
+    box.className = "empty";
+    box.textContent = text;
+    host.appendChild(box);
   }
 
   function clearCanvas(c) {
@@ -899,6 +1087,8 @@
     els.msg.hidden = true;
     els.stage.hidden = false;
     ensurePainted(mode);
+    renderTopList();
+    syncModeSeg();
     var rageTotal = totalOf("rage");
     els.chipbar.hidden = !(mode === "clicks" && rageTotal > 0);
     els.rageChipText.textContent = "קליקי תסכול (" + rageTotal + ")";
@@ -1295,7 +1485,22 @@
     el.addEventListener("change", function () { trends.stale = true; load(); });
   });
 
-  // The map needs one device; the table above it always counts both.
+  els.modeSeg.addEventListener("click", function (e) {
+    var btn = e.target.closest ? e.target.closest("button[data-mode]") : null;
+    if (!btn || btn.dataset.mode === mode) return;
+    mode = btn.dataset.mode;
+    syncModeSeg();
+    applyMode();
+  });
+
+  function syncModeSeg() {
+    var buttons = els.modeSeg.querySelectorAll("button[data-mode]");
+    for (var i = 0; i < buttons.length; i++) {
+      buttons[i].classList.toggle("on", buttons[i].dataset.mode === mode);
+    }
+  }
+
+  // The map needs one device; the table beside it always counts both.
   els.deviceSeg.addEventListener("click", function (e) {
     var btn = e.target.closest ? e.target.closest("button[data-device]") : null;
     if (!btn || btn.dataset.device === els.device.value) return;
@@ -1325,6 +1530,7 @@
   addEventListener("resize", function () { if (mode === "trends") drawTrends(); });
 
   syncDeviceSeg();
+  syncModeSeg();
   load();
 })();
 </script>
