@@ -8,15 +8,28 @@
 (function () {
   "use strict";
 
-  // The collector used to run as soon as its <script defer> executed — right
-  // in the middle of React's first render, where its initial measureScroll()
-  // and section sweep forced ~1s of extra layout work on the critical path
-  // (Lighthouse attributed ~1030ms of mobile boot CPU to this file). All of
-  // it now waits for window load + an idle slot; analytics never paints
-  // pixels, so it has no business running before the page does. The cost:
-  // interactions in the first ~1-2s go unrecorded, which also means a
-  // sub-2s bounce no longer produces a session record.
-  var start = function () {
+  // What made this file expensive was never the code — it was the DOM
+  // measuring: the first measureScroll() and the section sweep landed inside
+  // React's first render and forced ~1s of layout on the critical path
+  // (Lighthouse blamed ~1030ms of mobile boot CPU on it). Deferring the whole
+  // collector fixed the cost and introduced a worse problem: nothing was
+  // listening yet, so a visitor who left inside the first couple of seconds
+  // produced no session at all. That silently deleted the fastest-bouncing
+  // traffic there is — people arriving from an ad — and made paid visits look
+  // like a third of what Ads Manager reported.
+  //
+  // So the split is by what actually costs, not by convenience: registering
+  // listeners and reading the URL are free and happen now, so every visit is
+  // counted and attributed from the first moment. Only the two calls that
+  // touch layout wait for an idle slot after load.
+  var whenIdle = function (fn) {
+    var run = function () {
+      if (window.requestIdleCallback) window.requestIdleCallback(fn, { timeout: 1500 });
+      else setTimeout(fn, 200);
+    };
+    if (document.readyState === "complete") run();
+    else window.addEventListener("load", run, { once: true });
+  };
 
   var ENDPOINT = "/api/heatmap";
   var FLUSH_AT = 40;      // send a batch every N events — move samples burst
@@ -418,9 +431,12 @@
     }
   } catch (e) { /* no IntersectionObserver — skip this signal entirely */ }
 
-  watchFormSections();
-  // React can mount the form section after us; one late sweep catches it.
-  setTimeout(watchFormSections, LATE_RENDER_MS);
+  // Both sweeps read geometry, so both wait for an idle slot after load.
+  whenIdle(function () {
+    watchFormSections();
+    // React can mount the form section after us; one late sweep catches it.
+    setTimeout(watchFormSections, LATE_RENDER_MS);
+  });
 
   // ── funnel: lead submitted ────────────────────────────────────────────────
   var LEAD_KEY = "cuts_hm_lead";
@@ -608,18 +624,8 @@
     flush();
   });
 
-  measureScroll(); // capture the viewport as it stands at init
-
-  };
-
-  function schedule() {
-    if (window.requestIdleCallback) {
-      window.requestIdleCallback(start, { timeout: 1500 });
-    } else {
-      setTimeout(start, 200);
-    }
-  }
-
-  if (document.readyState === "complete") schedule();
-  else window.addEventListener("load", schedule, { once: true });
+  // The only other layout read at boot. Until it runs the session is already
+  // recorded and attributed — it just has a scroll depth of 0, which is the
+  // truth for anyone who leaves this early.
+  whenIdle(measureScroll);
 })();

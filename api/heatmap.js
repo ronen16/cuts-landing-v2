@@ -240,7 +240,9 @@ function sliceOf(req) {
   // A named campaign is campaign traffic by definition, so it replaces the
   // source clause instead of stacking with it — "organic" plus a campaign
   // name would otherwise be an empty slice no matter what the data says.
-  const filter = c ? `&campaign=eq.${encodeURIComponent(c)}` : sourceClause(s);
+  const filter = c
+    ? `&campaign=in.(${campaignVariants(c).map((n) => `"${encodeURIComponent(n)}"`).join(",")})`
+    : sourceClause(s);
   return { v, d, p, s, c, windowDays, since, sinceParam, deviceClause, baseAll, base: baseAll + filter };
 }
 
@@ -326,7 +328,35 @@ function countCampaignSessions(rows) {
     if (!campaign) continue;
     counts[campaign] = (counts[campaign] || 0) + 1;
   }
-  return counts;
+  return mergeStrippedVariants(counts);
+}
+
+// Until the token filter learned Hebrew, "קמפיין 25.08.26" was stored as a
+// bare "25.08.26" — so one campaign now sits in the table under two spellings
+// and the picker splits its visitors between them. The two are folded back
+// together when one is exactly the other with its Hebrew removed, which is a
+// fact about the old filter rather than a guess about names.
+function hebrewStripped(value) {
+  return String(value).replace(/[֐-׿]/g, "").replace(/\s+/g, " ").trim();
+}
+
+function mergeStrippedVariants(counts) {
+  const merged = { ...counts };
+  for (const name of Object.keys(counts)) {
+    const bare = hebrewStripped(name);
+    if (!bare || bare === name) continue;
+    if (!(bare in merged)) continue;
+    merged[name] += merged[bare];
+    delete merged[bare];
+  }
+  return merged;
+}
+
+// The picker offers the full name, so the filter has to match the old bare
+// spelling too or selecting it would show only half its visitors.
+function campaignVariants(name) {
+  const bare = hebrewStripped(name);
+  return bare && bare !== name ? [name, bare] : [name];
 }
 
 async function handleGet(req, res) {
