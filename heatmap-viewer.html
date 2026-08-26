@@ -37,8 +37,8 @@
      tabs stay on the system face while everything around them is branded. */
   button, select, input, textarea, table { font-family: inherit; }
   /* Flex containers below would otherwise out-specify the UA rule for [hidden]. */
-  .legend[hidden], .chipbar[hidden], .stage-outer[hidden],
-  .kpis[hidden], .field[hidden] { display: none; }
+  .legend[hidden], .chipbar[hidden], .stage-outer[hidden], .seg[hidden],
+  .kpis[hidden], .field[hidden], .advfilters[hidden] { display: none; }
 
   .bar {
     position: sticky; top: 0; z-index: 20;
@@ -55,12 +55,62 @@
   .tabs button.on { background: var(--accent); color: #111; }
   .bar .stat { font-size: 13px; opacity: 0.6; margin-inline-start: auto; white-space: nowrap; }
 
-  /* Six bare dropdowns are a guessing game; each one says what it filters. */
-  .filters {
-    display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: end;
-    padding: 12px 18px; background: rgba(255,255,255,0.02);
-    border-bottom: 1px solid var(--line);
+  .bar select {
+    background: #24242c; color: #fff; border: 1px solid var(--line);
+    border-radius: 8px; padding: 8px 12px; font-size: 14px; cursor: pointer;
   }
+
+  .block { max-width: 1180px; margin: 0 auto; padding: var(--space-6) var(--space-4) 0; }
+  .block h2 { font-size: 15px; font-weight: 900; color: var(--accent); margin-bottom: var(--space-3); }
+  .blockhead {
+    display: flex; align-items: center; gap: var(--space-3);
+    flex-wrap: wrap; margin-bottom: var(--space-3);
+  }
+  .blockhead h2 { margin: 0; }
+  .blockhead .legend { margin-inline-start: auto; }
+
+  /* One row per ad. Reading down the first column answers "which ad works". */
+  table.src { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+  table.src th {
+    font-size: 11.5px; font-weight: 700; color: var(--gray);
+    padding: 0 12px 8px; text-align: right; white-space: nowrap;
+  }
+  table.src th.n, table.src td.n { text-align: left; font-variant-numeric: tabular-nums; }
+  table.src td {
+    padding: 12px; border-top: 1px solid var(--line); vertical-align: middle;
+  }
+  table.src tbody tr { cursor: pointer; }
+  table.src tbody tr:hover td { background: rgba(255,255,255,0.04); }
+  table.src tr.on td { background: rgba(255,222,31,0.10); }
+  table.src tr.on td:first-child { box-shadow: inset -3px 0 0 var(--accent); }
+  table.src td.name { font-weight: 700; }
+  table.src .tag {
+    display: inline-block; margin-inline-start: 8px; padding: 2px 8px;
+    border-radius: 999px; font-size: 11px; font-weight: 700;
+    background: rgba(255,222,31,0.14); color: var(--accent);
+  }
+  table.src .tag.off { background: rgba(255,255,255,0.07); color: var(--gray); }
+  table.src td.n b { font-size: 17px; font-weight: 900; }
+  table.src tr.total td { border-top: 2px solid var(--line); color: var(--gray); cursor: default; }
+  table.src tr.total:hover td { background: none; }
+
+  .seg { display: flex; background: #24242c; border-radius: 8px; padding: 3px; gap: 2px; }
+  .seg button {
+    background: transparent; color: rgba(255,255,255,0.65); border: 0;
+    border-radius: 6px; padding: 6px 14px; font-size: 13.5px; font-weight: 700; cursor: pointer;
+  }
+  .seg button.on { background: var(--accent); color: #111; }
+
+  .more { max-width: 1180px; margin: 0 auto; padding: 40px var(--space-4) 70px; }
+  .more > button {
+    background: none; border: 0; color: var(--gray); cursor: pointer;
+    font-size: 13.5px; font-weight: 700; padding: 8px 0;
+  }
+  .more > button:hover { color: #fff; }
+  .more > button::after { content: " ▾"; }
+  .more > button[aria-expanded="true"]::after { content: " ▴"; }
+  .advfilters { display: flex; gap: 14px; margin-top: var(--space-4); }
+
   .field { display: flex; flex-direction: column; gap: 4px; }
   .field > span {
     font-size: 11px; font-weight: 700; letter-spacing: 0.02em;
@@ -72,21 +122,6 @@
   }
   /* A locked picker still shows its value — it just isn't a choice any more. */
   .field select:disabled { opacity: 0.55; cursor: default; }
-  .filters .legend { margin-inline-start: auto; padding-bottom: 8px; }
-
-  /* The numbers that answer "how is the page doing" before any map is read. */
-  .kpis {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 1px; background: var(--line); border-bottom: 1px solid var(--line);
-  }
-  .kpi { background: var(--bg); padding: 14px 18px; }
-  .kpi .k-label { font-size: 12px; color: var(--gray); font-weight: 700; }
-  .kpi .k-value {
-    font-size: 26px; font-weight: 900; line-height: 1.25;
-    font-variant-numeric: tabular-nums;
-  }
-  .kpi .k-note { font-size: 11.5px; color: var(--gray); }
-  .kpi.accent .k-value { color: var(--accent); }
 
   /* One sentence saying what the open tab is showing. */
   .hint {
@@ -164,79 +199,90 @@
 <body>
   <div class="bar">
     <b>מפת חום</b>
-    <div class="tabs">
-      <button id="tabClicks" class="on">קליקים</button>
-      <button id="tabMoves">תנועה</button>
-      <button id="tabScroll">גלילה</button>
-      <button id="tabFunnel">משפך</button>
-      <button id="tabForms">טפסים</button>
-      <button id="tabTrends">מגמות</button>
-    </div>
+    <select id="days" aria-label="טווח זמן">
+      <option value="7">7 ימים אחרונים</option>
+      <option value="30" selected>30 ימים אחרונים</option>
+      <option value="90">90 ימים אחרונים</option>
+    </select>
     <span class="stat" id="stat"></span>
   </div>
 
-  <div class="filters">
-    <label class="field"><span>דף</span>
-      <select id="page">
-        <option value="/" selected>דף הבית</option>
-      </select>
-    </label>
-    <label class="field"><span>מקור תנועה</span>
-      <select id="src">
-        <option value="all" selected>הכול</option>
-        <option value="campaign">קמפיינים</option>
-        <option value="organic">אורגני + ישיר</option>
-      </select>
-    </label>
-    <label class="field" id="campField" hidden><span>קמפיין</span>
-      <select id="camp" hidden>
-        <option value="all" selected>כל הקמפיינים</option>
-      </select>
-    </label>
-    <label class="field" id="variantField"><span>גרסת הדף</span>
-      <select id="variant">
-        <option value="c" selected>c — הדומיין הראשי</option>
-        <option value="a">a</option><option value="b">b</option><option value="d">d</option>
-      </select>
-    </label>
-    <label class="field"><span>מכשיר</span>
-      <select id="device">
-        <option value="all" selected>כל המכשירים</option>
-        <option value="mobile">מובייל</option>
-        <option value="desktop">דסקטופ</option>
-      </select>
-    </label>
-    <label class="field"><span>טווח זמן</span>
-      <select id="days">
-        <option value="7">7 ימים אחרונים</option>
-        <option value="30" selected>30 ימים אחרונים</option>
-        <option value="90">90 ימים אחרונים</option>
-      </select>
-    </label>
-    <span class="legend" id="legend"><span>מעט</span><span class="ramp"></span><span>הרבה</span></span>
-  </div>
+  <!-- Question one: how many people came, from which ad. -->
+  <section class="block">
+    <h2>מאיפה הגיעו</h2>
+    <div id="srcTable"></div>
+  </section>
 
-  <div class="kpis" id="kpis" hidden></div>
-  <p class="hint" id="hint"></p>
-
-  <div class="msg" id="msg" hidden></div>
-
-  <div class="chipbar" id="chipbar" hidden>
-    <button class="chip on" id="rageChip" type="button"><span class="dot"></span><span id="rageChipText">קליקי תסכול</span></button>
-  </div>
-
-  <div class="stage-outer" id="stageOuter">
-    <div class="stage" id="stage" hidden>
-      <iframe id="frame" scrolling="no" title="תצוגת האתר"></iframe>
-      <canvas id="clickCanvas" class="overlay"></canvas>
-      <canvas id="moveCanvas" class="overlay"></canvas>
-      <canvas id="scrollCanvas" class="overlay"></canvas>
-      <canvas id="labelCanvas" class="overlay"></canvas>
-      <canvas id="rageCanvas" class="overlay"></canvas>
+  <!-- Question two: where they clicked. Nothing else on this screen. -->
+  <section class="block">
+    <div class="blockhead">
+      <h2 id="mapTitle">איפה לחצו</h2>
+      <div class="seg" id="deviceSeg">
+        <button type="button" data-device="mobile" class="on">מובייל</button>
+        <button type="button" data-device="desktop">דסקטופ</button>
+      </div>
+      <span class="legend" id="legend"><span>מעט</span><span class="ramp"></span><span>הרבה</span></span>
     </div>
-  </div>
 
-  <div class="panel" id="panel" hidden></div>
+    <div class="chipbar" id="chipbar" hidden>
+      <button class="chip on" id="rageChip" type="button"><span class="dot"></span><span id="rageChipText">קליקי תסכול</span></button>
+    </div>
+
+    <div class="msg" id="msg" hidden></div>
+
+    <div class="stage-outer" id="stageOuter">
+      <div class="stage" id="stage" hidden>
+        <iframe id="frame" scrolling="no" title="תצוגת האתר"></iframe>
+        <canvas id="clickCanvas" class="overlay"></canvas>
+        <canvas id="moveCanvas" class="overlay"></canvas>
+        <canvas id="scrollCanvas" class="overlay"></canvas>
+        <canvas id="labelCanvas" class="overlay"></canvas>
+        <canvas id="rageCanvas" class="overlay"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <!-- Everything else, folded away. It was five tabs competing with the two
+       things this page is for. -->
+  <section class="more">
+    <button type="button" id="moreBtn" aria-expanded="false">נתונים נוספים</button>
+    <div id="moreWrap" hidden>
+      <div class="tabs">
+        <button id="tabScroll">עומק גלילה</button>
+        <button id="tabMoves">תנועת עכבר</button>
+        <button id="tabFunnel">משפך המרה</button>
+        <button id="tabForms">התנהגות בטופס</button>
+        <button id="tabTrends">מגמות לאורך זמן</button>
+      </div>
+      <div class="advfilters">
+        <label class="field"><span>דף</span>
+          <select id="page"><option value="/" selected>דף הבית</option></select>
+        </label>
+        <label class="field" id="variantField"><span>גרסת הדף</span>
+          <select id="variant">
+            <option value="c" selected>c — הדומיין הראשי</option>
+            <option value="a">a</option><option value="b">b</option><option value="d">d</option>
+          </select>
+        </label>
+      </div>
+      <p class="hint" id="hint"></p>
+      <div class="panel" id="panel" hidden></div>
+    </div>
+  </section>
+
+  <!-- State the table and the segmented control drive; never shown. -->
+  <select id="device" hidden>
+    <option value="all">all</option><option value="mobile" selected>mobile</option>
+    <option value="desktop">desktop</option>
+  </select>
+  <select id="src" hidden>
+    <option value="all" selected>all</option><option value="campaign">campaign</option>
+    <option value="organic">organic</option>
+  </select>
+  <input id="camp" type="hidden" value="all">
+  <span id="campField" hidden></span>
+  <div id="kpis" hidden></div>
+  <button id="tabClicks" hidden class="on">קליקים</button>
 
   <div class="tip" id="tip"></div>
 
@@ -255,6 +301,8 @@
     labels: $("labelCanvas"), rage: $("rageCanvas"),
     legend: $("legend"), panel: $("panel"), tip: $("tip"),
     chipbar: $("chipbar"), rageChip: $("rageChip"), rageChipText: $("rageChipText"),
+    srcTable: $("srcTable"), mapTitle: $("mapTitle"), deviceSeg: $("deviceSeg"),
+    moreBtn: $("moreBtn"), moreWrap: $("moreWrap"),
   };
   var TABS = {
     clicks: $("tabClicks"), moves: $("tabMoves"), scroll: $("tabScroll"),
@@ -352,65 +400,6 @@
     syncVariantVisibility();
   }
 
-  // ── Campaign picker ───────────────────────────────────────────────────────
-  // Which single ad brought the visitors, not just "an ad did". The list comes
-  // from the unfiltered slice, so picking one never removes the others.
-  var campaignsAvailable = false;
-
-  function syncCampaigns(map) {
-    var counts = (map && typeof map === "object") ? map : {};
-    var names = Object.keys(counts).sort(function (a, b) {
-      return (+counts[b] || 0) - (+counts[a] || 0);
-    });
-    var keep = els.camp.value;
-    els.camp.innerHTML = "";
-    var all = document.createElement("option");
-    all.value = "all";
-    all.textContent = "כל הקמפיינים";
-    els.camp.appendChild(all);
-    names.forEach(function (name) {
-      var opt = document.createElement("option");
-      opt.value = name;
-      opt.textContent = name + " (" + (+counts[name] || 0) + ")";
-      els.camp.appendChild(opt);
-    });
-    campaignsAvailable = names.length > 0;
-    var dropped = keep !== "all" && names.indexOf(keep) === -1;
-    els.camp.value = dropped ? "all" : keep;
-    syncCampVisibility();
-    // The campaign we were filtered to doesn't exist in this slice (device or
-    // page just changed). The picker now says "all" but the data on screen is
-    // still the old campaign's — refetch so the two agree.
-    return dropped;
-  }
-
-  // An organic slice has no campaigns in it by construction, so the picker
-  // would only offer filters that empty the view.
-  function syncCampVisibility() {
-    var usable = campaignsAvailable && els.src.value !== "organic";
-    if (!usable && els.camp.value !== "all") els.camp.value = "all";
-    els.camp.hidden = !usable;
-    els.campField.hidden = !usable;
-    syncSrcLock();
-  }
-
-  // One campaign already implies campaign traffic — leaving the source picker
-  // live would offer a choice the API is right to ignore. The pre-lock choice
-  // is remembered so dropping the campaign doesn't silently narrow the slice.
-  var srcBeforeLock = null;
-
-  function syncSrcLock() {
-    var locked = !els.camp.hidden && els.camp.value !== "all";
-    if (locked) {
-      if (srcBeforeLock === null) srcBeforeLock = els.src.value;
-      els.src.value = "campaign";
-    } else if (srcBeforeLock !== null) {
-      els.src.value = srcBeforeLock;
-      srcBeforeLock = null;
-    }
-    els.src.disabled = locked;
-  }
-
   function apiUrl(apiMode) {
     return "/api/heatmap?mode=" + apiMode + "&key=" + encodeURIComponent(key) +
       "&page=" + encodeURIComponent(els.page.value) +
@@ -420,91 +409,127 @@
       "&device=" + els.device.value + "&days=" + els.days.value;
   }
 
-  // ── Traffic source breakdown ──────────────────────────────────────────────
-  // Campaign traffic is exactly what the collector prefixed "c:"; everything
-  // else — organic referrals and direct visits — is the other half.
-  var SRC_LABELS = { campaign: "קמפיינים", organic: "אורגני + ישיר" };
+  // ── "מאיפה הגיעו": one row per ad, biggest first ───────────────────────────
+  // This table is the whole answer to how many people came and from which ad.
+  // Picking a row narrows the map below it, so the two questions stay on one
+  // screen instead of being wired together through a dropdown.
+  var SRC_COLS = [
+    { key: "visitors", head: "נכנסו לדף", lead: true },
+    { key: "clicks", head: "קליקים" },
+    { key: "leads", head: "לידים" },
+  ];
 
-  function num(n) { return (+n || 0).toLocaleString("he-IL"); }
+  function cell(text, cls) {
+    var td = document.createElement("td");
+    if (cls) td.className = cls;
+    td.textContent = text;
+    return td;
+  }
 
-  // Campaign traffic is exactly what the collector prefixed "c:"; everything
-  // else — organic referrals and direct visits — is the other half.
-  function sourceSplit() {
-    var sources = lastData && lastData.sources;
-    if (!sources || typeof sources !== "object") return null;
-    var campaign = 0, organic = 0;
-    Object.keys(sources).forEach(function (name) {
-      var count = +sources[name] || 0;
-      if (name.indexOf("c:") === 0) campaign += count; else organic += count;
+  function renderSourceTable() {
+    var host = els.srcTable;
+    while (host.firstChild) host.removeChild(host.firstChild);
+    var rows = (lastData && Array.isArray(lastData.breakdown)) ? lastData.breakdown : [];
+    if (!rows.length) {
+      var empty = document.createElement("div");
+      empty.className = "empty";
+      empty.textContent = "עוד לא נרשמו כניסות בטווח הזה.";
+      host.appendChild(empty);
+      return;
+    }
+
+    var table = document.createElement("table");
+    table.className = "src";
+    var thead = document.createElement("thead");
+    var hr = document.createElement("tr");
+    var th0 = document.createElement("th");
+    th0.textContent = "מקור";
+    hr.appendChild(th0);
+    SRC_COLS.forEach(function (col) {
+      var th = document.createElement("th");
+      th.className = "n";
+      th.textContent = col.head;
+      hr.appendChild(th);
     });
-    if (!campaign && !organic) return null;
-    return { campaign: campaign, organic: organic };
+    thead.appendChild(hr);
+    table.appendChild(thead);
+
+    var body = document.createElement("tbody");
+    var selected = els.camp.value;
+    var totals = { visitors: 0, clicks: 0, leads: 0 };
+
+    rows.forEach(function (row) {
+      SRC_COLS.forEach(function (col) { totals[col.key] += +row[col.key] || 0; });
+      var tr = document.createElement("tr");
+      var isSelected = row.paid && selected !== "all" && selected === row.filter;
+      if (isSelected) tr.className = "on";
+
+      var name = document.createElement("td");
+      name.className = "name";
+      name.appendChild(document.createTextNode(row.label));
+      var tag = document.createElement("span");
+      tag.className = row.paid ? "tag" : "tag off";
+      tag.textContent = row.paid ? "מודעה" : "לא מודעה";
+      name.appendChild(tag);
+      tr.appendChild(name);
+
+      SRC_COLS.forEach(function (col) {
+        var td = document.createElement("td");
+        td.className = "n";
+        var value = String((+row[col.key] || 0).toLocaleString("he-IL"));
+        if (col.lead) {
+          var b = document.createElement("b");
+          b.textContent = value;
+          td.appendChild(b);
+        } else {
+          td.textContent = value;
+        }
+        tr.appendChild(td);
+      });
+
+      // Only paid rows can narrow the map — "organic" isn't a stored value the
+      // API can filter on, and offering a filter that does nothing is worse
+      // than not offering it.
+      if (row.paid) {
+        tr.addEventListener("click", function () {
+          els.camp.value = isSelected ? "all" : row.filter;
+          load();
+        });
+      } else {
+        tr.style.cursor = "default";
+      }
+      body.appendChild(tr);
+    });
+
+    var totalRow = document.createElement("tr");
+    totalRow.className = "total";
+    totalRow.appendChild(cell("סך הכול"));
+    SRC_COLS.forEach(function (col) {
+      totalRow.appendChild(cell(totals[col.key].toLocaleString("he-IL"), "n"));
+    });
+    body.appendChild(totalRow);
+
+    table.appendChild(body);
+    host.appendChild(table);
+
+    syncMapTitle();
   }
 
-  function kpiCard(label, value, note, accent) {
-    var box = document.createElement("div");
-    box.className = "kpi" + (accent ? " accent" : "");
-    var l = document.createElement("div");
-    l.className = "k-label"; l.textContent = label;
-    var v = document.createElement("div");
-    v.className = "k-value"; v.textContent = value;
-    box.appendChild(l); box.appendChild(v);
-    if (note) {
-      var n = document.createElement("div");
-      n.className = "k-note"; n.textContent = note;
-      box.appendChild(n);
-    }
-    return box;
-  }
+  var MAP_TITLES = {
+    clicks: "איפה לחצו", scroll: "עד כמה גללו", moves: "לאן זז העכבר",
+  };
 
-  // ── The headline numbers ──────────────────────────────────────────────────
-  // Whatever tab is open, these answer the question the page is really for:
-  // how many people came, what did they do, how many turned into leads.
-  function renderKpis() {
-    while (els.kpis.firstChild) els.kpis.removeChild(els.kpis.firstChild);
-    if (!lastData) { els.kpis.hidden = true; return; }
-
-    var visitors = +lastData.total_scroll_sessions || 0;
-    var clicks = +lastData.total_clicks || 0;
-    var funnel = lastData.funnel || {};
-    var leads = +funnel.leads || 0;
-    var conv = visitors ? Math.round((leads / visitors) * 1000) / 10 : 0;
-
-    // Every note below describes the slice on screen. A note that quietly
-    // reported the whole site under a filtered number was the one thing that
-    // made these cards untrustworthy.
-    var filtered = (lastData.camp && lastData.camp !== "all") ||
-      (lastData.src && lastData.src !== "all");
-    var split = sourceSplit();
-    var dev = lastData.devices;
-    var visitorsNote = "";
-    if (els.device.value === "all" && dev && (dev.mobile || dev.desktop)) {
-      visitorsNote = num(dev.mobile || 0) + " מובייל · " + num(dev.desktop || 0) + " דסקטופ";
-    }
-    if (filtered) {
-      var label = lastData.camp && lastData.camp !== "all"
-        ? "קמפיין: " + lastData.camp
-        : "מקור: " + (SRC_LABELS[lastData.src] || lastData.src);
-      visitorsNote = visitorsNote ? label + " · " + visitorsNote : label;
-    }
-
-    els.kpis.appendChild(kpiCard("מבקרים", num(visitors), visitorsNote));
-    // Under a filter this card would only restate the filter, so it steps out.
-    if (split && !filtered) {
-      els.kpis.appendChild(kpiCard("מתוך קמפיינים", num(split.campaign),
-        num(split.organic) + " הגיעו אורגני או ישיר"));
-    }
-    els.kpis.appendChild(kpiCard("קליקים", num(clicks),
-      visitors ? (Math.round((clicks / visitors) * 10) / 10) + " בממוצע למבקר" : ""));
-    els.kpis.appendChild(kpiCard("לידים", num(leads), "השאירו שם וטלפון"));
-    els.kpis.appendChild(kpiCard("אחוז המרה", conv + "%", "מבקר → ליד", true));
-    els.kpis.hidden = false;
+  function syncMapTitle() {
+    var rows = (lastData && lastData.breakdown) || [];
+    var selected = els.camp.value;
+    var chosen = rows.filter(function (r) { return r.paid && r.filter === selected; })[0];
+    var base = MAP_TITLES[mode] || MAP_TITLES.clicks;
+    els.mapTitle.textContent = chosen ? base + " — " + chosen.label : base;
   }
 
   async function load() {
     els.stat.textContent = "טוען…";
     syncVariantVisibility();
-    syncCampVisibility();
     heatReady = false;
     var page = els.page.value, v = currentVariant(), d = els.device.value;
     var r;
@@ -517,20 +542,26 @@
     fatal = null;
     els.msg.hidden = true;
 
-    // An older cached function returns no page list — fall back to home only,
-    // and no campaign map — the picker then stays empty and hidden.
+    // An older cached function returns no page list — fall back to home only.
     syncPages(lastData.pages);
-    if (syncCampaigns(lastData.campaigns)) {
-      syncSrcLock();
-      return load(); // the locked campaign is gone from this slice — reload clean
+    // The chosen ad vanished from this window (the range changed) — drop back
+    // to everything rather than mapping a row that is no longer listed.
+    if (els.camp.value !== "all" && !breakdownHas(els.camp.value)) {
+      els.camp.value = "all";
+      return load();
     }
     els.stat.textContent = lastData.days + " ימים אחרונים";
-    renderKpis();
+    renderSourceTable();
 
-    // No frame for "all devices" — there is no single page to draw on.
-    if (d !== "all" && hasAnyHeat()) loadFrame(page, v, d);
+    if (hasAnyHeat()) loadFrame(page, v, d);
     trends.stale = true;
     applyMode();
+  }
+
+  function breakdownHas(filter) {
+    var rows = (lastData && lastData.breakdown) || [];
+    for (var i = 0; i < rows.length; i++) if (rows[i].filter === filter) return true;
+    return false;
   }
 
   function hasAnyHeat() {
@@ -811,6 +842,7 @@
   function applyMode() {
     Object.keys(TABS).forEach(function (m) { TABS[m].classList.toggle("on", m === mode); });
     els.hint.textContent = HINTS[mode] || "";
+    syncMapTitle();
     els.tip.style.display = "none";
     var isHeat = !!HEAT_MODES[mode];
     els.legend.hidden = !isHeat;
@@ -842,19 +874,6 @@
 
     els.panel.hidden = true;
     els.stageOuter.hidden = false;
-
-    // A map is drawn over one rendering of the page, and mobile and desktop
-    // are different pages — the numbers can be summed, the pixels can't.
-    if (els.device.value === "all") {
-      els.stage.hidden = true;
-      els.msg.hidden = true;
-      els.chipbar.hidden = true;
-      els.stageOuter.hidden = true;
-      els.panel.hidden = false;
-      renderDevicePick();
-      syncRageLayer();
-      return;
-    }
 
     if (mode === "moves" && els.device.value === "mobile") {
       els.stage.hidden = true;
@@ -907,23 +926,6 @@
       box.appendChild(btn);
     }
     return box;
-  }
-
-  function renderDevicePick() {
-    clearPanel();
-    var box = panelEmpty("המפה מצוירת על תצוגה אחת של הדף.\nבחר מכשיר כדי לראות אותה — המספרים למעלה ממשיכים לספור את שניהם.");
-    var row = document.createElement("div");
-    row.style.cssText = "display:flex; justify-content:center; gap:10px; margin-top:18px;";
-    [["mobile", "מובייל"], ["desktop", "דסקטופ"]].forEach(function (pair) {
-      var btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "chip";
-      btn.textContent = pair[1];
-      btn.addEventListener("click", function () { els.device.value = pair[0]; load(); });
-      row.appendChild(btn);
-    });
-    box.appendChild(row);
-    els.panel.appendChild(box);
   }
 
   function renderMovesMobileHint() {
@@ -1292,8 +1294,36 @@
     el.addEventListener("change", function () { trends.stale = true; load(); });
   });
 
+  // The map needs one device; the table above it always counts both.
+  els.deviceSeg.addEventListener("click", function (e) {
+    var btn = e.target.closest ? e.target.closest("button[data-device]") : null;
+    if (!btn || btn.dataset.device === els.device.value) return;
+    els.device.value = btn.dataset.device;
+    syncDeviceSeg();
+    trends.stale = true;
+    load();
+  });
+
+  function syncDeviceSeg() {
+    var buttons = els.deviceSeg.querySelectorAll("button[data-device]");
+    for (var i = 0; i < buttons.length; i++) {
+      buttons[i].classList.toggle("on", buttons[i].dataset.device === els.device.value);
+    }
+  }
+
+  els.moreBtn.addEventListener("click", function () {
+    var open = els.moreWrap.hidden;
+    els.moreWrap.hidden = !open;
+    els.moreBtn.setAttribute("aria-expanded", String(open));
+    // Opening lands on the first extra view; closing returns to the click map,
+    // so the main section is never left showing something it isn't titled for.
+    mode = open ? "scroll" : "clicks";
+    applyMode();
+  });
+
   addEventListener("resize", function () { if (mode === "trends") drawTrends(); });
 
+  syncDeviceSeg();
   load();
 })();
 </script>

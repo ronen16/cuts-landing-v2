@@ -46,8 +46,10 @@ const FIELD_ACTIONS = new Set(["focus", "abandon", "complete"]);
 const SOURCE_PATTERN = /^[a-z0-9֐-׿._:\- ]{1,40}$/;
 const DEFAULT_SOURCE = "direct";
 const SOURCE_FILTERS = new Set(["all", "campaign", "organic"]);
-// The campaign name behind a campaign source, same grammar as the source
-// token. "" means the visit named no campaign, which is most of the traffic.
+// The campaign name behind a campaign source, plus the ad inside it after a
+// pipe — the collector joins them because the table has no column for the ad.
+// Longer than a source token for the same reason: it holds two names.
+const CAMPAIGN_PATTERN = /^[a-z0-9\u0590-\u05ff._:\- |]{1,120}$/;
 const DEFAULT_CAMPAIGN = "";
 // The picker's "no campaign chosen" value — never a campaign name itself.
 const CAMPAIGN_ALL = "all";
@@ -100,7 +102,15 @@ function cleanSource(value) {
 // Unlike the source, an absent campaign is the normal case rather than a
 // degraded one, so anything unusable collapses to the same empty string.
 function cleanCampaign(value) {
-  return typeof value === "string" && SOURCE_PATTERN.test(value) ? value : DEFAULT_CAMPAIGN;
+  return typeof value === "string" && CAMPAIGN_PATTERN.test(value) ? value : DEFAULT_CAMPAIGN;
+}
+
+// "campaign|ad" → the two names. A value with no pipe is a campaign whose ad
+// was never recorded, which is every row written before today.
+function splitCampaign(value) {
+  const at = String(value || "").indexOf("|");
+  if (at === -1) return { campaign: value || "", ad: "" };
+  return { campaign: value.slice(0, at), ad: value.slice(at + 1) };
 }
 
 // Accept only what the schema expects, drop everything else. A row that
@@ -226,7 +236,7 @@ function sliceOf(req) {
   const p = cleanPage(page) || DEFAULT_PAGE;
   const s = SOURCE_FILTERS.has(src) ? src : "all";
   const c =
-    typeof camp === "string" && camp !== CAMPAIGN_ALL && SOURCE_PATTERN.test(camp) ? camp : "";
+    typeof camp === "string" && camp !== CAMPAIGN_ALL && CAMPAIGN_PATTERN.test(camp) ? camp : "";
   const windowDays = Math.min(90, Math.max(1, parseInt(days, 10) || 30));
   const since = new Date(Date.now() - windowDays * DAY_MS).toISOString();
   const sinceParam = encodeURIComponent(since);
@@ -359,6 +369,56 @@ function campaignVariants(name) {
   return bare && bare !== name ? [name, bare] : [name];
 }
 
+// ── One table: where the visitors came from ──────────────────────────────────
+// Every paid visit is a row named after its ad; everything else collapses into
+// two rows, because "organic" and "direct" are one answer ("not from an ad")
+// split by a detail nobody acts on. Rows carry visitors, clicks and leads so
+// the question "which ad is working" is answered without changing any filter.
+const ROW_ORGANIC = "__organic";
+const ROW_DIRECT = "__direct";
+
+function rowKeyOf(row) {
+  const source = cleanSource(row && row.source);
+  if (source.indexOf("c:") !== 0) return source === "direct" ? ROW_DIRECT : ROW_ORGANIC;
+  const campaign = cleanCampaign(row && row.campaign);
+  // A paid visit whose ad never named itself still belongs with paid traffic,
+  // so it gets the network's own row rather than being lost among the organic.
+  return campaign ? "c|" + campaign : "c|" + source;
+}
+
+function buildBreakdown(scrollRows, clickRows, leadRows) {
+  const rows = new Map();
+  const seen = { visitors: new Set(), leads: new Set() };
+  const touch = (key) => {
+    let r = rows.get(key);
+    if (!r) rows.set(key, (r = { key, visitors: 0, clicks: 0, leads: 0 }));
+    return r;
+  };
+  for (const row of scrollRows) {
+    if (!row || !row.session_id || seen.visitors.has(row.session_id)) continue;
+    seen.visitors.add(row.session_id);
+    touch(rowKeyOf(row)).visitors += 1;
+  }
+  for (const row of clickRows) if (row) touch(rowKeyOf(row)).clicks += 1;
+  for (const row of leadRows) {
+    if (!row || !row.session_id || seen.leads.has(row.session_id)) continue;
+    seen.leads.add(row.session_id);
+    touch(rowKeyOf(row)).leads += 1;
+  }
+
+  const paid = [], rest = [];
+  for (const r of rows.values()) {
+    if (r.key.indexOf("c|") !== 0) { rest.push({ ...r, paid: false, label: r.key === ROW_DIRECT ? "ישיר" : "אורגני" }); continue; }
+    const value = r.key.slice(2);
+    const { campaign, ad } = splitCampaign(value);
+    paid.push({ ...r, paid: true, campaign, filter: value, label: ad || campaign || value });
+  }
+  // Ads first and biggest first: the top row is the one worth reading.
+  paid.sort((a, b) => b.visitors - a.visitors || b.clicks - a.clicks);
+  rest.sort((a, b) => b.visitors - a.visitors);
+  return [...paid, ...rest];
+}
+
 async function handleGet(req, res) {
   if (!viewKeyValid((req.query || {}).key)) return res.status(403).json({ error: "forbidden" });
   if (!configured()) return res.status(503).json({ error: "storage not configured" });
@@ -384,6 +444,8 @@ async function handleAgg(res, slice) {
     leadRows,
     fieldRows,
     breakdownRows,
+    breakdownClicks,
+    breakdownLeads,
   ] = await Promise.all([
     fetch(`${base}&kind=eq.click&select=section_id,rel_x,rel_y&limit=50000`, { headers: headers() }),
     fetch(
@@ -405,6 +467,8 @@ async function handleAgg(res, slice) {
     // One row set feeds both — a campaign missing from the list because the
     // current filter hides it would be a campaign he can never get back to.
     fetchRows(`${baseAll}&kind=eq.scroll&select=session_id,source,campaign,device&limit=20000`),
+    fetchRows(`${baseAll}&kind=eq.click&select=session_id,source,campaign&limit=50000`),
+    fetchRows(`${baseAll}&kind=eq.lead&select=session_id,source,campaign&limit=20000`),
   ]);
   if (!clicksRes.ok || !scrollsRes.ok) {
     return res.status(502).json({ error: "storage query failed" });
@@ -479,6 +543,7 @@ async function handleAgg(res, slice) {
     sources: countSourceSessions([...deepest.values()]),
     camp: c,
     campaigns: countCampaignSessions(breakdownRows),
+    breakdown: buildBreakdown(breakdownRows, breakdownClicks, breakdownLeads),
     devices: countDeviceSessions([...deepest.values()]),
     days: windowDays,
     grid: GRID,

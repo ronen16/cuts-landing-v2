@@ -149,14 +149,19 @@
     return "direct";
   })();
 
-  // The source names the network that sent the visit; the campaign names the
-  // specific ad inside it. utm_content is the fallback because some link
-  // builders put the ad's name there and leave utm_campaign empty. Organic
-  // traffic has no campaign at all, and "" is exactly that.
+  // "Which ad brought them" is the question this data exists to answer, and
+  // until now it was the one thing thrown away: utm_campaign won and the ad
+  // name in utm_content was dropped. Both are kept, joined by a pipe, because
+  // adding a column to the table needs Supabase credentials this repo doesn't
+  // hold. The pipe is safe as a separator: cleanToken strips it, so it can
+  // only ever appear where this line puts it.
+  var CAMPAIGN_MAX = 120;
   var CAMPAIGN = (function () {
-    var name = cleanToken(attribute("utm_campaign"));
-    if (!name) name = cleanToken(attribute("utm_content"));
-    return name.slice(0, SOURCE_MAX);
+    var campaign = cleanToken(attribute("utm_campaign"));
+    var ad = cleanToken(attribute("utm_content"));
+    if (!campaign) return ad.slice(0, CAMPAIGN_MAX);
+    if (!ad || ad === campaign) return campaign.slice(0, CAMPAIGN_MAX);
+    return (campaign + "|" + ad).slice(0, CAMPAIGN_MAX);
   })();
 
   function clamp01(n) {
