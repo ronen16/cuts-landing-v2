@@ -79,21 +79,27 @@
     } catch (e) { return ""; }
   }
 
-  var SOURCE = (function () {
+  // primitives.jsx caches the first landing's params, but the collector also
+  // runs on pages it never loads (thank-you.html), so the URL is read too.
+  var attribution = (function () {
     var attr = {};
     try {
       attr = JSON.parse(sessionStorage.getItem("cuts_attribution") || "{}") || {};
     } catch (e) { attr = {}; }
 
-    // primitives.jsx caches the first landing's params, but the collector also
-    // runs on pages it never loads (thank-you.html), so the URL is read too.
     var params = null;
     try { params = new URLSearchParams(location.search); } catch (e) { /* swallow */ }
 
-    function attribute(name) {
-      if (attr && attr[name]) return attr[name];
-      return (params && params.get(name)) || "";
-    }
+    return { attr: attr, params: params };
+  })();
+
+  function attribute(name) {
+    if (attribution.attr && attribution.attr[name]) return attribution.attr[name];
+    return (attribution.params && attribution.params.get(name)) || "";
+  }
+
+  var SOURCE = (function () {
+    var attr = attribution.attr;
 
     var utmSource = cleanToken(attribute("utm_source"));
     if (utmSource) return ("c:" + utmSource).slice(0, SOURCE_MAX);
@@ -108,6 +114,16 @@
     if (host) return ("r:" + host).slice(0, SOURCE_MAX);
 
     return "direct";
+  })();
+
+  // The source names the network that sent the visit; the campaign names the
+  // specific ad inside it. utm_content is the fallback because some link
+  // builders put the ad's name there and leave utm_campaign empty. Organic
+  // traffic has no campaign at all, and "" is exactly that.
+  var CAMPAIGN = (function () {
+    var name = cleanToken(attribute("utm_campaign"));
+    if (!name) name = cleanToken(attribute("utm_content"));
+    return name.slice(0, SOURCE_MAX);
   })();
 
   function clamp01(n) {
@@ -247,6 +263,7 @@
         variant: variant(),
         device: device(),
         source: SOURCE,
+        campaign: CAMPAIGN,
         section_id: at.sectionId,
         rel_x: round3(at.relX),
         rel_y: round3(at.relY),
@@ -307,6 +324,7 @@
       variant: variant(),
       device: device(),
       source: SOURCE,
+      campaign: CAMPAIGN,
       section_id: at.sectionId,
       rel_x: round3(at.relX),
       rel_y: round3(at.relY),
@@ -350,6 +368,7 @@
               variant: variant(),
               device: device(),
               source: SOURCE,
+              campaign: CAMPAIGN,
               section_id: id,
             });
           }
@@ -380,6 +399,7 @@
         variant: variant(),
         device: device(),
         source: SOURCE,
+        campaign: CAMPAIGN,
       });
       // A lead usually means a redirect is a heartbeat away.
       flushImmediate();
@@ -420,6 +440,7 @@
         variant: variant(),
         device: device(),
         source: SOURCE,
+        campaign: CAMPAIGN,
         section_id: name,
         reached_section: "focus",
       });
@@ -443,6 +464,7 @@
         variant: variant(),
         device: device(),
         source: SOURCE,
+        campaign: CAMPAIGN,
         section_id: name,
         reached_section: outcome,
       });
@@ -475,6 +497,7 @@
         variant: variant(),
         device: device(),
         source: SOURCE,
+        campaign: CAMPAIGN,
         section_id: at.sectionId,
         rel_x: round3(at.relX),
         rel_y: round3(at.relY),
@@ -524,6 +547,7 @@
       variant: variant(),
       device: device(),
       source: SOURCE,
+      campaign: CAMPAIGN,
       scroll_pct: maxPct,
       reached_section: deepestSection,
     });

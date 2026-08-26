@@ -27,6 +27,8 @@
     background: #24242c; color: #fff; border: 1px solid var(--line);
     border-radius: 8px; padding: 8px 12px; font-size: 14px; cursor: pointer;
   }
+  /* A locked picker still shows its value — it just isn't a choice any more. */
+  .bar select:disabled { opacity: 0.55; cursor: default; }
   .tabs { display: flex; background: #24242c; border-radius: 8px; padding: 3px; gap: 2px; }
   .tabs button {
     background: transparent; color: rgba(255,255,255,0.65); border: 0;
@@ -126,6 +128,9 @@
       <option value="campaign">מקור: קמפיינים</option>
       <option value="organic">מקור: אורגני+ישיר</option>
     </select>
+    <select id="camp" aria-label="קמפיין" hidden>
+      <option value="all" selected>כל הקמפיינים</option>
+    </select>
     <select id="variant">
       <option value="c" selected>c — הדומיין הראשי</option>
       <option value="a">a</option><option value="b">b</option><option value="d">d</option>
@@ -172,7 +177,8 @@
   var key = new URLSearchParams(location.search).get("key") || "";
   var $ = function (id) { return document.getElementById(id); };
   var els = {
-    page: $("page"), variant: $("variant"), src: $("src"), srcline: $("srcline"),
+    page: $("page"), variant: $("variant"), src: $("src"), camp: $("camp"),
+    srcline: $("srcline"),
     device: $("device"), days: $("days"), stat: $("stat"),
     msg: $("msg"), stage: $("stage"), stageOuter: $("stageOuter"), frame: $("frame"),
     click: $("clickCanvas"), move: $("moveCanvas"), scroll: $("scrollCanvas"),
@@ -276,11 +282,70 @@
     syncVariantVisibility();
   }
 
+  // ── Campaign picker ───────────────────────────────────────────────────────
+  // Which single ad brought the visitors, not just "an ad did". The list comes
+  // from the unfiltered slice, so picking one never removes the others.
+  var campaignsAvailable = false;
+
+  function syncCampaigns(map) {
+    var counts = (map && typeof map === "object") ? map : {};
+    var names = Object.keys(counts).sort(function (a, b) {
+      return (+counts[b] || 0) - (+counts[a] || 0);
+    });
+    var keep = els.camp.value;
+    els.camp.innerHTML = "";
+    var all = document.createElement("option");
+    all.value = "all";
+    all.textContent = "כל הקמפיינים";
+    els.camp.appendChild(all);
+    names.forEach(function (name) {
+      var opt = document.createElement("option");
+      opt.value = name;
+      opt.textContent = name + " (" + (+counts[name] || 0) + ")";
+      els.camp.appendChild(opt);
+    });
+    campaignsAvailable = names.length > 0;
+    var dropped = keep !== "all" && names.indexOf(keep) === -1;
+    els.camp.value = dropped ? "all" : keep;
+    syncCampVisibility();
+    // The campaign we were filtered to doesn't exist in this slice (device or
+    // page just changed). The picker now says "all" but the data on screen is
+    // still the old campaign's — refetch so the two agree.
+    return dropped;
+  }
+
+  // An organic slice has no campaigns in it by construction, so the picker
+  // would only offer filters that empty the view.
+  function syncCampVisibility() {
+    var usable = campaignsAvailable && els.src.value !== "organic";
+    if (!usable && els.camp.value !== "all") els.camp.value = "all";
+    els.camp.hidden = !usable;
+    syncSrcLock();
+  }
+
+  // One campaign already implies campaign traffic — leaving the source picker
+  // live would offer a choice the API is right to ignore. The pre-lock choice
+  // is remembered so dropping the campaign doesn't silently narrow the slice.
+  var srcBeforeLock = null;
+
+  function syncSrcLock() {
+    var locked = !els.camp.hidden && els.camp.value !== "all";
+    if (locked) {
+      if (srcBeforeLock === null) srcBeforeLock = els.src.value;
+      els.src.value = "campaign";
+    } else if (srcBeforeLock !== null) {
+      els.src.value = srcBeforeLock;
+      srcBeforeLock = null;
+    }
+    els.src.disabled = locked;
+  }
+
   function apiUrl(apiMode) {
     return "/api/heatmap?mode=" + apiMode + "&key=" + encodeURIComponent(key) +
       "&page=" + encodeURIComponent(els.page.value) +
       "&variant=" + encodeURIComponent(currentVariant()) +
       "&src=" + encodeURIComponent(els.src.value) +
+      "&camp=" + encodeURIComponent(els.camp.value) +
       "&device=" + els.device.value + "&days=" + els.days.value;
   }
 
@@ -313,6 +378,7 @@
   async function load() {
     els.stat.textContent = "טוען…";
     syncVariantVisibility();
+    syncCampVisibility();
     heatReady = false;
     var page = els.page.value, v = currentVariant(), d = els.device.value;
     var r;
@@ -325,8 +391,13 @@
     fatal = null;
     els.msg.hidden = true;
 
-    // An older cached function returns no page list — fall back to home only.
+    // An older cached function returns no page list — fall back to home only,
+    // and no campaign map — the picker then stays empty and hidden.
     syncPages(lastData.pages);
+    if (syncCampaigns(lastData.campaigns)) {
+      syncSrcLock();
+      return load(); // the locked campaign is gone from this slice — reload clean
+    }
     var movesTotal = totalOf("moves");
     var stat = (lastData.total_clicks || 0) + " קליקים · " +
       (lastData.total_scroll_sessions || 0) + " סשנים · " + lastData.days + " ימים";
@@ -1028,7 +1099,7 @@
     TABS[m].addEventListener("click", function () { mode = m; applyMode(); });
   });
 
-  [els.page, els.variant, els.src, els.device, els.days].forEach(function (el) {
+  [els.page, els.variant, els.src, els.camp, els.device, els.days].forEach(function (el) {
     el.addEventListener("change", function () { trends.stale = true; load(); });
   });
 

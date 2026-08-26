@@ -42,6 +42,11 @@ const FIELD_ACTIONS = new Set(["focus", "abandon", "complete"]);
 const SOURCE_PATTERN = /^[a-z0-9._:-]{1,40}$/;
 const DEFAULT_SOURCE = "direct";
 const SOURCE_FILTERS = new Set(["all", "campaign", "organic"]);
+// The campaign name behind a campaign source, same grammar as the source
+// token. "" means the visit named no campaign, which is most of the traffic.
+const DEFAULT_CAMPAIGN = "";
+// The picker's "no campaign chosen" value — never a campaign name itself.
+const CAMPAIGN_ALL = "all";
 const GRID = 40;
 const DAY_MS = 86400000;
 
@@ -88,6 +93,12 @@ function cleanSource(value) {
   return typeof value === "string" && SOURCE_PATTERN.test(value) ? value : DEFAULT_SOURCE;
 }
 
+// Unlike the source, an absent campaign is the normal case rather than a
+// degraded one, so anything unusable collapses to the same empty string.
+function cleanCampaign(value) {
+  return typeof value === "string" && SOURCE_PATTERN.test(value) ? value : DEFAULT_CAMPAIGN;
+}
+
 // Accept only what the schema expects, drop everything else. A row that
 // fails validation is skipped silently — analytics never earns a retry loop.
 function sanitize(ev, sessionId) {
@@ -103,6 +114,7 @@ function sanitize(ev, sessionId) {
     variant: ev.variant,
     device: ev.device,
     source: cleanSource(ev.source),
+    campaign: cleanCampaign(ev.campaign),
     section_id: null,
     rel_x: null,
     rel_y: null,
@@ -201,21 +213,27 @@ function sourceClause(src) {
 // Israel session before 03:00 local lands on the previous bar; acceptable
 // for reading trends.
 function sliceOf(req) {
-  const { variant, device, days, page, src } = req.query || {};
+  const { variant, device, days, page, src, camp } = req.query || {};
   const v = VARIANTS.has(variant) ? variant : "c";
   const d = DEVICES.has(device) ? device : "mobile";
   const p = cleanPage(page) || DEFAULT_PAGE;
   const s = SOURCE_FILTERS.has(src) ? src : "all";
+  const c =
+    typeof camp === "string" && camp !== CAMPAIGN_ALL && SOURCE_PATTERN.test(camp) ? camp : "";
   const windowDays = Math.min(90, Math.max(1, parseInt(days, 10) || 30));
   const since = new Date(Date.now() - windowDays * DAY_MS).toISOString();
   const sinceParam = encodeURIComponent(since);
-  // baseAll is the same slice without the source filter — the breakdown has
-  // to keep showing every source, including the ones the filter hides.
+  // baseAll is the same slice without the source filter — the breakdowns have
+  // to keep showing every source and campaign, including the ones a filter hides.
   const baseAll =
     `${SUPABASE_URL}/rest/v1/${TABLE}` +
     `?page=eq.${encodeURIComponent(p)}&variant=eq.${v}` +
     `&device=eq.${d}&ts=gte.${sinceParam}`;
-  return { v, d, p, s, windowDays, since, sinceParam, baseAll, base: baseAll + sourceClause(s) };
+  // A named campaign is campaign traffic by definition, so it replaces the
+  // source clause instead of stacking with it — "organic" plus a campaign
+  // name would otherwise be an empty slice no matter what the data says.
+  const filter = c ? `&campaign=eq.${encodeURIComponent(c)}` : sourceClause(s);
+  return { v, d, p, s, c, windowDays, since, sinceParam, baseAll, base: baseAll + filter };
 }
 
 // A panel whose query fails degrades to zeros — one missing block must never
@@ -273,6 +291,23 @@ function countSourceSessions(rows) {
   return counts;
 }
 
+// Sessions per campaign, first value per session wins for the same reason.
+// The empty campaign is every organic visit plus every untagged ad — it can't
+// be drilled into, so it never reaches the picker.
+function countCampaignSessions(rows) {
+  const campaignOf = new Map();
+  for (const row of rows) {
+    if (!row || !row.session_id || campaignOf.has(row.session_id)) continue;
+    campaignOf.set(row.session_id, cleanCampaign(row.campaign));
+  }
+  const counts = {};
+  for (const campaign of campaignOf.values()) {
+    if (!campaign) continue;
+    counts[campaign] = (counts[campaign] || 0) + 1;
+  }
+  return counts;
+}
+
 async function handleGet(req, res) {
   if (!viewKeyValid((req.query || {}).key)) return res.status(403).json({ error: "forbidden" });
   if (!configured()) return res.status(503).json({ error: "storage not configured" });
@@ -283,7 +318,7 @@ async function handleGet(req, res) {
 }
 
 async function handleAgg(res, slice) {
-  const { v, d, p, s, windowDays, sinceParam, base, baseAll } = slice;
+  const { v, d, p, s, c, windowDays, sinceParam, base, baseAll } = slice;
 
   // PostgREST has no group-by; volumes here are small (a landing page, capped
   // at 200 events/session), so fetch raw rows and bucket in the function.
@@ -298,7 +333,7 @@ async function handleAgg(res, slice) {
     formViewRows,
     leadRows,
     fieldRows,
-    sourceRows,
+    breakdownRows,
   ] = await Promise.all([
     fetch(`${base}&kind=eq.click&select=section_id,rel_x,rel_y&limit=50000`, { headers: headers() }),
     fetch(`${base}&kind=eq.scroll&select=scroll_pct,reached_section&limit=10000`, { headers: headers() }),
@@ -313,9 +348,11 @@ async function handleAgg(res, slice) {
     fetchRows(`${base}&kind=eq.form_view&select=session_id&limit=20000`),
     fetchRows(`${base}&kind=eq.lead&select=session_id&limit=20000`),
     fetchRows(`${base}&kind=eq.form_field&select=session_id,section_id,reached_section&limit=20000`),
-    // Deliberately on baseAll: the breakdown is the whole picture of the
+    // Deliberately on baseAll: the breakdowns are the whole picture of the
     // slice, which is what tells Ronen whether a filter is worth applying.
-    fetchRows(`${baseAll}&kind=eq.scroll&select=session_id,source&limit=20000`),
+    // One row set feeds both — a campaign missing from the list because the
+    // current filter hides it would be a campaign he can never get back to.
+    fetchRows(`${baseAll}&kind=eq.scroll&select=session_id,source,campaign&limit=20000`),
   ]);
   if (!clicksRes.ok || !scrollsRes.ok) {
     return res.status(502).json({ error: "storage query failed" });
@@ -374,7 +411,9 @@ async function handleAgg(res, slice) {
     variant: v,
     device: d,
     src: s,
-    sources: countSourceSessions(sourceRows),
+    sources: countSourceSessions(breakdownRows),
+    camp: c,
+    campaigns: countCampaignSessions(breakdownRows),
     days: windowDays,
     grid: GRID,
     total_clicks: clicks.length,
@@ -444,6 +483,7 @@ async function handleTrends(res, slice) {
     variant: slice.v,
     device: slice.d,
     src: slice.s,
+    camp: slice.c,
     days: slice.windowDays,
     series,
   });
