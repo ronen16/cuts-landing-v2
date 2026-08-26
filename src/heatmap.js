@@ -126,9 +126,20 @@
     return { attr: attr, params: params };
   })();
 
+  // Some Meta placements deliver the landing URL double-encoded, so even the
+  // decoded query still holds "%D7%A7…" — cleanToken strips the percent signs
+  // and the campaign name becomes hex soup ("d7a7d79e…" in the dashboard).
+  function decodeMaybe(value) {
+    var s = String(value || "");
+    for (var i = 0; i < 2 && /%[0-9a-fA-F]{2}/.test(s); i++) {
+      try { s = decodeURIComponent(s.replace(/\+/g, " ")); } catch (e) { break; }
+    }
+    return s;
+  }
+
   function attribute(name) {
-    if (attribution.attr && attribution.attr[name]) return attribution.attr[name];
-    return (attribution.params && attribution.params.get(name)) || "";
+    if (attribution.attr && attribution.attr[name]) return decodeMaybe(attribution.attr[name]);
+    return decodeMaybe((attribution.params && attribution.params.get(name)) || "");
   }
 
   var SOURCE = (function () {

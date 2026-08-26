@@ -458,9 +458,28 @@ async function handleGet(req, res) {
   if (!viewKeyValid((req.query || {}).key)) return res.status(403).json({ error: "forbidden" });
   if (!configured()) return res.status(503).json({ error: "storage not configured" });
 
+  if ((req.query || {}).mode === "purge") return handlePurge(req, res);
   const slice = sliceOf(req);
   if ((req.query || {}).mode === "trends") return handleTrends(res, slice);
   return handleAgg(res, slice);
+}
+
+// Maintenance: delete every event before a cutoff, so the dataset can restart
+// clean after an attribution fix. Guarded by the same view key as the
+// dashboard — whoever may read the data may also reset it.
+async function handlePurge(req, res) {
+  const before = new Date(String((req.query || {}).before || ""));
+  if (isNaN(before.getTime()) || before.getTime() > Date.now()) {
+    return res.status(400).json({ error: "before must be a past ISO timestamp" });
+  }
+  const cutoff = before.toISOString();
+  const r = await fetch(
+    `${SUPABASE_URL}/rest/v1/${TABLE}?ts=lt.${encodeURIComponent(cutoff)}`,
+    { method: "DELETE", headers: headers({ Prefer: "count=exact" }) },
+  );
+  if (!r.ok) return res.status(502).json({ error: `delete failed: ${r.status}` });
+  const total = (r.headers.get("content-range") || "").split("/")[1];
+  return res.status(200).json({ deleted: Number(total) || 0, before: cutoff });
 }
 
 async function handleAgg(res, slice) {
