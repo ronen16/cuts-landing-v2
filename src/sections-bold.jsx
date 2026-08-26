@@ -4167,7 +4167,20 @@ function guestObjectPosition(offsetX, offsetY) {
 
 if (typeof window !== "undefined") window.__cutsGuestObjectPosition = guestObjectPosition;
 
-function GuestTile({ item, n, aspectStr, dup, width }) {
+// Tiles render at ≤176px (tall row) / ≤462px (wide row) CSS width, but the
+// admin publishes Drive thumbnails at sz=w1600 (~1.3MB each, ~18MB a page).
+// Rewriting the size hint at render time — instead of editing the overrides
+// JSON — survives admin re-publishes, which restore the stored w1600 URLs.
+function guestImageSrc(src, targetW) {
+  const url =
+    (typeof window !== "undefined" && window.__cutsDriveUrlToImage && window.__cutsDriveUrlToImage(src)) || src;
+  if (typeof url !== "string") return url;
+  return url
+    .replace(/([?&]sz=w)\d+/, `$1${targetW}`)
+    .replace(/(googleusercontent\.com\/d\/[^=?]+=w)\d+/, `$1${targetW}`);
+}
+
+function GuestTile({ item, n, aspectStr, dup, width, showImages }) {
   const hasImg = !!(item && item.src);
   const ct = hasImg ? clampGuestTransform(item.scale, item.offsetX, item.offsetY) : null;
   // Row 1 (portrait 9:16, wide source) pans within the cover overflow via
@@ -4194,10 +4207,11 @@ function GuestTile({ item, n, aspectStr, dup, width }) {
         position: "relative",
         overflow: "hidden"
       }}>
-      {hasImg && (
+      {hasImg && showImages && (
         <img
-          src={(window.__cutsDriveUrlToImage && window.__cutsDriveUrlToImage(item.src)) || item.src}
+          src={guestImageSrc(item.src, aspectStr === "9 / 16" ? 480 : 800)}
           alt=""
+          decoding="async"
           draggable="false"
           style={{
             position: "absolute", inset: 0,
@@ -4251,8 +4265,41 @@ function orderAndFilterGuestsRow2(admin) {
 }
 
 function GuestStrip({ admin }) {
+  // Defer the 16 marquee images off the critical path, then fetch them ALL in
+  // one background burst — per-image loading="lazy" is wrong here: the marquee
+  // auto-scrolls horizontally, so tiles would pop in half-loaded at the
+  // viewport edge. Two triggers, whichever fires first:
+  //  - the visitor scrolls within 1500px of the strip, or
+  //  - the page finished loading 2.5s ago (Drive serves thumbnails slowly,
+  //    ~1s each, so waiting for scroll proximity alone can leave tiles blank
+  //    under a fast flick — start early while the visitor is still on the hero).
+  const stripRef = React.useRef(null);
+  const [showImages, setShowImages] = React.useState(
+    typeof IntersectionObserver === "undefined"
+  );
+
+  React.useEffect(() => {
+    if (showImages || !stripRef.current) return;
+    const io = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) { setShowImages(true); io.disconnect(); } },
+      { rootMargin: "1500px 0px" }
+    );
+    io.observe(stripRef.current);
+
+    let timer = null;
+    const armTimer = () => { timer = setTimeout(() => setShowImages(true), 2500); };
+    if (document.readyState === "complete") armTimer();
+    else window.addEventListener("load", armTimer, { once: true });
+
+    return () => {
+      io.disconnect();
+      if (timer) clearTimeout(timer);
+      window.removeEventListener("load", armTimer);
+    };
+  }, [showImages]);
+
   return (
-    <section className="guest-section" style={{
+    <section ref={stripRef} className="guest-section" style={{
       padding: "76px 0 64px",
       position: "relative", overflow: "hidden",
       background: "var(--bg)",
@@ -4334,6 +4381,7 @@ function GuestStrip({ admin }) {
                         aspectStr={row.aspect}
                         dup={dup}
                         width={row.width}
+                        showImages={showImages}
                       />
                     );
                   })
