@@ -470,28 +470,27 @@
     var leads = +funnel.leads || 0;
     var conv = visitors ? Math.round((leads / visitors) * 1000) / 10 : 0;
 
+    // Every note below describes the slice on screen. A note that quietly
+    // reported the whole site under a filtered number was the one thing that
+    // made these cards untrustworthy.
+    var filtered = (lastData.camp && lastData.camp !== "all") ||
+      (lastData.src && lastData.src !== "all");
     var split = sourceSplit();
+    var dev = lastData.devices;
     var visitorsNote = "";
-    // An older cached function ignores src and echoes nothing back; claiming a
-    // filter is active would then be a lie, so say nothing at all.
-    if (lastData.src && lastData.src !== "all") {
-      visitorsNote = "מסונן: " + (SRC_LABELS[lastData.src] || lastData.src);
-    } else if (split) {
-      visitorsNote = num(split.campaign) + " מקמפיינים · " + num(split.organic) + " אורגני";
+    if (els.device.value === "all" && dev && (dev.mobile || dev.desktop)) {
+      visitorsNote = num(dev.mobile || 0) + " מובייל · " + num(dev.desktop || 0) + " דסקטופ";
+    }
+    if (filtered) {
+      var label = lastData.camp && lastData.camp !== "all"
+        ? "קמפיין: " + lastData.camp
+        : "מקור: " + (SRC_LABELS[lastData.src] || lastData.src);
+      visitorsNote = visitorsNote ? label + " · " + visitorsNote : label;
     }
 
-    // On "all devices" the split matters more than the source: it's the first
-    // thing anyone asks when a total doesn't match a number they saw before.
-    var dev = lastData.devices;
-    if (els.device.value === "all") {
-      // The source split moves to its own card below, so the note here never
-      // repeats it — an older cached function sends no devices at all.
-      visitorsNote = dev && (dev.mobile || dev.desktop)
-        ? num(dev.mobile || 0) + " מובייל · " + num(dev.desktop || 0) + " דסקטופ"
-        : "";
-    }
     els.kpis.appendChild(kpiCard("מבקרים", num(visitors), visitorsNote));
-    if (split && els.device.value === "all") {
+    // Under a filter this card would only restate the filter, so it steps out.
+    if (split && !filtered) {
       els.kpis.appendChild(kpiCard("מתוך קמפיינים", num(split.campaign),
         num(split.organic) + " הגיעו אורגני או ישיר"));
     }

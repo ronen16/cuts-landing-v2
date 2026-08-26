@@ -357,7 +357,7 @@ async function handleAgg(res, slice) {
   ] = await Promise.all([
     fetch(`${base}&kind=eq.click&select=section_id,rel_x,rel_y&limit=50000`, { headers: headers() }),
     fetch(
-      `${base}&kind=eq.scroll&select=session_id,scroll_pct,reached_section&limit=20000`,
+      `${base}&kind=eq.scroll&select=session_id,scroll_pct,reached_section,device,source&limit=20000`,
       { headers: headers() }
     ),
     fetch(
@@ -444,10 +444,12 @@ async function handleAgg(res, slice) {
     variant: v,
     device: d,
     src: s,
-    sources: countSourceSessions(breakdownRows),
+    // Describes the slice on screen. The campaign picker below stays on
+    // baseAll: a filter must never hide the way back out of itself.
+    sources: countSourceSessions([...deepest.values()]),
     camp: c,
     campaigns: countCampaignSessions(breakdownRows),
-    devices: countDeviceSessions(breakdownRows),
+    devices: countDeviceSessions([...deepest.values()]),
     days: windowDays,
     grid: GRID,
     total_clicks: clicks.length,
