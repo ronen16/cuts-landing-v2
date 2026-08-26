@@ -329,22 +329,22 @@ async function handleAgg(res, slice) {
     pagesRes,
     rageRows,
     moveRows,
-    sessionRows,
     formViewRows,
     leadRows,
     fieldRows,
     breakdownRows,
   ] = await Promise.all([
     fetch(`${base}&kind=eq.click&select=section_id,rel_x,rel_y&limit=50000`, { headers: headers() }),
-    fetch(`${base}&kind=eq.scroll&select=scroll_pct,reached_section&limit=10000`, { headers: headers() }),
+    fetch(
+      `${base}&kind=eq.scroll&select=session_id,scroll_pct,reached_section&limit=20000`,
+      { headers: headers() }
+    ),
     fetch(
       `${SUPABASE_URL}/rest/v1/${TABLE}?device=eq.${d}&ts=gte.${sinceParam}&select=page&limit=2000`,
       { headers: headers() }
     ),
     fetchRows(`${base}&kind=eq.rage&select=section_id,rel_x,rel_y&limit=20000`),
     fetchRows(`${base}&kind=eq.move&select=section_id,rel_x,rel_y&limit=50000`),
-    // Every session emits exactly one scroll record, so it's the session count.
-    fetchRows(`${base}&kind=eq.scroll&select=session_id&limit=20000`),
     fetchRows(`${base}&kind=eq.form_view&select=session_id&limit=20000`),
     fetchRows(`${base}&kind=eq.lead&select=session_id&limit=20000`),
     fetchRows(`${base}&kind=eq.form_field&select=session_id,section_id,reached_section&limit=20000`),
@@ -394,11 +394,22 @@ async function handleAgg(res, slice) {
     };
   }
 
+  // A visit sends a scroll record on every visibilitychange, so a single
+  // visitor leaves several rows — usually a deep one and a few shallow ones
+  // from tabbing away. Counting rows inflated the visitor count and dragged
+  // the depth curve down; only the deepest row per session is that session.
+  const deepest = new Map();
+  for (const s of scrolls) {
+    if (!s || !s.session_id) continue;
+    const prev = deepest.get(s.session_id);
+    if (!prev || (+s.scroll_pct || 0) > (+prev.scroll_pct || 0)) deepest.set(s.session_id, s);
+  }
+
   // Scroll → % of sessions reaching each 10% bucket (cumulative),
   // plus how many sessions got at least as deep as each section.
   const buckets = Array(11).fill(0);
   const reach = {};
-  for (const s of scrolls) {
+  for (const s of deepest.values()) {
     const b = Math.min(10, Math.floor(s.scroll_pct / 10));
     for (let i = 0; i <= b; i++) buckets[i]++;
     if (s.reached_section) reach[s.reached_section] = (reach[s.reached_section] || 0) + 1;
@@ -417,14 +428,14 @@ async function handleAgg(res, slice) {
     days: windowDays,
     grid: GRID,
     total_clicks: clicks.length,
-    total_scroll_sessions: scrolls.length,
+    total_scroll_sessions: deepest.size,
     sections,
     scroll_buckets: buckets,
     deepest_section_counts: reach,
     rage: { total: rageRows.length, sections: bucketPoints(rageRows) },
     moves: { total: moveRows.length, sections: bucketPoints(moveRows) },
     funnel: {
-      sessions: countSessions(sessionRows),
+      sessions: deepest.size,
       form_view: countSessions(formViewRows),
       leads: countSessions(leadRows),
     },
