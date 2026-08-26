@@ -6,13 +6,33 @@
 <meta name="robots" content="noindex, nofollow">
 <title>מפת חום — Cuts</title>
 <style>
+  /* The brand font, same files the site itself serves. */
+  @font-face {
+    font-family: 'FbTypograph2';
+    src: url('assets/fonts/FbTypograph2-Regular.otf') format('opentype');
+    font-weight: 400; font-display: swap;
+  }
+  @font-face {
+    font-family: 'FbTypograph2';
+    src: url('assets/fonts/FbTypograph2-Bold.otf') format('opentype');
+    font-weight: 700; font-display: swap;
+  }
+  @font-face {
+    font-family: 'FbTypograph2';
+    src: url('assets/fonts/FbTypograph2-Black.otf') format('opentype');
+    font-weight: 900; font-display: swap;
+  }
   :root {
-    --accent: #FFD500; --bg: #101014; --card: #1a1a20; --line: rgba(255,255,255,0.1);
-    --blue: #3CAAFF; --gray: #8A8A96; --rage: #FF3C3C;
+    /* Cuts brand: yellow #FFDE1F, black #272727, white, grey #808080. */
+    --accent: #FFDE1F; --bg: #1a1a1a; --card: #272727; --line: rgba(255,255,255,0.12);
+    --blue: #3CAAFF; --gray: #808080; --rage: #FF3C3C;
     --space-2: 8px; --space-3: 12px; --space-4: 18px; --space-6: 28px;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: var(--bg); color: #fff; font-family: system-ui, sans-serif; min-height: 100vh; }
+  body {
+    background: var(--bg); color: #fff; min-height: 100vh;
+    font-family: 'FbTypograph2', system-ui, sans-serif;
+  }
   /* Flex containers below would otherwise out-specify the UA rule for [hidden]. */
   .legend[hidden], .chipbar[hidden], .stage-outer[hidden] { display: none; }
 
@@ -45,7 +65,7 @@
   .legend { display: flex; align-items: center; gap: var(--space-2); font-size: 11.5px; opacity: 0.85; }
   .legend .ramp {
     width: 110px; height: 10px; border-radius: 5px;
-    background: linear-gradient(to left, rgba(255,32,32,1), rgba(255,213,0,1), rgba(40,220,120,1), rgba(60,170,255,1), rgba(60,60,255,0.55));
+    background: linear-gradient(to left, rgba(255,32,32,1), rgba(255,222,31,1), rgba(40,220,120,1), rgba(60,170,255,1), rgba(60,60,255,0.55));
   }
 
   .chipbar { display: flex; justify-content: center; gap: var(--space-2); padding: var(--space-4) 12px 0; }
@@ -223,7 +243,7 @@
     g.addColorStop(0.20, "rgba(60,60,255,0.7)");
     g.addColorStop(0.40, "rgba(60,170,255,0.85)");
     g.addColorStop(0.60, "rgba(40,220,120,0.9)");
-    g.addColorStop(0.78, "rgba(255,213,0,0.95)");
+    g.addColorStop(0.78, "rgba(255,222,31,0.95)");
     g.addColorStop(1.00, "rgba(255,32,32,1)");
     var ctx = c.getContext("2d");
     ctx.fillStyle = g;
@@ -557,7 +577,7 @@
     rageLastPaint = ts;
     var ctx = els.rage.getContext("2d");
     var phase = (ts % RAGE_PULSE_MS) / RAGE_PULSE_MS;
-    ctx.font = "700 11px system-ui";
+    ctx.font = "700 11px FbTypograph2, system-ui";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     // Clearing only each badge's box keeps a full-page canvas cheap to animate;
@@ -614,7 +634,7 @@
     sctx.fillRect(0, 0, width, fullH);
 
     // Depth labels every 25% + the "half the visitors reach here" line.
-    lctx.font = "700 13px system-ui";
+    lctx.font = "700 13px FbTypograph2, system-ui";
     lctx.textAlign = "left";
     [25, 50, 75].forEach(function (pctDepth) {
       var y = Math.round(fullH * pctDepth / 100);
@@ -872,7 +892,7 @@
   var SERIES = [
     { key: "sessions", label: "סשנים", color: "#8A8A96" },
     { key: "clicks", label: "קליקים", color: "#3CAAFF" },
-    { key: "leads", label: "לידים", color: "#FFD500" },
+    { key: "leads", label: "לידים", color: "#FFDE1F" },
   ];
 
   function renderTrends() {
@@ -972,7 +992,7 @@
     ctx.clearRect(0, 0, g.W, g.H);
 
     // Dotted grid + y labels.
-    ctx.font = "11px system-ui";
+    ctx.font = "11px FbTypograph2, system-ui";
     ctx.textBaseline = "middle";
     ctx.textAlign = "right";
     ctx.setLineDash([2, 4]);

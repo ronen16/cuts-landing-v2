@@ -34,6 +34,13 @@
     // Ronen editing in admin mode must not pollute the data.
     var adminState = JSON.parse(localStorage.getItem("cuts_admin_v1") || "{}");
     if (adminState.unlocked) return;
+
+    // Visiting ?hm_optout=1 once marks this browser as ours for good — the
+    // team browsing its own site was showing up as visitor behaviour.
+    if (/[?&]hm_optout=1/.test(location.search)) {
+      localStorage.setItem("cuts_hm_optout", "1");
+    }
+    if (localStorage.getItem("cuts_hm_optout") === "1") return;
   } catch (e) { /* storage blocked — keep collecting, it's anonymous */ }
 
   // Page identity. /a /b /c /d are rewrites of the home page, so they all
@@ -245,16 +252,33 @@
   }
 
   // ── clicks / taps ─────────────────────────────────────────────────────────
-  // No section markup? anchorAt falls back to the document, so a plain page
-  // like thank-you.html is measurable without touching its HTML.
+  // A touch that starts a scroll fires pointerdown too, so counting those as
+  // clicks fills the map with swipe marks down the side of the screen where a
+  // thumb rests. A click is only a click if the pointer went down and came up
+  // in the same spot, quickly — anything else is a scroll or a drag.
+  var TAP_MAX_MOVE_PX = 12;
+  var TAP_MAX_MS = 700;
+  var pendingTap = null;
+
   document.addEventListener("pointerdown", function (e) {
     try {
       if (!e.target || !e.target.closest) return;
-      // The consent banner floats over the page — dismissing it isn't engagement.
       // Consent UI (banner + reopen button) is chrome, not page engagement.
       if (e.target.closest('[id^="cuts-consent"]')) return;
+      pendingTap = { x: e.clientX, y: e.clientY, t: Date.now(), target: e.target };
+    } catch (err) { pendingTap = null; }
+  }, { passive: true, capture: true });
 
-      var at = anchorAt(e.clientX, e.clientY, e.target);
+  document.addEventListener("pointerup", function (e) {
+    try {
+      var down = pendingTap;
+      pendingTap = null;
+      if (!down) return;
+      if (Date.now() - down.t > TAP_MAX_MS) return;
+      if (Math.abs(e.clientX - down.x) > TAP_MAX_MOVE_PX) return;
+      if (Math.abs(e.clientY - down.y) > TAP_MAX_MOVE_PX) return;
+
+      var at = anchorAt(down.x, down.y, down.target);
       if (!at) return;
 
       record({
@@ -269,9 +293,13 @@
         rel_y: round3(at.relY),
       });
 
-      trackRage(e);
+      trackRage({ clientX: down.x, clientY: down.y, target: down.target });
     } catch (err) { /* swallow */ }
   }, { passive: true, capture: true });
+
+  // A pointer that leaves the surface mid-gesture never becomes a tap.
+  document.addEventListener("pointercancel", function () { pendingTap = null; },
+    { passive: true, capture: true });
 
   // ── rage clicks ───────────────────────────────────────────────────────────
   // Repeated stabs at the same spot mean something looks clickable and isn't.
