@@ -39,7 +39,9 @@ const FIELD_ACTIONS = new Set(["focus", "abandon", "complete"]);
 // Traffic source, as the collector writes it: "c:<network>" for campaign
 // traffic, "r:<host>" for an organic referral, "direct" for neither. The
 // dashboard's campaign/organic split is that "c:" prefix and nothing else.
-const SOURCE_PATTERN = /^[a-z0-9._:-]{1,40}$/;
+// Hebrew and spaces are in the class because Meta expands {{campaign.name}}
+// and {{ad.name}} to names typed in Ads Manager, which are Hebrew here.
+const SOURCE_PATTERN = /^[a-z0-9֐-׿._:\- ]{1,40}$/;
 const DEFAULT_SOURCE = "direct";
 const SOURCE_FILTERS = new Set(["all", "campaign", "organic"]);
 // The campaign name behind a campaign source, same grammar as the source

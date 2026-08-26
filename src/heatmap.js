@@ -81,7 +81,10 @@
   var SOURCE_MAX = 40;
 
   function cleanToken(value) {
-    return String(value || "").toLowerCase().replace(/[^a-z0-9._:-]/g, "");
+    // Hebrew and spaces are allowed because Meta's {{campaign.name}} and
+    // {{ad.name}} expand to the names Ronen typed in Ads Manager — stripping
+    // them left "קמפיין 25.08.26" as a bare "25.08.26", or nothing at all.
+    return String(value || "").toLowerCase().replace(/[^a-z0-9֐-׿._:\- ]/g, "").trim();
   }
 
   // A referrer only counts when it's someone else's site — our own pages
