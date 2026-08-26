@@ -33,6 +33,9 @@
     background: var(--bg); color: #fff; min-height: 100vh;
     font-family: 'FbTypograph2', system-ui, sans-serif;
   }
+  /* Form controls don't inherit the page font — without this the selects and
+     tabs stay on the system face while everything around them is branded. */
+  button, select, input, textarea, table { font-family: inherit; }
   /* Flex containers below would otherwise out-specify the UA rule for [hidden]. */
   .legend[hidden], .chipbar[hidden], .stage-outer[hidden] { display: none; }
 
