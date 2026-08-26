@@ -163,9 +163,27 @@ function Hero({ onCTAClick }) {
   const [heroVideoPlaying, setHeroVideoPlaying] = React.useState(false);
   const [heroMuted, setHeroMuted] = React.useState(true);
   const heroIframeRef = React.useRef(null);
-  // Auto-open the real video on load (muted — browsers block sound-on-autoplay).
+  // Auto-open the real video (muted — browsers block sound-on-autoplay), but
+  // only after window load + an idle slot. Mounting the Vimeo iframe on first
+  // render put the player's ~2MB of script + stream on the critical path
+  // (PSI: 12s of JS on a slow phone, and under throttling the player itself
+  // died with a visible "Player error" in the hero). The local loop mp4 covers
+  // the gap, so the visitor sees motion the whole time; a tap on the poster
+  // still opens the player immediately.
   React.useEffect(() => {
-    if (HERO_VIDEO_AUTOOPEN && HERO_VIMEO_ID) setHeroVideoPlaying(true);
+    if (!(HERO_VIDEO_AUTOOPEN && HERO_VIMEO_ID)) return;
+    let cancelled = false;
+    const open = () => { if (!cancelled) setHeroVideoPlaying(true); };
+    const schedule = () => {
+      if (window.requestIdleCallback) window.requestIdleCallback(open, { timeout: 2000 });
+      else setTimeout(open, 800);
+    };
+    if (document.readyState === "complete") schedule();
+    else window.addEventListener("load", schedule, { once: true });
+    return () => {
+      cancelled = true;
+      window.removeEventListener("load", schedule);
+    };
   }, []);
   // VSL trick: the clip auto-opens muted, then on the visitor's FIRST real gesture
   // (click / tap / key) we unmute IN PLACE via the Vimeo Player SDK — no reload,

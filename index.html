@@ -8,13 +8,18 @@
 <base href="/" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Cuts — אולפן פודקאסטים בפתח תקווה</title>
+<meta name="description" content="אולפן פודקאסטים בפתח תקווה עם הפקה מלאה: צילום, עריכה, קליפים לרשתות והפצה. בונים לכם נכס אמון שמביא לקוחות אליכם, בלי לרדוף אחרי אף אחד." />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preconnect" href="https://player.vimeo.com">
-<link rel="preconnect" href="https://i.vimeocdn.com">
-<link rel="preconnect" href="https://f.vimeocdn.com">
+<!-- The Vimeo player mounts a beat after window load, so a dns-prefetch is
+     enough — preconnects here held sockets open through the critical path. -->
 <link rel="dns-prefetch" href="https://player.vimeo.com">
-<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&family=Assistant:wght@300;400;500;600;700;800&family=Rubik:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<!-- Fonts CSS loads async (media=print until ready): the page paints with the
+     system fallback instead of waiting ~1.9s on the fonts request. Rubik and
+     JetBrains Mono were dropped — nothing rendered ever used them. -->
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&family=Assistant:wght@300;400;500;600;700;800&display=swap">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&family=Assistant:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&family=Assistant:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
 <link rel="stylesheet" href="styles.css?v=2" />
 
 <!-- Meta Pixel -->
@@ -36,7 +41,7 @@ src="https://www.facebook.com/tr?id=646207438565937&ev=PageView&noscript=1"
 <!-- End Meta Pixel -->
 </head>
 <body>
-  <div id="root"></div>
+  <main id="root"></main>
 
   <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
