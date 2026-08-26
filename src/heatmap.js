@@ -8,6 +8,16 @@
 (function () {
   "use strict";
 
+  // The collector used to run as soon as its <script defer> executed — right
+  // in the middle of React's first render, where its initial measureScroll()
+  // and section sweep forced ~1s of extra layout work on the critical path
+  // (Lighthouse attributed ~1030ms of mobile boot CPU to this file). All of
+  // it now waits for window load + an idle slot; analytics never paints
+  // pixels, so it has no business running before the page does. The cost:
+  // interactions in the first ~1-2s go unrecorded, which also means a
+  // sub-2s bounce no longer produces a session record.
+  var start = function () {
+
   var ENDPOINT = "/api/heatmap";
   var FLUSH_AT = 40;      // send a batch every N events — move samples burst
   var SESSION_CAP = 200;  // hard ceiling per session
@@ -595,5 +605,18 @@
     flush();
   });
 
-  measureScroll(); // capture the landing viewport before any scroll
+  measureScroll(); // capture the viewport as it stands at init
+
+  };
+
+  function schedule() {
+    if (window.requestIdleCallback) {
+      window.requestIdleCallback(start, { timeout: 1500 });
+    } else {
+      setTimeout(start, 200);
+    }
+  }
+
+  if (document.readyState === "complete") schedule();
+  else window.addEventListener("load", schedule, { once: true });
 })();
