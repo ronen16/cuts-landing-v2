@@ -201,7 +201,8 @@
     </label>
     <label class="field"><span>מכשיר</span>
       <select id="device">
-        <option value="mobile" selected>מובייל</option>
+        <option value="all" selected>כל המכשירים</option>
+        <option value="mobile">מובייל</option>
         <option value="desktop">דסקטופ</option>
       </select>
     </label>
@@ -479,7 +480,21 @@
       visitorsNote = num(split.campaign) + " מקמפיינים · " + num(split.organic) + " אורגני";
     }
 
+    // On "all devices" the split matters more than the source: it's the first
+    // thing anyone asks when a total doesn't match a number they saw before.
+    var dev = lastData.devices;
+    if (els.device.value === "all") {
+      // The source split moves to its own card below, so the note here never
+      // repeats it — an older cached function sends no devices at all.
+      visitorsNote = dev && (dev.mobile || dev.desktop)
+        ? num(dev.mobile || 0) + " מובייל · " + num(dev.desktop || 0) + " דסקטופ"
+        : "";
+    }
     els.kpis.appendChild(kpiCard("מבקרים", num(visitors), visitorsNote));
+    if (split && els.device.value === "all") {
+      els.kpis.appendChild(kpiCard("מתוך קמפיינים", num(split.campaign),
+        num(split.organic) + " הגיעו אורגני או ישיר"));
+    }
     els.kpis.appendChild(kpiCard("קליקים", num(clicks),
       visitors ? (Math.round((clicks / visitors) * 10) / 10) + " בממוצע למבקר" : ""));
     els.kpis.appendChild(kpiCard("לידים", num(leads), "השאירו שם וטלפון"));
@@ -513,7 +528,8 @@
     els.stat.textContent = lastData.days + " ימים אחרונים";
     renderKpis();
 
-    if (hasAnyHeat()) loadFrame(page, v, d);
+    // No frame for "all devices" — there is no single page to draw on.
+    if (d !== "all" && hasAnyHeat()) loadFrame(page, v, d);
     trends.stale = true;
     applyMode();
   }
@@ -828,6 +844,19 @@
     els.panel.hidden = true;
     els.stageOuter.hidden = false;
 
+    // A map is drawn over one rendering of the page, and mobile and desktop
+    // are different pages — the numbers can be summed, the pixels can't.
+    if (els.device.value === "all") {
+      els.stage.hidden = true;
+      els.msg.hidden = true;
+      els.chipbar.hidden = true;
+      els.stageOuter.hidden = true;
+      els.panel.hidden = false;
+      renderDevicePick();
+      syncRageLayer();
+      return;
+    }
+
     if (mode === "moves" && els.device.value === "mobile") {
       els.stage.hidden = true;
       els.msg.hidden = true;
@@ -879,6 +908,23 @@
       box.appendChild(btn);
     }
     return box;
+  }
+
+  function renderDevicePick() {
+    clearPanel();
+    var box = panelEmpty("המפה מצוירת על תצוגה אחת של הדף.\nבחר מכשיר כדי לראות אותה — המספרים למעלה ממשיכים לספור את שניהם.");
+    var row = document.createElement("div");
+    row.style.cssText = "display:flex; justify-content:center; gap:10px; margin-top:18px;";
+    [["mobile", "מובייל"], ["desktop", "דסקטופ"]].forEach(function (pair) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "chip";
+      btn.textContent = pair[1];
+      btn.addEventListener("click", function () { els.device.value = pair[0]; load(); });
+      row.appendChild(btn);
+    });
+    box.appendChild(row);
+    els.panel.appendChild(box);
   }
 
   function renderMovesMobileHint() {

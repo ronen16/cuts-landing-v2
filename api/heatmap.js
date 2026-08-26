@@ -29,6 +29,8 @@ const MAX_EVENTS = 200;
 // split doesn't exist.
 const VARIANTS = new Set(["a", "b", "c", "d", "-"]);
 const DEVICES = new Set(["mobile", "desktop"]);
+// Not a device an event can carry — only a slice that spans both.
+const DEVICE_ALL = "all";
 const MAX_PAGE_LEN = 80;
 const DEFAULT_PAGE = "/";
 const MAX_SECTION_LEN = 40;
@@ -217,7 +219,10 @@ function sourceClause(src) {
 function sliceOf(req) {
   const { variant, device, days, page, src, camp } = req.query || {};
   const v = VARIANTS.has(variant) ? variant : "c";
-  const d = DEVICES.has(device) ? device : "mobile";
+  // "all" is the honest default: with a per-device filter and nothing else,
+  // no number on the dashboard was ever the site's total, which invites
+  // reading a mobile figure as the whole picture.
+  const d = DEVICES.has(device) ? device : DEVICE_ALL;
   const p = cleanPage(page) || DEFAULT_PAGE;
   const s = SOURCE_FILTERS.has(src) ? src : "all";
   const c =
@@ -227,15 +232,16 @@ function sliceOf(req) {
   const sinceParam = encodeURIComponent(since);
   // baseAll is the same slice without the source filter — the breakdowns have
   // to keep showing every source and campaign, including the ones a filter hides.
+  const deviceClause = d === DEVICE_ALL ? "" : `&device=eq.${d}`;
   const baseAll =
     `${SUPABASE_URL}/rest/v1/${TABLE}` +
     `?page=eq.${encodeURIComponent(p)}&variant=eq.${v}` +
-    `&device=eq.${d}&ts=gte.${sinceParam}`;
+    `${deviceClause}&ts=gte.${sinceParam}`;
   // A named campaign is campaign traffic by definition, so it replaces the
   // source clause instead of stacking with it — "organic" plus a campaign
   // name would otherwise be an empty slice no matter what the data says.
   const filter = c ? `&campaign=eq.${encodeURIComponent(c)}` : sourceClause(s);
-  return { v, d, p, s, c, windowDays, since, sinceParam, baseAll, base: baseAll + filter };
+  return { v, d, p, s, c, windowDays, since, sinceParam, deviceClause, baseAll, base: baseAll + filter };
 }
 
 // A panel whose query fails degrades to zeros — one missing block must never
@@ -293,6 +299,19 @@ function countSourceSessions(rows) {
   return counts;
 }
 
+// Sessions per device, so an "all devices" total can show its own split
+// instead of leaving the reader to guess which half they are looking at.
+function countDeviceSessions(rows) {
+  const deviceOf = new Map();
+  for (const row of rows) {
+    if (!row || !row.session_id || deviceOf.has(row.session_id)) continue;
+    deviceOf.set(row.session_id, DEVICES.has(row.device) ? row.device : "mobile");
+  }
+  const counts = {};
+  for (const device of deviceOf.values()) counts[device] = (counts[device] || 0) + 1;
+  return counts;
+}
+
 // Sessions per campaign, first value per session wins for the same reason.
 // The empty campaign is every organic visit plus every untagged ad — it can't
 // be drilled into, so it never reaches the picker.
@@ -320,7 +339,7 @@ async function handleGet(req, res) {
 }
 
 async function handleAgg(res, slice) {
-  const { v, d, p, s, c, windowDays, sinceParam, base, baseAll } = slice;
+  const { v, d, p, s, c, windowDays, sinceParam, deviceClause, base, baseAll } = slice;
 
   // PostgREST has no group-by; volumes here are small (a landing page, capped
   // at 200 events/session), so fetch raw rows and bucket in the function.
@@ -342,7 +361,8 @@ async function handleAgg(res, slice) {
       { headers: headers() }
     ),
     fetch(
-      `${SUPABASE_URL}/rest/v1/${TABLE}?device=eq.${d}&ts=gte.${sinceParam}&select=page&limit=2000`,
+      `${SUPABASE_URL}/rest/v1/${TABLE}?ts=gte.${sinceParam}${deviceClause}` +
+        `&select=page&limit=2000`,
       { headers: headers() }
     ),
     fetchRows(`${base}&kind=eq.rage&select=section_id,rel_x,rel_y&limit=20000`),
@@ -354,7 +374,7 @@ async function handleAgg(res, slice) {
     // slice, which is what tells Ronen whether a filter is worth applying.
     // One row set feeds both — a campaign missing from the list because the
     // current filter hides it would be a campaign he can never get back to.
-    fetchRows(`${baseAll}&kind=eq.scroll&select=session_id,source,campaign&limit=20000`),
+    fetchRows(`${baseAll}&kind=eq.scroll&select=session_id,source,campaign,device&limit=20000`),
   ]);
   if (!clicksRes.ok || !scrollsRes.ok) {
     return res.status(502).json({ error: "storage query failed" });
@@ -427,6 +447,7 @@ async function handleAgg(res, slice) {
     sources: countSourceSessions(breakdownRows),
     camp: c,
     campaigns: countCampaignSessions(breakdownRows),
+    devices: countDeviceSessions(breakdownRows),
     days: windowDays,
     grid: GRID,
     total_clicks: clicks.length,
