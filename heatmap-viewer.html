@@ -98,7 +98,11 @@
 
   /* One row per ad. Reading down the first column answers "which ad works". */
   table.src { width: 100%; border-collapse: collapse; font-size: 12.5px; }
-  table.src thead { display: none; }
+  table.src th {
+    padding: 0 6px 7px; font-size: 10.5px; font-weight: 700;
+    color: var(--gray); text-align: right; white-space: nowrap;
+  }
+  table.src th.n { text-align: left; }
   table.src td { padding: 8px 6px; border-top: 1px solid var(--line); }
   table.src tbody tr { cursor: pointer; }
   table.src tbody tr:hover td { background: rgba(255,255,255,0.04); }
@@ -111,6 +115,33 @@
   table.src .tag.off { color: var(--gray); }
   table.src tr.total td { border-top: 2px solid var(--line); color: var(--gray); cursor: default; }
   table.src tr.total:hover td { background: none; }
+
+  /* The bottom line, before anything needs decoding: four labeled numbers
+     and one plain sentence. */
+  .kpis2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .kpi { background: #1e1e26; border-radius: 10px; padding: 10px 12px; }
+  .kpi b {
+    display: block; font-size: 22px; font-weight: 900; line-height: 1.25;
+    font-variant-numeric: tabular-nums;
+  }
+  .kpi span { font-size: 11.5px; color: var(--gray); font-weight: 700; }
+  .kpi.lead b { color: var(--accent); }
+  .story {
+    margin-top: 10px; font-size: 12.5px; line-height: 1.7;
+    color: rgba(255,255,255,0.85); background: rgba(255,222,31,0.07);
+    border: 1px solid rgba(255,222,31,0.25); border-radius: 10px; padding: 9px 12px;
+  }
+  .story[hidden] { display: none; }
+
+  /* One sentence above the map saying what the colours mean. */
+  .mapcap {
+    margin: 0 0 12px; text-align: center; font-size: 13px; line-height: 1.6;
+    color: rgba(255,255,255,0.72);
+  }
+  .mapcap b { color: var(--accent); }
+  .mapcap[hidden] { display: none; }
+
+  .sidebox .seg + .seg { margin-top: 8px; }
 
   .more { padding: 0 16px 24px; }
   .more > button {
@@ -237,6 +268,7 @@
   <main class="work">
     <div class="mapview" id="mapView">
       <div class="msg" id="msg" hidden></div>
+      <p class="mapcap" id="mapCap" hidden><b id="mapTitle"></b> <span id="mapHint"></span></p>
       <div class="stage-outer" id="stageOuter">
         <div class="stage" id="stage" hidden>
           <iframe id="frame" scrolling="no" title="תצוגת האתר"></iframe>
@@ -250,22 +282,31 @@
     </div>
 
     <aside class="side">
+      <!-- The bottom line first: what happened, in four labeled numbers and
+           one sentence. Everything below refines it; nothing precedes it. -->
       <div class="sidebox">
-        <h3>סוג מפה</h3>
+        <h3>שורה תחתונה</h3>
+        <div class="kpis2" id="kpiCards"></div>
+        <p class="story" id="story" hidden></p>
+      </div>
+
+      <div class="sidebox">
+        <h3>מאיפה הגיעו — לחיצה על מודעה מסננת את המפה</h3>
+        <div id="srcTable"></div>
+      </div>
+
+      <div class="sidebox">
+        <h3>מה המפה מציגה</h3>
         <div class="seg wide" id="modeSeg">
           <button type="button" data-mode="clicks" class="on">קליקים</button>
           <button type="button" data-mode="moves">תנועה</button>
           <button type="button" data-mode="scroll">גלילה</button>
         </div>
-        <span class="legend" id="legend"><span>מעט</span><span class="ramp"></span><span>הרבה</span></span>
-      </div>
-
-      <div class="sidebox">
-        <h3>מכשיר</h3>
         <div class="seg wide" id="deviceSeg">
           <button type="button" data-device="mobile" class="on">מובייל</button>
           <button type="button" data-device="desktop">דסקטופ</button>
         </div>
+        <span class="legend" id="legend"><span>מעט</span><span class="ramp"></span><span>הרבה</span></span>
       </div>
 
       <!-- The answer to "where did they click", in words. A ranked list beats
@@ -273,11 +314,6 @@
       <div class="sidebox" id="topBox">
         <h3 id="topTitle">הכי נלחצים</h3>
         <ol class="top" id="topList"></ol>
-      </div>
-
-      <div class="sidebox">
-        <h3 id="mapTitle">מאיפה הגיעו</h3>
-        <div id="srcTable"></div>
       </div>
 
       <div class="chipbar" id="chipbar" hidden>
@@ -346,6 +382,7 @@
     legend: $("legend"), panel: $("panel"), tip: $("tip"),
     chipbar: $("chipbar"), rageChip: $("rageChip"), rageChipText: $("rageChipText"),
     srcTable: $("srcTable"), mapTitle: $("mapTitle"), deviceSeg: $("deviceSeg"),
+    kpiCards: $("kpiCards"), story: $("story"), mapCap: $("mapCap"), mapHint: $("mapHint"),
     moreBtn: $("moreBtn"), moreWrap: $("moreWrap"), modeSeg: $("modeSeg"),
     topList: $("topList"), topTitle: $("topTitle"), mapView: $("mapView"),
   };
@@ -371,7 +408,7 @@
     els.msg.innerHTML = html;
     els.msg.hidden = false;
     els.stage.hidden = true; els.panel.hidden = true; els.chipbar.hidden = true;
-    els.kpis.hidden = true;
+    els.kpis.hidden = true; els.mapCap.hidden = true;
   }
   if (!key) { showMsg("חסר מפתח גישה (?key=)"); return; }
 
@@ -570,7 +607,52 @@
     var selected = els.camp.value;
     var chosen = rows.filter(function (r) { return r.filter && r.filter === selected; })[0];
     var base = MAP_TITLES[mode] || MAP_TITLES.clicks;
-    els.mapTitle.textContent = chosen ? base + " — " + chosen.label : base;
+    els.mapTitle.textContent = (chosen ? base + " — " + chosen.label : base) + ".";
+    els.mapHint.textContent = HINTS[mode] || "";
+  }
+
+  // ── The bottom line: four labeled numbers + one plain sentence ────────────
+  function renderKpis() {
+    var host = els.kpiCards;
+    while (host.firstChild) host.removeChild(host.firstChild);
+    var rows = (lastData && Array.isArray(lastData.breakdown)) ? lastData.breakdown : [];
+    var totals = { visitors: 0, clicks: 0, leads: 0 };
+    var paidVisitors = 0, topAd = null;
+    rows.forEach(function (r) {
+      totals.visitors += +r.visitors || 0;
+      totals.clicks += +r.clicks || 0;
+      totals.leads += +r.leads || 0;
+      if (r.paid) {
+        paidVisitors += +r.visitors || 0;
+        if (!topAd || (+r.visitors || 0) > (+topAd.visitors || 0)) topAd = r;
+      }
+    });
+    var conv = totals.visitors ? Math.round((totals.leads / totals.visitors) * 1000) / 10 : 0;
+    [
+      { value: totals.visitors, label: "נכנסו לדף" },
+      { value: totals.clicks, label: "קליקים בדף" },
+      { value: totals.leads, label: "השאירו פרטים", cls: "lead" },
+      { value: conv + "%", label: "אחוז המרה", cls: "lead" },
+    ].forEach(function (k) {
+      var card = document.createElement("div");
+      card.className = "kpi" + (k.cls ? " " + k.cls : "");
+      var num = document.createElement("b");
+      num.textContent = typeof k.value === "number" ? k.value.toLocaleString("he-IL") : k.value;
+      var label = document.createElement("span");
+      label.textContent = k.label;
+      card.appendChild(num); card.appendChild(label);
+      host.appendChild(card);
+    });
+
+    if (!totals.visitors) { els.story.hidden = true; return; }
+    var parts = [paidVisitors
+      ? paidVisitors + " מתוך " + totals.visitors + " המבקרים הגיעו ממודעות"
+      : "אף מבקר לא הגיע ממודעה בטווח הזה"];
+    if (topAd && +topAd.visitors) {
+      parts.push("המודעה החזקה: " + topAd.label + " (" + topAd.visitors + ")");
+    }
+    els.story.textContent = parts.join(" · ");
+    els.story.hidden = false;
   }
 
   async function load() {
@@ -597,6 +679,7 @@
       return load();
     }
     els.stat.textContent = lastData.days + " ימים אחרונים";
+    renderKpis();
     renderSourceTable();
 
     if (hasAnyHeat()) loadFrame(page, v, d);
@@ -1035,6 +1118,7 @@
     els.tip.style.display = "none";
     var isHeat = !!HEAT_MODES[mode];
     els.legend.hidden = !isHeat;
+    els.mapCap.hidden = true;
 
     if (fatal) { syncRageLayer(); return; }
     // Tab clicked while the first fetch is still in flight — the stat line
@@ -1086,6 +1170,7 @@
 
     els.msg.hidden = true;
     els.stage.hidden = false;
+    els.mapCap.hidden = false;
     ensurePainted(mode);
     renderTopList();
     syncModeSeg();
