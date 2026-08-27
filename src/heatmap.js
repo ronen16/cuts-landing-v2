@@ -276,10 +276,14 @@
   // opts.lowPriority marks move samples, which give up their slot long
   // before the real signal does. Returns whether the event was queued.
   function record(ev, opts) {
-    var ceiling = opts && opts.lowPriority
-      ? SESSION_CAP - MOVE_RESERVED_SLOTS
-      : SESSION_CAP;
-    if (sentCount + pending.length >= ceiling) return false;
+    // opts.critical is the one signal the session cap may not eat: a lead is
+    // the last event of a busy session, exactly when the ceiling is closest.
+    if (!(opts && opts.critical)) {
+      var ceiling = opts && opts.lowPriority
+        ? SESSION_CAP - MOVE_RESERVED_SLOTS
+        : SESSION_CAP;
+      if (sentCount + pending.length >= ceiling) return false;
+    }
     pending.push(ev);
     if (pending.length >= FLUSH_AT) {
       sentCount += pending.length;
@@ -473,7 +477,7 @@
         device: device(),
         source: SOURCE,
         campaign: CAMPAIGN,
-      });
+      }, { critical: true });
       // A lead usually means a redirect is a heartbeat away.
       flushImmediate();
     } catch (err) { /* swallow */ }

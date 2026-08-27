@@ -2,31 +2,66 @@
 
 const LOGO_SRC = (typeof window !== "undefined" && window.__resources && window.__resources.cutsLogo) || "assets/cuts-logo.png";
 
-// Marketing attribution capture — runs on first page load.
+// Marketing attribution capture — runs on every load that carries params.
 // Meta's URL templates expand {{campaign.name}}, {{ad.name}}, {{adset.name}}
-// and {{site_source_name}} into the visitor's URL, which we cache in
-// sessionStorage so the form can attach them to the lead even if the visitor
-// browses around the site before converting. We only capture on the first
-// landing (when no value is stored yet) — a same-session navigation that
-// removes the UTM params from the URL must not erase the original source.
+// and {{site_source_name}} into the visitor's URL. We keep them in
+// localStorage for a week, the same window Meta itself attributes a click in,
+// so someone who clicks the ad on Sunday and leaves details on Tuesday still
+// arrives carrying the ad that sent them. sessionStorage keeps a per-visit
+// copy because the heatmap collector reports on the visit, not on the ad.
+const ATTR_STORE_KEY = "cuts_attribution";
+const ATTR_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
+const ATTR_KEYS = [
+  "utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term",
+  "fbclid", "gclid", "ttclid",
+];
+
+// Accessing localStorage throws outright in some privacy modes, so even the
+// lookup has to be guarded — not just the read.
+function attributionStore(kind) {
+  if (typeof window === "undefined") return null;
+  try { return window[kind] || null; } catch (_) { return null; }
+}
+
+function readAttribution(store) {
+  try {
+    const raw = store && store.getItem(ATTR_STORE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch (_) { return null; }
+}
+
+function attributionAgeMs(data) {
+  const t = data && data.landed_at ? Date.parse(data.landed_at) : NaN;
+  return Number.isNaN(t) ? Infinity : Date.now() - t;
+}
+
 (function captureAttribution() {
-  if (typeof window === "undefined" || !window.sessionStorage) return;
+  if (typeof window === "undefined") return;
   try {
     const params = new URLSearchParams(window.location.search);
-    const ATTR_KEYS = [
-      "utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term",
-      "fbclid", "gclid", "ttclid",
-    ];
     if (!ATTR_KEYS.some((k) => params.has(k))) return;
-    if (sessionStorage.getItem("cuts_attribution")) return;
-    const data = {};
+    const incoming = {};
     for (const k of ATTR_KEYS) {
       const v = params.get(k);
-      if (v) data[k] = v;
+      if (v) incoming[k] = v;
     }
-    data.landed_at = new Date().toISOString();
-    data.referrer = document.referrer || "";
-    sessionStorage.setItem("cuts_attribution", JSON.stringify(data));
+    incoming.landed_at = new Date().toISOString();
+    incoming.referrer = document.referrer || "";
+
+    // Last campaign click wins. A later visit that names no campaign — an
+    // organic Facebook post carries fbclid and nothing else — must not erase
+    // an ad that is still inside the attribution window.
+    const stored = readAttribution(attributionStore("localStorage"));
+    const keepStored = !!(stored && stored.utm_campaign && !incoming.utm_campaign &&
+      attributionAgeMs(stored) < ATTR_MAX_AGE_MS);
+
+    if (!keepStored) {
+      const ls = attributionStore("localStorage");
+      try { if (ls) ls.setItem(ATTR_STORE_KEY, JSON.stringify(incoming)); } catch (_) {}
+    }
+    // The collector describes this visit, so it always takes the fresh params.
+    const ss = attributionStore("sessionStorage");
+    try { if (ss) ss.setItem(ATTR_STORE_KEY, JSON.stringify(incoming)); } catch (_) {}
   } catch (_) {}
 })();
 
@@ -52,13 +87,14 @@ if (typeof window !== "undefined") {
   window.__cutsVariantPath = variantOverridePath;
 }
 
-// Read whatever we captured (if anything).
+// Read whatever we captured. localStorage carries the ad across visits within
+// the attribution window; sessionStorage is the fallback when persistent
+// storage is blocked, and covers this visit only.
 function getAttribution() {
-  if (typeof window === "undefined" || !window.sessionStorage) return null;
-  try {
-    const raw = sessionStorage.getItem("cuts_attribution");
-    return raw ? JSON.parse(raw) : null;
-  } catch (_) { return null; }
+  if (typeof window === "undefined") return null;
+  const stored = readAttribution(attributionStore("localStorage"));
+  if (stored && attributionAgeMs(stored) < ATTR_MAX_AGE_MS) return stored;
+  return readAttribution(attributionStore("sessionStorage"));
 }
 
 // ── Never-lose-a-lead safety net ────────────────────────────────────────────

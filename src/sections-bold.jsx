@@ -168,6 +168,49 @@ function Hero({ onCTAClick }) {
   // A poster tap is a real user gesture, so the player may start WITH sound —
   // only the auto-open path must embed muted. Read at iframe mount time.
   const heroOpenedByTapRef = React.useRef(false);
+  const heroSdkRef = React.useRef(null);
+
+  // Loading the SDK is what makes the difference between sound and silence, so
+  // it starts on the first hint of intent — by the time the click lands the
+  // script is usually already there, and play() fires inside the few seconds of
+  // activation the browser grants rather than after a network round trip.
+  const loadVimeoSdk = React.useCallback(() => {
+    if (heroSdkRef.current) return heroSdkRef.current;
+    heroSdkRef.current = new Promise((resolve) => {
+      if (window.Vimeo) return resolve(window.Vimeo);
+      const s = document.createElement("script");
+      s.src = "https://player.vimeo.com/api/player.js";
+      s.onload = () => resolve(window.Vimeo || null);
+      s.onerror = () => resolve(null);
+      document.head.appendChild(s);
+    });
+    return heroSdkRef.current;
+  }, []);
+
+  // Why the URL's muted=0 was not enough: a click gives THIS page permission to
+  // make noise, and that permission does not cross into an iframe that did not
+  // exist when the click happened. Vimeo therefore loads with no right to play
+  // sound and quietly falls back to muted. Driving playback from here instead —
+  // the SDK talks to the player from a page that does hold the permission — is
+  // what actually starts it with sound.
+  React.useEffect(() => {
+    if (!heroVideoPlaying || !heroOpenedByTapRef.current || !HERO_VIMEO_ID) return;
+    let cancelled = false;
+    loadVimeoSdk().then((Vimeo) => {
+      if (cancelled || !Vimeo || !heroIframeRef.current) return;
+      const player = new Vimeo.Player(heroIframeRef.current);
+      player.setVolume(1).catch(() => {});
+      player.setMuted(false).catch(() => {});
+      player.play().catch(() => {
+        // Sound was refused anyway. A silent frame is worse than a muted one,
+        // so play it muted and put the tap-for-sound prompt back.
+        if (cancelled) return;
+        setHeroMuted(true);
+        player.setMuted(true).then(() => player.play()).catch(() => {});
+      });
+    });
+    return () => { cancelled = true; };
+  }, [heroVideoPlaying, loadVimeoSdk]);
   // Auto-open the real video (muted — browsers block sound-on-autoplay), but
   // only after window load + an idle slot. Mounting the Vimeo iframe on first
   // render put the player's ~2MB of script + stream on the critical path
@@ -432,6 +475,8 @@ function Hero({ onCTAClick }) {
             <button
               type="button"
               className="hero-poster-btn"
+              onPointerEnter={loadVimeoSdk}
+              onPointerDown={loadVimeoSdk}
               onClick={() => {
                 if (!HERO_VIMEO_ID) return;
                 heroOpenedByTapRef.current = true;
