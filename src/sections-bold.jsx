@@ -109,6 +109,12 @@ const HERO_VIDEO_POSTER = "assets/hero-video-poster.jpg";
 // Optional looping animation shown in place of the static poster (autoplay,
 // muted, loop). Empty falls back to the poster image. It's treated as baked.
 const HERO_VIDEO_LOOP = "assets/hero-video-loop.mp4";
+// The showreel itself, served from our own origin. This is what makes one tap
+// produce sound: a <video> in this page belongs to this document, so the tap
+// that starts it is a gesture the browser accepts. An <iframe> player is a
+// different document and never receives that permission. Empty falls back to
+// the Vimeo embed, which needs a second tap to unmute on a phone.
+const HERO_VIDEO_FILE = "assets/hero-vsl.mp4";
 // Auto-open the real Vimeo video on page load. Browsers forbid sound-on-autoplay,
 // so it starts MUTED — the viewer taps once to unmute. OFF since 26/08/2026:
 // the visitor taps the poster to start (with sound); flip back to true to
@@ -169,6 +175,7 @@ function Hero({ onCTAClick }) {
   // only the auto-open path must embed muted. Read at iframe mount time.
   const heroOpenedByTapRef = React.useRef(false);
   const heroSdkRef = React.useRef(null);
+  const heroVideoRef = React.useRef(null);
 
   // Loading the SDK is what makes the difference between sound and silence, so
   // it starts on the first hint of intent — by the time the click lands the
@@ -463,7 +470,23 @@ function Hero({ onCTAClick }) {
             }} />
             )}
 
-            {HERO_VIMEO_ID && heroVideoPlaying ?
+            {HERO_VIDEO_FILE ?
+            <video
+              ref={heroVideoRef}
+              src={HERO_VIDEO_FILE}
+              poster={HERO_VIDEO_POSTER}
+              preload="none"
+              playsInline
+              controls={heroVideoPlaying}
+              onEnded={() => setHeroVideoPlaying(false)}
+              style={{
+                position: "absolute", inset: 0, width: "100%", height: "100%",
+                border: "none", objectFit: "cover", background: "#000",
+                zIndex: heroVideoPlaying ? 4 : 0,
+                opacity: heroVideoPlaying ? 1 : 0, pointerEvents: heroVideoPlaying ? "auto" : "none"
+              }} /> : null}
+
+            {!HERO_VIDEO_FILE && HERO_VIMEO_ID && heroVideoPlaying ?
             <iframe
               ref={heroIframeRef}
               src={`https://player.vimeo.com/video/${HERO_VIMEO_ID}?autoplay=1&muted=${heroOpenedByTapRef.current ? 0 : 1}&playsinline=1&title=0&byline=0&portrait=0&badge=0&autopause=0&app_id=58479${HERO_VIMEO_HASH ? `&h=${HERO_VIMEO_HASH}` : ""}`}
@@ -475,9 +498,27 @@ function Hero({ onCTAClick }) {
             <button
               type="button"
               className="hero-poster-btn"
-              onPointerEnter={loadVimeoSdk}
-              onPointerDown={loadVimeoSdk}
+              onPointerEnter={HERO_VIDEO_FILE ? undefined : loadVimeoSdk}
+              onPointerDown={HERO_VIDEO_FILE ? undefined : loadVimeoSdk}
               onClick={() => {
+                if (HERO_VIDEO_FILE) {
+                  const v = heroVideoRef.current;
+                  if (!v) return;
+                  // play() has to be called inside the handler itself. Awaiting
+                  // anything first spends the gesture and iOS refuses the sound.
+                  v.muted = false;
+                  v.volume = 1;
+                  const started = v.play();
+                  if (started && started.catch) {
+                    started.catch(() => {
+                      v.muted = true;
+                      setHeroMuted(true);
+                      v.play().catch(() => {});
+                    });
+                  }
+                  setHeroVideoPlaying(true);
+                  return;
+                }
                 if (!HERO_VIMEO_ID) return;
                 heroOpenedByTapRef.current = true;
                 setHeroMuted(false);
@@ -487,8 +528,12 @@ function Hero({ onCTAClick }) {
               style={{
                 position: "absolute", inset: 0, padding: 0,
                 background: "transparent", border: "none", overflow: "hidden",
-                cursor: HERO_VIMEO_ID ? "pointer" : "default",
-                color: "var(--accent)"
+                cursor: (HERO_VIDEO_FILE || HERO_VIMEO_ID) ? "pointer" : "default",
+                color: "var(--accent)",
+                // Once the local player is running the poster must get out of
+                // the way entirely, or it swallows the clicks meant for the
+                // video's own controls.
+                display: (HERO_VIDEO_FILE && heroVideoPlaying) ? "none" : undefined
               }}>
               {HERO_VIDEO_LOOP ?
               <video src={HERO_VIDEO_LOOP} autoPlay muted loop playsInline preload="auto"

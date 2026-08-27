@@ -116,6 +116,7 @@ async function run() {
   await copy("assets/cuts-logo.png", path.join(DIST, "assets", "cuts-logo.png"));
   try { await copy("assets/hero-video-poster.jpg", path.join(DIST, "assets", "hero-video-poster.jpg")); } catch (_) {}
   try { await copy("assets/hero-video-loop.mp4", path.join(DIST, "assets", "hero-video-loop.mp4")); } catch (_) {}
+  try { await copy("assets/hero-vsl.mp4", path.join(DIST, "assets", "hero-vsl.mp4")); } catch (_) {}
   for (const w of ["Light", "Regular", "Bold", "Black"]) {
     await copy(
       `assets/fonts/FbTypograph2-${w}.otf`,
