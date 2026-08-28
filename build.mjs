@@ -115,13 +115,20 @@ async function run() {
   // 3. Only the assets actually used (skip ~4.8MB of unused PNGs).
   await copy("assets/cuts-logo.png", path.join(DIST, "assets", "cuts-logo.png"));
   try { await copy("assets/hero-video-poster.jpg", path.join(DIST, "assets", "hero-video-poster.jpg")); } catch (_) {}
+  try { await copy("assets/hero-video-poster.webp", path.join(DIST, "assets", "hero-video-poster.webp")); } catch (_) {}
   try { await copy("assets/hero-video-loop.mp4", path.join(DIST, "assets", "hero-video-loop.mp4")); } catch (_) {}
   try { await copy("assets/hero-vsl.mp4", path.join(DIST, "assets", "hero-vsl.mp4")); } catch (_) {}
+  await copy("vendor/react.production.min.js", path.join(DIST, "vendor", "react.production.min.js"));
+  await copy("vendor/react-dom.production.min.js", path.join(DIST, "vendor", "react-dom.production.min.js"));
   for (const w of ["Light", "Regular", "Bold", "Black"]) {
-    await copy(
-      `assets/fonts/FbTypograph2-${w}.otf`,
-      path.join(DIST, "assets", "fonts", `FbTypograph2-${w}.otf`)
-    );
+    for (const ext of ["woff2", "otf"]) {
+      try {
+        await copy(
+          `assets/fonts/FbTypograph2-${w}.${ext}`,
+          path.join(DIST, "assets", "fonts", `FbTypograph2-${w}.${ext}`)
+        );
+      } catch (_) { /* otf is the fallback; woff2 is the one that matters */ }
+    }
   }
   // logos folder (svg client logos for the marquee)
   try {
@@ -148,18 +155,18 @@ async function run() {
   html = html
     .replace(
       /<script src="https:\/\/unpkg\.com\/react@[^"]+"[^>]*><\/script>\s*/,
-      '<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin="anonymous"></script>\n  '
+      `<script defer src="vendor/react.production.min.js?v=${V}"></script>\n  `
     )
     .replace(
       /<script src="https:\/\/unpkg\.com\/react-dom@[^"]+"[^>]*><\/script>\s*/,
-      '<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous"></script>\n  '
+      `<script defer src="vendor/react-dom.production.min.js?v=${V}"></script>\n  `
     )
     .replace(/<script src="https:\/\/unpkg\.com\/@babel\/standalone[^"]+"[^>]*><\/script>\s*/, "")
     .replace(/<script type="text\/babel" src="src\/([a-z-]+)\.jsx"><\/script>/g,
-      `<script src="src/$1.js?v=${V}"></script>`)
+      `<script defer src="src/$1.js?v=${V}"></script>`)
     .replace(/(<link[^>]+href=")styles\.css(?:\?v=[0-9]+)?(")/g, `$1styles.css?v=${V}$2`)
-    .replace(/(<script[^>]+src=")src\/interactions\.js("[^>]*><\/script>)/g,
-      `$1src/interactions.js?v=${V}$2`)
+    .replace(/<script src="src\/interactions\.js"><\/script>/g,
+      `<script defer src="src/interactions.js?v=${V}"></script>`)
     .replace(/(<script[^>]+src=")src\/heatmap\.js("[^>]*><\/script>)/g,
       `$1src/heatmap.js?v=${V}$2`);
   await fs.writeFile(path.join(DIST, "index.html"), html);

@@ -20,6 +20,12 @@
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&family=Assistant:wght@300;400;500;600;700;800&display=swap">
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&family=Assistant:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&family=Assistant:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
+<!-- The brand fonts are what shifted the hero: they arrived after first
+     paint, so every line re-flowed once. Preloading them lands the text
+     in its final shape the first time it is drawn. -->
+<link rel="preload" as="font" type="font/woff2" crossorigin href="assets/fonts/FbTypograph2-Regular.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="assets/fonts/FbTypograph2-Bold.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="assets/fonts/FbTypograph2-Black.woff2">
 <link rel="stylesheet" href="styles.css?v=2" />
 
 <!-- Meta Pixel -->

@@ -105,7 +105,7 @@ const HERO_VIMEO_HASH = "";
 // RESTORE POINT: the previous thumbnail design (purple still + HTML overlay) is
 // saved at git tag `thumbnail-v1`. To go back:  git checkout thumbnail-v1 -- \
 //   src/sections-bold.jsx styles.css build.mjs assets/hero-video-poster.jpg
-const HERO_VIDEO_POSTER = "assets/hero-video-poster.jpg";
+const HERO_VIDEO_POSTER = "assets/hero-video-poster.webp";
 // Optional looping animation shown in place of the static poster (autoplay,
 // muted, loop). Empty falls back to the poster image. It's treated as baked.
 const HERO_VIDEO_LOOP = "assets/hero-video-loop.mp4";
