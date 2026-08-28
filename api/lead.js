@@ -4,6 +4,8 @@
 // "Invalid column values' definition" — Make's internal column encoder needs
 // rich UI-only metadata that the API can't provide. Direct GraphQL bypasses it.
 
+import { createHash } from "node:crypto";
+
 const MONDAY_API_URL = "https://api.monday.com/v2";
 const BOARD_ID = 5091244482;
 const GROUP_ID = "group_mkyptfa0";
@@ -152,7 +154,34 @@ function nowInJerusalem() {
   return { date: `${g("year")}-${g("month")}-${g("day")}`, time: `${g("hour")}:${g("minute")}:${g("second")}` };
 }
 
+// ── GET: recent leads with their delivery status, for triage ───────────────
+// Answers "Ads Manager says N leads — did they all reach Monday?" without
+// Supabase credentials. Gated by the same view key as the heatmap dashboard;
+// the data is Ronen's own leads.
+const VIEW_KEY = process.env.HEATMAP_VIEW_KEY;
+const VIEW_KEY_SHA256 = "67db196eab780f203604bc0f0c925d8117ef16bf29619850d2f1a0643638a348";
+
+function viewKeyValid(key) {
+  if (typeof key !== "string" || !key) return false;
+  if (VIEW_KEY) return key === VIEW_KEY;
+  return createHash("sha256").update(key).digest("hex") === VIEW_KEY_SHA256;
+}
+
+async function listRecentLeads(req, res) {
+  if (!viewKeyValid((req.query || {}).key)) return res.status(403).json({ error: "forbidden" });
+  if (!supabaseConfigured()) return res.status(503).json({ error: "storage not configured" });
+  const days = Math.min(30, Math.max(1, parseInt((req.query || {}).days, 10) || 3));
+  const since = new Date(Date.now() - days * 86400000).toISOString();
+  const q = `${SUPABASE_URL}/rest/v1/${LEADS_TABLE}` +
+    `?select=created_at,full_name,phone_normalized,status,monday_item_id,ad_name,campaign_name,source` +
+    `&created_at=gte.${encodeURIComponent(since)}&order=created_at.desc&limit=100`;
+  const r = await fetch(q, { headers: supabaseHeaders() });
+  if (!r.ok) return res.status(502).json({ error: `query failed: ${r.status}` });
+  return res.status(200).json({ since, leads: await r.json() });
+}
+
 export default async function handler(req, res) {
+  if (req.method === "GET") return listRecentLeads(req, res);
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
     return res.status(405).json({ error: "method-not-allowed" });
