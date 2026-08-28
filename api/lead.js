@@ -229,6 +229,9 @@ export default async function handler(req, res) {
   });
   // Replay dedup: this submission already produced a Monday item — don't repeat.
   if (stored && stored.monday_item_id) {
+    // The upsert above just reset status to "received"; put the truth back so
+    // the status column stays readable in triage.
+    await patchLead(clientId, { status: "monday_ok" });
     return res.status(200).json({ ok: true, item_id: stored.monday_item_id, deduped: true });
   }
 
