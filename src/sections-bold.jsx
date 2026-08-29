@@ -155,16 +155,9 @@ const HERO_HEADLINES = {
 };
 
 function Hero({ onCTAClick }) {
-  const [tick, setTick] = React.useState(0);
-  React.useEffect(() => {
-    const id = setInterval(() => setTick((t) => t + 1), 80);
-    return () => clearInterval(id);
-  }, []);
-
-  // 64 waveform bars — pseudo-random heights animated by tick
-  const bars = React.useMemo(() => Array.from({ length: 64 }, (_, i) => i), []);
-  // 140 bars for full-width waveform
-  const wideBars = React.useMemo(() => Array.from({ length: 140 }, (_, i) => i), []);
+  // A waveform used to live here, animated by an 80ms tick. The waveform is
+  // long gone; the tick stayed, re-rendering Hero 12.5x/sec for nothing —
+  // measured at ~19 React commits/sec on an idle page, down to ~6 once removed.
 
   // Hero showreel — lazy Vimeo facade. Set HERO_VIMEO_ID once the clip is ready;
   // until then a placeholder panel renders and nothing streams.
@@ -5313,13 +5306,8 @@ function ProblemOld() {
     return () => io.disconnect();
   }, []);
 
-  // Ticker for the "3 years" chart
-  const [tick, setTick] = React.useState(0);
-  React.useEffect(() => {
-    if (!inView) return;
-    const id = setInterval(() => setTick((t) => (t + 1) % 100), 60);
-    return () => clearInterval(id);
-  }, [inView]);
+  // A 60ms ticker for a chart that no longer reads it lived here — same dead
+  // pattern as the Hero waveform, removed for the same reason.
 
   // Stat: animated count-up
   const useCountUp = (target, duration = 1400) => {
@@ -7940,6 +7928,15 @@ function SectionDivider() {
 
 // ---------- BOLD VARIATION (root) ----------
 
+// A memo boundary so a state change inside one section cannot re-render the
+// other fourteen. Comp identities are stable by construction (see the note on
+// DEFAULT_SECTIONS); onCTAClick is a useCallback; form and admin change only
+// on real events. Defensive — the measured cost lived elsewhere (see the
+// override guard in admin.jsx) — but it is the right shape for this tree.
+const SectionBody = React.memo(function SectionBody({ Comp, onCTAClick, form, admin }) {
+  return <Comp onCTAClick={onCTAClick} form={form} admin={admin} />;
+});
+
 function BoldVariation({ onCTAClick, form, admin }) {
   // Comp identities MUST stay stable across renders — otherwise React
   // unmounts/remounts every section on each re-render, wiping in-section
@@ -8064,7 +8061,7 @@ function BoldVariation({ onCTAClick, form, admin }) {
               {isHidden && isUnlocked && (
                 <div className="section-hidden-badge">מוסתר באתר הלייב</div>
               )}
-              <s.Comp onCTAClick={onCTAClick} form={form} admin={admin} />
+              <SectionBody Comp={s.Comp} onCTAClick={onCTAClick} form={form} admin={admin} />
             </div>
             {i < visibleSections.length - 1 && <SectionDivider />}
           </React.Fragment>

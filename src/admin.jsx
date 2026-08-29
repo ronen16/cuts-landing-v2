@@ -1021,10 +1021,20 @@ function applyOverrideContent(el, desired) {
   // Fallback: real HTML or mixed text+element content. Keep the cached guard so
   // we don't rewrite on every tick, accepting that interactive children here are
   // rare (e.g. the accessibility widget rows, not the page's CTA / form buttons).
-  if (el.__ovDesired !== desired || el.__ovApplied !== el.innerHTML) {
+  //
+  // The guard has to compare against the element's HTML WITHOUT the editing
+  // attributes. The same sweep that writes this innerHTML then stamps
+  // data-edit-id / data-edit-original onto the child spans inside it, which
+  // changes el.innerHTML; comparing the raw read-back therefore failed on every
+  // pass, the override was rewritten, the stamps were wiped, the write fired
+  // the MutationObserver, and the sweep ran again — a closed loop at ~17Hz on
+  // 16 elements, for as long as the page was open. Stripping the stamps before
+  // comparing is what breaks it: the content is then equal when it is equal.
+  const current = stripEditingAttrs(el.innerHTML);
+  if (el.__ovDesired !== desired || el.__ovApplied !== current) {
     el.innerHTML = desired;
     el.__ovDesired = desired;
-    el.__ovApplied = el.innerHTML; // store the normalized read-back
+    el.__ovApplied = stripEditingAttrs(el.innerHTML); // normalized, stamp-free
   }
 }
 
