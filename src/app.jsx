@@ -287,6 +287,18 @@ function App() {
   // resets in-section state like the podcast carousel index).
   const onCTAClick = React.useCallback(() => scrollToId("#cta"), []);
 
+  // The accessibility widget and the legal modal are attached to window by
+  // scripts that now load after first paint, so their globals are undefined
+  // during the first render. Without this, React never looks again and the
+  // widget simply never appears — re-render once the loader says they landed.
+  const [lateReady, setLateReady] = React.useState(false);
+  React.useEffect(() => {
+    if (window.__cutsLateReady) { setLateReady(true); return; }
+    const onReady = () => setLateReady(true);
+    window.addEventListener("cuts:late-ready", onReady);
+    return () => window.removeEventListener("cuts:late-ready", onReady);
+  }, []);
+
   const Variant = window.BoldVariation;
   const AdminPanel = window.AdminPanel;
   const AdminPasswordModal = window.AdminPasswordModal;
@@ -409,8 +421,9 @@ function App() {
       {AdminLogosModal && <AdminLogosModal admin={admin} />}
       {AdminGuestsModal && <AdminGuestsModal admin={admin} />}
       {AdminPublishSettingsModal && <AdminPublishSettingsModal />}
-      {window.AccessibilityWidget && <window.AccessibilityWidget />}
-      {window.LegalModal && <window.LegalModal />}
+      {/* lateReady is read here so this subtree re-evaluates when they load */}
+      {(lateReady || window.AccessibilityWidget) && window.AccessibilityWidget && <window.AccessibilityWidget />}
+      {(lateReady || window.LegalModal) && window.LegalModal && <window.LegalModal />}
     </div>
   );
 }

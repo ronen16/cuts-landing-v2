@@ -162,13 +162,30 @@ async function run() {
       `<script defer src="vendor/react-dom.production.min.js?v=${V}"></script>\n  `
     )
     .replace(/<script src="https:\/\/unpkg\.com\/@babel\/standalone[^"]+"[^>]*><\/script>\s*/, "")
+    // Everything the first render needs stays in the document. The three below
+    // do not: the accessibility widget, the legal modal and the nav
+    // interactions all attach themselves to window and are read again once
+    // they land (app.jsx listens for cuts:late-ready). Moving their bytes out
+    // of the pre-mount download is worth ~340ms to first paint on a phone.
+    // heatmap.js deliberately stays early — deferring it stopped sub-2s
+    // bounces from being recorded at all.
+    .replace(/<script type="text\/babel" src="src\/(legal|accessibility)\.jsx"><\/script>\s*/g, "")
     .replace(/<script type="text\/babel" src="src\/([a-z-]+)\.jsx"><\/script>/g,
       `<script defer src="src/$1.js?v=${V}"></script>`)
     .replace(/(<link[^>]+href=")styles\.css(?:\?v=[0-9]+)?(")/g, `$1styles.css?v=${V}$2`)
-    .replace(/<script src="src\/interactions\.js"><\/script>/g,
-      `<script defer src="src/interactions.js?v=${V}"></script>`)
+    .replace(/<script src="src\/interactions\.js"><\/script>\s*/g, "")
     .replace(/(<script[^>]+src=")src\/heatmap\.js("[^>]*><\/script>)/g,
       `$1src/heatmap.js?v=${V}$2`);
+  const LATE = ["accessibility", "legal", "interactions"];
+  const loader =
+    `<script>addEventListener("load",function(){var n=${LATE.length};` +
+    LATE.map((n, i) =>
+      `var s${i}=document.createElement("script");s${i}.src="src/${n}.js?v=${V}";` +
+      `s${i}.onload=d;s${i}.onerror=d;document.head.appendChild(s${i});`
+    ).join("") +
+    `function d(){if(--n===0){window.__cutsLateReady=true;` +
+    `dispatchEvent(new Event("cuts:late-ready"))}}});</script>`;
+  html = html.replace("</body>", `${loader}\n</body>`);
   await fs.writeFile(path.join(DIST, "index.html"), html);
 
   console.log("✓ build complete → dist/");
