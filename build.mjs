@@ -186,6 +186,27 @@ async function run() {
     `function d(){if(--n===0){window.__cutsLateReady=true;` +
     `dispatchEvent(new Event("cuts:late-ready"))}}});</script>`;
   html = html.replace("</body>", `${loader}\n</body>`);
+
+  // A hero the browser can paint before React exists. On a phone this is the
+  // difference between a blank screen for five seconds and a finished-looking
+  // page in one. Entirely optional: if the snapshot is missing or anything
+  // below throws, the page is written exactly as it was.
+  try {
+    const { buildPreheroBlock, preheroMarkup } = await import("./tools/inject-hero.mjs");
+    const prehero = await buildPreheroBlock();
+    if (prehero) {
+      html = html.replace(
+        '<main id="root"></main>',
+        `${preheroMarkup(prehero.html)}\n  <main id="root"></main>`
+      );
+      console.log(`  pre-painted hero: ${prehero.applied} published texts baked in`);
+    } else {
+      console.warn("  pre-painted hero: no snapshot — building without it");
+    }
+  } catch (e) {
+    console.warn(`  pre-painted hero skipped (${e.message}) — building without it`);
+  }
+
   await fs.writeFile(path.join(DIST, "index.html"), html);
 
   console.log("✓ build complete → dist/");
