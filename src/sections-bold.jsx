@@ -162,7 +162,6 @@ function Hero({ onCTAClick }) {
   // Hero showreel — lazy Vimeo facade. Set HERO_VIMEO_ID once the clip is ready;
   // until then a placeholder panel renders and nothing streams.
   const [heroVideoPlaying, setHeroVideoPlaying] = React.useState(false);
-  const [heroMuted, setHeroMuted] = React.useState(true);
   const heroIframeRef = React.useRef(null);
   // A poster tap is a real user gesture, so the player may start WITH sound —
   // only the auto-open path must embed muted. Read at iframe mount time.
@@ -205,7 +204,6 @@ function Hero({ onCTAClick }) {
         // Sound was refused anyway. A silent frame is worse than a muted one,
         // so play it muted and put the tap-for-sound prompt back.
         if (cancelled) return;
-        setHeroMuted(true);
         player.setMuted(true).then(() => player.play()).catch(() => {});
       });
     });
@@ -255,7 +253,6 @@ function Hero({ onCTAClick }) {
     const remove = () => events.forEach((ev) => window.removeEventListener(ev, unmute, true));
     const unmute = () => {
       if (player) { player.setMuted(false).catch(() => {}); player.setVolume(1).catch(() => {}); }
-      setHeroMuted(false);
       remove();
     };
     events.forEach((ev) => window.addEventListener(ev, unmute, { capture: true }));
@@ -505,7 +502,6 @@ function Hero({ onCTAClick }) {
                   if (started && started.catch) {
                     started.catch(() => {
                       v.muted = true;
-                      setHeroMuted(true);
                       v.play().catch(() => {});
                     });
                   }
@@ -514,7 +510,6 @@ function Hero({ onCTAClick }) {
                 }
                 if (!HERO_VIMEO_ID) return;
                 heroOpenedByTapRef.current = true;
-                setHeroMuted(false);
                 setHeroVideoPlaying(true);
               }}
               aria-label={HERO_VIMEO_ID ? "נגן סרטון" : "סרטון בקרוב"}
@@ -606,18 +601,6 @@ function Hero({ onCTAClick }) {
             }
             </div>
           </div>
-
-          {HERO_VIMEO_ID && heroVideoPlaying && heroMuted &&
-          <div style={{ display: "flex", justifyContent: "center", margin: "0 0 32px" }}>
-            <span className="hero-sound-hint" aria-hidden="true">
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
-                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4.03v8.06A4.5 4.5 0 0 0 16.5 12z" />
-                <path d="M19 12a7 7 0 0 0-3.5-6.06v2.3A4.7 4.7 0 0 1 17 12a4.7 4.7 0 0 1-1.5 3.76v2.3A7 7 0 0 0 19 12z" />
-              </svg>
-              הקש בכל מקום להפעלת הקול
-            </span>
-          </div>
-          }
 
           {/* CTA — centered */}
           <div style={{
