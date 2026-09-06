@@ -152,10 +152,14 @@ fbq('init', '646207438565937');
 // One Lead per browser session: a refresh or back-forward return to this page
 // is the same person, not a new lead — without the guard Ads Manager counts
 // every revisit and drifts above the number of real submissions.
+// The submission id from the redirect is passed as eventID so Meta collapses this
+// pixel event and the server's Conversions API event into one lead.
 try {
+  var cutsLeadId = new URLSearchParams(location.search).get('cid') || '';
+  var cutsLeadOpts = cutsLeadId ? { eventID: cutsLeadId } : undefined;
   if (!sessionStorage.getItem('cuts_lead_fired')) {
     sessionStorage.setItem('cuts_lead_fired', '1');
-    fbq('track', 'Lead');
+    fbq('track', 'Lead', {}, cutsLeadOpts);
   }
 } catch (e) { fbq('track', 'Lead'); }
 </script>

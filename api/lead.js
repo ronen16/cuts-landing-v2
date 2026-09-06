@@ -10,6 +10,94 @@ const MONDAY_API_URL = "https://api.monday.com/v2";
 const BOARD_ID = 5091244482;
 const GROUP_ID = "group_mkyptfa0";
 
+// ── Meta Conversions API ───────────────────────────────────────────────────────
+// The browser pixel misses whatever an ad blocker or ITP eats, and it can only offer
+// Meta a cookie. This server has the things that actually match a conversion back to
+// the click: the fbclid the visitor arrived with, their IP and user agent, and the
+// phone they just typed. Sent alongside the pixel and deduplicated by event_id, so
+// Meta counts one lead, matched far better.
+//
+// Two switches, both off by default — deploying this file sends nothing:
+//   META_CAPI_ENABLED=1  turns sending on
+//   META_CAPI_TEST_CODE  routes events to Events Manager's Test Events tool
+const GRAPH_URL = "https://graph.facebook.com/v23.0";
+
+const sha256 = (value) => {
+  const text = String(value || "").trim().toLowerCase();
+  return text ? createHash("sha256").update(text).digest("hex") : "";
+};
+
+function metaEnabled() {
+  return ["1", "true", "yes"].includes(String(process.env.META_CAPI_ENABLED || "").trim());
+}
+
+// Meta's click id cookie format. The visitor never had the cookie set for us (we
+// never wrote one), so it is rebuilt from the fbclid we stored on the first landing.
+function buildFbc(attribution) {
+  const fbclid = (attribution && attribution.fbclid) || "";
+  if (!fbclid) return "";
+  const landed = Date.parse((attribution && attribution.landed_at) || "") || Date.now();
+  return `fb.1.${landed}.${fbclid}`;
+}
+
+async function sendLeadToMeta({ body, phoneNorm, email, fullName, clientId, req }) {
+  if (!metaEnabled()) return { sent: false, reason: "disabled" };
+  const token = process.env.META_CAPI_TOKEN;
+  const pixel = process.env.META_PIXEL_ID;
+  if (!token || !pixel) return { sent: false, reason: "not-configured" };
+
+  const attribution = body.attribution || {};
+  const nameParts = String(fullName || "").split(/\s+/).filter(Boolean);
+  const userData = {
+    ph: [sha256(phoneNorm)],
+    country: [sha256("il")],
+    client_ip_address: (req.headers["x-forwarded-for"] || "").split(",")[0].trim(),
+    client_user_agent: req.headers["user-agent"] || "",
+  };
+  if (email) userData.em = [sha256(email)];
+  if (nameParts.length) userData.fn = [sha256(nameParts[0])];
+  if (nameParts.length > 1) userData.ln = [sha256(nameParts[nameParts.length - 1])];
+  const fbc = buildFbc(attribution);
+  if (fbc) userData.fbc = fbc;
+
+  const event = {
+    event_name: "Lead",
+    event_time: Math.floor(Date.now() / 1000),
+    action_source: "website",
+    // The same id the browser pixel reports, so Meta collapses the pair into one.
+    event_id: clientId,
+    event_source_url: body.page_url || "https://www.cuts.co.il/",
+    user_data: userData,
+  };
+
+  const payload = new URLSearchParams({
+    data: JSON.stringify([event]),
+    access_token: token,
+  });
+  const testCode = String(process.env.META_CAPI_TEST_CODE || "").trim();
+  if (testCode) payload.set("test_event_code", testCode);
+
+  try {
+    const res = await fetch(`${GRAPH_URL}/${pixel}/events`, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: payload,
+    });
+    const out = await res.json();
+    if (!res.ok) {
+      // Never log the URL or token — only Meta's own message.
+      console.error(`[lead] capi rejected: ${res.status} ${(out.error || {}).message || ""}`);
+      return { sent: false, reason: `http-${res.status}` };
+    }
+    console.log(`[lead] capi accepted ${out.events_received} event(s)` +
+      (testCode ? ` (test ${testCode})` : "") + (fbc ? " with fbc" : " without fbc"));
+    return { sent: true, fbc: !!fbc };
+  } catch (err) {
+    console.error("[lead] capi exception:", (err && err.message) || err);
+    return { sent: false, reason: "exception" };
+  }
+}
+
 // Monday column IDs (the suffix is opaque — never infer meaning from the
 // prefix). Mapping verified against the working FB Lead Ads scenario blueprint.
 const COL = {
@@ -305,15 +393,20 @@ export default async function handler(req, res) {
     console.log(`[lead] created Monday item ${itemId} for "${fullName}" (${phoneNorm})`);
     await patchLead(clientId, { monday_item_id: itemId, status: "monday_ok" });
 
-    // Forward to Make for WhatsApp + research pipeline. Awaited so the call
-    // completes before Vercel kills the instance; best-effort — failures
-    // don't change the 200 response since the lead is already in Monday.
-    const enrichment = await forwardToMake({
-      ...body,
-      item_id: itemId,
-      phone_normalized: phoneNorm,
-    });
-    return res.status(200).json({ ok: true, item_id: itemId, enrichment });
+    // Both are awaited so they finish before Vercel kills the instance, and both are
+    // best-effort: the lead is already in Monday, so neither can change the 200.
+    const [enrichment, capi] = await Promise.all([
+      forwardToMake({ ...body, item_id: itemId, phone_normalized: phoneNorm }),
+      sendLeadToMeta({
+        body,
+        phoneNorm,
+        email: String(data.email || "").trim(),
+        fullName,
+        clientId,
+        req,
+      }),
+    ]);
+    return res.status(200).json({ ok: true, item_id: itemId, enrichment, capi });
   } catch (err) {
     console.error("[lead] exception:", err?.message || err);
     await patchLead(clientId, { status: "monday_error" });

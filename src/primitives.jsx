@@ -364,11 +364,16 @@ function useForm() {
       // (Make's column encoder kept rejecting the payload). `keepalive: true`
       // ensures the request completes after the redirect fires.
       const name = (values.name || "").trim();
+      // The submission's own id travels to the thank-you page so the browser pixel
+      // can fire the Lead event under the SAME id the server sends to the Conversions
+      // API. Without a shared id Meta counts the lead twice.
+      const clientId = newClientId();
       const goThankYou = () => {
+        const query = "?name=" + encodeURIComponent(name) + "&cid=" + encodeURIComponent(clientId);
         try {
-          window.location.assign("thank-you.html?name=" + encodeURIComponent(name));
+          window.location.assign("thank-you.html" + query);
         } catch (_) {
-          window.location.href = "thank-you.html";
+          window.location.href = "thank-you.html" + query;
         }
       };
       let payload = null;
@@ -390,7 +395,7 @@ function useForm() {
           dateCreated:  new Date().toISOString(),
           source:       "cuts.co.il-landing",
           ab_variant:   getVariant(),
-          client_id:    newClientId(),
+          client_id:    clientId,
           // Full attribution snapshot for traceability / future analytics.
           attribution:  attr || null,
         };
