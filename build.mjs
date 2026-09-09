@@ -114,10 +114,6 @@ async function run() {
 
   // 3. Only the assets actually used (skip ~4.8MB of unused PNGs).
   await copy("assets/cuts-logo.png", path.join(DIST, "assets", "cuts-logo.png"));
-  try { await copy("assets/hero-video-poster.jpg", path.join(DIST, "assets", "hero-video-poster.jpg")); } catch (_) {}
-  try { await copy("assets/hero-video-poster.webp", path.join(DIST, "assets", "hero-video-poster.webp")); } catch (_) {}
-  try { await copy("assets/hero-video-loop.mp4", path.join(DIST, "assets", "hero-video-loop.mp4")); } catch (_) {}
-  try { await copy("assets/hero-vsl.mp4", path.join(DIST, "assets", "hero-vsl.mp4")); } catch (_) {}
   await copy("vendor/react.production.min.js", path.join(DIST, "vendor", "react.production.min.js"));
   await copy("vendor/react-dom.production.min.js", path.join(DIST, "vendor", "react-dom.production.min.js"));
   for (const w of ["Light", "Regular", "Bold", "Black"]) {
@@ -186,6 +182,22 @@ async function run() {
     `function d(){if(--n===0){window.__cutsLateReady=true;` +
     `dispatchEvent(new Event("cuts:late-ready"))}}});</script>`;
   html = html.replace("</body>", `${loader}\n</body>`);
+
+  // The published wording, inlined so React's first render already has it.
+  // Without this the page renders its source text and then reflows when the
+  // fetch lands. Variant c only: /a /b /d rewrite to this same file and fetch
+  // their own, and a wrong seed would be worse than none.
+  try {
+    const raw = await fs.readFile("live-overrides-c.json", "utf8");
+    const parsed = JSON.parse(raw);
+    html = html.replace(
+      "</head>",
+      `<script>window.__CUTS_LIVE_OVERRIDES=${JSON.stringify(parsed)}</script>\n</head>`
+    );
+    console.log("  live overrides inlined for the first render");
+  } catch {
+    console.warn("  live overrides not inlined — first render will reflow once");
+  }
 
   // A hero the browser can paint before React exists. On a phone this is the
   // difference between a blank screen for five seconds and a finished-looking

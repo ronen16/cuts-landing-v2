@@ -95,7 +95,20 @@ function App() {
   // On boot, fetch live overrides from GitHub (raw.githubusercontent.com)
   // and merge with the user's local overrides so the deployed site reflects
   // the latest published state without any browser localStorage.
-  const [liveOverrides, setLiveOverrides] = React.useState(null);
+  // Seeded from a copy inlined at build time so the FIRST render already has
+  // the published wording. Fetching it produced a visible reflow: the hero
+  // rendered its source text, the override arrived with different font sizes,
+  // and the whole page below shifted — 0.29 of layout shift on desktop once
+  // the section under the hero sat in the viewport. The fetch below still
+  // runs and wins if anything was published since this build.
+  const [liveOverrides, setLiveOverrides] = React.useState(() => {
+    if (typeof window === "undefined" || !window.__CUTS_LIVE_OVERRIDES) return null;
+    // The seed is variant c's. /a /b /d are rewrites of this same file with
+    // their own wording, so seeding them would show c's text until the fetch
+    // corrects it — worse than the reflow this avoids.
+    const variant = window.__cutsGetVariant ? window.__cutsGetVariant() : "c";
+    return variant === "c" ? window.__CUTS_LIVE_OVERRIDES : null;
+  });
   React.useEffect(() => {
     if (!window.__cutsFetchLiveOverrides || !window.__cutsLoadPublishSettings) return;
     let cancelled = false;

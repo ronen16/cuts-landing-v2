@@ -54,15 +54,10 @@ export async function buildPreheroBlock() {
   for (const el of root.querySelectorAll("[data-edit-id]")) el.removeAttribute("data-edit-id");
 
   // While this is on screen the rest of the page does not exist yet, so a tap
-  // has nothing to scroll to and no real player to start. Both taps are
-  // remembered instead and carried out the moment React is up — and because
-  // the tap itself was a genuine gesture, the browser still lets the video
-  // start with sound.
+  // has nothing to scroll to. The tap is remembered instead and carried out
+  // the moment React is up.
   for (const btn of root.querySelectorAll(".btn-primary")) {
     btn.setAttribute("onclick", "window.__cutsWantsCTA=1");
-  }
-  for (const btn of root.querySelectorAll(".hero-poster-btn")) {
-    btn.setAttribute("onclick", "window.__cutsWantsVideo=1");
   }
 
   return { html: root.toString(), applied, missing };
@@ -87,7 +82,7 @@ if(el){act(el);return}if(tries>0)setTimeout(function(){honour(sel,act,tries-1)},
 var o=new MutationObserver(function(){var r=document.getElementById("root");
 if(!r||!r.children.length)return;p.remove();o.disconnect();
 if(window.__cutsWantsCTA)honour("#cta",function(e){e.scrollIntoView({behavior:"smooth"})},25);
-if(window.__cutsWantsVideo)honour(".hero-poster-btn",function(e){e.click()},25)});
+});
 document.addEventListener("DOMContentLoaded",function(){var r=document.getElementById("root");
 if(r)o.observe(r,{childList:true})})})();</script>`;
 }
