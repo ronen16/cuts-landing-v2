@@ -552,6 +552,8 @@ function Footer() {
           <a href="privacy.html" onClick={(e) => { e.preventDefault(); if (window.openLegal) window.openLegal("privacy"); }} style={{ color: "inherit", textDecoration: "none", cursor: "pointer" }}>מדיניות פרטיות</a>
           <span style={{ opacity: 0.4 }}>·</span>
           <a href="terms.html" onClick={(e) => { e.preventDefault(); if (window.openLegal) window.openLegal("terms"); }} style={{ color: "inherit", textDecoration: "none", cursor: "pointer" }}>תקנון האתר</a>
+          <span style={{ opacity: 0.4 }}>·</span>
+          <a href="https://portal.cuts.co.il/login" style={{ color: "inherit", textDecoration: "none" }}>כניסה ללקוחות</a>
         </span>
         <span style={{ fontFamily: "var(--font-mono)", fontSize: 12, opacity: 0.5 }}>
           © 2026 CUTS. כל הזכויות שמורות.
