@@ -114,6 +114,9 @@ async function run() {
 
   // 3. Only the assets actually used (skip ~4.8MB of unused PNGs).
   await copy("assets/cuts-logo.png", path.join(DIST, "assets", "cuts-logo.png"));
+  await copy("favicon.ico", path.join(DIST, "favicon.ico"));
+  await copy("assets/favicon-32.png", path.join(DIST, "assets", "favicon-32.png"));
+  await copy("assets/apple-touch-icon.png", path.join(DIST, "assets", "apple-touch-icon.png"));
   await copy("vendor/react.production.min.js", path.join(DIST, "vendor", "react.production.min.js"));
   await copy("vendor/react-dom.production.min.js", path.join(DIST, "vendor", "react-dom.production.min.js"));
   for (const w of ["Light", "Regular", "Bold", "Black"]) {
