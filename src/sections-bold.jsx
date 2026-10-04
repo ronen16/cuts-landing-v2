@@ -4733,15 +4733,15 @@ function Results({ admin }) {
                 }}>
                     <div className="pod-play-btn" style={{
                     position: "relative",
-                    width: 68, height: 48,
+                    width: 60, height: 60,
                     background: "var(--accent)",
-                    borderRadius: 12,
+                    borderRadius: "50%",
                     display: "flex", alignItems: "center", justifyContent: "center",
                     boxShadow: "0 10px 30px rgba(255,213,0,0.45)"
                   }}>
                       <span aria-hidden="true" className="pod-play-ring" style={{
                       position: "absolute", inset: -8,
-                      borderRadius: 16,
+                      borderRadius: "50%",
                       border: "1.5px solid rgba(255,213,0,0.5)"
                     }} />
                       <div style={{
