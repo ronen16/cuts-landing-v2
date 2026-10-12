@@ -4,7 +4,7 @@
 // "Invalid column values' definition" — Make's internal column encoder needs
 // rich UI-only metadata that the API can't provide. Direct GraphQL bypasses it.
 
-import { createHash } from "node:crypto";
+import { createHash, timingSafeEqual } from "node:crypto";
 
 const MONDAY_API_URL = "https://api.monday.com/v2";
 const BOARD_ID = 5091244482;
@@ -40,6 +40,32 @@ function buildFbc(attribution) {
   return `fb.1.${landed}.${fbclid}`;
 }
 
+// Leads from the Cuts website arrive server-to-server through its own /api/lead,
+// so the connecting IP and user agent are Vercel's. The website passes the
+// visitor's real ones in x-cuts-* headers, trusted only with the shared key.
+export function resolveClientContext(req, forwardKey = process.env.LEAD_FORWARD_KEY || "") {
+  const h = req.headers || {};
+  // Byte lengths, not string lengths: timingSafeEqual throws on a mismatch.
+  const given = Buffer.from(String(h["x-cuts-forward-key"] || ""));
+  const expected = Buffer.from(forwardKey);
+  if (forwardKey && given.length === expected.length && timingSafeEqual(given, expected)) {
+    return { ip: String(h["x-cuts-client-ip"] || ""), ua: String(h["x-cuts-client-ua"] || "") };
+  }
+  return { ip: String(h["x-forwarded-for"] || "").split(",")[0].trim(), ua: String(h["user-agent"] || "") };
+}
+
+// Source ("מקור הגעה"): a Meta-campaign click (fbclid / a facebook|instagram
+// utm_source) reads "מטא"; a lead forwarded from the Cuts website reads "אתר";
+// everything else is organic and reads "דף נחיתה".
+export function resolveSource(body) {
+  const attr = (body && body.attribution) || {};
+  const utmSource = String(attr.utm_source || "").toLowerCase();
+  const isMeta = !!(attr.fbclid || /facebook|fb|instagram|ig|meta/.test(utmSource));
+  if (isMeta) return "מטא";
+  if (body && body.site === "website") return "אתר";
+  return "דף נחיתה";
+}
+
 async function sendLeadToMeta({ body, phoneNorm, email, fullName, clientId, req }) {
   if (!metaEnabled()) return { sent: false, reason: "disabled" };
   const token = process.env.META_CAPI_TOKEN;
@@ -48,11 +74,12 @@ async function sendLeadToMeta({ body, phoneNorm, email, fullName, clientId, req 
 
   const attribution = body.attribution || {};
   const nameParts = String(fullName || "").split(/\s+/).filter(Boolean);
+  const visitor = resolveClientContext(req);
   const userData = {
     ph: [sha256(phoneNorm)],
     country: [sha256("il")],
-    client_ip_address: (req.headers["x-forwarded-for"] || "").split(",")[0].trim(),
-    client_user_agent: req.headers["user-agent"] || "",
+    client_ip_address: visitor.ip,
+    client_user_agent: visitor.ua,
   };
   if (email) userData.em = [sha256(email)];
   if (nameParts.length) userData.fn = [sha256(nameParts[0])];
@@ -285,12 +312,7 @@ export default async function handler(req, res) {
   }
 
   // Shared fields used by both the durable store and Monday.
-  // Source ("מקור הגעה"): a Meta-campaign click (fbclid / a facebook|instagram
-  // utm_source) reads "מטא"; everything else is organic and reads "דף נחיתה".
-  const attr = body.attribution || {};
-  const utmSource = String(attr.utm_source || "").toLowerCase();
-  const isMeta = !!(attr.fbclid || /facebook|fb|instagram|ig|meta/.test(utmSource));
-  const source = isMeta ? "מטא" : "דף נחיתה";
+  const source = resolveSource(body);
   const phoneNorm = normalizePhone(phoneRaw);
   const adName       = String(body.adName       || "").trim();
   const adsetName    = String(body.adsetName    || "").trim();
